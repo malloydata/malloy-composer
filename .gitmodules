@@ -1,0 +1,6 @@
+[submodule "malloy-third-party"]
+	path = malloy-third-party
+	url = git@github.com:malloydata/malloy-third-party
+[submodule "malloy-samples"]
+	path = malloy-samples
+	url = git@github.com:malloydata/malloy-samples.git

@@ -78,7 +78,7 @@ async function packageDemo(
     ],
     platform,
     arch: architecture,
-    extraResource: ["../../samples/", path.join(outDir, thirdPartyNotices)],
+    extraResource: ["./malloy-samples", path.join(outDir, thirdPartyNotices)],
     ...extraOptions,
   });
   console.log(`Electron app bundles created:\n${appPaths.join("\n")}`);

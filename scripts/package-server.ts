@@ -23,7 +23,7 @@ const thirdPartyNotices = "third_party_notices.txt";
 
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
-const duckdbPath = "../../../third_party/github.com/duckdb/duckdb";
+const duckdbPath = "../malloy-third-party/third_party/github.com/duckdb/duckdb";
 
 const duckDbTargetMap = new Map<string, string>([
   ["darwin-arm64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`],

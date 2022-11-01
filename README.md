@@ -26,7 +26,7 @@ In the `malloy/demo/malloy-demo-composer` directory, run:
 1. `npm run build` (you need to do this in addition to the above build in the top-level directory)
 2. `npm run start`
 
-This will start a desktop application. You should see any sources defined in `.malloy` files you place in a the Malloy models directory (by default, this is the samples directory but can be configured, as described below) listed in the "Select analysis..." menu at the top left. If you don't already have Malloy models built you'd like to work with, try making a copy of one of the [samples](https://github.com/looker-open-source/malloy/tree/main/samples); these are all built on public BigQuery datasets!
+This will start a desktop application. You should see any sources defined in `.malloy` files you place in a the Malloy models directory (by default, this is the samples directory but can be configured, as described below) listed in the "Select analysis..." menu at the top left. If you don't already have Malloy models built you'd like to work with, try making a copy of one of the [samples](https://github.com/malloydata/malloy-samples); these are all built on public BigQuery datasets!
 
 Troubleshooting notes:
 
@@ -58,7 +58,7 @@ The composer is a two-way tool; saved queries are saved into this source by the 
 
 ### Settings
 
-The Malloy models directory is `../../samples` by default, but you can set it to another directory by adding a `composer_config.json` file (see `composer_config.sample.json` for a sample of this file).
+The Malloy models directory is `./malloy-samples` by default, but you can set it to another directory by adding a `composer_config.json` file (see `composer_config.sample.json` for a sample of this file).
 
 For example, a `composer_config.json` with the following content would configure the Composer to look for models in the `~/malloy` directory.
 

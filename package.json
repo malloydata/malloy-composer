@@ -16,7 +16,7 @@
     "debian": "electron-installer-debian --src dist//malloy-composer-demo-linux-x64/ --dest dist/installers/ --arch amd64",
     "clean": "rm -rf ./node_modules",
     "server-build": "ts-node scripts/package-server --skip-package",
-    "server-start": "npm run server-build && node ./dist/cli.js --models ../../samples",
+    "server-start": "npm run server-build && node ./dist/cli.js --models ./malloy-samples",
     "server-package": "ts-node scripts/package-server"
   },
   "dependencies": {
@@ -56,6 +56,10 @@
     "esbuild": "0.14.13",
     "esbuild-plugin-svgr": "^1.0.1",
     "pkg": "^5.8.0",
+    "remark-gfm": "^1.0.0",
+    "remark-parse": "^10.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "4.7.4",
     "wait-on": "^6.0.1"
   },
   "optionalDependencies": {
