@@ -1,0 +1,16 @@
+steps:
+  - id: nix-quiet-install
+    name: gcr.io/cloud-builders/docker
+    args:
+      - pull
+      - "-q"
+      - nixos/nix
+  - id: run-script
+    name: "nixos/nix"
+    entrypoint: sh
+    args:
+      - -c
+      - "./cloudbuild/build-test/$TRIGGER_NAME.sh"
+    waitFor: ["nix-quiet-install"]
+    timeout: "1600s"
+timeout: "1600s"
