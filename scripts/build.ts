@@ -185,7 +185,6 @@ export async function doBuild(target?: string): Promise<void> {
     }
     fs.copyFileSync(
       path.join(
-        "..",
         "malloy-third-party",
         "third_party",
         "github.com",

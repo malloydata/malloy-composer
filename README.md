@@ -10,18 +10,15 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 ## Running the Composer
 
-### Install Malloy
-
-If you haven't already done so, you'll need to start by [Building the Malloy repo](https://github.com/looker-open-source/malloy/blob/main/developing.md). Install the dependencies in that link, then in the top-level `malloy/` directory, run:
-
-1. `npm install` to install dependencies
-2. `npm run build` to build all the libraries Malloy needs
+1. `npm install` to install package dependencies
+2. `git submodule init` and
+3. `git submodule update` to install git dependencies
 
 Make sure you have a [database connected](https://looker-open-source.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/looker-open-source/malloy#installing-the-extension) to view and edit Malloy files.
 
 ### Launch the Composer
 
-In the `malloy/demo/malloy-demo-composer` directory, run:
+Run:
 
 1. `npm run build` (you need to do this in addition to the above build in the top-level directory)
 2. `npm run start`
