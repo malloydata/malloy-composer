@@ -11,10 +11,11 @@
  * GNU General Public License for more details.
  */
 
-import { SearchValueMapResult } from "@malloydata/malloy";
+import { SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
 import { Analysis } from "../../types";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 export function KEY(analysis?: Analysis): string {
   return analysis
@@ -31,6 +32,14 @@ async function fetchTopValues(
     return undefined;
   }
   const source = analysis && analysis.modelDef.contents[analysis.sourceName];
+
+  if (isDuckDBWASM()) {
+    return duckDBWASM.topValues(
+      source as StructDef,
+      analysis.fullPath || analysis.modelFullPath
+    );
+  }
+
   if (isElectron()) {
     const res = await window.malloy.topValues(
       source,

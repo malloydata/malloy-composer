@@ -15,7 +15,8 @@ import { useMutation, useQueryClient } from "react-query";
 import { Analysis } from "../../types";
 import { KEY as DIRECTORY_KEY } from "./use_directory";
 import { FieldDef, ModelDef, Result } from "@malloydata/malloy";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 async function saveField(
   type: "query" | "dimension" | "measure",
@@ -26,6 +27,15 @@ async function saveField(
   if (analysis === undefined) {
     return undefined;
   }
+
+  if (isDuckDBWASM()) {
+    const res = await duckDBWASM.saveField(type, field, name, analysis);
+    if (res instanceof Error) {
+      throw res;
+    }
+    return res;
+  }
+
   if (isElectron()) {
     const res = await window.malloy.saveField(type, field, name, {
       ...analysis,

@@ -13,11 +13,16 @@
 
 import { useQuery } from "react-query";
 import * as explore from "../../types";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 export const KEY = "models";
 
 async function fetchModels(): Promise<explore.Model[]> {
+  if (isDuckDBWASM()) {
+    return duckDBWASM.models();
+  }
+
   if (isElectron()) {
     const res = await window.malloy.models();
     if (res instanceof Error) {

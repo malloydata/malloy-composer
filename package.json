@@ -18,7 +18,9 @@
     "clean": "rm -rf ./node_modules",
     "server-build": "ts-node scripts/package-server --skip-package",
     "server-start": "npm run server-build && node ./dist/cli.js --models ./malloy-samples",
-    "server-package": "ts-node scripts/package-server"
+    "server-package": "ts-node scripts/package-server",
+    "build-duckdb-wasm": "ts-node scripts/build-duckdb-wasm",
+    "start-duckdb-wasm": "npm run build-duckdb-wasm 9999"
   },
   "dependencies": {
     "@malloydata/db-bigquery": "0.0.3",

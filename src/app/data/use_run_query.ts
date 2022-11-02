@@ -14,12 +14,22 @@
 import { useMutation } from "react-query";
 import { Analysis } from "../../types";
 import * as malloy from "@malloydata/malloy";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 async function runQuery(query: string, queryName: string, analysis?: Analysis) {
   if (analysis === undefined) {
     return undefined;
   }
+
+  if (isDuckDBWASM()) {
+    const result = await duckDBWASM.runQuery(query, queryName, analysis);
+    if (result instanceof Error) {
+      throw result;
+    }
+    return result;
+  }
+
   if (isElectron()) {
     const res = await window.malloy.runQuery(query, queryName, {
       ...analysis,
