@@ -29,6 +29,7 @@ import { compileModel } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
+import { isDuckDBWASM } from "../utils";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -133,13 +134,13 @@ export const Explore: React.FC = () => {
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          <ActionIcon
+          {!isDuckDBWASM() && <ActionIcon
             action="open-directory"
             onClick={() => {
               !isOpeningDirectory && beginOpenDirectory();
             }}
             color="dimension"
-          />
+          />}
           <DirectoryPicker
             directory={directory}
             analysis={analysis}

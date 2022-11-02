@@ -92,7 +92,9 @@ export function useSaveField(
     }) => saveField(type, field, name, analysis),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(DIRECTORY_KEY(directoryPath));
+        if (!isDuckDBWASM()) {
+          queryClient.invalidateQueries(DIRECTORY_KEY(directoryPath));
+        }
       },
     }
   );
