@@ -1,5 +1,14 @@
 build
+composer_config.json
 dist
+env
 node_modules
 out
 pkg
+public/js
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
