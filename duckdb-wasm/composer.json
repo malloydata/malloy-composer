@@ -4,23 +4,5 @@
     "dataTables": ["airports.parquet"],
     "modelPath": "./airports.malloy",
     "readme": "./airports.md"
-  },
-  {
-    "name": "Auto Recalls",
-    "dataTables": ["auto_recalls.csv"],
-    "modelPath": "./auto_recalls.malloy",
-    "readme": "./auto_recalls.md"
-  },
-  {
-    "name": "Flights",
-    "dataTables": ["airports.parquet", "carriers.parquet", "flights.parquet"],
-    "modelPath": "./flights.malloy",
-    "readme": "./flights.md"
-  },
-  {
-    "name": "No Model",
-    "modelPath": "./no_model.malloy",
-    "dataTables": ["auto_recalls.csv", "words.parquet", "ga_sample.parquet","airports.parquet"],
-    "readme": "./no_model.md"
   }
 ]

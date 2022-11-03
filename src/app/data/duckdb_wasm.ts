@@ -82,7 +82,7 @@ export async function directory(): Promise<explore.Directory> {
     const modelURL = new URL(sample.modelPath, base);
     const malloy = await URL_READER.readURL(modelURL);
     // TODO README on a per model or "dataset" basis
-    // const readme = sample.readme && await URL_READER.readURL(new URL(sample.readme, base));
+    const readme = sample.readme && await URL_READER.readURL(new URL(sample.readme, base));
     const styles = sample.styles && await URL_READER.readURL(new URL(sample.styles, base));
     const model = await RUNTIME.getModel(modelURL);
     return {
@@ -93,6 +93,7 @@ export async function directory(): Promise<explore.Directory> {
       sources: model.explores,
       modelDef: model._modelDef,
       dataStyles: styles ? JSON.parse(styles) : {},
+      readme,
     }
   }));
   return {
@@ -100,6 +101,7 @@ export async function directory(): Promise<explore.Directory> {
     path: "/",
     fullPath: window.location.hostname,
     contents,
+    readme: contents.length === 1 ? contents[0].readme : undefined
   };
 }
 
