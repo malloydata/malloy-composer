@@ -84,7 +84,7 @@ export async function directory(): Promise<explore.Directory> {
     // TODO README on a per model or "dataset" basis
     // const readme = sample.readme && await URL_READER.readURL(new URL(sample.readme, base));
     const styles = sample.styles && await URL_READER.readURL(new URL(sample.styles, base));
-    const model = await RUNTIME.getModel(malloy);
+    const model = await RUNTIME.getModel(modelURL);
     return {
       type: "model",
       malloy,
