@@ -29,7 +29,7 @@ export async function doBuild(): Promise<void> {
   const options: BuildOptions = {
     define: { 
       "process.env.NODE_DEBUG": "false", 
-      "process.env.IS_DUCKDB_WASM": "true" 
+      "window.IS_DUCKDB_WASM": "true" 
     },
     entryPoints: {
       main: "./src/index.tsx"

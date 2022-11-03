@@ -91,7 +91,8 @@ export const Explore: React.FC = () => {
     }
 
     const newSourceName = sourceName + "_analysis";
-    const code = `import "file://${model.fullPath}"\n\n explore: ${newSourceName} is ${source.name} {}`;
+    const pathWithProtocol = new URL(model.fullPath, "file:///");
+    const code = `import "${pathWithProtocol}"\n\n explore: ${newSourceName} is ${source.name} {}`;
     compileModel(model.modelDef, code).then((modelDef) => {
       const analysis: Analysis = {
         type: "analysis",
