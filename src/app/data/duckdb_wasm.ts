@@ -88,7 +88,7 @@ export async function directory(): Promise<explore.Directory> {
     return {
       type: "model",
       malloy,
-      path: modelURL.pathname.substring(1),
+      path: modelURL.pathname.substring(modelURL.pathname.lastIndexOf('/') + 1),
       fullPath: modelURL.toString(),
       sources: model.explores,
       modelDef: model._modelDef,
