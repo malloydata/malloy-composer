@@ -12,12 +12,10 @@
  */
 
 /* eslint-disable no-console */
-import fs from "fs";
 import packager from "electron-packager";
 import { exit } from "process";
 import { doBuild } from "./build";
 import * as path from "path";
-import { exec } from "child_process";
 
 const outDir = "./dist";
 const thirdPartyNotices = "third_party_notices.txt";

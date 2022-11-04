@@ -69,37 +69,47 @@ export async function directory(): Promise<explore.Directory> {
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
   const samples = JSON.parse(response);
-  const contents = await Promise.all(samples.map(async (sample: SampleEntry) => {
-    const connection = await DUCKDB_WASM.lookupConnection("duckdb");
-    await Promise.all(sample.dataTables.map((tableName) => {
-      return connection.database?.registerFileURL(
-        tableName,
-        new URL(tableName, base).toString()
+  const contents = await Promise.all(
+    samples.map(async (sample: SampleEntry) => {
+      const connection = await DUCKDB_WASM.lookupConnection("duckdb");
+      await Promise.all(
+        sample.dataTables.map((tableName) => {
+          return connection.database?.registerFileURL(
+            tableName,
+            new URL(tableName, base).toString()
+          );
+        })
       );
-    }));
-    const modelURL = new URL(sample.modelPath, base);
-    const malloy = await URL_READER.readURL(modelURL);
-    // TODO README on a per model or "dataset" basis
-    const readme = sample.readme && await URL_READER.readURL(new URL(sample.readme, base));
-    const styles = sample.styles && await URL_READER.readURL(new URL(sample.styles, base));
-    const model = await RUNTIME.getModel(modelURL);
-    return {
-      type: "model",
-      malloy,
-      path: modelURL.pathname.substring(modelURL.pathname.lastIndexOf('/') + 1),
-      fullPath: modelURL.toString(),
-      sources: model.explores,
-      modelDef: model._modelDef,
-      dataStyles: styles ? JSON.parse(styles) : {},
-      readme,
-    }
-  }));
+      const modelURL = new URL(sample.modelPath, base);
+      const malloy = await URL_READER.readURL(modelURL);
+      // TODO README on a per model or "dataset" basis
+      const readme =
+        sample.readme &&
+        (await URL_READER.readURL(new URL(sample.readme, base)));
+      const styles =
+        sample.styles &&
+        (await URL_READER.readURL(new URL(sample.styles, base)));
+      const model = await RUNTIME.getModel(modelURL);
+      return {
+        type: "model",
+        malloy,
+        path: modelURL.pathname.substring(
+          modelURL.pathname.lastIndexOf("/") + 1
+        ),
+        fullPath: modelURL.toString(),
+        sources: model.explores,
+        modelDef: model._modelDef,
+        dataStyles: styles ? JSON.parse(styles) : {},
+        readme,
+      };
+    })
+  );
   return {
     type: "directory",
     path: "/",
     fullPath: window.location.hostname,
     contents,
-    readme: contents.length === 1 ? contents[0].readme : undefined
+    readme: contents.length === 1 ? contents[0].readme : undefined,
   };
 }
 
@@ -192,14 +202,12 @@ export async function search(
 
 export async function topValues(
   source: malloy.StructDef,
-  analysisPath: string
+  _analysisPath: string
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
   const sourceName = source.as || source.name;
-  return RUNTIME
-    ._loadModelFromModelDef({
-      name: "_generated",
-      contents: { [sourceName]: source },
-      exports: [],
-    })
-    .searchValueMap(sourceName);
+  return RUNTIME._loadModelFromModelDef({
+    name: "_generated",
+    contents: { [sourceName]: source },
+    exports: [],
+  }).searchValueMap(sourceName);
 }

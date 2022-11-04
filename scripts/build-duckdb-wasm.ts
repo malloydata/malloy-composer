@@ -27,12 +27,12 @@ export async function doBuild(): Promise<void> {
   const development = process.env.NODE_ENV == "development";
 
   const options: BuildOptions = {
-    define: { 
-      "process.env.NODE_DEBUG": "false", 
-      "window.IS_DUCKDB_WASM": "true" 
+    define: {
+      "process.env.NODE_DEBUG": "false",
+      "window.IS_DUCKDB_WASM": "true",
     },
     entryPoints: {
-      main: "./src/index.tsx"
+      main: "./src/index.tsx",
     },
     entryNames: "app",
     bundle: true,
@@ -41,9 +41,9 @@ export async function doBuild(): Promise<void> {
     outdir: "duckdb-wasm/dist/",
     platform: "browser",
     plugins: [svgrPlugin({ exportType: "named" })],
-    loader: { 
-      [".ttf"]: "dataurl", 
-      [".svg"]: "dataurl", 
+    loader: {
+      [".ttf"]: "dataurl",
+      [".svg"]: "dataurl",
       [".png"]: "dataurl",
     },
     inject: ["./react-shim.js"],

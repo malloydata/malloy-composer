@@ -135,13 +135,15 @@ export const Explore: React.FC = () => {
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          {!isDuckDBWASM() && <ActionIcon
-            action="open-directory"
-            onClick={() => {
-              !isOpeningDirectory && beginOpenDirectory();
-            }}
-            color="dimension"
-          />}
+          {!isDuckDBWASM() && (
+            <ActionIcon
+              action="open-directory"
+              onClick={() => {
+                !isOpeningDirectory && beginOpenDirectory();
+              }}
+              color="dimension"
+            />
+          )}
           <DirectoryPicker
             directory={directory}
             analysis={analysis}
@@ -282,11 +284,6 @@ const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-`;
-
-const ScrollContent = styled(Content)`
-  overflow-y: auto;
-  background-color: unset;
 `;
 
 const Page = styled(Content)``;

@@ -68,10 +68,12 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               />
             )}
           </Popover>
-          {!isDuckDBWASM() && <SaveQueryButton
-            saveQuery={queryModifiers.saveCurrentQuery}
-            disabled={!analysis}
-          />}
+          {!isDuckDBWASM() && (
+            <SaveQueryButton
+              saveQuery={queryModifiers.saveCurrentQuery}
+              disabled={!analysis}
+            />
+          )}
           <ActionIcon
             action="remove"
             onClick={() => queryModifiers.clearQuery()}

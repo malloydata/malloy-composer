@@ -33,7 +33,7 @@ export function isElectron(): boolean {
 }
 
 export function isDuckDBWASM(): boolean {
-  return !!(window as any).IS_DUCKDB_WASM;
+  return !!(window as unknown as { IS_DUCKDB_WASM: boolean }).IS_DUCKDB_WASM;
 }
 
 const HIGHLIGHTER = shiki.getHighlighter({
