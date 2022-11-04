@@ -15,6 +15,7 @@ import { QuerySummaryPanel } from "../QuerySummaryPanel";
 import { Result } from "../Result";
 import { SaveQueryButton } from "../SaveQueryButton";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
+import { isDuckDBWASM } from "../utils";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -67,10 +68,10 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               />
             )}
           </Popover>
-          <SaveQueryButton
+          {!isDuckDBWASM() && <SaveQueryButton
             saveQuery={queryModifiers.saveCurrentQuery}
             disabled={!analysis}
-          />
+          />}
           <ActionIcon
             action="remove"
             onClick={() => queryModifiers.clearQuery()}

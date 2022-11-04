@@ -15,8 +15,6 @@ import { useEffect } from "react";
 import { useQuery } from "react-query";
 import * as explore from "../../types";
 import { isDuckDBWASM, isElectron } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
-
 export const KEY = "currentAnalysis";
 
 async function refetchAnalysis(

@@ -13,7 +13,6 @@
 
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
 import * as malloy from "@malloydata/malloy";
-import { QueryWriter } from "../../core/query";
 import * as explore from "../../types";
 
 export class DuckDBWasmLookup
@@ -53,7 +52,6 @@ export class BrowserURLReader implements malloy.URLReader {
   }
 }
 
-// TODO gross singleton...
 const URL_READER = new BrowserURLReader();
 const DUCKDB_WASM = new DuckDBWasmLookup();
 const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
@@ -160,10 +158,7 @@ export async function schema(analysis: explore.Analysis): Promise<
       malloy: string;
     }
 > {
-  const malloy = analysis.fullPath
-    ? analysis.malloy // await fs.readFile(analysis.fullPath, "utf8")
-    : analysis.malloy;
-  const model = await RUNTIME.getModel(malloy);
+  const model = await RUNTIME.getModel(analysis.malloy);
   const source = model.explores.find(
     (source) => source.name === analysis.sourceName
   );
@@ -177,7 +172,7 @@ export async function schema(analysis: explore.Analysis): Promise<
       fields: source.allFields.map((field) => mapField(field, undefined)),
     },
     modelDef: model._modelDef,
-    malloy: malloy,
+    malloy: analysis.malloy,
   };
 }
 
@@ -207,118 +202,4 @@ export async function topValues(
       exports: [],
     })
     .searchValueMap(sourceName);
-}
-
-
-function codeBefore(
-  code: string,
-  location: { line: number; character: number }
-) {
-  const lines = code.split("\n");
-  const wellBefore = lines.slice(0, location.line);
-  const before = lines[location.line].substring(0, location.character);
-  return wellBefore.join("\n") + "\n" + before;
-}
-
-function codeAfter(
-  code: string,
-  location: { line: number; character: number }
-) {
-  const lines = code.split("\n");
-  const wellAfter = lines.slice(location.line + 1);
-  const after = lines[location.line].substring(location.character);
-  return after + "\n" + wellAfter.join("\n");
-}
-
-function indent(str: string) {
-  return str
-    .split("\n")
-    .map((line) => "  " + line)
-    .join("\n");
-}
-
-function indentExceptFirstLine(str: string) {
-  const lines = str.split("\n");
-  return (
-    lines[0] +
-    "\n" +
-    lines
-      .slice(1)
-      .map((line) => "  " + line)
-      .join("\n")
-  );
-}
-
-export async function saveField(
-  type: "query" | "dimension" | "measure",
-  field: malloy.FieldDef,
-  name: string,
-  analysis: explore.Analysis
-): Promise<explore.Analysis> {
-  const model = await RUNTIME.getModel(analysis.malloy);
-  const source = model._modelDef.contents[analysis.sourceName];
-  if (source.type !== "struct") {
-    throw new Error("Wrong type for source.");
-  }
-  if (field.type === "struct") {
-    throw new Error("Invalid field to save");
-  }
-  const fieldString =
-    field.type === "turtle"
-      ? new QueryWriter(field, source).getQueryStringForSource(name)
-      : `${name} is ${field.code}`;
-  if (fieldString === undefined) {
-    throw new Error("Expected field to have code.");
-  }
-  const explore = model.getExploreByName(analysis.sourceName);
-  const existingField = explore.allFields.find((field) => field.name === name);
-  if (existingField && typeOf(existingField) !== field.type) {
-    throw new Error("Cannot overwrite field of differing type");
-  }
-  let newMalloy;
-  if (existingField) {
-    const existingLocation = locationOf(existingField);
-    if (existingLocation?.url === `internal://internal.malloy`) {
-      newMalloy =
-        codeBefore(analysis.malloy, existingLocation.range.start) +
-        indentExceptFirstLine(fieldString) +
-        codeAfter(analysis.malloy, existingLocation.range.end);
-    } else {
-      newMalloy = analysis.malloy.replace(
-        /\}\s*$/,
-        "\n" + indent(`${type}: ${fieldString}`) + "\n}"
-      );
-    }
-  } else {
-    newMalloy = analysis.malloy.replace(
-      /\}\s*$/,
-      "\n" + indent(`${type}: ${fieldString}`) + "\n}"
-    );
-  }
-  const newModel = await RUNTIME.getModel(newMalloy);
-  return {
-    ...analysis,
-    malloy: newMalloy,
-    modelDef: newModel._modelDef,
-  };
-}
-
-function locationOf(existingField: malloy.Field) {
-  if (existingField.isQueryField()) {
-    return (existingField as unknown as { turtleDef: malloy.TurtleDef }).turtleDef
-      .location;
-  } else if (existingField.isAtomicField()) {
-    return (existingField as unknown as { fieldTypeDef: malloy.FieldTypeDef })
-      .fieldTypeDef.location;
-  }
-}
-
-function typeOf(existingField: malloy.Field) {
-  if (existingField.isQueryField()) {
-    return (existingField as unknown as { turtleDef: malloy.TurtleDef }).turtleDef
-      .type;
-  } else if (existingField.isAtomicField()) {
-    return (existingField as unknown as { fieldTypeDef: malloy.FieldTypeDef })
-      .fieldTypeDef.type;
-  }
 }

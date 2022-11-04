@@ -14,9 +14,8 @@
 import { useMutation, useQueryClient } from "react-query";
 import { Analysis } from "../../types";
 import { KEY as DIRECTORY_KEY } from "./use_directory";
-import { FieldDef, ModelDef, Result } from "@malloydata/malloy";
+import { FieldDef, ModelDef } from "@malloydata/malloy";
 import { isDuckDBWASM, isElectron } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
 
 async function saveField(
   type: "query" | "dimension" | "measure",
@@ -29,11 +28,7 @@ async function saveField(
   }
 
   if (isDuckDBWASM()) {
-    const res = await duckDBWASM.saveField(type, field, name, analysis);
-    if (res instanceof Error) {
-      throw res;
-    }
-    return res;
+    throw new Error("Saving is not allowed in DuckDB WASM Mode");
   }
 
   if (isElectron()) {

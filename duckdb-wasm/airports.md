@@ -17,3 +17,59 @@ For personal / educational use only.
 ## Queries in `imdb.malloy`
 
 ### <!--malloy-query model="airports.malloy" source="airports" query="by_state"--> `by_state`
+
+
+[MyQuery](malloy://foo.malloy/bar/my_query)
+
+
+<!-- mq model="airports.malloy" -->
+
+
+<!-- malloy-query 
+  name="My Cool Query"
+  description="This is a super cool query" 
+-->
+```malloy
+source -> my_query { where: foo }
+```
+
+## Heres a list of cool queries
+
+
+<!-- malloy-query  
+  name="My Cool Query"
+  description="This is a super cool query" 
+  code="source -> my_query { where: foo }"
+-->
+```malloy
+source -> my_query { where: foo }
+```
+
+<!-- malloy-query  
+  name="My Cool Query"
+  description="This is a super cool query" 
+  code="source -> my_query { where: foo }"
+-->
+```malloy
+source -> my_query { where: foo }
+```
+
+<!-- malloy-query  
+  name="My Cool Query"
+  description="This is a super cool query" 
+  code="source -> my_query { where: foo }"
+-->
+```malloy
+source -> my_query { where: foo }
+```
+
+<!-- malloy-query  
+  name="My Cool Query"
+  description="This is a super cool query" 
+  code="source -> my_query { where: foo }"
+  renderer="dashboard"
+  source="foo"
+-->
+```malloy
+query: foo is { where: foo }
+```
