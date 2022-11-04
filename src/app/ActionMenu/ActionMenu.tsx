@@ -56,7 +56,6 @@ export type Action = OneClickAction | SubMenuAction;
 
 interface ActionMenuProps {
   valueSearchSource?: StructDef | undefined;
-  valueSearchAnalysisPath?: string;
   actions: Action[];
   closeMenu: () => void;
   searchItems?: SearchItem[];
@@ -69,7 +68,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   closeMenu,
   searchItems,
   valueSearchSource,
-  valueSearchAnalysisPath,
   topValues,
   addFilter,
 }) => {
@@ -79,11 +77,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
       : undefined
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const { searchResults, isLoading } = useSearch(
-    valueSearchSource,
-    valueSearchAnalysisPath,
-    searchTerm
-  );
+  const { searchResults, isLoading } = useSearch(valueSearchSource, searchTerm);
   const stringSearchResults =
     searchResults &&
     searchResults.filter((r) => r.fieldType === "string").slice(0, 100);

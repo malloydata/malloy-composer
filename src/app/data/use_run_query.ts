@@ -12,49 +12,48 @@
  */
 
 import { useMutation } from "react-query";
-import { Analysis } from "../../types";
 import * as malloy from "@malloydata/malloy";
 import { isDuckDBWASM, isElectron } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-async function runQuery(query: string, queryName: string, analysis?: Analysis) {
-  if (analysis === undefined) {
-    return undefined;
-  }
-
+async function runQuery(
+  query: string,
+  model: malloy.ModelDef,
+  queryName: string
+) {
   if (isDuckDBWASM()) {
-    const result = await duckDBWASM.runQuery(query, queryName, analysis);
+    const result = await duckDBWASM.runQuery(query, queryName, model);
     if (result instanceof Error) {
       throw result;
     }
     return result;
   }
 
-  if (isElectron()) {
-    const res = await window.malloy.runQuery(query, queryName, {
-      ...analysis,
-      modelDef: {} as unknown as malloy.ModelDef,
-    });
-    if (res instanceof Error) {
-      throw res;
-    }
-    return malloy.Result.fromJSON(res);
-  }
+  // if (isElectron()) {
+  //   const res = await window.malloy.runQuery(query, queryName, {
+  //     ...analysis,
+  //     modelDef: {} as unknown as malloy.ModelDef,
+  //   });
+  //   if (res instanceof Error) {
+  //     throw res;
+  //   }
+  //   return malloy.Result.fromJSON(res);
+  // }
 
-  const raw = await (
-    await fetch("api/run_query", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query,
-        queryName,
-        analysis: { ...analysis, modelDef: {} },
-      }),
-    })
-  ).json();
-  return malloy.Result.fromJSON(raw.result) as malloy.Result;
+  // const raw = await (
+  //   await fetch("api/run_query", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       query,
+  //       queryName,
+  //       analysis: { ...analysis, modelDef: {} },
+  //     }),
+  //   })
+  // ).json();
+  // return malloy.Result.fromJSON(raw.result) as malloy.Result;
 }
 
 interface UseRunQueryResult {
@@ -66,12 +65,12 @@ interface UseRunQueryResult {
 
 export function useRunQuery(
   query: string,
-  queryName: string,
   onError: (error: Error) => void,
-  analysis?: Analysis
+  model: malloy.ModelDef,
+  queryName: string
 ): UseRunQueryResult {
   const { data, mutateAsync, isLoading, reset } = useMutation(
-    () => runQuery(query, queryName, analysis),
+    () => runQuery(query, model, queryName),
     { onError }
   );
 

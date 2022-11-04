@@ -13,49 +13,18 @@
 
 import {
   FieldDef,
+  ModelDef,
   QueryFieldDef,
   StructDef,
-  ModelDef,
 } from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
 
-export interface Source {
+export interface Dataset {
+  id: string;
   name: string;
+  description: string;
+  model: ModelDef;
+  readme: string;
 }
-
-export interface Directory {
-  type: "directory";
-  path: string;
-  fullPath: string;
-  contents: (Model | Directory | Analysis)[];
-  readme?: string;
-}
-
-export interface Model {
-  type: "model";
-  malloy: string;
-  path: string;
-  fullPath: string;
-  sources: Source[];
-  modelDef: ModelDef;
-  dataStyles: DataStyles;
-}
-
-export interface Analysis {
-  type: "analysis";
-  malloy: string;
-  path?: string;
-  fullPath?: string;
-  modelFullPath: string;
-  sourceName: string;
-  modelDef: ModelDef;
-  id?: string;
-  dataStyles: DataStyles;
-}
-
-export type AnalysableReference =
-  | { type: "source"; modelFullPath: string; sourceName: string }
-  | { type: "analysis"; analysisFullPath: string };
 
 export interface SchemaFieldMeasure {
   name: string;

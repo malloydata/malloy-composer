@@ -16,7 +16,6 @@ import * as malloy from "@malloydata/malloy";
 import * as render from "@malloydata/render";
 import styled from "styled-components";
 import { LoadingSpinner } from "../Spinner";
-import { Analysis } from "../../types";
 import { usePrevious } from "../hooks";
 import { downloadFile, highlightPre, notUndefined } from "../utils";
 import { compileFilter } from "../../core/compile";
@@ -25,9 +24,8 @@ import { DOMElement } from "../DOMElement";
 import { PageContent, PageHeader } from "../CommonElements";
 
 interface ResultProps {
-  source: malloy.StructDef | undefined;
+  source: malloy.StructDef;
   result?: malloy.Result;
-  analysis: Analysis | undefined;
   dataStyles: render.DataStyles;
   malloy: string;
   onDrill: (filters: malloy.FilterExpression[]) => void;
@@ -37,7 +35,6 @@ interface ResultProps {
 export const Result: React.FC<ResultProps> = ({
   source,
   result,
-  analysis,
   dataStyles,
   malloy,
   onDrill,
@@ -71,16 +68,16 @@ export const Result: React.FC<ResultProps> = ({
       return;
     }
     setTimeout(async () => {
-      if (analysis === undefined || source === undefined) {
-        return;
-      }
       setRendering(true);
       highlightPre(result.sql, "sql").then(setSQL);
       // eslint-disable-next-line no-console
       console.log(result.sql);
       const currentResultId = ++resultId.current;
       const rendered = await new render.HTMLView(document).render(result.data, {
-        dataStyles: { ...analysis.dataStyles, ...dataStyles },
+        dataStyles: {
+          // ...analysis.dataStyles,
+          ...dataStyles,
+        },
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(
@@ -113,7 +110,7 @@ export const Result: React.FC<ResultProps> = ({
         }, 0);
       }, 0);
     });
-  }, [result, dataStyles, analysis, previousDataStyles, previousResult]);
+  }, [result, dataStyles, previousDataStyles, previousResult]);
 
   return (
     <OuterDiv>

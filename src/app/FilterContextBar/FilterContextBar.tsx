@@ -46,7 +46,6 @@ interface FilterContextBarProps {
   onComplete: () => void;
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;
-  analysisPath: string;
 }
 
 export const FilterContextBar: React.FC<FilterContextBarProps> = ({
@@ -55,7 +54,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   onComplete,
   needsRename,
   topValues,
-  analysisPath,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
@@ -103,7 +101,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
       <div>
         {field && (
           <AddFilter
-            analysisPath={analysisPath}
             source={source}
             fieldPath={field.path}
             field={field.def}

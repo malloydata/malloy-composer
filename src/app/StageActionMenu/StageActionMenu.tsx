@@ -64,7 +64,6 @@ interface StageActionMenuProps {
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   topValues: SearchValueMapResult[] | undefined;
   isLastStage: boolean;
-  analysisPath: string;
 }
 
 export const StageActionMenu: React.FC<StageActionMenuProps> = ({
@@ -82,7 +81,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   setDataStyle,
   isLastStage,
   topValues,
-  analysisPath,
 }) => {
   return (
     <ActionMenu
@@ -147,7 +145,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
-              analysisPath={analysisPath}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}

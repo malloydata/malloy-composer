@@ -58,31 +58,32 @@ const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
 
 interface SampleEntry {
   name: string;
-  dataTables: string[];
-  modelPath: string;
-  readme: string;
-  styles: string;
+  description: string;
+  tables: string[];
+  model: string;
+  readme?: string;
+  styles?: string;
 }
 
-export async function directory(): Promise<explore.Directory> {
+export async function datasets(): Promise<explore.Dataset[]> {
   const base = window.location.href;
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
-  const samples = JSON.parse(response);
-  const contents = await Promise.all(
-    samples.map(async (sample: SampleEntry) => {
+  const samples = JSON.parse(response) as { datasets: SampleEntry[] };
+  console.log(samples)
+  return await Promise.all(
+    samples.datasets.map(async (sample: SampleEntry) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
       await Promise.all(
-        sample.dataTables.map((tableName) => {
+        sample.tables.map((tableName) => {
           return connection.database?.registerFileURL(
             tableName,
             new URL(tableName, base).toString()
           );
         })
       );
-      const modelURL = new URL(sample.modelPath, base);
-      const malloy = await URL_READER.readURL(modelURL);
-      // TODO README on a per model or "dataset" basis
+      const modelURL = new URL(sample.model, base);
+      // const malloy = await URL_READER.readURL(modelURL);
       const readme =
         sample.readme &&
         (await URL_READER.readURL(new URL(sample.readme, base)));
@@ -91,39 +92,31 @@ export async function directory(): Promise<explore.Directory> {
         (await URL_READER.readURL(new URL(sample.styles, base)));
       const model = await RUNTIME.getModel(modelURL);
       return {
-        type: "model",
-        malloy,
-        path: modelURL.pathname.substring(
-          modelURL.pathname.lastIndexOf("/") + 1
-        ),
-        fullPath: modelURL.toString(),
-        sources: model.explores,
-        modelDef: model._modelDef,
-        dataStyles: styles ? JSON.parse(styles) : {},
+        id: modelURL.toString(),
+        name: sample.name,
+        description: sample.description,
+        model: model._modelDef,
         readme,
+        styles,
       };
     })
   );
-  return {
-    type: "directory",
-    path: "/",
-    fullPath: window.location.hostname,
-    contents,
-    readme: contents.length === 1 ? contents[0].readme : undefined,
-  };
-}
-
-export async function models(): Promise<explore.Model[]> {
-  return [];
 }
 
 export async function runQuery(
   query: string,
   queryName: string,
-  analysis?: explore.Analysis
+  model: malloy.ModelDef
 ): Promise<Error | malloy.Result> {
-  const runnable = RUNTIME.loadModel(
-    analysis.malloy + "\n" + query
+  const baseModel = await RUNTIME._loadModelFromModelDef(model).getModel();
+  const queryModel = await malloy.Malloy.compile({
+    urlReader: URL_READER,
+    connections: DUCKDB_WASM,
+    model: baseModel,
+    parse: malloy.Malloy.parse({ source: query }),
+  });
+  const runnable = RUNTIME._loadModelFromModelDef(
+    queryModel._modelDef
   ).loadQueryByName(queryName);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({ rowLimit });
@@ -160,7 +153,10 @@ function mapField(
   }
 }
 
-export async function schema(analysis: explore.Analysis): Promise<
+export async function schema(
+  model: string,
+  sourceName: string
+): Promise<
   | Error
   | {
       schema: explore.Schema;
@@ -168,21 +164,19 @@ export async function schema(analysis: explore.Analysis): Promise<
       malloy: string;
     }
 > {
-  const model = await RUNTIME.getModel(analysis.malloy);
-  const source = model.explores.find(
-    (source) => source.name === analysis.sourceName
+  const compiledModel = await RUNTIME.getModel(model);
+  const source = compiledModel.explores.find(
+    (source) => source.name === sourceName
   );
   if (source === undefined) {
-    throw new Error(
-      `Invalid analysis: no source with name ${analysis.sourceName}`
-    );
+    throw new Error(`No source with name ${sourceName}`);
   }
   return {
     schema: {
       fields: source.allFields.map((field) => mapField(field, undefined)),
     },
-    modelDef: model._modelDef,
-    malloy: analysis.malloy,
+    modelDef: compiledModel._modelDef,
+    malloy: model,
   };
 }
 

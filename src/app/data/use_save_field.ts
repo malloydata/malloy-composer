@@ -13,7 +13,7 @@
 
 import { useMutation, useQueryClient } from "react-query";
 import { Analysis } from "../../types";
-import { KEY as DIRECTORY_KEY } from "./use_directory";
+import { KEY as DIRECTORY_KEY } from "./use_datasets";
 import { FieldDef, ModelDef } from "@malloydata/malloy";
 import { isDuckDBWASM, isElectron } from "../utils";
 

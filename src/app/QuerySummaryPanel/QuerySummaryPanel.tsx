@@ -50,7 +50,6 @@ interface QuerySummaryPanelProps {
   stagePath: StagePath | undefined;
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
-  analysisPath: string;
   queryModifiers: QueryModifiers;
 }
 
@@ -59,7 +58,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
   stagePath,
   queryName,
   topValues,
-  analysisPath,
   queryModifiers,
 }) => {
   if (
@@ -89,7 +87,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               <ClickToPopover
                 popoverContent={({ closeMenu }) => (
                   <StageActionMenu
-                    analysisPath={analysisPath}
                     source={stage.inputSource}
                     toggleField={queryModifiers.toggleField}
                     addFilter={queryModifiers.addFilter}
@@ -130,7 +127,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               />
             )}
             <StageSummaryUI
-              analysisPath={analysisPath}
               stage={stage}
               queryModifiers={queryModifiers}
               stagePath={nestStagePath}
@@ -149,7 +145,6 @@ interface SummaryStageProps {
   stage: StageSummary;
   stagePath: StagePath;
   source: StructDef;
-  analysisPath: string;
   topValues: SearchValueMapResult[] | undefined;
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
@@ -158,7 +153,6 @@ interface SummaryStageProps {
 const StageSummaryUI: React.FC<SummaryStageProps> = ({
   stage,
   topValues,
-  analysisPath,
   queryModifiers,
   source,
   stagePath,
@@ -203,7 +197,6 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
     <FieldListDiv>
       {stage.items.map((item, index) => (
         <SummaryItem
-          analysisPath={analysisPath}
           key={`${item.type}/${index}`}
           item={item}
           stageSummary={stage.items}
@@ -273,7 +266,6 @@ const ClickToPopoverDiv = styled.div`
 
 interface SummaryItemProps {
   item: QuerySummaryItem;
-  analysisPath: string;
   source: StructDef;
   stagePath: StagePath;
   stageSummary: QuerySummaryItem[];
@@ -295,7 +287,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
   beginReorderingField,
   deselect,
   topValues,
-  analysisPath,
   queryModifiers,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -325,7 +316,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             if (item.kind === "dimension") {
               return (
                 <DimensionActionMenu
-                  analysisPath={analysisPath}
                   source={source}
                   removeField={() =>
                     queryModifiers.removeField(stagePath, item.fieldIndex)
@@ -361,13 +351,13 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   }
                   addFilter={queryModifiers.addFilter}
                   saveDimension={() => {
-                    item.saveDefinition &&
-                      queryModifiers.saveDimension(
-                        stagePath,
-                        item.fieldIndex,
-                        item.name,
-                        item.saveDefinition
-                      );
+                    // item.saveDefinition &&
+                    //   queryModifiers.saveDimension(
+                    //     stagePath,
+                    //     item.fieldIndex,
+                    //     item.name,
+                    //     item.saveDefinition
+                    //   );
                   }}
                   editDimension={(fieldIndex, dimension) =>
                     queryModifiers.editDimension(
@@ -390,7 +380,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 (item.kind === "measure" && item.isRenamed);
               return (
                 <AggregateActionMenu
-                  analysisPath={analysisPath}
                   stagePath={stagePath}
                   source={source}
                   removeField={() =>
@@ -431,13 +420,13 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     queryModifiers.editMeasure(stagePath, fieldIndex, dimension)
                   }
                   saveMeasure={() => {
-                    item.saveDefinition &&
-                      queryModifiers.saveMeasure(
-                        stagePath,
-                        item.fieldIndex,
-                        item.name,
-                        item.saveDefinition
-                      );
+                    // item.saveDefinition &&
+                    //   queryModifiers.saveMeasure(
+                    //     stagePath,
+                    //     item.fieldIndex,
+                    //     item.name,
+                    //     item.saveDefinition
+                    //   );
                   }}
                   topValues={topValues}
                   addOrderBy={queryModifiers.addOrderBy}
@@ -555,7 +544,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             });
             return (
               <NestQueryActionMenu
-                analysisPath={analysisPath}
                 source={source}
                 toggleField={queryModifiers.toggleField}
                 addFilter={queryModifiers.addFilter}
@@ -588,13 +576,13 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 }}
                 canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                 saveQuery={() => {
-                  item.saveDefinition &&
-                    queryModifiers.saveNestQuery(
-                      stagePath,
-                      item.fieldIndex,
-                      item.name,
-                      item.saveDefinition
-                    );
+                  // item.saveDefinition &&
+                  //   queryModifiers.saveNestQuery(
+                  //     stagePath,
+                  //     item.fieldIndex,
+                  //     item.name,
+                  //     item.saveDefinition
+                  //   );
                 }}
                 beginReorderingField={() => {
                   beginReorderingField(item.fieldIndex);
@@ -806,7 +794,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 <ClickToPopover
                   popoverContent={({ closeMenu }) => (
                     <StageActionMenu
-                      analysisPath={analysisPath}
                       source={stage.inputSource}
                       toggleField={queryModifiers.toggleField}
                       addFilter={queryModifiers.addFilter}
@@ -847,7 +834,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 />
               )}
               <StageSummaryUI
-                analysisPath={analysisPath}
                 stage={stage}
                 stagePath={nestStagePath}
                 source={source}
@@ -876,7 +862,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             {children.map(({ childItem, fieldIndex }, index) => {
               return (
                 <SummaryItem
-                  analysisPath={analysisPath}
                   key={"child:" + index}
                   item={childItem}
                   source={source}

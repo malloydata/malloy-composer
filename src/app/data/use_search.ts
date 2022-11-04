@@ -18,21 +18,15 @@ import * as duckDBWASM from "./duckdb_wasm";
 
 async function search(
   source: StructDef | undefined,
-  analysisPath: string | undefined,
   searchTerm: string,
   fieldPath?: string
 ) {
-  if (source === undefined || analysisPath === undefined) {
+  if (source === undefined) {
     return undefined;
   }
 
   if (isDuckDBWASM()) {
-    const res = await duckDBWASM.search(
-      source,
-      analysisPath,
-      searchTerm,
-      fieldPath
-    );
+    const res = await duckDBWASM.search(source, searchTerm, fieldPath);
     if (res instanceof Error) {
       throw res;
     }
@@ -40,12 +34,7 @@ async function search(
   }
 
   if (isElectron()) {
-    const res = await window.malloy.search(
-      source,
-      analysisPath,
-      searchTerm,
-      fieldPath
-    );
+    const res = await window.malloy.search(source, searchTerm, fieldPath);
     if (res instanceof Error) {
       throw res;
     }
@@ -58,7 +47,7 @@ async function search(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ searchTerm, source, fieldPath, analysisPath }),
+      body: JSON.stringify({ searchTerm, source, fieldPath }),
     })
   ).json();
   return (raw.result || []) as SearchIndexResult[];
@@ -71,13 +60,12 @@ interface UseSearchResult {
 
 export function useSearch(
   source: StructDef | undefined,
-  analysisPath: string | undefined,
   searchTerm: string,
   fieldPath?: string
 ): UseSearchResult {
   const { data: searchResults, isLoading } = useQuery(
     [source, searchTerm, fieldPath],
-    () => search(source, analysisPath, searchTerm, fieldPath),
+    () => search(source, searchTerm, fieldPath),
     {
       refetchOnWindowFocus: true,
     }

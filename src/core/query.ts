@@ -84,24 +84,30 @@ class SourceUtils {
   }
 }
 
+const BLANK_QUERY: TurtleDef = {
+  pipeline: [
+    {
+      type: "reduce",
+      fields: [],
+    },
+  ],
+  name: "new_query",
+  type: "turtle",
+};
+
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
   constructor(source: StructDef) {
     super(source);
-    this.query = {
-      pipeline: [
-        {
-          type: "reduce",
-          fields: [],
-        },
-      ],
-      name: "new_query",
-      type: "turtle",
-    };
+    this.query = BLANK_QUERY;
   }
 
   getName(): string {
     return this.query.name;
+  }
+
+  public clearQuery(): void {
+    this.query = BLANK_QUERY;
   }
 
   private stageAtPath(stagePath: StagePath) {

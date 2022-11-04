@@ -17,11 +17,12 @@ import {
   QueryFieldDef,
   StructDef,
   Result as MalloyResult,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useCallback, useRef, useState } from "react";
 import { QueryBuilder, QueryWriter } from "../../core/query";
-import { Analysis, QuerySummary, RendererName, StagePath } from "../../types";
+import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useSaveField, useWatchAnalysis } from "../data";
 import { useRunQuery } from "../data/use_run_query";
 
@@ -29,7 +30,7 @@ interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
   queryMalloy: string;
   queryName: string;
-  clearQuery: (newAnalysis?: Analysis) => void;
+  clearQuery: () => void;
   runQuery: () => void;
   isRunning: boolean;
   clearResult: () => void;
@@ -39,12 +40,6 @@ interface UseQueryBuilderResult {
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   error: Error | undefined;
-}
-
-interface UseQueryBuilderProps {
-  analysis: Analysis | undefined;
-  setAnalysis: (anaysis: Analysis | undefined) => void;
-  openDirectory: string | undefined;
 }
 
 export interface QueryModifiers {
@@ -110,38 +105,23 @@ export interface QueryModifiers {
     direction: "asc" | "desc" | undefined
   ) => void;
   removeStage: (stagePath: StagePath) => void;
-  saveDimension: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    name: string,
-    definition: FieldDef
-  ) => void;
-  saveMeasure: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    name: string,
-    definition: FieldDef
-  ) => void;
-  saveNestQuery: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    name: string,
-    definition: FieldDef
-  ) => void;
-  saveCurrentQuery: (name: string) => void;
   clearQuery: () => void;
   onDrill: (filters: FilterExpression[]) => void;
-  loadQueryInNewAnalysis: (newAnalysis: Analysis, queryName: string) => void;
 }
 
-export function useQueryBuilder({
-  analysis,
-  setAnalysis,
-  openDirectory,
-}: UseQueryBuilderProps): UseQueryBuilderResult {
-  const queryBuilder = useRef<QueryBuilder>();
+export function useQueryBuilder(
+  model: ModelDef,
+  sourceName: string
+): UseQueryBuilderResult {
+  const source = model.contents[sourceName] as StructDef;
+  const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(source));
   const [queryMalloy, setQueryMalloy] = useState<string>("");
-  const [querySummary, setQuerySummary] = useState<QuerySummary>();
+  const [querySummary, setQuerySummary] = useState<QuerySummary>(
+    new QueryWriter(queryBuilder.current.getQuery(), source).getQuerySummary(
+      {},
+      {}
+    )
+  );
   const [queryName, setQueryName] = useState("");
   const [error, setError] = useState<Error>();
 
@@ -150,15 +130,8 @@ export function useQueryBuilder({
     runQuery: runQueryRaw,
     isRunning,
     clearResult,
-  } = useRunQuery(queryMalloy, queryName, setError, analysis);
+  } = useRunQuery(queryMalloy, setError, model, queryName);
   const [dataStyles, setDataStyles] = useState<DataStyles>({});
-
-  const { saveField } = useSaveField(openDirectory, analysis, (newAnalysis) => {
-    setAnalysis(newAnalysis);
-    withAnalysisSource(newAnalysis, (source) => {
-      queryBuilder.current?.updateSource(source);
-    });
-  });
 
   const runQuery = () => {
     runQueryRaw();
@@ -172,63 +145,50 @@ export function useQueryBuilder({
     }
   };
 
-  useWatchAnalysis(analysis, (newAnalysis) => {
-    setAnalysis(newAnalysis);
-    withAnalysisSource(newAnalysis, (source) => {
-      queryBuilder.current?.updateSource(source);
-    });
-  });
+  // useWatchAnalysis(analysis, (newAnalysis) => {
+  //   setAnalysis(newAnalysis);
+  //   withAnalysisSource(newAnalysis, (source) => {
+  //     queryBuilder.current?.updateSource(source);
+  //   });
+  // });
 
-  const loadQueryInNewAnalysis = (newAnalysis: Analysis, queryName: string) => {
-    setAnalysis(newAnalysis);
-    clearQuery(newAnalysis);
-    withAnalysisSource(newAnalysis, (source) => {
-      queryBuilder.current?.updateSource(source);
-      queryBuilder.current?.loadQuery(queryName);
-      writeQuery(dataStyles, newAnalysis);
-    });
-  };
+  // const loadQueryInNewAnalysis = (newAnalysis: Analysis, queryName: string) => {
+  //   setAnalysis(newAnalysis);
+  //   clearQuery(newAnalysis);
+  //   withAnalysisSource(newAnalysis, (source) => {
+  //     queryBuilder.current?.updateSource(source);
+  //     queryBuilder.current?.loadQuery(queryName);
+  //     writeQuery(dataStyles, newAnalysis);
+  //   });
+  // };
 
-  const writeQuery = (newDataStyles = dataStyles, newAnalysis = analysis) => {
-    if (!queryBuilder.current) {
-      return;
-    }
+  const modifyQuery = (modify: (queryBuilder: QueryBuilder) => void) => {
+    modify(queryBuilder.current);
     const query = queryBuilder.current.getQuery();
     setQueryName(query.name);
-    if (!newAnalysis) {
-      return;
+    const writer = new QueryWriter(query, source);
+    if (queryBuilder.current?.canRun()) {
+      const queryString = writer.getQueryStringForModel();
+      setQueryMalloy(queryString);
+      // eslint-disable-next-line no-console
+      console.log(queryString);
+    } else {
+      setQueryMalloy("");
     }
-    withAnalysisSource(newAnalysis, (source) => {
-      const writer = new QueryWriter(query, source);
-      if (queryBuilder.current?.canRun()) {
-        const queryString = writer.getQueryStringForModel();
-        setQueryMalloy(queryString);
-        // eslint-disable-next-line no-console
-        console.log(queryString);
-      } else {
-        setQueryMalloy("");
-      }
-      const summary = writer.getQuerySummary(
-        analysis?.dataStyles || {},
-        newDataStyles
-      );
-      setQuerySummary(summary);
-    });
+    const summary = writer.getQuerySummary({}, {});
+    setQuerySummary(summary);
   };
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
-    queryBuilder.current?.toggleField(stagePath, fieldPath);
-    writeQuery();
+    modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));
   };
 
   const removeField = (stagePath: StagePath, fieldIndex: number) => {
-    queryBuilder.current?.removeField(stagePath, fieldIndex);
-    writeQuery();
+    modifyQuery((qb) => qb.removeField(stagePath, fieldIndex));
   };
 
   const addFilter = (stagePath: StagePath, filter: FilterExpression) => {
-    queryBuilder.current?.addFilter(stagePath, filter);
-    writeQuery();
+    modifyQuery((qb) => qb.addFilter(stagePath, filter));
   };
 
   const editFilter = (
@@ -237,13 +197,9 @@ export function useQueryBuilder({
     filterIndex: number,
     filter: FilterExpression
   ) => {
-    queryBuilder.current?.editFilter(
-      stagePath,
-      fieldIndex,
-      filterIndex,
-      filter
+    modifyQuery((qb) =>
+      qb.editFilter(stagePath, fieldIndex, filterIndex, filter)
     );
-    writeQuery();
   };
 
   const removeFilter = (
@@ -251,23 +207,19 @@ export function useQueryBuilder({
     filterIndex: number,
     fieldIndex?: number
   ) => {
-    queryBuilder.current?.removeFilter(stagePath, filterIndex, fieldIndex);
-    writeQuery();
+    modifyQuery((qb) => qb.removeFilter(stagePath, filterIndex, fieldIndex));
   };
 
   const addLimit = (stagePath: StagePath, limit: number) => {
-    queryBuilder.current?.addLimit(stagePath, limit);
-    writeQuery();
+    modifyQuery((qb) => qb.addLimit(stagePath, limit));
   };
 
   const addStage = (stagePath: StagePath | undefined, fieldIndex?: number) => {
-    queryBuilder.current?.addStage(stagePath, fieldIndex);
-    writeQuery();
+    modifyQuery((qb) => qb.addStage(stagePath, fieldIndex));
   };
 
   const removeStage = (stagePath: StagePath) => {
-    queryBuilder.current?.removeStage(stagePath);
-    writeQuery();
+    modifyQuery((qb) => qb.removeStage(stagePath));
   };
 
   const addOrderBy = (
@@ -275,8 +227,7 @@ export function useQueryBuilder({
     byFieldIndex: number,
     direction?: "asc" | "desc"
   ) => {
-    queryBuilder.current?.addOrderBy(stagePath, byFieldIndex, direction);
-    writeQuery();
+    modifyQuery((qb) => qb.addOrderBy(stagePath, byFieldIndex, direction));
   };
 
   const editOrderBy = (
@@ -284,18 +235,15 @@ export function useQueryBuilder({
     orderByIndex: number,
     direction: "asc" | "desc" | undefined
   ) => {
-    queryBuilder.current?.editOrderBy(stagePath, orderByIndex, direction);
-    writeQuery();
+    modifyQuery((qb) => qb.editOrderBy(stagePath, orderByIndex, direction));
   };
 
   const removeOrderBy = (stagePath: StagePath, orderByIndex: number) => {
-    queryBuilder.current?.removeOrderBy(stagePath, orderByIndex);
-    writeQuery();
+    modifyQuery((qb) => qb.removeOrderBy(stagePath, orderByIndex));
   };
 
   const removeLimit = (stagePath: StagePath) => {
-    queryBuilder.current?.removeLimit(stagePath);
-    writeQuery();
+    modifyQuery((qb) => qb.removeLimit(stagePath));
   };
 
   const renameField = (
@@ -303,8 +251,7 @@ export function useQueryBuilder({
     fieldIndex: number,
     newName: string
   ) => {
-    queryBuilder.current?.renameField(stagePath, fieldIndex, newName);
-    writeQuery();
+    modifyQuery((qb) => qb.renameField(stagePath, fieldIndex, newName));
   };
 
   const addFilterToField = (
@@ -313,18 +260,15 @@ export function useQueryBuilder({
     filter: FilterExpression,
     as?: string
   ) => {
-    queryBuilder.current?.addFilterToField(stagePath, fieldIndex, filter, as);
-    writeQuery();
+    modifyQuery((qb) => qb.addFilterToField(stagePath, fieldIndex, filter, as));
   };
 
   const addNewNestedQuery = (stagePath: StagePath, name: string) => {
-    queryBuilder.current?.addNewNestedQuery(stagePath, name);
-    writeQuery();
+    modifyQuery((qb) => qb.addNewNestedQuery(stagePath, name));
   };
 
   const addNewDimension = (stagePath: StagePath, dimension: QueryFieldDef) => {
-    queryBuilder.current?.addNewField(stagePath, dimension);
-    writeQuery();
+    modifyQuery((qb) => qb.addNewField(stagePath, dimension));
   };
 
   const editDimension = (
@@ -332,8 +276,9 @@ export function useQueryBuilder({
     fieldIndex: number,
     dimension: QueryFieldDef
   ) => {
-    queryBuilder.current?.editFieldDefinition(stagePath, fieldIndex, dimension);
-    writeQuery();
+    modifyQuery((qb) =>
+      qb.editFieldDefinition(stagePath, fieldIndex, dimension)
+    );
   };
 
   const editMeasure = (
@@ -341,148 +286,52 @@ export function useQueryBuilder({
     fieldIndex: number,
     measure: QueryFieldDef
   ) => {
-    queryBuilder.current?.editFieldDefinition(stagePath, fieldIndex, measure);
-    writeQuery();
+    modifyQuery((qb) => qb.editFieldDefinition(stagePath, fieldIndex, measure));
   };
 
   const updateFieldOrder = (stagePath: StagePath, order: number[]) => {
-    queryBuilder.current?.reorderFields(stagePath, order);
-    writeQuery();
+    modifyQuery((qb) => qb.reorderFields(stagePath, order));
   };
 
   const replaceWithDefinition = (stagePath: StagePath, fieldIndex: number) => {
-    if (analysis === undefined) {
-      return;
-    }
-    const struct = analysis.modelDef.contents[analysis.sourceName];
-    if (struct.type !== "struct") {
-      return;
-    }
-    analysis &&
-      queryBuilder.current?.replaceWithDefinition(
-        stagePath,
-        fieldIndex,
-        struct
-      );
-    writeQuery();
+    modifyQuery((qb) =>
+      qb.replaceWithDefinition(stagePath, fieldIndex, source)
+    );
   };
 
   const loadQuery = (queryPath: string) => {
-    queryBuilder.current?.loadQuery(queryPath);
-    writeQuery();
+    modifyQuery((qb) => qb.loadQuery(queryPath));
   };
 
   const addNewMeasure = addNewDimension;
 
-  const saveCurrentQuery = useCallback(
-    (name: string) => {
-      const query = queryBuilder.current?.getQuery();
-      if (query) {
-        saveField("query", name, query);
-      }
-    },
-    [saveField]
-  );
-
-  const saveAnyField = useCallback(
-    (
-      kind: "dimension" | "measure" | "query",
-      stagePath: StagePath,
-      fieldIndex: number,
-      name: string,
-      fieldDef: FieldDef
-    ) => {
-      saveField(kind, name, fieldDef).then((analysis) => {
-        if (analysis) {
-          withAnalysisSource(analysis, (source) => {
-            queryBuilder.current?.updateSource(source);
-          });
-          queryBuilder.current?.replaceSavedField(stagePath, fieldIndex, name);
-          writeQuery(dataStyles, analysis);
-        }
-      });
-    },
-    [saveField]
-  );
-
-  const saveDimension = useCallback(
-    (
-      stagePath: StagePath,
-      fieldIndex: number,
-      name: string,
-      fieldDef: FieldDef
-    ) => {
-      saveAnyField("dimension", stagePath, fieldIndex, name, fieldDef);
-    },
-    [saveAnyField]
-  );
-
-  const saveMeasure = useCallback(
-    (
-      stagePath: StagePath,
-      fieldIndex: number,
-      name: string,
-      fieldDef: FieldDef
-    ) => {
-      saveAnyField("measure", stagePath, fieldIndex, name, fieldDef);
-    },
-    [saveAnyField]
-  );
-
-  const saveNestQuery = useCallback(
-    (
-      stagePath: StagePath,
-      fieldIndex: number,
-      name: string,
-      fieldDef: FieldDef
-    ) => {
-      saveAnyField("query", stagePath, fieldIndex, name, fieldDef);
-    },
-    [saveAnyField]
-  );
-
-  const clearQuery = (newAnalysis = analysis) => {
+  const clearQuery = () => {
     setDataStyle(queryName, undefined);
     setQueryMalloy("");
-    if (newAnalysis) {
-      const source = newAnalysis.modelDef.contents[newAnalysis.sourceName];
-      if (source.type !== "struct") {
-        throw new Error("Source for analysis must be a source, not a query");
-      }
-      queryBuilder.current = new QueryBuilder(source);
-      setQuerySummary({
-        stages: [{ items: [], orderByFields: [], inputSource: source }],
-      });
-    }
     clearResult();
-    writeQuery();
+    modifyQuery((qb) => qb.clearQuery());
   };
 
-  const sourceRaw = analysis && analysis.modelDef.contents[analysis.sourceName];
-  const source = sourceRaw?.type === "struct" ? sourceRaw : undefined;
-
   const onDrill = (filters: FilterExpression[]) => {
-    if (!source) {
-      return;
-    }
-    queryBuilder.current = new QueryBuilder(source);
-    for (const filter of filters) {
-      queryBuilder.current.addFilter({ stageIndex: 0 }, filter);
-    }
-    writeQuery();
+    modifyQuery((qb) => {
+      qb.clearQuery();
+      for (const filter of filters) {
+        qb.addFilter({ stageIndex: 0 }, filter);
+      }
+    });
   };
 
   const setDataStyle = (name: string, renderer: RendererName | undefined) => {
-    const newDataStyles = { ...dataStyles };
-    if (renderer === undefined) {
-      if (name in newDataStyles) {
-        delete newDataStyles[name];
-      }
-    } else {
-      newDataStyles[name] = { renderer };
-    }
-    setDataStyles(newDataStyles);
-    writeQuery(newDataStyles);
+    // const newDataStyles = { ...dataStyles };
+    // if (renderer === undefined) {
+    //   if (name in newDataStyles) {
+    //     delete newDataStyles[name];
+    //   }
+    // } else {
+    //   newDataStyles[name] = { renderer };
+    // }
+    // setDataStyles(newDataStyles);
+    // writeQuery(newDataStyles);
   };
 
   return {
@@ -523,23 +372,8 @@ export function useQueryBuilder({
       editMeasure,
       editOrderBy,
       removeStage,
-      saveDimension,
-      saveMeasure,
-      saveNestQuery,
-      saveCurrentQuery,
       clearQuery,
       onDrill,
-      loadQueryInNewAnalysis,
     },
   };
-}
-
-function withAnalysisSource(
-  analysis: Analysis,
-  callback: (source: StructDef) => void
-) {
-  const source = analysis.modelDef.contents[analysis.sourceName];
-  if (source && source.type === "struct") {
-    callback(source);
-  }
 }

@@ -13,16 +13,15 @@
 
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Analysis, Directory, Model } from "../../types";
-import { useDirectory } from "../data/use_directory";
+import { Dataset } from "../../types";
+import { useDatasets } from "../data/use_datasets";
 import { Button, PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
 import { ActionIcon } from "../ActionIcon";
-import { DirectoryPicker } from "../DirectoryPicker";
+import { DatasetPicker } from "../DatasetPicker";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
-import { useOpenDirectory } from "../data/use_open_directory";
 import { useQueryBuilder } from "../hooks";
 import { ExploreQueryEditor } from "../ExploreQueryEditor";
 import { compileModel } from "../../core/compile";
@@ -30,6 +29,7 @@ import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { isDuckDBWASM } from "../utils";
+import { StructDef } from "@malloydata/malloy";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -37,125 +37,37 @@ const KEY_MAP = {
 };
 
 export const Explore: React.FC = () => {
-  const [analysis, setAnalysis] = useState<Analysis>();
-  const { openDirectory, beginOpenDirectory, isOpeningDirectory } =
-    useOpenDirectory();
-  const directory = useDirectory(openDirectory);
-  const {
-    queryMalloy,
-    queryName,
-    clearQuery,
-    runQuery,
-    isRunning,
-    clearResult,
-    source,
-    queryModifiers,
-    querySummary,
-    dataStyles,
-    result,
-    error,
-  } = useQueryBuilder({
-    analysis,
-    setAnalysis,
-    openDirectory,
-  });
+  const [dataset, setDataset] = useState<Dataset | undefined>();
+  const [sourceName, setSourceName] = useState<string | undefined>();
+  const datasets = useDatasets();
 
-  const topValues = useTopValues(analysis);
+  // const topValues = useTopValues(analysis);
   const [section, setSection] = useState("query");
 
-  const loadQueryLink = (
-    modelPath: string,
-    sourceName: string,
-    queryName: string
-  ) => {
-    let current: Directory | Model | Analysis | undefined = directory;
-    // Note, this only works for relative paths like ./dir/model.malloy
-    // and cannot go up the directory hierarchy. Therefore, it will only load
-    // models in the same directory.
-    for (const segment of modelPath.split("/")) {
-      if (segment === ".") {
-        continue;
-      } else if (current?.type !== "directory") {
-        return;
-      } else {
-        current = current.contents.find((item) => item.path === segment);
-      }
-    }
-    if (current?.type !== "model") {
-      return;
-    }
-    const model: Model = current;
-    const source = model.sources.find((source) => source.name === sourceName);
-    if (source === undefined) {
-      return;
-    }
-
-    const newSourceName = sourceName + "_analysis";
-    const pathWithProtocol = new URL(model.fullPath, "file:///");
-    const code = `import "${pathWithProtocol}"\n\n explore: ${newSourceName} is ${source.name} {}`;
-    compileModel(model.modelDef, code).then((modelDef) => {
-      const analysis: Analysis = {
-        type: "analysis",
-        malloy: code,
-        path: undefined,
-        fullPath: undefined,
-        modelFullPath: model.fullPath,
-        sourceName: newSourceName,
-        modelDef,
-        id: `${model.fullPath}/${source.name}`,
-        dataStyles: model.dataStyles,
-      };
-      queryModifiers.loadQueryInNewAnalysis(analysis, queryName);
-      setSection("query");
-    });
-  };
-
-  useEffect(() => {
-    if (directory) {
-      if (directory.readme) {
-        setSection("about");
-      }
-      setAnalysis(undefined);
-      clearQuery();
-    }
-  }, [directory]);
-
-  const selectAnalysis = (analysis: Analysis) => {
-    setAnalysis(analysis);
-    clearQuery(analysis);
-  };
-
-  const handlers = {
-    REMOVE_FIELDS: () => clearQuery(),
-    RUN_QUERY: runQuery,
-  };
+  // const handlers = {
+  //   REMOVE_FIELDS: () => clearQuery(),
+  //   RUN_QUERY: runQuery,
+  // };
 
   return (
-    <Main handlers={handlers} keyMap={KEY_MAP}>
+    <Main handlers={{}} keyMap={KEY_MAP}>
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          {!isDuckDBWASM() && (
-            <ActionIcon
-              action="open-directory"
-              onClick={() => {
-                !isOpeningDirectory && beginOpenDirectory();
-              }}
-              color="dimension"
-            />
-          )}
-          <DirectoryPicker
-            directory={directory}
-            analysis={analysis}
-            selectAnalysis={selectAnalysis}
+          <DatasetPicker
+            datasets={datasets}
+            dataset={dataset}
+            setDataset={setDataset}
+            setSourceName={setSourceName}
+            sourceName={sourceName}
           />
         </HeaderLeft>
-        {!isRunning && <Button onClick={() => runQuery()}>Run</Button>}
+        {/* {!isRunning && <Button onClick={() => runQuery()}>Run</Button>}
         {isRunning && (
           <Button onClick={() => clearResult()} color="primary" outline={true}>
             Cancel
           </Button>
-        )}
+        )} */}
       </Header>
       <Body>
         <Content>
@@ -172,39 +84,31 @@ export const Explore: React.FC = () => {
                 text="About"
                 icon="about"
                 selected={section === "about"}
-                disabled={directory?.readme == undefined}
+                disabled={dataset?.readme == undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom></ChannelBottom>
           </Channel>
           <Page>
             <PageContainer>
-              {section === "query" && (
+              {section === "query" && dataset && sourceName && (
                 <ExploreQueryEditor
-                  source={source}
-                  analysis={analysis}
-                  queryModifiers={queryModifiers}
-                  topValues={topValues}
-                  queryName={queryName}
-                  querySummary={querySummary}
-                  queryMalloy={queryMalloy}
-                  dataStyles={dataStyles}
-                  result={result}
-                  isRunning={isRunning}
+                  model={dataset.model}
+                  sourceName={sourceName}
                 />
               )}
-              {section === "about" && (
+              {/* {section === "about" && (
                 <PageContent>
                   <MarkdownDocument
                     content={
-                      directory?.readme ||
+                      dataset?.readme ||
                       "# No Readme\nThis project has no readme"
                     }
                     loadQueryLink={loadQueryLink}
                   />
                 </PageContent>
-              )}
-              <ErrorMessage error={error} />
+              )} */}
+              {/* <ErrorMessage error={error} /> */}
             </PageContainer>
           </Page>
           <RightChannel />
