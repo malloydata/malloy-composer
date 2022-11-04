@@ -28,9 +28,10 @@
     "server-build": "ts-node scripts/package-server --skip-package",
     "server-start": "npm run server-build && node ./dist/cli.js --models ./malloy-samples",
     "server-package": "ts-node scripts/package-server",
-    "malloy-update": "npm run malloy-unlink && npm --no-fund --no-audit install --save-exact $npm_package_config_malloy_packages",
+    "malloy-install": "npm --no-fund --no-audit install --save-exact $npm_package_config_malloy_packages",
+    "malloy-update": "npm --no-fund --no-audit unlink $npm_package_config_malloy_packages && npm run malloy-install",
     "malloy-link": "npm --no-fund --no-audit link $npm_package_config_malloy_packages",
-    "malloy-unlink": "npm --no-fund --no-audit unlink $npm_package_config_malloy_packages && npm --no-fund --no-audit install --force"
+    "malloy-unlink": "npm --no-fund --no-save --no-audit unlink $npm_package_config_malloy_packages && npm --no-fund --no-audit install --force"
   },
   "dependencies": {
     "@malloydata/db-bigquery": "0.0.5",
