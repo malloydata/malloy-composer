@@ -24,7 +24,7 @@ fs.mkdirSync(outDir, { recursive: true });
 let port: number | undefined;
 
 export async function doBuild(): Promise<void> {
-  const development = process.env.NODE_ENV == "development";
+  const development = port !== undefined;
 
   const options: BuildOptions = {
     define: {
@@ -37,7 +37,7 @@ export async function doBuild(): Promise<void> {
     entryNames: "app",
     bundle: true,
     minify: !development,
-    sourcemap: false,
+    sourcemap: development,
     outdir: "duckdb-wasm/dist/",
     platform: "browser",
     plugins: [svgrPlugin({ exportType: "named" })],

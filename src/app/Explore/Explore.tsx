@@ -24,12 +24,14 @@ import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
 import { useQueryBuilder } from "../hooks";
 import { ExploreQueryEditor } from "../ExploreQueryEditor";
-import { compileModel } from "../../core/compile";
+import { compileModel, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { isDuckDBWASM } from "../utils";
 import { StructDef } from "@malloydata/malloy";
+import { useQueryParams } from "../hooks/use_query_params";
+import { useSearchParams } from "react-router-dom";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -43,6 +45,26 @@ export const Explore: React.FC = () => {
 
   // const topValues = useTopValues(analysis);
   const [section, setSection] = useState("query");
+  const [params, setParams] = useSearchParams();
+
+  useEffect(() => {
+    const loadDataset = async () => {
+      const model = params.get("model");
+      const query = params.get("query");
+      const source = params.get("source");
+      if (model && (query || source) && datasets) {
+        const dataset = datasets.find((dataset) => dataset.name === model);
+        if (dataset === undefined) {
+          throw new Error("Bad model");
+        }
+        const sourceName =
+          source || (await getSourceNameForQuery(dataset.model, query));
+        setSourceName(sourceName);
+        setDataset(dataset);
+      }
+    };
+    loadDataset();
+  }, [params, datasets]);
 
   // const handlers = {
   //   REMOVE_FIELDS: () => clearQuery(),
@@ -57,8 +79,16 @@ export const Explore: React.FC = () => {
           <DatasetPicker
             datasets={datasets}
             dataset={dataset}
-            setDataset={setDataset}
-            setSourceName={setSourceName}
+            setDataset={(dataset) => {
+              setDataset(dataset);
+              params.set("model", dataset.name);
+              setParams(params);
+            }}
+            setSourceName={(sourceName) => {
+              setSourceName(sourceName);
+              params.set("source", sourceName);
+              setParams(params);
+            }}
             sourceName={sourceName}
           />
         </HeaderLeft>
@@ -97,17 +127,17 @@ export const Explore: React.FC = () => {
                   sourceName={sourceName}
                 />
               )}
-              {/* {section === "about" && (
+              {section === "about" && (
                 <PageContent>
                   <MarkdownDocument
                     content={
                       dataset?.readme ||
                       "# No Readme\nThis project has no readme"
                     }
-                    loadQueryLink={loadQueryLink}
+                    loadQueryLink={() => {}}
                   />
                 </PageContent>
-              )} */}
+              )}
               {/* <ErrorMessage error={error} /> */}
             </PageContainer>
           </Page>

@@ -34,8 +34,10 @@ import {
   StructDef,
   TurtleDef,
   FieldTypeDef,
+  Query,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
+import { NamedQuery } from "./compile";
 
 class SourceUtils {
   constructor(protected source: StructDef) {}
@@ -99,7 +101,7 @@ export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
   constructor(source: StructDef) {
     super(source);
-    this.query = BLANK_QUERY;
+    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
   }
 
   getName(): string {
@@ -107,7 +109,15 @@ export class QueryBuilder extends SourceUtils {
   }
 
   public clearQuery(): void {
-    this.query = BLANK_QUERY;
+    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
+  }
+
+  public setQuery(query: NamedQuery): void {
+    this.query = {
+      pipeline: query.pipeline,
+      name: query.as || query.name,
+      type: "turtle",
+    };
   }
 
   private stageAtPath(stagePath: StagePath) {

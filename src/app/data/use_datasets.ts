@@ -16,29 +16,26 @@ import * as explore from "../../types";
 import { isDuckDBWASM, isElectron } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-export const KEY = "models";
+export const KEY = "datasets";
 
-async function fetchModels(): Promise<explore.Model[]> {
-  if (isDuckDBWASM()) {
-    return duckDBWASM.models();
-  }
-
-  if (isElectron()) {
-    const res = await window.malloy.models();
-    if (res instanceof Error) {
-      throw res;
+export function useDatasets(): explore.Dataset[] | undefined {
+  const { data: directory } = useQuery(
+    KEY,
+    async () => {
+      return duckDBWASM.datasets();
+      // if (isDuckDBWASM()) {
+      //   return duckDBWASM.directory();
+      // }
+      // if (isElectron()) {
+      //   return window.malloy.analyses(path);
+      // }
+      // const raw = await (await fetch("api/analyses")).json();
+      // return raw.directory as explore.Dataset[];
+    },
+    {
+      refetchOnWindowFocus: false,
     }
-    return res;
-  }
+  );
 
-  const raw = await (await fetch("api/models")).json();
-  return raw.models as explore.Model[];
-}
-
-export function useModels(): explore.Model[] | undefined {
-  const { data: models } = useQuery(KEY, fetchModels, {
-    refetchOnWindowFocus: false,
-  });
-
-  return models;
+  return directory;
 }

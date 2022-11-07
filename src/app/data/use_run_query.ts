@@ -58,25 +58,24 @@ async function runQuery(
 
 interface UseRunQueryResult {
   result: malloy.Result | undefined;
-  runQuery: () => void;
+  runQuery: (query: string, queryName: string) => void;
   isRunning: boolean;
   clearResult: () => void;
 }
 
 export function useRunQuery(
-  query: string,
   onError: (error: Error) => void,
-  model: malloy.ModelDef,
-  queryName: string
+  model: malloy.ModelDef
 ): UseRunQueryResult {
   const { data, mutateAsync, isLoading, reset } = useMutation(
-    () => runQuery(query, model, queryName),
+    ({ query, queryName }: { query: string; queryName: string }) =>
+      runQuery(query, model, queryName),
     { onError }
   );
 
-  const runQueryRet = () => {
+  const runQueryRet = (query: string, queryName: string) => {
     reset();
-    mutateAsync();
+    mutateAsync({ query, queryName });
   };
 
   return {

@@ -7,7 +7,7 @@ import {
 import { DataStyles } from "@malloydata/render";
 import { useState } from "react";
 import styled from "styled-components";
-import { Analysis, QuerySummary } from "../../types";
+import { QuerySummary } from "../../types";
 import { ActionIcon } from "../ActionIcon";
 import { EmptyMessage, PageContent, PageHeader } from "../CommonElements";
 import { QueryModifiers, useQueryBuilder } from "../hooks/use_query_builder";

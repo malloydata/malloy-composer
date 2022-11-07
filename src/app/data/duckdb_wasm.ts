@@ -70,7 +70,7 @@ export async function datasets(): Promise<explore.Dataset[]> {
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
   const samples = JSON.parse(response) as { datasets: SampleEntry[] };
-  console.log(samples)
+  console.log(samples);
   return await Promise.all(
     samples.datasets.map(async (sample: SampleEntry) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");

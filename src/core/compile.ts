@@ -21,6 +21,7 @@ import {
   isFilteredAliasedName,
   Malloy,
   MalloyQueryData,
+  Model,
   ModelDef,
   PersistSQLResults,
   PooledConnection,
@@ -28,6 +29,7 @@ import {
   StreamingConnection,
   StructDef,
   URLReader,
+  Query,
 } from "@malloydata/malloy";
 
 class DummyFiles implements URLReader {
@@ -85,10 +87,10 @@ class DummyConnection implements Connection {
   }
 }
 
-export async function compileModel(
+export async function _compileModel(
   modelDef: ModelDef,
   malloy: string
-): Promise<ModelDef> {
+): Promise<Model> {
   const runtime = new Runtime(new DummyFiles(), new DummyConnection());
   const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
   // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
@@ -101,7 +103,14 @@ export async function compileModel(
     model: baseModel,
     parse: Malloy.parse({ source: malloy }),
   });
-  return model._modelDef;
+  return model;
+}
+
+export async function compileModel(
+  modelDef: ModelDef,
+  malloy: string
+): Promise<ModelDef> {
+  return (await _compileModel(modelDef, malloy))._modelDef;
 }
 
 function modelDefForSource(source: StructDef): ModelDef {
@@ -176,4 +185,45 @@ export async function compileMeasure(
     throw new Error("Expected field definition, not filtered aliased name");
   }
   return field;
+}
+
+type CheatyPreparedQuery = { _query: Query };
+
+// TODO get this from Malloy
+export type NamedQuery = Query & { as?: string; name?: string };
+
+export async function compileQuery(
+  source: StructDef,
+  query: string
+): Promise<NamedQuery> {
+  const modelDef = modelDefForSource(source);
+  const model = await _compileModel(modelDef, query);
+  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const match = query.match(regex);
+  const preparedQuery = match
+    ? model.getPreparedQueryByName(match[1])
+    : model.preparedQuery;
+  const compiledQuery = (preparedQuery as unknown as CheatyPreparedQuery)
+    ._query;
+  const as = "as" in compiledQuery ? (compiledQuery as any).as : undefined;
+  const name =
+    "name" in compiledQuery ? (compiledQuery as any).name : undefined;
+  return {
+    ...compiledQuery,
+    as,
+    name: name || "new_query",
+  };
+}
+
+export async function getSourceNameForQuery(
+  modelDef: ModelDef,
+  query: string
+): Promise<string> {
+  const model = await _compileModel(modelDef, query);
+  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const match = query.match(regex);
+  const preparedQuery = match
+    ? model.getPreparedQueryByName(match[1])
+    : model.preparedQuery;
+  return preparedQuery.preparedResult._sourceExploreName;
 }

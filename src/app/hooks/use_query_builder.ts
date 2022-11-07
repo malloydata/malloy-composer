@@ -20,11 +20,14 @@ import {
   ModelDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { compileQuery } from "../../core/compile";
 import { QueryBuilder, QueryWriter } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useSaveField, useWatchAnalysis } from "../data";
 import { useRunQuery } from "../data/use_run_query";
+import { useQueryParams } from "./use_query_params";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
@@ -115,26 +118,36 @@ export function useQueryBuilder(
 ): UseQueryBuilderResult {
   const source = model.contents[sourceName] as StructDef;
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(source));
-  const [queryMalloy, setQueryMalloy] = useState<string>("");
-  const [querySummary, setQuerySummary] = useState<QuerySummary>(
-    new QueryWriter(queryBuilder.current.getQuery(), source).getQuerySummary(
-      {},
-      {}
-    )
-  );
-  const [queryName, setQueryName] = useState("");
+  // const [querySummary, setQuerySummary] = useState<QuerySummary>(
+  //   new QueryWriter(queryBuilder.current.getQuery(), source).getQuerySummary(
+  //     {},
+  //     {}
+  //   )
+  // );
+  // const [queryName, setQueryName] = useState("");
   const [error, setError] = useState<Error>();
+  // const { params, setParam, unsetParam } = useQueryParams();
+  const [params, setParams] = useSearchParams();
+  const [queryString, setQueryString] = useState("");
+
+  const querySummary = (() => {
+    const query = queryBuilder.current.getQuery();
+    const writer = new QueryWriter(query, source);
+    const summary = writer.getQuerySummary({}, {});
+    return summary;
+  })();
+
+  const queryName = queryBuilder.current.getQuery().name;
 
   const {
     result,
     runQuery: runQueryRaw,
     isRunning,
     clearResult,
-  } = useRunQuery(queryMalloy, setError, model, queryName);
+  } = useRunQuery(setError, model);
   const [dataStyles, setDataStyles] = useState<DataStyles>({});
 
   const runQuery = () => {
-    runQueryRaw();
     const topLevel = {
       stageIndex: querySummary ? querySummary.stages.length - 1 : 0,
     };
@@ -142,6 +155,14 @@ export function useQueryBuilder(
       // TODO magic number here: we run the query before we set this limit,
       //      and this limit just happens to be the default limit
       addLimit(topLevel, 10);
+    }
+    const query = queryBuilder.current.getQuery();
+    const writer = new QueryWriter(query, source);
+    if (queryBuilder.current?.canRun()) {
+      const queryString = writer.getQueryStringForModel();
+      runQueryRaw(queryString, query.name);
+      params.set("run", "true");
+      setParams(params, { replace: true });
     }
   };
 
@@ -162,22 +183,50 @@ export function useQueryBuilder(
   //   });
   // };
 
-  const modifyQuery = (modify: (queryBuilder: QueryBuilder) => void) => {
+  const modifyQuery = (
+    modify: (queryBuilder: QueryBuilder) => void,
+    fromURL = false
+  ) => {
     modify(queryBuilder.current);
     const query = queryBuilder.current.getQuery();
-    setQueryName(query.name);
     const writer = new QueryWriter(query, source);
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
-      setQueryMalloy(queryString);
-      // eslint-disable-next-line no-console
-      console.log(queryString);
-    } else {
-      setQueryMalloy("");
+      if (!fromURL) {
+        params.set("query", queryString);
+        setParams(params);
+      }
+      setQueryString(queryString);
     }
-    const summary = writer.getQuerySummary({}, {});
-    setQuerySummary(summary);
+    if (!fromURL) {
+      params.delete("run");
+      setParams(params, { replace: true });
+    }
   };
+
+  const clearQuery = (fromURL = false) => {
+    setDataStyle(queryName, undefined);
+    clearResult();
+    params.delete("query");
+    setParams(params);
+    modifyQuery((qb) => qb.clearQuery(), fromURL);
+  };
+
+  useEffect(() => {
+    const setQuery = async () => {
+      const queryString = params.get("query");
+      if (queryString) {
+        const query = await compileQuery(source, queryString);
+        modifyQuery((qb) => qb.setQuery(query), true);
+        if (params.has("run")) {
+          runQuery();
+        }
+      } else {
+        clearQuery(true);
+      }
+    };
+    setQuery();
+  }, [params]);
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
     modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));
@@ -305,13 +354,6 @@ export function useQueryBuilder(
 
   const addNewMeasure = addNewDimension;
 
-  const clearQuery = () => {
-    setDataStyle(queryName, undefined);
-    setQueryMalloy("");
-    clearResult();
-    modifyQuery((qb) => qb.clearQuery());
-  };
-
   const onDrill = (filters: FilterExpression[]) => {
     modifyQuery((qb) => {
       qb.clearQuery();
@@ -336,7 +378,7 @@ export function useQueryBuilder(
 
   return {
     queryBuilder,
-    queryMalloy,
+    queryMalloy: queryString,
     queryName,
     clearQuery,
     runQuery,
