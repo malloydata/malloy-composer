@@ -29,6 +29,7 @@ import { compileModel } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
+import { isDuckDBWASM } from "../utils";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -90,7 +91,8 @@ export const Explore: React.FC = () => {
     }
 
     const newSourceName = sourceName + "_analysis";
-    const code = `import "file://${model.fullPath}"\n\n explore: ${newSourceName} is ${source.name} {}`;
+    const pathWithProtocol = new URL(model.fullPath, "file:///");
+    const code = `import "${pathWithProtocol}"\n\n explore: ${newSourceName} is ${source.name} {}`;
     compileModel(model.modelDef, code).then((modelDef) => {
       const analysis: Analysis = {
         type: "analysis",
@@ -133,13 +135,15 @@ export const Explore: React.FC = () => {
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          <ActionIcon
-            action="open-directory"
-            onClick={() => {
-              !isOpeningDirectory && beginOpenDirectory();
-            }}
-            color="dimension"
-          />
+          {!isDuckDBWASM() && (
+            <ActionIcon
+              action="open-directory"
+              onClick={() => {
+                !isOpeningDirectory && beginOpenDirectory();
+              }}
+              color="dimension"
+            />
+          )}
           <DirectoryPicker
             directory={directory}
             analysis={analysis}
@@ -280,11 +284,6 @@ const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-`;
-
-const ScrollContent = styled(Content)`
-  overflow-y: auto;
-  background-color: unset;
 `;
 
 const Page = styled(Content)``;

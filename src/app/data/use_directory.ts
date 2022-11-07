@@ -13,7 +13,8 @@
 
 import { useQuery } from "react-query";
 import * as explore from "../../types";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 export const KEY = (path: string | undefined): string => `directory/${path}`;
 
@@ -23,6 +24,9 @@ export function useDirectory(
   const { data: directory } = useQuery(
     KEY(path),
     async () => {
+      if (isDuckDBWASM()) {
+        return duckDBWASM.directory();
+      }
       if (isElectron()) {
         return window.malloy.analyses(path);
       }

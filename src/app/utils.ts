@@ -26,10 +26,14 @@ export function snakeToTitle(snake: string): string {
     .join(" ");
 }
 
-export function isElectron() {
+export function isElectron(): boolean {
   const userAgent = navigator.userAgent.toLowerCase();
   const isElectron = userAgent.indexOf(" electron/") != -1;
   return isElectron;
+}
+
+export function isDuckDBWASM(): boolean {
+  return !!(window as unknown as { IS_DUCKDB_WASM: boolean }).IS_DUCKDB_WASM;
 }
 
 const HIGHLIGHTER = shiki.getHighlighter({

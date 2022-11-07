@@ -47,7 +47,8 @@ export const DirectoryPicker: React.FC<DirectoryPickerProps> = ({
 
   const selectSource = (model: Model, source: Source) => {
     const sourceName = `${source.name}_analysis`;
-    const code = `import "file://${model.fullPath}"\n\n explore: ${sourceName} is ${source.name} {}`;
+    const pathWithProtocol = new URL(model.fullPath, "file:///");
+    const code = `import "${pathWithProtocol}"\n\n explore: ${sourceName} is ${source.name} {}`;
     compileModel(model.modelDef, code).then((modelDef) => {
       const analysis: Analysis = {
         type: "analysis",

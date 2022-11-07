@@ -14,8 +14,7 @@
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import * as explore from "../../types";
-import { isElectron } from "../utils";
-
+import { isDuckDBWASM, isElectron } from "../utils";
 export const KEY = "currentAnalysis";
 
 async function refetchAnalysis(
@@ -24,6 +23,11 @@ async function refetchAnalysis(
   if (analysis === undefined || analysis.fullPath === undefined) {
     return undefined;
   }
+
+  if (isDuckDBWASM()) {
+    return analysis;
+  }
+
   if (isElectron()) {
     return window.malloy.analysis(analysis.fullPath);
   }

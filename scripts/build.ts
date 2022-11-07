@@ -41,6 +41,7 @@ export const commonAppConfig = (development = false): BuildOptions => {
     loader: {
       ".js": "jsx",
       ".png": "file",
+      ".ttf": "dataurl",
     },
     plugins: [svgrPlugin({ exportType: "named" })],
     define: {

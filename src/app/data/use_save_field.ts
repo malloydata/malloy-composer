@@ -14,8 +14,8 @@
 import { useMutation, useQueryClient } from "react-query";
 import { Analysis } from "../../types";
 import { KEY as DIRECTORY_KEY } from "./use_directory";
-import { FieldDef, ModelDef, Result } from "@malloydata/malloy";
-import { isElectron } from "../utils";
+import { FieldDef, ModelDef } from "@malloydata/malloy";
+import { isDuckDBWASM, isElectron } from "../utils";
 
 async function saveField(
   type: "query" | "dimension" | "measure",
@@ -26,6 +26,11 @@ async function saveField(
   if (analysis === undefined) {
     return undefined;
   }
+
+  if (isDuckDBWASM()) {
+    throw new Error("Saving is not allowed in DuckDB WASM Mode");
+  }
+
   if (isElectron()) {
     const res = await window.malloy.saveField(type, field, name, {
       ...analysis,
@@ -82,7 +87,9 @@ export function useSaveField(
     }) => saveField(type, field, name, analysis),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(DIRECTORY_KEY(directoryPath));
+        if (!isDuckDBWASM()) {
+          queryClient.invalidateQueries(DIRECTORY_KEY(directoryPath));
+        }
       },
     }
   );
