@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,7 +12,6 @@
  */
 
 import {
-  FieldDef,
   FilterExpression,
   QueryFieldDef,
   StructDef,
@@ -20,14 +19,12 @@ import {
   ModelDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { compileQuery } from "../../core/compile";
 import { QueryBuilder, QueryWriter } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
-import { useSaveField, useWatchAnalysis } from "../data";
 import { useRunQuery } from "../data/use_run_query";
-import { useQueryParams } from "./use_query_params";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
@@ -43,6 +40,7 @@ interface UseQueryBuilderResult {
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   error: Error | undefined;
+  registerNewSource: (source: StructDef) => void;
 }
 
 export interface QueryModifiers {
@@ -113,10 +111,11 @@ export interface QueryModifiers {
 }
 
 export function useQueryBuilder(
-  model: ModelDef,
-  sourceName: string
+  model?: ModelDef,
+  sourceName?: string
 ): UseQueryBuilderResult {
-  const source = model.contents[sourceName] as StructDef;
+  const source =
+    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(source));
   // const [querySummary, setQuerySummary] = useState<QuerySummary>(
   //   new QueryWriter(queryBuilder.current.getQuery(), source).getQuerySummary(
@@ -131,13 +130,20 @@ export function useQueryBuilder(
   const [queryString, setQueryString] = useState("");
 
   const querySummary = (() => {
+    if (source === undefined) {
+      return undefined;
+    }
     const query = queryBuilder.current.getQuery();
     const writer = new QueryWriter(query, source);
     const summary = writer.getQuerySummary({}, {});
     return summary;
   })();
 
-  const queryName = queryBuilder.current.getQuery().name;
+  const registerNewSource = (source: StructDef) => {
+    queryBuilder.current.updateSource(source);
+  };
+
+  const queryName = source ? queryBuilder.current.getQuery().name : undefined;
 
   const {
     result,
@@ -165,23 +171,6 @@ export function useQueryBuilder(
       setParams(params, { replace: true });
     }
   };
-
-  // useWatchAnalysis(analysis, (newAnalysis) => {
-  //   setAnalysis(newAnalysis);
-  //   withAnalysisSource(newAnalysis, (source) => {
-  //     queryBuilder.current?.updateSource(source);
-  //   });
-  // });
-
-  // const loadQueryInNewAnalysis = (newAnalysis: Analysis, queryName: string) => {
-  //   setAnalysis(newAnalysis);
-  //   clearQuery(newAnalysis);
-  //   withAnalysisSource(newAnalysis, (source) => {
-  //     queryBuilder.current?.updateSource(source);
-  //     queryBuilder.current?.loadQuery(queryName);
-  //     writeQuery(dataStyles, newAnalysis);
-  //   });
-  // };
 
   const modifyQuery = (
     modify: (queryBuilder: QueryBuilder) => void,
@@ -215,18 +204,20 @@ export function useQueryBuilder(
   useEffect(() => {
     const setQuery = async () => {
       const queryString = params.get("query");
-      if (queryString) {
-        const query = await compileQuery(source, queryString);
-        modifyQuery((qb) => qb.setQuery(query), true);
-        if (params.has("run")) {
-          runQuery();
+      if (source) {
+        if (queryString) {
+          const query = await compileQuery(source, queryString);
+          modifyQuery((qb) => qb.setQuery(query), true);
+          if (params.has("run")) {
+            runQuery();
+          }
+        } else {
+          clearQuery(true);
         }
-      } else {
-        clearQuery(true);
       }
     };
     setQuery();
-  }, [params]);
+  }, [params, source]);
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
     modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));
@@ -389,6 +380,7 @@ export function useQueryBuilder(
     dataStyles,
     result,
     error,
+    registerNewSource,
     queryModifiers: {
       addFilter,
       toggleField,

@@ -30,7 +30,6 @@ import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { isDuckDBWASM } from "../utils";
 import { StructDef } from "@malloydata/malloy";
-import { useQueryParams } from "../hooks/use_query_params";
 import { useSearchParams } from "react-router-dom";
 
 const KEY_MAP = {
@@ -44,8 +43,49 @@ export const Explore: React.FC = () => {
   const datasets = useDatasets();
 
   // const topValues = useTopValues(analysis);
-  const [section, setSection] = useState("query");
   const [params, setParams] = useSearchParams();
+
+  // TODO maybe want to move to react router fully...
+  const section = params.get("page") || "query";
+  const setSection = (section: string) => {
+    params.set("page", section);
+    setParams(params);
+  };
+
+  const {
+    queryMalloy,
+    queryName,
+    clearQuery,
+    runQuery,
+    isRunning,
+    clearResult,
+    queryModifiers,
+    querySummary,
+    dataStyles,
+    result,
+    registerNewSource,
+    error,
+  } = useQueryBuilder(dataset?.model, sourceName);
+
+  const source =
+    dataset && sourceName
+      ? (dataset.model.contents[sourceName] as StructDef)
+      : undefined;
+
+  const setDatasetSource = (
+    dataset: Dataset,
+    sourceName: string,
+    fromURL = false
+  ) => {
+    setDataset(dataset);
+    setSourceName(sourceName);
+    if (!fromURL) {
+      params.set("source", sourceName);
+      params.set("model", dataset.name);
+      setParams(params);
+    }
+    registerNewSource(dataset.model.contents[sourceName] as StructDef);
+  };
 
   useEffect(() => {
     const loadDataset = async () => {
@@ -53,42 +93,49 @@ export const Explore: React.FC = () => {
       const query = params.get("query");
       const source = params.get("source");
       if (model && (query || source) && datasets) {
-        const dataset = datasets.find((dataset) => dataset.name === model);
-        if (dataset === undefined) {
-          throw new Error("Bad model");
+        const isDatasetDifferent = !dataset || dataset.name !== model;
+        const isSourceDifferent = source !== sourceName;
+        if (isDatasetDifferent || isSourceDifferent) {
+          const newDataset = datasets.find((dataset) => dataset.name === model);
+          if (newDataset === undefined) {
+            throw new Error("Bad model");
+          }
+          const sourceName =
+            source || (await getSourceNameForQuery(newDataset.model, query));
+          setDatasetSource(newDataset, sourceName, true);
         }
-        const sourceName =
-          source || (await getSourceNameForQuery(dataset.model, query));
-        setSourceName(sourceName);
-        setDataset(dataset);
       }
     };
     loadDataset();
   }, [params, datasets]);
 
-  // const handlers = {
-  //   REMOVE_FIELDS: () => clearQuery(),
-  //   RUN_QUERY: runQuery,
-  // };
+  const loadQueryLink = (
+    model: string,
+    sourceName: string,
+    queryName: string
+  ) => {
+    params.set("model", model);
+    params.set("source", sourceName);
+    params.set("query", `query: ${sourceName} -> ${queryName}`);
+    params.set("page", "query");
+    params.set("run", "true");
+    setParams(params);
+  };
+
+  const handlers = {
+    REMOVE_FIELDS: () => clearQuery(),
+    RUN_QUERY: runQuery,
+  };
 
   return (
-    <Main handlers={{}} keyMap={KEY_MAP}>
+    <Main handlers={handlers} keyMap={KEY_MAP}>
       <Header>
         <HeaderLeft>
           <MalloyLogo />
           <DatasetPicker
             datasets={datasets}
             dataset={dataset}
-            setDataset={(dataset) => {
-              setDataset(dataset);
-              params.set("model", dataset.name);
-              setParams(params);
-            }}
-            setSourceName={(sourceName) => {
-              setSourceName(sourceName);
-              params.set("source", sourceName);
-              setParams(params);
-            }}
+            setSourceName={setDatasetSource}
             sourceName={sourceName}
           />
         </HeaderLeft>
@@ -121,21 +168,31 @@ export const Explore: React.FC = () => {
           </Channel>
           <Page>
             <PageContainer>
-              {section === "query" && dataset && sourceName && (
+              {section === "query" && (
                 <ExploreQueryEditor
-                  model={dataset.model}
-                  sourceName={sourceName}
+                  source={source}
+                  queryModifiers={queryModifiers}
+                  topValues={[]} // TODO
+                  queryName={queryName}
+                  querySummary={querySummary}
+                  queryMalloy={queryMalloy}
+                  dataStyles={dataStyles}
+                  result={result}
+                  isRunning={isRunning}
+                  runQuery={runQuery}
                 />
               )}
               {section === "about" && (
                 <PageContent>
-                  <MarkdownDocument
-                    content={
-                      dataset?.readme ||
-                      "# No Readme\nThis project has no readme"
-                    }
-                    loadQueryLink={() => {}}
-                  />
+                  {dataset && (
+                    <MarkdownDocument
+                      content={
+                        dataset.readme ||
+                        "# No Readme\nThis project has no readme"
+                      }
+                      loadQueryLink={loadQueryLink}
+                    />
+                  )}
                 </PageContent>
               )}
               {/* <ErrorMessage error={error} /> */}

@@ -19,29 +19,45 @@ import { TopQueryActionMenu } from "../TopQueryActionMenu";
 import { isDuckDBWASM } from "../utils";
 
 interface ExploreQueryEditorProps {
-  model: ModelDef;
-  sourceName: string;
+  source: StructDef | undefined;
+  topValues: SearchValueMapResult[] | undefined;
+  queryName: string;
+  querySummary: QuerySummary | undefined;
+  result: MalloyResult | undefined;
+  dataStyles: DataStyles;
+  queryMalloy: string;
+  isRunning: boolean;
+  queryModifiers: QueryModifiers;
+  runQuery: () => void;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
-  model,
-  sourceName,
+  source,
+  queryName,
+  topValues,
+  runQuery,
+  querySummary,
+  result,
+  dataStyles,
+  isRunning,
+  queryMalloy,
+  queryModifiers,
 }) => {
-  const {
-    queryMalloy,
-    queryName,
-    clearQuery,
-    runQuery,
-    isRunning,
-    clearResult,
-    queryModifiers,
-    querySummary,
-    dataStyles,
-    result,
-    error,
-  } = useQueryBuilder(model, sourceName);
+  // const {
+  //   queryMalloy,
+  //   queryName,
+  //   clearQuery,
+  //   runQuery,
+  //   isRunning,
+  //   clearResult,
+  //   queryModifiers,
+  //   querySummary,
+  //   dataStyles,
+  //   result,
+  //   error,
+  // } = useQueryBuilder(model, sourceName);
   const [insertOpen, setInsertOpen] = useState(false);
-  const source = model.contents[sourceName] as StructDef;
+  // const source = model.contents[sourceName] as StructDef;
   return (
     <Outer>
       <SidebarOuter>
@@ -79,14 +95,16 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         </SidebarHeader>
         <QueryBar>
           <QueryBarInner>
-            <QuerySummaryPanel
-              source={source}
-              querySummary={querySummary}
-              queryModifiers={queryModifiers}
-              stagePath={undefined}
-              queryName={queryName}
-              topValues={[]}
-            />
+            {querySummary && (
+              <QuerySummaryPanel
+                source={source}
+                querySummary={querySummary}
+                queryModifiers={queryModifiers}
+                stagePath={undefined}
+                queryName={queryName}
+                topValues={[]}
+              />
+            )}
           </QueryBarInner>
         </QueryBar>
       </SidebarOuter>

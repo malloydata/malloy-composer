@@ -40,10 +40,17 @@ import { DataStyles } from "@malloydata/render";
 import { NamedQuery } from "./compile";
 
 class SourceUtils {
-  constructor(protected source: StructDef) {}
+  constructor(protected _source: StructDef | undefined) {}
 
   updateSource(source: StructDef) {
-    this.source = source;
+    this._source = source;
+  }
+
+  getSource() {
+    if (this._source === undefined) {
+      throw new Error("Source has not been set");
+    }
+    return this._source;
   }
 
   protected getField(source: StructDef, fieldName: string): FieldDef {
@@ -59,7 +66,7 @@ class SourceUtils {
         currentSource = found;
         parts = parts.slice(1);
       } else if (found.type === "turtle") {
-        let turtleSource = this.source;
+        let turtleSource = this.getSource();
         for (const stage of found.pipeline) {
           turtleSource = this.modifySourceForStage(stage, turtleSource);
         }
@@ -151,7 +158,7 @@ export class QueryBuilder extends SourceUtils {
 
   private sourceForStageAtPath(stagePath: StagePath) {
     let currentPipeline = this.query.pipeline;
-    let currentSource = this.source;
+    let currentSource = this.getSource();
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const {
@@ -249,7 +256,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   loadQuery(queryPath: string): void {
-    const definition = this.getField(this.source, queryPath);
+    const definition = this.getField(this.getSource(), queryPath);
     if (definition.type !== "turtle") {
       throw new Error("Path does not refer to query.");
     }
@@ -853,11 +860,11 @@ export class QueryWriter extends SourceUtils {
     }
     if (!forSource) {
       initParts.push(
-        this.maybeQuoteIdentifier(this.source.as || this.source.name)
+        this.maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
     }
     const malloy: Fragment[] = [initParts.join(" ")];
-    let stageSource = this.source;
+    let stageSource = this.getSource();
     for (const stage of this.query.pipeline) {
       if (!forSource) {
         malloy.push(" ->");
@@ -888,7 +895,7 @@ export class QueryWriter extends SourceUtils {
     dataStyles: DataStyles
   ): QuerySummary {
     const queryName = this.query.name;
-    let stageSource = this.source;
+    let stageSource = this.getSource();
     const stages = this.query.pipeline.map((stage, index) => {
       const summary = this.getStageSummary(
         stage,
@@ -1077,7 +1084,7 @@ export class QueryWriter extends SourceUtils {
             type: "field",
             field: fieldDef,
             saveDefinition:
-              source === this.source && fieldDef.type !== "turtle"
+              source === this.getSource() && fieldDef.type !== "turtle"
                 ? this.fanToDef(field, fieldDef)
                 : undefined,
             fieldIndex,
@@ -1112,7 +1119,7 @@ export class QueryWriter extends SourceUtils {
             type: "nested_query_definition",
             name: field.as || field.name,
             fieldIndex,
-            saveDefinition: source === this.source ? field : undefined,
+            saveDefinition: source === this.getSource() ? field : undefined,
             stages: stages,
             styles: styleItems,
           });
@@ -1122,7 +1129,7 @@ export class QueryWriter extends SourceUtils {
             name: field.as || field.name,
             fieldIndex,
             field,
-            saveDefinition: source === this.source ? field : undefined,
+            saveDefinition: source === this.getSource() ? field : undefined,
             source: field.code,
             kind: field.aggregate ? "measure" : "dimension",
             styles: styleItems,

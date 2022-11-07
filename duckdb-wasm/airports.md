@@ -16,7 +16,7 @@ For personal / educational use only.
 
 ## Queries in `imdb.malloy`
 
-### <!--malloy-query model="airports.malloy" source="airports" query="by_state"--> `by_state`
+### <!--malloy-query model="Airports" source="airports" query="by_state"--> `by_state`
 
 
 [MyQuery](malloy://foo.malloy/bar/my_query)

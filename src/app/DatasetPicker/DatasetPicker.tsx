@@ -26,9 +26,8 @@ import { StructDef } from "@malloydata/malloy";
 interface DirectoryPickerProps {
   datasets: Dataset[] | undefined;
   sourceName: string | undefined;
-  setSourceName: (sourceName: string) => void;
+  setSourceName: (dataset: Dataset, sourceName: string) => void;
   dataset: Dataset | undefined;
-  setDataset: (dataset: Dataset) => void;
 }
 
 export const DatasetPicker: React.FC<DirectoryPickerProps> = ({
@@ -87,8 +86,7 @@ export const DatasetPicker: React.FC<DirectoryPickerProps> = ({
                             <ActionIcon action="analysis" color="dimension" />
                           }
                           onClick={() => {
-                            setSourceName(entry.name);
-                            setDataset(dataset);
+                            setSourceName(dataset, entry.name);
                             setOpen(false);
                           }}
                           name={entry.name}

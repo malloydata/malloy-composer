@@ -205,6 +205,22 @@ export async function compileQuery(
     : model.preparedQuery;
   const compiledQuery = (preparedQuery as unknown as CheatyPreparedQuery)
     ._query;
+  if (compiledQuery.pipeHead) {
+    const structRef = compiledQuery.structRef;
+    if (typeof structRef !== "string") {
+      throw new Error("Cannot run queries with complex struct refs");
+    }
+    const source = model._modelDef.contents[structRef] as StructDef;
+    // TODO LLOYD HOW
+    // TODO deal with turtleSegment/pipeHead filters?
+    const resolved = source.fields.find(
+      (field) => field.name === compiledQuery.pipeHead.name
+    );
+    if (resolved.type !== "turtle") {
+      throw new Error("Invalid query pipehead");
+    }
+    compiledQuery.pipeline = [...resolved.pipeline, ...compiledQuery.pipeline];
+  }
   const as = "as" in compiledQuery ? (compiledQuery as any).as : undefined;
   const name =
     "name" in compiledQuery ? (compiledQuery as any).name : undefined;
