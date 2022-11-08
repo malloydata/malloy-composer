@@ -117,17 +117,11 @@ export function useQueryBuilder(
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(source));
-  // const [querySummary, setQuerySummary] = useState<QuerySummary>(
-  //   new QueryWriter(queryBuilder.current.getQuery(), source).getQuerySummary(
-  //     {},
-  //     {}
-  //   )
-  // );
-  // const [queryName, setQueryName] = useState("");
-  const [error, setError] = useState<Error>();
-  // const { params, setParam, unsetParam } = useQueryParams();
+  const [error, setError] = useState<Error | undefined>();
   const [params, setParams] = useSearchParams();
   const [queryString, setQueryString] = useState("");
+
+  const dataStyles = parseDataStyles(params.get("styles"));
 
   const querySummary = (() => {
     if (source === undefined) {
@@ -135,7 +129,7 @@ export function useQueryBuilder(
     }
     const query = queryBuilder.current.getQuery();
     const writer = new QueryWriter(query, source);
-    const summary = writer.getQuerySummary({}, {});
+    const summary = writer.getQuerySummary({}, dataStyles);
     return summary;
   })();
 
@@ -151,16 +145,16 @@ export function useQueryBuilder(
     isRunning,
     clearResult,
   } = useRunQuery(setError, model);
-  const [dataStyles, setDataStyles] = useState<DataStyles>({});
 
   const runQuery = () => {
     const topLevel = {
       stageIndex: querySummary ? querySummary.stages.length - 1 : 0,
     };
+    setError(undefined);
     if (!queryBuilder.current?.hasLimit(topLevel)) {
       // TODO magic number here: we run the query before we set this limit,
       //      and this limit just happens to be the default limit
-      modifyQuery((qb) => qb.addLimit(topLevel, 10), true);
+      modifyQuery((qb) => qb.addLimit(topLevel, 10), true, true);
     }
     const query = queryBuilder.current.getQuery();
     const writer = new QueryWriter(query, source);
@@ -174,7 +168,8 @@ export function useQueryBuilder(
 
   const modifyQuery = (
     modify: (queryBuilder: QueryBuilder) => void,
-    fromURL = false
+    fromURL = false,
+    replace = false
   ) => {
     modify(queryBuilder.current);
     const query = queryBuilder.current.getQuery();
@@ -185,7 +180,7 @@ export function useQueryBuilder(
         params.delete("name");
         params.delete("description");
         params.set("query", queryString);
-        setParams(params);
+        setParams(params, { replace });
       }
       setQueryString(queryString);
     }
@@ -195,23 +190,43 @@ export function useQueryBuilder(
     }
   };
 
-  const clearQuery = (fromURL = false) => {
+  const clearURL = (replace = true) => {
+    params.delete("query");
+    params.delete("styles");
+    params.delete("name");
+    params.delete("description");
+    params.delete("run");
+    setParams(params, { replace });
+  };
+
+  const clearQuery = (fromURL = false, replace = false) => {
     setDataStyle(queryName, undefined);
     clearResult();
-    params.delete("query");
-    setParams(params);
+    clearURL(replace);
     modifyQuery((qb) => qb.clearQuery(), fromURL);
   };
 
   useEffect(() => {
     const setQuery = async () => {
-      const queryString = params.get("query");
+      const newQueryString = params.get("query");
       if (source) {
-        if (queryString) {
-          const query = await compileQuery(source, queryString);
-          modifyQuery((qb) => qb.setQuery(query), true);
-          if (params.has("run")) {
-            runQuery();
+        if (newQueryString === queryString) {
+          return;
+        }
+        if (newQueryString) {
+          try {
+            const query = await compileQuery(source, newQueryString);
+            modifyQuery((qb) => qb.setQuery(query), true);
+            if (params.has("run") && params.get("page") === "query") {
+              runQuery();
+            }
+            setQueryString(newQueryString);
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(error);
+            clearResult();
+            clearURL(true);
+            setError(error);
           }
         } else {
           clearQuery(true);
@@ -357,16 +372,18 @@ export function useQueryBuilder(
   };
 
   const setDataStyle = (name: string, renderer: RendererName | undefined) => {
-    // const newDataStyles = { ...dataStyles };
-    // if (renderer === undefined) {
-    //   if (name in newDataStyles) {
-    //     delete newDataStyles[name];
-    //   }
-    // } else {
-    //   newDataStyles[name] = { renderer };
-    // }
-    // setDataStyles(newDataStyles);
-    // writeQuery(newDataStyles);
+    modifyQuery(() => {
+      const newDataStyles = { ...dataStyles };
+      if (renderer === undefined) {
+        if (name in newDataStyles) {
+          delete newDataStyles[name];
+        }
+      } else {
+        newDataStyles[name] = { renderer };
+      }
+
+      params.set("styles", JSON.stringify(newDataStyles));
+    });
   };
 
   return {
@@ -412,4 +429,14 @@ export function useQueryBuilder(
       onDrill,
     },
   };
+}
+
+function parseDataStyles(styles: string | undefined): DataStyles {
+  try {
+    return styles ? JSON.parse(styles) : {};
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return {};
+  }
 }

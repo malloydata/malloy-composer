@@ -57,11 +57,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
-  const { searchResults, isLoading } = useSearch(
-    source,
-    analysisPath,
-    searchTerm
-  );
+  const { searchResults, isLoading } = useSearch(source, searchTerm);
   const stringSearchResults =
     searchResults &&
     searchResults.filter((r) => r.fieldType === "string").slice(0, 100);

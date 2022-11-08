@@ -34,8 +34,6 @@ export const DatasetPicker: React.FC<DirectoryPickerProps> = ({
   datasets,
   sourceName,
   setSourceName,
-  dataset,
-  setDataset,
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

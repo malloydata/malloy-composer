@@ -204,7 +204,7 @@ export const Explore: React.FC = () => {
                   )}
                 </PageContent>
               )}
-              {/* <ErrorMessage error={error} /> */}
+              <ErrorMessage error={error} />
             </PageContainer>
           </Page>
           <RightChannel />

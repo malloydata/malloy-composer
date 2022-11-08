@@ -182,7 +182,6 @@ export async function schema(
 
 export async function search(
   source: malloy.StructDef,
-  _analysisPath: string,
   searchTerm: string,
   fieldPath?: string
 ): Promise<malloy.SearchIndexResult[] | undefined | Error> {

@@ -62,36 +62,40 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
     <Outer>
       <SidebarOuter>
         <SidebarHeader>
-          <div>
-            <ActionIcon
-              action="add"
-              onClick={() => setInsertOpen(true)}
-              color="dimension"
-            />
-            <Popover open={insertOpen} setOpen={setInsertOpen}>
-              <TopQueryActionMenu
-                source={source}
-                queryModifiers={queryModifiers}
-                stagePath={{ stageIndex: 0 }}
-                orderByFields={querySummary?.stages[0].orderByFields || []}
-                closeMenu={() => setInsertOpen(false)}
-                queryName={queryName}
-                stageSummary={querySummary?.stages[0].items || []}
-                isOnlyStage={querySummary?.stages.length === 1}
-                topValues={[]}
+          {source && (
+            <>
+              <div>
+                <ActionIcon
+                  action="add"
+                  onClick={() => setInsertOpen(true)}
+                  color="dimension"
+                />
+                <Popover open={insertOpen} setOpen={setInsertOpen}>
+                  <TopQueryActionMenu
+                    source={source}
+                    queryModifiers={queryModifiers}
+                    stagePath={{ stageIndex: 0 }}
+                    orderByFields={querySummary?.stages[0].orderByFields || []}
+                    closeMenu={() => setInsertOpen(false)}
+                    queryName={queryName}
+                    stageSummary={querySummary?.stages[0].items || []}
+                    isOnlyStage={querySummary?.stages.length === 1}
+                    topValues={[]}
+                  />
+                </Popover>
+              </div>
+              <ActionIcon
+                action="remove"
+                onClick={() => queryModifiers.clearQuery()}
+                color="dimension"
               />
-            </Popover>
-          </div>
-          <ActionIcon
-            action="remove"
-            onClick={() => queryModifiers.clearQuery()}
-            color="dimension"
-          />
-          <ActionIcon
-            action="run"
-            onClick={() => runQuery()}
-            color="dimension"
-          />
+              <ActionIcon
+                action="run"
+                onClick={() => runQuery()}
+                color="dimension"
+              />
+            </>
+          )}
         </SidebarHeader>
         <QueryBar>
           <QueryBarInner>

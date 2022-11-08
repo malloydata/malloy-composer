@@ -321,5 +321,4 @@ const QueryLinkTitleRow = styled.div`
   align-items: center;
 `;
 
-const QueryLinkDescription = styled.div`
-`;
+const QueryLinkDescription = styled.div``;
