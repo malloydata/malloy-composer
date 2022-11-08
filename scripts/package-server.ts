@@ -18,9 +18,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { Command } from "commander";
 
-const outDir = "./dist";
-const thirdPartyNotices = "third_party_notices.txt";
-
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
 const duckdbPath = "../malloy-third-party/third_party/github.com/duckdb/duckdb";

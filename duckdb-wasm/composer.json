@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Airports",
+    "dataTables": ["airports.parquet"],
+    "modelPath": "./airports.malloy",
+    "readme": "./airports.md"
+  }
+]

@@ -97,3 +97,37 @@ source=Unnotarized Developer ID
 - From VSCode Run & Debug Panel Select "Launch Composer" from the dropdown, then "Start Debugging" using the Run button or `F5`
 - Then select "Launch Composer" from the dropdown, then "Start Debugging" using the Run button or `F5`
 - To connect to the render process select "Attach to Composer Render Process"
+
+## DuckDB WASM Mode
+
+There is a `duckdb-wasm` folder which should be served on a webserver in order to run an instance of the DuckDB WASM Mode Composer. The `duckdb-wasm/dist` folder contains the compiled app after running `npm run build-duckdb-wasm`. You can also run `npm run start-duckdb-wasm` to run the DuckDB WASM Mode Composer on port 9999.
+
+The WASM Mode Composer can be easily added to any project that already uses the Fiddle, or it can be added to any repo with Malloy files using CSV or parquet files to simply serve the Composer experience on top of those files. All you need is to host the generated `app.js` and `app.css` files on some CDN (it can be the same CDN that serves the data and malloy files, or a different one), then to add a `composer.json` file that lists the available datasets, e.g.
+
+```json
+[
+  {
+    "name": "Airports",
+    "dataTables": ["airports.parquet"],
+    "modelPath": "./airports.malloy",
+    "readme": "./airports.md"
+  }
+]
+```
+
+Finally, add an `index.html` file, like this:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Malloy Composer</title>
+    <link rel="stylesheet" href="dist/app.css" />
+    <script src="dist/app.js" async defer></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+```

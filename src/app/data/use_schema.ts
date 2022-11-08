@@ -13,7 +13,8 @@
 
 import { useQuery } from "react-query";
 import * as explore from "../../types";
-import { isElectron } from "../utils";
+import { isDuckDBWASM, isElectron } from "../utils";
+import * as duckDBWASM from "./duckdb_wasm";
 
 export function KEY(analysis?: explore.Analysis): string {
   return analysis
@@ -30,6 +31,30 @@ async function fetchSchema(
   if (analysis === undefined) {
     return undefined;
   }
+
+  if (isDuckDBWASM()) {
+    const params: Partial<explore.Analysis> = {
+      malloy: analysis.malloy,
+      modelFullPath: analysis.modelFullPath,
+      sourceName: analysis.sourceName,
+    };
+    if (analysis.fullPath) {
+      params.fullPath = analysis.fullPath;
+    }
+    if (analysis.path) {
+      params.path = analysis.path;
+    }
+    const res = await duckDBWASM.schema(params as explore.Analysis);
+    if (res instanceof Error) {
+      throw res;
+    }
+    const schema = res;
+    analysis.modelDef = schema.modelDef;
+    analysis.malloy = schema.malloy;
+    setAnalysis(analysis);
+    return schema.schema as explore.Schema;
+  }
+
   if (isElectron()) {
     const params: Partial<explore.Analysis> = {
       malloy: analysis.malloy,

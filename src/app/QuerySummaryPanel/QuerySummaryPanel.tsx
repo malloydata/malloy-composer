@@ -38,7 +38,7 @@ import { VisIcon } from "../VisIcon";
 import { StageActionMenu } from "../StageActionMenu";
 import { BackPart, CloseIconStyled } from "../FieldButton/FieldButton";
 import { ErrorFieldActionMenu } from "../ErrorFieldActionMenu";
-import { notUndefined, scalarTypeOfField } from "../utils";
+import { isDuckDBWASM, notUndefined, scalarTypeOfField } from "../utils";
 import { useClickOutside } from "../hooks";
 import { HoverToPopover } from "../HoverToPopover";
 import { FieldDetailPanel } from "../FieldDetailPanel";
@@ -355,7 +355,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   }
                   name={item.name}
                   isEditable={item.type === "field_definition"}
-                  canSave={item.saveDefinition !== undefined}
+                  canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                   definition={
                     item.type === "field_definition" ? item.source : undefined
                   }
@@ -426,7 +426,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   definition={
                     item.type === "field_definition" ? item.source : undefined
                   }
-                  canSave={item.saveDefinition !== undefined}
+                  canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                   editMeasure={(fieldIndex, dimension) =>
                     queryModifiers.editMeasure(stagePath, fieldIndex, dimension)
                   }
@@ -586,7 +586,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     newName
                   );
                 }}
-                canSave={item.saveDefinition !== undefined}
+                canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                 saveQuery={() => {
                   item.saveDefinition &&
                     queryModifiers.saveNestQuery(
