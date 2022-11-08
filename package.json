@@ -29,7 +29,7 @@
     "server-start": "npm run server-build && node ./dist/cli.js --models ./malloy-samples",
     "server-package": "ts-node scripts/package-server",
     "build-duckdb-wasm": "ts-node scripts/build-duckdb-wasm",
-    "start-duckdb-wasm": "npm run build-duckdb-wasm 9999"
+    "start-duckdb-wasm": "npm run build-duckdb-wasm 9999",
     "malloy-install": "npm --no-fund --no-audit install --save-exact $npm_package_config_malloy_packages",
     "malloy-update": "npm --no-fund --no-audit unlink $npm_package_config_malloy_packages && npm run malloy-install",
     "malloy-link": "npm --no-fund --no-audit link $npm_package_config_malloy_packages",
