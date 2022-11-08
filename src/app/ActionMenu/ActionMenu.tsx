@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+import { ModelDef } from "@malloydata/malloy";
 import {
   FilterExpression,
   SearchValueMapResult,
@@ -61,9 +62,11 @@ interface ActionMenuProps {
   searchItems?: SearchItem[];
   addFilter?: (filter: FilterExpression) => void;
   topValues?: SearchValueMapResult[] | undefined;
+  model?: ModelDef | undefined;
 }
 
 export const ActionMenu: React.FC<ActionMenuProps> = ({
+  model,
   actions,
   closeMenu,
   searchItems,
@@ -77,7 +80,11 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
       : undefined
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const { searchResults, isLoading } = useSearch(valueSearchSource, searchTerm);
+  const { searchResults, isLoading } = useSearch(
+    model,
+    valueSearchSource,
+    searchTerm
+  );
   const stringSearchResults =
     searchResults &&
     searchResults.filter((r) => r.fieldType === "string").slice(0, 100);

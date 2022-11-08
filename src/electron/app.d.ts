@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import { ResultJSON } from "@malloydata/malloy";
+import { ModelDef, ResultJSON } from "@malloydata/malloy";
 import { Analysis, SearchIndexResult, SearchValueMapResult } from "../types";
 
 export interface MalloyElectronAPI {
@@ -38,6 +38,7 @@ export interface MalloyElectronAPI {
     analysis: Analysis
   ) => Promise<Analysis | Error>;
   search: (
+    model: ModelDef,
     source: StructDef,
     analysisPath: string,
     searchTerm: string,

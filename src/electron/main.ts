@@ -22,7 +22,6 @@ import { saveField } from "./save_query";
 import { getSchema } from "./schema";
 import { searchIndex } from "./search";
 import { topValues } from "./top_values";
-import { Analysis } from "../types";
 import { getOpenDirectory } from "./file_system";
 
 function createWindow() {
@@ -145,22 +144,31 @@ async function registerIPC(): Promise<void> {
 
   ipcMain.handle(
     "post:search",
-    async (_event, source, analysisPath, searchTerm, fieldPath) => {
+    async (_event, model, source, analysisPath, searchTerm, fieldPath) => {
       try {
-        return await searchIndex(source, analysisPath, searchTerm, fieldPath);
+        return await searchIndex(
+          model,
+          source,
+          analysisPath,
+          searchTerm,
+          fieldPath
+        );
       } catch (error) {
         return error;
       }
     }
   );
 
-  ipcMain.handle("post:top_values", async (_event, source, analysisPath) => {
-    try {
-      return await topValues(source, analysisPath);
-    } catch (error) {
-      return error;
+  ipcMain.handle(
+    "post:top_values",
+    async (_event, model, source, analysisPath) => {
+      try {
+        return await topValues(model, source, analysisPath);
+      } catch (error) {
+        return error;
+      }
     }
-  });
+  );
 
   ipcMain.handle("post:open_directory", async (_event) => {
     try {

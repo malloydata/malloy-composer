@@ -16,6 +16,7 @@ import {
   FilterExpression,
   QueryFieldDef,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import {
   RendererName,
@@ -31,6 +32,7 @@ import { EditOrderBy } from "../EditOrderBy";
 import { RenameField } from "../RenameField";
 
 interface DimensionActionMenuProps {
+  model: ModelDef;
   removeField: () => void;
   rename: (name: string) => void;
   closeMenu: () => void;
@@ -60,6 +62,7 @@ interface DimensionActionMenuProps {
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   source,
+  model,
   rename,
   name,
   closeMenu,
@@ -103,6 +106,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           Component: ({ onComplete }) =>
             filterField && filterFieldPath ? (
               <AddFilter
+                model={model}
                 onComplete={onComplete}
                 source={source}
                 field={filterField}

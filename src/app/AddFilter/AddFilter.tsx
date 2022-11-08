@@ -11,7 +11,12 @@
  * GNU General Public License for more details.
  */
 
-import { FieldDef, FilterExpression, StructDef } from "@malloydata/malloy";
+import {
+  FieldDef,
+  FilterExpression,
+  ModelDef,
+  StructDef,
+} from "@malloydata/malloy";
 import { useState } from "react";
 import { compileFilter } from "../../core/compile";
 import { CodeInput } from "../CodeInput";
@@ -45,6 +50,7 @@ import { TimeFilterBuilder } from "./TimeFilterBuilder";
 import { BooleanFilterBuilder } from "./BooleanFilterBuilder";
 
 interface AddFilterProps {
+  model: ModelDef;
   source: StructDef;
   field: FieldDef;
   fieldPath: string;
@@ -54,6 +60,7 @@ interface AddFilterProps {
 }
 
 export const AddFilter: React.FC<AddFilterProps> = ({
+  model,
   source,
   field,
   addFilter,
@@ -132,6 +139,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
         )}
         {type === "string" && (
           <StringFilterBuilder
+            model={model}
             source={source}
             fieldPath={fieldPath}
             filter={stringFilter}

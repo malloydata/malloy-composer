@@ -13,7 +13,6 @@
 
 import { FieldDef, StructDef } from "@malloydata/malloy";
 import * as express from "express";
-import { Analysis } from "../types";
 import { getAnalysis, readMalloyDirectory } from "./directory";
 import { wrapErrors } from "./errors";
 import { getModels } from "./models";
@@ -88,12 +87,14 @@ export function routes(router: express.Router): void {
       const source = req.body.source as unknown as StructDef;
       const searchTerm = req.body.searchTerm;
       const fieldPath = req.body.fieldPath;
-      const analysisPath = req.body.analysisPath;
+      const model = req.body.model;
+      const modelPath = req.body.modelPath;
       res.json(
         await wrapErrors(async () => {
           const result = await searchIndex(
+            model,
             source,
-            analysisPath,
+            modelPath,
             searchTerm,
             fieldPath
           );
@@ -106,11 +107,12 @@ export function routes(router: express.Router): void {
   router.post(
     "/top_values",
     async (req: express.Request, res: express.Response) => {
+      const model = req.body.model;
       const source = req.body.source as unknown as StructDef;
-      const analysisPath = req.body.analysisPath as string;
+      const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
-          const result = await topValues(source, analysisPath);
+          const result = await topValues(model, source, modelPath);
           return { result: result };
         })
       );

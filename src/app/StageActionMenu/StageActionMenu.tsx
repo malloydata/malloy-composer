@@ -29,6 +29,7 @@ import {
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import {

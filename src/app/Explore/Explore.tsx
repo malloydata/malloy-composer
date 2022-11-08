@@ -15,20 +15,18 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Dataset } from "../../types";
 import { useDatasets } from "../data/use_datasets";
-import { Button, PageContent } from "../CommonElements";
+import { PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
-import { ActionIcon } from "../ActionIcon";
 import { DatasetPicker } from "../DatasetPicker";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
 import { useQueryBuilder } from "../hooks";
 import { ExploreQueryEditor } from "../ExploreQueryEditor";
-import { compileModel, getSourceNameForQuery } from "../../core/compile";
+import { getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
-import { isDuckDBWASM } from "../utils";
 import { StructDef } from "@malloydata/malloy";
 import { useSearchParams } from "react-router-dom";
 
@@ -42,10 +40,8 @@ export const Explore: React.FC = () => {
   const [sourceName, setSourceName] = useState<string | undefined>();
   const datasets = useDatasets();
 
-  // const topValues = useTopValues(analysis);
   const [params, setParams] = useSearchParams();
 
-  // TODO maybe want to move to react router fully...
   const section = params.get("page") || "query";
   const setSection = (section: string) => {
     params.set("page", section);
@@ -58,7 +54,6 @@ export const Explore: React.FC = () => {
     clearQuery,
     runQuery,
     isRunning,
-    clearResult,
     queryModifiers,
     querySummary,
     dataStyles,
@@ -67,10 +62,9 @@ export const Explore: React.FC = () => {
     error,
   } = useQueryBuilder(dataset?.model, sourceName);
 
+  const model = dataset?.model;
   const source =
-    dataset && sourceName
-      ? (dataset.model.contents[sourceName] as StructDef)
-      : undefined;
+    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 
   const setDatasetSource = (
     dataset: Dataset,
@@ -86,6 +80,7 @@ export const Explore: React.FC = () => {
       params.delete("query");
       params.delete("run");
       params.delete("name");
+      params.delete("renderer");
       clearQuery();
       setParams(params);
     }
@@ -118,7 +113,6 @@ export const Explore: React.FC = () => {
     model: string,
     query: string,
     name?: string,
-    description?: string,
     renderer?: string
   ) => {
     const newDataset = datasets.find((dataset) => dataset.name === model);
@@ -132,6 +126,7 @@ export const Explore: React.FC = () => {
     params.set("query", query);
     params.set("page", "query");
     params.set("run", "true");
+    params.set("renderer", renderer);
     params.set("name", name);
     // params.set("description", description);
     setParams(params);
@@ -143,7 +138,6 @@ export const Explore: React.FC = () => {
   };
 
   const topValues = useTopValues(dataset, source);
-  console.log({topValues});
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -182,6 +176,7 @@ export const Explore: React.FC = () => {
             <PageContainer>
               {section === "query" && (
                 <ExploreQueryEditor
+                  model={model}
                   source={source}
                   datasets={datasets}
                   queryModifiers={queryModifiers}

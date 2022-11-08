@@ -11,24 +11,30 @@
  * GNU General Public License for more details.
  */
 
-import { Runtime, SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import {
+  ModelDef,
+  Runtime,
+  SearchValueMapResult,
+  StructDef,
+} from "@malloydata/malloy";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
 
 export async function topValues(
+  model: ModelDef,
   source: StructDef,
-  analysisPath: string
+  modelPath: string
 ): Promise<SearchValueMapResult[] | undefined> {
   const sourceName = source.as || source.name;
   const connections = CONNECTION_MANAGER.getConnectionLookup(
-    new URL("file://" + analysisPath)
+    new URL("file://" + modelPath)
   );
   const runtime = new Runtime(URL_READER, connections);
+  const contents = { ...model.contents, [sourceName]: source };
   return runtime
     ._loadModelFromModelDef({
-      name: "_generated",
-      contents: { [sourceName]: source },
-      exports: [],
+      ...model,
+      contents,
     })
     .searchValueMap(sourceName);
 }

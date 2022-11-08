@@ -208,7 +208,13 @@ export function useQueryBuilder(
 
   useEffect(() => {
     const setQuery = async () => {
-      const newQueryString = params.get("query");
+      // Note the `replace` here is sort of an intersting hack. If you create a new stage
+      // but don't add any fields to it, then refresh, the page fails to load the query.
+      // So we look for `-> { }` (with the newline in it that the Composer generates)
+      // And get rid of it. There are not very many cases where you create invalid malloy code
+      // when using the Composer, so we just special case this one for now... Someday we may want
+      // to do something different.
+      const newQueryString = params.get("query")?.replace(/->\s\{\n\}/g, "");
       if (source) {
         if (newQueryString === queryString) {
           return;
@@ -216,6 +222,11 @@ export function useQueryBuilder(
         if (newQueryString) {
           try {
             const query = await compileQuery(model, newQueryString);
+            const renderer = params.get("renderer") as RendererName;
+            if (renderer) {
+              params.delete("renderer");
+              setDataStyle(query.name, renderer);
+            }
             modifyQuery((qb) => qb.setQuery(query), true);
             if (params.has("run") && params.get("page") === "query") {
               runQuery();

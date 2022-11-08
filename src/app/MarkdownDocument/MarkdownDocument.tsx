@@ -26,7 +26,6 @@ interface MarkdownDocumentProps {
     model: string,
     query: string,
     name?: string,
-    description?: string,
     renderer?: string
   ) => void;
 }
@@ -46,7 +45,6 @@ export const MarkdownNode: React.FC<{
     model: string,
     query: string,
     name?: string,
-    description?: string,
     renderer?: string
   ) => void;
 }> = ({ node, loadQueryLink }) => {
@@ -131,13 +129,7 @@ export const MarkdownNode: React.FC<{
       return (
         <QueryLink
           onClick={() => {
-            loadQueryLink(
-              node.model,
-              node.query,
-              node.name,
-              node.description,
-              node.renderer
-            );
+            loadQueryLink(node.model, node.query, node.name, node.renderer);
           }}
         >
           <QueryLinkTitleRow>

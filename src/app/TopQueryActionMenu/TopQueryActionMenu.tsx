@@ -19,7 +19,7 @@ import { FilterContextBar } from "../FilterContextBar";
 import { AddLimit } from "../AddLimit";
 import { OrderByContextBar } from "../OrderByContextBar";
 import { ActionMenu } from "../ActionMenu";
-import { SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import { SearchValueMapResult, StructDef, ModelDef } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import { LoadQueryContextBar } from "../LoadQueryContextBar";
 import {
@@ -40,6 +40,7 @@ interface TopQueryActionMenuProps {
   queryName: string;
   isOnlyStage: boolean;
   queryModifiers: QueryModifiers;
+  model: ModelDef | undefined;
 }
 
 export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
@@ -50,6 +51,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
   queryName,
   topValues,
   queryModifiers,
+  model,
 }) => {
   return (
     <ActionMenu
@@ -57,6 +59,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
       valueSearchSource={source}
       addFilter={(filter) => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
+      model={model}
       actions={[
         {
           kind: "sub_menu",

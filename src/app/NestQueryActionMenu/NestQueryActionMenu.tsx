@@ -29,6 +29,7 @@ import {
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import {
@@ -69,9 +70,11 @@ interface NestQueryActionMenuProps {
   saveQuery: () => void;
   rename: (newName: string) => void;
   canSave: boolean;
+  model: ModelDef | undefined;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
+  model,
   source,
   toggleField,
   addFilter,
@@ -94,6 +97,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   return (
     <ActionMenu
       topValues={topValues}
+      model={model}
       valueSearchSource={source}
       addFilter={(filter) => addFilter(stagePath, filter)}
       closeMenu={closeMenu}
@@ -156,6 +160,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              model={model}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}

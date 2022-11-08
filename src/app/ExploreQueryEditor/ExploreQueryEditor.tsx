@@ -9,14 +9,12 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Dataset, QuerySummary } from "../../types";
 import { ActionIcon } from "../ActionIcon";
-import { EmptyMessage, PageContent, PageHeader } from "../CommonElements";
-import { QueryModifiers, useQueryBuilder } from "../hooks/use_query_builder";
+import { PageContent, PageHeader } from "../CommonElements";
+import { QueryModifiers } from "../hooks/use_query_builder";
 import { Popover } from "../Popover";
 import { QuerySummaryPanel } from "../QuerySummaryPanel";
 import { Result } from "../Result";
-import { SaveQueryButton } from "../SaveQueryButton";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
-import { isDuckDBWASM } from "../utils";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 
 interface ExploreQueryEditorProps {
@@ -32,9 +30,11 @@ interface ExploreQueryEditorProps {
   runQuery: () => void;
   queryTitle?: string;
   datasets: Dataset[];
+  model: ModelDef;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
+  model,
   source,
   queryName,
   topValues,
@@ -62,6 +62,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 />
                 <Popover open={insertOpen} setOpen={setInsertOpen}>
                   <TopQueryActionMenu
+                    model={model}
                     source={source}
                     queryModifiers={queryModifiers}
                     stagePath={{ stageIndex: 0 }}
@@ -91,6 +92,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
           <QueryBarInner>
             {querySummary && (
               <QuerySummaryPanel
+                model={model}
                 source={source}
                 querySummary={querySummary}
                 queryModifiers={queryModifiers}

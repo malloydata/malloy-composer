@@ -30,7 +30,7 @@ import { ListNest } from "../ListNest";
 import { NestQueryActionMenu } from "../NestQueryActionMenu";
 import styled from "styled-components";
 import { FilterActionMenu } from "../FilterActionMenu";
-import { SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import { ModelDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { OrderByActionMenu } from "../OrderByActionMenu";
 import { EmptyMessage } from "../CommonElements";
 import { DataStyleActionMenu } from "../DataStyleActionMenu";
@@ -45,6 +45,7 @@ import { FieldDetailPanel } from "../FieldDetailPanel";
 import { QueryModifiers } from "../hooks/use_query_builder";
 
 interface QuerySummaryPanelProps {
+  model: ModelDef;
   source: StructDef;
   querySummary: QuerySummary;
   stagePath: StagePath | undefined;
@@ -54,6 +55,7 @@ interface QuerySummaryPanelProps {
 }
 
 export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
+  model,
   querySummary,
   stagePath,
   queryName,
@@ -127,6 +129,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               />
             )}
             <StageSummaryUI
+              model={model}
               stage={stage}
               queryModifiers={queryModifiers}
               stagePath={nestStagePath}
@@ -148,9 +151,11 @@ interface SummaryStageProps {
   topValues: SearchValueMapResult[] | undefined;
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
+  model: ModelDef;
 }
 
 const StageSummaryUI: React.FC<SummaryStageProps> = ({
+  model,
   stage,
   topValues,
   queryModifiers,
@@ -197,6 +202,7 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
     <FieldListDiv>
       {stage.items.map((item, index) => (
         <SummaryItem
+          model={model}
           key={`${item.type}/${index}`}
           item={item}
           stageSummary={stage.items}
@@ -275,9 +281,11 @@ interface SummaryItemProps {
   deselect: () => void;
   topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
+  model: ModelDef;
 }
 
 const SummaryItem: React.FC<SummaryItemProps> = ({
+  model,
   item,
   source,
   stagePath,
@@ -316,6 +324,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             if (item.kind === "dimension") {
               return (
                 <DimensionActionMenu
+                  model={model}
                   source={source}
                   removeField={() =>
                     queryModifiers.removeField(stagePath, item.fieldIndex)
@@ -380,6 +389,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 (item.kind === "measure" && item.isRenamed);
               return (
                 <AggregateActionMenu
+                  model={model}
                   stagePath={stagePath}
                   source={source}
                   removeField={() =>
@@ -544,6 +554,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             });
             return (
               <NestQueryActionMenu
+                model={model}
                 source={source}
                 toggleField={queryModifiers.toggleField}
                 addFilter={queryModifiers.addFilter}
@@ -834,6 +845,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 />
               )}
               <StageSummaryUI
+                model={model}
                 stage={stage}
                 stagePath={nestStagePath}
                 source={source}
@@ -862,6 +874,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             {children.map(({ childItem, fieldIndex }, index) => {
               return (
                 <SummaryItem
+                  model={model}
                   key={"child:" + index}
                   item={childItem}
                   source={source}

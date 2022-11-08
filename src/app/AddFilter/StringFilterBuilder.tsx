@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import { StructDef } from "@malloydata/malloy";
+import { ModelDef, StructDef } from "@malloydata/malloy";
 import { useState } from "react";
 import styled from "styled-components";
 import { stringFilterChangeType } from "../../core/filters";
@@ -43,6 +43,7 @@ import { LoadingSpinner } from "../Spinner";
 import { largeNumberLabel } from "../utils";
 
 interface StringFilterBuilderProps {
+  model: ModelDef;
   source: StructDef;
   fieldPath: string;
   filter: StringFilter;
@@ -50,6 +51,7 @@ interface StringFilterBuilderProps {
 }
 
 export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
+  model,
   source,
   filter,
   setFilter,
@@ -60,6 +62,7 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
   };
 
   const equalTo = useStringEqualToOrNotBuilder(
+    model,
     source,
     filter,
     setFilter,
@@ -147,6 +150,7 @@ const UtilRow = styled.div`
 `;
 
 function useStringEqualToOrNotBuilder(
+  model: ModelDef,
   source: StructDef,
   filter: StringFilter,
   setFilter: (filter: StringEqualToFilter | StringNotEqualToFilter) => void,
@@ -154,6 +158,7 @@ function useStringEqualToOrNotBuilder(
 ) {
   const [searchValue, setSearchValue] = useState("");
   const { searchResults, isLoading } = useSearch(
+    model,
     source,
     searchValue,
     fieldPath

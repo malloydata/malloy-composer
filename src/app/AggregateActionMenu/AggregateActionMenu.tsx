@@ -13,6 +13,7 @@
 
 import {
   FilterExpression,
+  ModelDef,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
@@ -49,9 +50,11 @@ interface AggregateActionMenuProps {
   ) => void;
   orderByField: OrderByField;
   stagePath: StagePath;
+  model: ModelDef | undefined;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
+  model,
   source,
   addFilter,
   rename,
@@ -84,6 +87,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              model={model}
               source={source}
               addFilter={addFilter}
               onComplete={onComplete}

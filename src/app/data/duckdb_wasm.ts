@@ -180,15 +180,21 @@ export async function schema(
 }
 
 export async function search(
+  model: malloy.ModelDef,
   source: malloy.StructDef,
   searchTerm: string,
   fieldPath?: string
 ): Promise<malloy.SearchIndexResult[] | undefined | Error> {
+  console.log("search", { model, source, searchTerm, fieldPath });
   const sourceName = source.as || source.name;
+  const contents = { ...model.contents, [sourceName]: source };
+  console.log(model, {
+    ...model,
+    contents,
+  });
   return RUNTIME._loadModelFromModelDef({
-    name: "_generated",
-    contents: { [sourceName]: source },
-    exports: [],
+    ...model,
+    contents,
   }).search(sourceName, searchTerm, undefined, fieldPath);
 }
 
@@ -196,6 +202,11 @@ export async function topValues(
   model: malloy.ModelDef,
   source: malloy.StructDef
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
+  console.log("topValues", { model, source });
   const sourceName = source.as || source.name;
-  return RUNTIME._loadModelFromModelDef(model).searchValueMap(sourceName);
+  const contents = { ...model.contents, [sourceName]: source };
+  return RUNTIME._loadModelFromModelDef({
+    ...model,
+    contents,
+  }).searchValueMap(sourceName);
 }
