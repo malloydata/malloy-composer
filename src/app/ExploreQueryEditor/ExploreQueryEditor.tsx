@@ -7,7 +7,7 @@ import {
 import { DataStyles } from "@malloydata/render";
 import { useState } from "react";
 import styled from "styled-components";
-import { QuerySummary } from "../../types";
+import { Dataset, QuerySummary } from "../../types";
 import { ActionIcon } from "../ActionIcon";
 import { EmptyMessage, PageContent, PageHeader } from "../CommonElements";
 import { QueryModifiers, useQueryBuilder } from "../hooks/use_query_builder";
@@ -17,6 +17,7 @@ import { Result } from "../Result";
 import { SaveQueryButton } from "../SaveQueryButton";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
 import { isDuckDBWASM } from "../utils";
+import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -29,6 +30,8 @@ interface ExploreQueryEditorProps {
   isRunning: boolean;
   queryModifiers: QueryModifiers;
   runQuery: () => void;
+  queryTitle?: string;
+  datasets: Dataset[];
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
@@ -42,22 +45,9 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   isRunning,
   queryMalloy,
   queryModifiers,
+  queryTitle,
 }) => {
-  // const {
-  //   queryMalloy,
-  //   queryName,
-  //   clearQuery,
-  //   runQuery,
-  //   isRunning,
-  //   clearResult,
-  //   queryModifiers,
-  //   querySummary,
-  //   dataStyles,
-  //   result,
-  //   error,
-  // } = useQueryBuilder(model, sourceName);
   const [insertOpen, setInsertOpen] = useState(false);
-  // const source = model.contents[sourceName] as StructDef;
   return (
     <Outer>
       <SidebarOuter>
@@ -80,7 +70,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     queryName={queryName}
                     stageSummary={querySummary?.stages[0].items || []}
                     isOnlyStage={querySummary?.stages.length === 1}
-                    topValues={[]}
+                    topValues={topValues}
                   />
                 </Popover>
               </div>
@@ -89,10 +79,10 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 onClick={() => queryModifiers.clearQuery()}
                 color="dimension"
               />
-              <ActionIcon
-                action="run"
+              <RunIcon
+                width="80px"
                 onClick={() => runQuery()}
-                color="dimension"
+                style={{ cursor: "pointer" }}
               />
             </>
           )}
@@ -106,7 +96,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 queryModifiers={queryModifiers}
                 stagePath={undefined}
                 queryName={queryName}
-                topValues={[]}
+                topValues={topValues}
               />
             )}
           </QueryBarInner>
@@ -119,6 +109,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         malloy={queryMalloy}
         onDrill={queryModifiers.onDrill}
         isRunning={isRunning}
+        queryTitle={queryTitle}
       />
     </Outer>
   );

@@ -70,7 +70,6 @@ export async function datasets(): Promise<explore.Dataset[]> {
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
   const samples = JSON.parse(response) as { datasets: SampleEntry[] };
-  console.log(samples);
   return await Promise.all(
     samples.datasets.map(async (sample: SampleEntry) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
@@ -194,13 +193,9 @@ export async function search(
 }
 
 export async function topValues(
-  source: malloy.StructDef,
-  _analysisPath: string
+  model: malloy.ModelDef,
+  source: malloy.StructDef
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
   const sourceName = source.as || source.name;
-  return RUNTIME._loadModelFromModelDef({
-    name: "_generated",
-    contents: { [sourceName]: source },
-    exports: [],
-  }).searchValueMap(sourceName);
+  return RUNTIME._loadModelFromModelDef(model).searchValueMap(sourceName);
 }

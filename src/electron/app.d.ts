@@ -45,8 +45,7 @@ export interface MalloyElectronAPI {
   ) => Promise<SearchIndexResult[] | undefined | Error>;
   openLink: (url: string) => void;
   topValues: (
-    source: StructDef,
-    analysisPath: string
+    source: StructDef
   ) => Promise<SearchValueMapResult[] | undefined | Error>;
   openDirectory: () => Promise<string | undefined | Error>;
 }

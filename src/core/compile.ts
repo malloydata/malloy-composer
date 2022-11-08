@@ -191,10 +191,9 @@ export async function compileMeasure(
 export type NamedQuery = Query & { as?: string; name?: string };
 
 export async function compileQuery(
-  source: StructDef,
+  modelDef: ModelDef,
   query: string
 ): Promise<NamedQuery> {
-  const modelDef = modelDefForSource(source);
   const model = await _compileModel(modelDef, query);
   const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
   const match = query.match(regex);

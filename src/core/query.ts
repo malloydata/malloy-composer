@@ -111,6 +111,10 @@ export class QueryBuilder extends SourceUtils {
     this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
   }
 
+  public getWriter(): QueryWriter {
+    return new QueryWriter(this.query, this._source);
+  }
+
   getName(): string {
     return this.query.name;
   }

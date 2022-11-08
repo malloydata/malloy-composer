@@ -157,7 +157,7 @@ export function useQueryBuilder(
       modifyQuery((qb) => qb.addLimit(topLevel, 10), true, true);
     }
     const query = queryBuilder.current.getQuery();
-    const writer = new QueryWriter(query, source);
+    const writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       runQueryRaw(queryString, query.name);
@@ -215,7 +215,7 @@ export function useQueryBuilder(
         }
         if (newQueryString) {
           try {
-            const query = await compileQuery(source, newQueryString);
+            const query = await compileQuery(model, newQueryString);
             modifyQuery((qb) => qb.setQuery(query), true);
             if (params.has("run") && params.get("page") === "query") {
               runQuery();

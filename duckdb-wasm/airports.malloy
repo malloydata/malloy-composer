@@ -19,3 +19,5 @@ source: airports is table('duckdb:airports.parquet') {
       avg_elevation
   }
 }
+
+source: airports2 is airports {} 

@@ -321,4 +321,8 @@ const QueryLinkTitleRow = styled.div`
   align-items: center;
 `;
 
-const QueryLinkDescription = styled.div``;
+const QueryLinkDescription = styled.div`
+  color: #696969;
+  margin-left: 32px;
+  font-size: 14px;
+`;

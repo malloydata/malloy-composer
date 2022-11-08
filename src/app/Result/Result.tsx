@@ -30,6 +30,7 @@ interface ResultProps {
   malloy: string;
   onDrill: (filters: malloy.FilterExpression[]) => void;
   isRunning: boolean;
+  queryTitle?: string;
 }
 
 export const Result: React.FC<ResultProps> = ({
@@ -39,6 +40,7 @@ export const Result: React.FC<ResultProps> = ({
   malloy,
   onDrill,
   isRunning,
+  queryTitle,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedMalloy, setHighlightedMalloy] = useState<HTMLElement>();
@@ -58,7 +60,10 @@ export const Result: React.FC<ResultProps> = ({
   }, [malloy]);
 
   useEffect(() => {
-    if (result === previousResult && dataStyles === previousDataStyles) {
+    if (
+      result === previousResult &&
+      JSON.stringify(dataStyles) === JSON.stringify(previousDataStyles)
+    ) {
       return;
     }
     setRendering(false);
@@ -115,28 +120,34 @@ export const Result: React.FC<ResultProps> = ({
   return (
     <OuterDiv>
       <ResultHeader>
-        <ViewTab onClick={() => setView("malloy")} selected={view === "malloy"}>
-          Malloy
-        </ViewTab>
-        <ViewTab onClick={() => setView("sql")} selected={view === "sql"}>
-          SQL
-        </ViewTab>
-        <ViewTab onClick={() => setView("html")} selected={view === "html"}>
-          Results
-        </ViewTab>
-        <DownloadMenu
-          disabled={!result || html === undefined || rendering}
-          onDownloadHTML={() =>
-            downloadFile(html?.outerHTML || "", "text/html", "result.html")
-          }
-          onDownloadJSON={() =>
-            downloadFile(
-              JSON.stringify(result?.data.toObject() || {}, null, 2),
-              "application/json",
-              "result.json"
-            )
-          }
-        />
+        <ResultHeaderSection>{queryTitle}</ResultHeaderSection>
+        <ResultHeaderSection>
+          <ViewTab
+            onClick={() => setView("malloy")}
+            selected={view === "malloy"}
+          >
+            Malloy
+          </ViewTab>
+          <ViewTab onClick={() => setView("sql")} selected={view === "sql"}>
+            SQL
+          </ViewTab>
+          <ViewTab onClick={() => setView("html")} selected={view === "html"}>
+            Results
+          </ViewTab>
+          <DownloadMenu
+            disabled={!result || html === undefined || rendering}
+            onDownloadHTML={() =>
+              downloadFile(html?.outerHTML || "", "text/html", "result.html")
+            }
+            onDownloadJSON={() =>
+              downloadFile(
+                JSON.stringify(result?.data.toObject() || {}, null, 2),
+                "application/json",
+                "result.json"
+              )
+            }
+          />
+        </ResultHeaderSection>
       </ResultHeader>
       <ContentDiv>
         {isRunning && view !== "malloy" && <LoadingSpinner text="Running" />}
@@ -186,7 +197,7 @@ const ContentDiv = styled(PageContent)`
 
 const ResultHeader = styled(PageHeader)`
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0px 20px;
   flex-direction: row;
 `;
@@ -209,4 +220,11 @@ const PreWrapper = styled.div`
   padding: 0 15px;
   font-family: "Roboto Mono";
   font-size: 14px;
+`;
+
+const ResultHeaderSection = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 11pt;
+  color: #4d4d4d;
 `;

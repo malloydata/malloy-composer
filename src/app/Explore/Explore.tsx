@@ -82,6 +82,11 @@ export const Explore: React.FC = () => {
     if (!fromURL) {
       params.set("source", sourceName);
       params.set("model", dataset.name);
+      params.set("page", "about");
+      params.delete("query");
+      params.delete("run");
+      params.delete("name");
+      clearQuery();
       setParams(params);
     }
     registerNewSource(dataset.model.contents[sourceName] as StructDef);
@@ -109,20 +114,26 @@ export const Explore: React.FC = () => {
     loadDataset();
   }, [params, datasets]);
 
-  const loadQueryLink = (
+  const loadQueryLink = async (
     model: string,
     query: string,
     name?: string,
     description?: string,
     renderer?: string
   ) => {
+    const newDataset = datasets.find((dataset) => dataset.name === model);
+    if (newDataset === undefined) {
+      throw new Error("Bad model");
+    }
+    const sourceName = await getSourceNameForQuery(newDataset.model, query);
+    setSourceName(sourceName);
     params.set("model", model);
     params.set("source", sourceName);
     params.set("query", query);
     params.set("page", "query");
     params.set("run", "true");
     params.set("name", name);
-    params.set("description", description);
+    // params.set("description", description);
     setParams(params);
   };
 
@@ -130,6 +141,9 @@ export const Explore: React.FC = () => {
     REMOVE_FIELDS: () => clearQuery(),
     RUN_QUERY: runQuery,
   };
+
+  const topValues = useTopValues(dataset, source);
+  console.log({topValues});
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -142,18 +156,7 @@ export const Explore: React.FC = () => {
             setSourceName={setDatasetSource}
             sourceName={sourceName}
           />
-          {source && (
-            <span>
-              {params.get("name")} / {params.get("description")}
-            </span>
-          )}
         </HeaderLeft>
-        {/* {!isRunning && <Button onClick={() => runQuery()}>Run</Button>}
-        {isRunning && (
-          <Button onClick={() => clearResult()} color="primary" outline={true}>
-            Cancel
-          </Button>
-        )} */}
       </Header>
       <Body>
         <Content>
@@ -180,8 +183,9 @@ export const Explore: React.FC = () => {
               {section === "query" && (
                 <ExploreQueryEditor
                   source={source}
+                  datasets={datasets}
                   queryModifiers={queryModifiers}
-                  topValues={[]} // TODO
+                  topValues={topValues}
                   queryName={queryName}
                   querySummary={querySummary}
                   queryMalloy={queryMalloy}
@@ -189,6 +193,7 @@ export const Explore: React.FC = () => {
                   result={result}
                   isRunning={isRunning}
                   runQuery={runQuery}
+                  queryTitle={params.get("name")}
                 />
               )}
               {section === "about" && (
