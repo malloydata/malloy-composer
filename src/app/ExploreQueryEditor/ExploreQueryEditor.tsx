@@ -31,9 +31,11 @@ interface ExploreQueryEditorProps {
   queryTitle?: string;
   datasets: Dataset[];
   model: ModelDef;
+  dirty: boolean;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
+  dirty,
   model,
   source,
   queryName,
@@ -80,10 +82,10 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 onClick={() => queryModifiers.clearQuery()}
                 color="dimension"
               />
-              <RunIcon
+              <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}
-                style={{ cursor: "pointer" }}
+                className={isRunning ? "running" : dirty ? "dirty" : "clean"}
               />
             </>
           )}
@@ -149,4 +151,20 @@ const SidebarHeader = styled(PageHeader)`
   gap: 20px;
   justify-content: center;
   align-items: center;
+`;
+
+const StyledRunIcon = styled(RunIcon)`
+  cursor: pointer;
+  &.running,
+  &.clean {
+    .backgroundfill {
+      fill: #e9e9e9;
+    }
+    .foregroundstroke {
+      stroke: #a7a7a7;
+    }
+    .foregroundfill {
+      fill: #a7a7a7;
+    }
+  }
 `;

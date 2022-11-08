@@ -41,6 +41,7 @@ interface UseQueryBuilderResult {
   dataStyles: DataStyles;
   error: Error | undefined;
   registerNewSource: (source: StructDef) => void;
+  dirty: boolean;
 }
 
 export interface QueryModifiers {
@@ -120,6 +121,7 @@ export function useQueryBuilder(
   const [error, setError] = useState<Error | undefined>();
   const [params, setParams] = useSearchParams();
   const [queryString, setQueryString] = useState("");
+  const [dirty, setDirty] = useState(false);
 
   const dataStyles = parseDataStyles(params.get("styles"));
 
@@ -163,6 +165,7 @@ export function useQueryBuilder(
       runQueryRaw(queryString, query.name);
       params.set("run", "true");
       setParams(params, { replace: true });
+      setDirty(false);
     }
   };
 
@@ -183,6 +186,7 @@ export function useQueryBuilder(
         setParams(params, { replace });
       }
       setQueryString(queryString);
+      setDirty(true);
     }
     if (!fromURL) {
       params.delete("run");
@@ -398,6 +402,7 @@ export function useQueryBuilder(
   };
 
   return {
+    dirty,
     queryBuilder,
     queryMalloy: queryString,
     queryName,

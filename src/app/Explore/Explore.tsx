@@ -60,6 +60,7 @@ export const Explore: React.FC = () => {
     result,
     registerNewSource,
     error,
+    dirty,
   } = useQueryBuilder(dataset?.model, sourceName);
 
   const model = dataset?.model;
@@ -176,6 +177,7 @@ export const Explore: React.FC = () => {
             <PageContainer>
               {section === "query" && (
                 <ExploreQueryEditor
+                  dirty={dirty}
                   model={model}
                   source={source}
                   datasets={datasets}
