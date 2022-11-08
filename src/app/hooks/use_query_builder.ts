@@ -226,12 +226,12 @@ export function useQueryBuilder(
         if (newQueryString) {
           try {
             const query = await compileQuery(model, newQueryString);
+            modifyQuery((qb) => qb.setQuery(query), true);
             const renderer = params.get("renderer") as RendererName;
             if (renderer) {
               params.delete("renderer");
               setDataStyle(query.name, renderer);
             }
-            modifyQuery((qb) => qb.setQuery(query), true);
             if (params.has("run") && params.get("page") === "query") {
               runQuery();
             }

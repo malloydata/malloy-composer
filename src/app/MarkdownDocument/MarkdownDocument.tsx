@@ -19,6 +19,7 @@ import { COLORS } from "../colors";
 import { openInBrowser } from "../data";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
+import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 
 interface MarkdownDocumentProps {
   content: string;
@@ -133,8 +134,8 @@ export const MarkdownNode: React.FC<{
           }}
         >
           <QueryLinkTitleRow>
-            <ActionIcon action="run" color="dimension" />
             {node.name}
+            <RunIcon width="80" height="22" />
           </QueryLinkTitleRow>
           <QueryLinkDescription>{node.description}</QueryLinkDescription>
         </QueryLink>
@@ -303,7 +304,7 @@ const QueryLink = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: #f4f4f4;
+    background-color: #f0f6ff;
   }
 `;
 
@@ -315,6 +316,5 @@ const QueryLinkTitleRow = styled.div`
 
 const QueryLinkDescription = styled.div`
   color: #696969;
-  margin-left: 32px;
   font-size: 14px;
 `;
