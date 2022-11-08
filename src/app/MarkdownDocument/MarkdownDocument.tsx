@@ -14,6 +14,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Markdown, parseMarkdown } from "../../core/markdown";
+import { ActionIcon } from "../ActionIcon";
 import { COLORS } from "../colors";
 import { openInBrowser } from "../data";
 import { DOMElement } from "../DOMElement";
@@ -22,9 +23,11 @@ import { highlightPre } from "../utils";
 interface MarkdownDocumentProps {
   content: string;
   loadQueryLink: (
-    modelPath: string,
-    sourceName: string,
-    queryName: string
+    model: string,
+    query: string,
+    name?: string,
+    description?: string,
+    renderer?: string
   ) => void;
 }
 
@@ -40,9 +43,11 @@ export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
 export const MarkdownNode: React.FC<{
   node: Markdown;
   loadQueryLink: (
-    modelPath: string,
-    sourceName: string,
-    queryName: string
+    model: string,
+    query: string,
+    name?: string,
+    description?: string,
+    renderer?: string
   ) => void;
 }> = ({ node, loadQueryLink }) => {
   const children = (node: { children: Markdown[] }) => (
@@ -124,14 +129,23 @@ export const MarkdownNode: React.FC<{
       return <hr />;
     case "malloyQueryLink":
       return (
-        <MarkdownLink
-          href="#"
+        <QueryLink
           onClick={() => {
-            loadQueryLink(node.model, node.source, node.query);
+            loadQueryLink(
+              node.model,
+              node.query,
+              node.name,
+              node.description,
+              node.renderer
+            );
           }}
         >
-          <code>{node.value}</code>
-        </MarkdownLink>
+          <QueryLinkTitleRow>
+            <ActionIcon action="run" color="dimension" />
+            {node.name}
+          </QueryLinkTitleRow>
+          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+        </QueryLink>
       );
   }
 };
@@ -283,4 +297,29 @@ const MarkdownPreWrapper = styled.div`
     padding: 10px;
     background-color: #fbfbfb;
   }
+`;
+
+const QueryLink = styled.div`
+  border: 1px solid #efefef;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: #fcfcfc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+`;
+
+const QueryLinkTitleRow = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`;
+
+const QueryLinkDescription = styled.div`
 `;

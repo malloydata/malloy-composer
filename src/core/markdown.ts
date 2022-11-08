@@ -163,19 +163,25 @@ export interface MalloyQueryLink {
   type: "malloyQueryLink";
   model: string;
   query: string;
-  source: string;
-  value: string;
+  name: string;
+  description: string;
+  renderer: string;
 }
 
 const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
   let linkMarker: Marker | undefined = undefined;
+  let savedModel = undefined;
   function transformer(tree: Node) {
     function doThing(node: Node): Markdown {
       const markdownNode = node as Markdown;
       if (markdownNode.type === "html") {
         const marker = commentMarker(markdownNode);
         if (marker) {
-          linkMarker = marker;
+          if (marker.name === "malloy-set-model") {
+            savedModel = marker.parameters?.model?.toString();
+          } else if (marker.name === "malloy-query") {
+            linkMarker = marker;
+          }
         }
         return markdownNode;
       } else if ("children" in markdownNode) {
@@ -185,15 +191,16 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
             doThing(child as Node)
           ),
         };
-      } else if (markdownNode.type === "inlineCode") {
+      } else if (markdownNode.type === "code") {
         const marker = linkMarker;
         if (marker) {
           linkMarker = undefined;
           return {
-            model: marker.parameters?.model?.toString() || "",
-            query: marker.parameters?.query?.toString() || "",
-            source: marker.parameters?.source?.toString() || "",
-            value: markdownNode.value,
+            model: marker.parameters?.model?.toString() || savedModel || "",
+            query: markdownNode.value,
+            name: marker.parameters?.name?.toString() || "",
+            description: marker.parameters?.description?.toString() || "",
+            renderer: marker.parameters?.renderer?.toString() || "",
             type: "malloyQueryLink",
           };
         } else {

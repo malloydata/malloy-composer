@@ -160,7 +160,7 @@ export function useQueryBuilder(
     if (!queryBuilder.current?.hasLimit(topLevel)) {
       // TODO magic number here: we run the query before we set this limit,
       //      and this limit just happens to be the default limit
-      addLimit(topLevel, 10);
+      modifyQuery((qb) => qb.addLimit(topLevel, 10), true);
     }
     const query = queryBuilder.current.getQuery();
     const writer = new QueryWriter(query, source);
@@ -182,6 +182,8 @@ export function useQueryBuilder(
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       if (!fromURL) {
+        params.delete("name");
+        params.delete("description");
         params.set("query", queryString);
         setParams(params);
       }

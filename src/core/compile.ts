@@ -187,8 +187,6 @@ export async function compileMeasure(
   return field;
 }
 
-type CheatyPreparedQuery = { _query: Query };
-
 // TODO get this from Malloy
 export type NamedQuery = Query & { as?: string; name?: string };
 
@@ -200,34 +198,20 @@ export async function compileQuery(
   const model = await _compileModel(modelDef, query);
   const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
   const match = query.match(regex);
-  const preparedQuery = match
+  let preparedQuery = match
     ? model.getPreparedQueryByName(match[1])
     : model.preparedQuery;
-  const compiledQuery = (preparedQuery as unknown as CheatyPreparedQuery)
-    ._query;
-  if (compiledQuery.pipeHead) {
-    const structRef = compiledQuery.structRef;
-    if (typeof structRef !== "string") {
-      throw new Error("Cannot run queries with complex struct refs");
-    }
-    const source = model._modelDef.contents[structRef] as StructDef;
-    // TODO LLOYD HOW
-    // TODO deal with turtleSegment/pipeHead filters?
-    const resolved = source.fields.find(
-      (field) => field.name === compiledQuery.pipeHead.name
-    );
-    if (resolved.type !== "turtle") {
-      throw new Error("Invalid query pipehead");
-    }
-    compiledQuery.pipeline = [...resolved.pipeline, ...compiledQuery.pipeline];
+  const defaultName = "new_query";
+  if (preparedQuery._query.pipeHead) {
+    preparedQuery = preparedQuery.getFlattenedQuery(defaultName);
   }
-  const as = "as" in compiledQuery ? (compiledQuery as any).as : undefined;
   const name =
-    "name" in compiledQuery ? (compiledQuery as any).name : undefined;
+    "as" in preparedQuery._query
+      ? preparedQuery._query.as || preparedQuery._query.name
+      : defaultName;
   return {
-    ...compiledQuery,
-    as,
-    name: name || "new_query",
+    ...preparedQuery._query,
+    name,
   };
 }
 

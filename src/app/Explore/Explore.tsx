@@ -111,14 +111,18 @@ export const Explore: React.FC = () => {
 
   const loadQueryLink = (
     model: string,
-    sourceName: string,
-    queryName: string
+    query: string,
+    name?: string,
+    description?: string,
+    renderer?: string
   ) => {
     params.set("model", model);
     params.set("source", sourceName);
-    params.set("query", `query: ${sourceName} -> ${queryName}`);
+    params.set("query", query);
     params.set("page", "query");
     params.set("run", "true");
+    params.set("name", name);
+    params.set("description", description);
     setParams(params);
   };
 
@@ -138,6 +142,11 @@ export const Explore: React.FC = () => {
             setSourceName={setDatasetSource}
             sourceName={sourceName}
           />
+          {source && (
+            <span>
+              {params.get("name")} / {params.get("description")}
+            </span>
+          )}
         </HeaderLeft>
         {/* {!isRunning && <Button onClick={() => runQuery()}>Run</Button>}
         {isRunning && (
