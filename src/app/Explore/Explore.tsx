@@ -105,8 +105,7 @@ export const Explore: React.FC = () => {
     sourceName: string,
     fromURL = false
   ) => {
-    // setDataset(dataset);
-    // setSourceName(sourceName);
+    registerNewSource(dataset.model.contents[sourceName] as StructDef);
     if (!fromURL) {
       params.set("source", sourceName);
       params.set("model", dataset.name);
@@ -115,18 +114,16 @@ export const Explore: React.FC = () => {
       params.delete("run");
       params.delete("name");
       params.delete("styles");
-      clearQuery();
+      clearQuery(true);
       newParams.current = params.toString();
       console.log("set params 6");
       setParams(params);
     }
-    registerNewSource(dataset.model.contents[sourceName] as StructDef);
   };
 
   useEffect(() => {
     const loadDataset = async () => {
       console.log({ params: params.toString(), newParams: newParams.current, change: params.toString() !== newParams.current  });
-      if (params.toString() === newParams.current) return;
       console.log(new Map(params.entries()));
       const model = params.get("model");
       const query = params.get("query")?.replace(/->\s*{\n}/g, "");
@@ -135,6 +132,7 @@ export const Explore: React.FC = () => {
       const page = params.get("page");
       console.log({ model, query, source, datasets});
       if (model && (query || source) && datasets) {
+        if (params.toString() === newParams.current) return;
         const newDataset = datasets.find((dataset) => dataset.name === model);
         if (newDataset === undefined) {
           throw new Error("Bad model");
@@ -233,14 +231,14 @@ export const Explore: React.FC = () => {
                 text="Sources"
                 icon="source"
                 selected={section === "sources"}
-                disabled={dataset?.readme == undefined}
+                disabled={datasets === undefined}
               ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("about")}
                 text="Home"
                 icon="about"
                 selected={section === "about"}
-                disabled={dataset?.readme == undefined}
+                disabled={dataset?.readme === undefined}
               ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("query")}
