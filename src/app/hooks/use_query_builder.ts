@@ -150,8 +150,10 @@ export function useQueryBuilder(
   } = useRunQuery(setError, model);
 
   const runQuery = () => {
+    let writer = queryBuilder.current.getWriter();
+    const summary = writer.getQuerySummary({}, dataStyles.current);
     const topLevel = {
-      stageIndex: querySummary ? querySummary.stages.length - 1 : 0,
+      stageIndex: summary ? summary.stages.length - 1 : 0,
     };
     setError(undefined);
     if (!queryBuilder.current?.hasLimit(topLevel)) {
@@ -160,12 +162,10 @@ export function useQueryBuilder(
       modifyQuery((qb) => qb.addLimit(topLevel, 10), true, true);
     }
     const query = queryBuilder.current.getQuery();
-    const writer = queryBuilder.current.getWriter();
+    writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       runQueryRaw(queryString, query.name);
-      // params.set("run", "true");
-      // setParams(params, { replace: true });
       setDirty(false);
     }
   };
@@ -181,12 +181,12 @@ export function useQueryBuilder(
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       if (!noURLUpdate) {
-        // params.delete("name");
-        // params.delete("description");
-        // params.set("query", queryString);
-        // setParams(params, { replace });
         updateQueryInURL(queryString, { run: noURLUpdate });
       }
+      setQueryString(queryString);
+      setDirty(true);
+    } else {
+      const queryString = writer.getQueryStringForModel();
       setQueryString(queryString);
       setDirty(true);
     }

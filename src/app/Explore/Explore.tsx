@@ -129,7 +129,7 @@ export const Explore: React.FC = () => {
       if (params.toString() === newParams.current) return;
       console.log(new Map(params.entries()));
       const model = params.get("model");
-      const query = params.get("query");
+      const query = params.get("query")?.replace(/->\s*{\n}/g, "");
       const source = params.get("source");
       const styles = params.get("styles");
       const page = params.get("page");
@@ -146,9 +146,7 @@ export const Explore: React.FC = () => {
           if (page !== "query") return;
           clearResult();
           const compiledQuery = await compileQuery(newDataset.model, query);
-          if (styles) {
-            queryModifiers.setDataStyles(JSON.parse(styles), true);
-          }
+          queryModifiers.setDataStyles(styles ? JSON.parse(styles) : {}, true);
           queryModifiers.setQuery(compiledQuery, true);
           if (params.has("run") && params.get("page") === "query") {
             runQuery();
