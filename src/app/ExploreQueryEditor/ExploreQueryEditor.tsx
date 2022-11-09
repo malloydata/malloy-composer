@@ -85,7 +85,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}
-                className={isRunning ? "running" : dirty ? "dirty" : "clean"}
+                className={isRunning ? "running" : queryMalloy === "" ? "blank" : dirty ? "dirty" : "clean"}
               />
             </>
           )}
@@ -156,7 +156,8 @@ const SidebarHeader = styled(PageHeader)`
 const StyledRunIcon = styled(RunIcon)`
   cursor: pointer;
   &.running,
-  &.clean {
+  &.clean,
+  &.blank {
     .backgroundfill {
       fill: #e9e9e9;
     }

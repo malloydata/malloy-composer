@@ -69,7 +69,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   fieldIndex,
   topValues,
   saveMeasure,
-  canSave,
   addOrderBy,
   orderByField,
   stagePath,
@@ -179,7 +178,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           id: "save_definition",
           label: "Save Measure",
           iconName: "save",
-          isEnabled: canSave,
+          isEnabled: false,
           iconColor: "measure",
           onClick: () => {
             saveMeasure && saveMeasure();

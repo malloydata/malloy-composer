@@ -91,7 +91,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   addStage,
   topValues,
   saveQuery,
-  canSave,
   rename,
 }) => {
   return (
@@ -273,7 +272,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           id: "save_definition",
           label: "Save Query",
           iconName: "save",
-          isEnabled: canSave,
+          isEnabled: false,
           iconColor: "query",
           onClick: saveQuery,
         },

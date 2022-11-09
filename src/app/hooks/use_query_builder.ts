@@ -17,6 +17,7 @@ import {
   StructDef,
   Result as MalloyResult,
   ModelDef,
+  NamedQuery,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useEffect, useRef, useState } from "react";
@@ -30,7 +31,7 @@ interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
   queryMalloy: string;
   queryName: string;
-  clearQuery: () => void;
+  clearQuery: (noURLUpdate?: boolean) => void;
   runQuery: () => void;
   isRunning: boolean;
   clearResult: () => void;
@@ -60,7 +61,8 @@ export interface QueryModifiers {
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
-  setDataStyle: (name: string, renderer: RendererName | undefined) => void;
+  setDataStyle: (name: string, renderer: RendererName | undefined, noURLUpdate?: boolean) => DataStyles;
+  setDataStyles: (styles: DataStyles, noURLUpdate?: boolean) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
   loadQuery: (queryPath: string) => void;
   updateFieldOrder: (stagePath: StagePath, newOrdering: number[]) => void;
@@ -107,31 +109,30 @@ export interface QueryModifiers {
     direction: "asc" | "desc" | undefined
   ) => void;
   removeStage: (stagePath: StagePath) => void;
-  clearQuery: () => void;
+  clearQuery: (noURLUpdate?: boolean) => void;
   onDrill: (filters: FilterExpression[]) => void;
+  setQuery: (query: NamedQuery, noURLUpdate?: boolean) => void;
 }
 
 export function useQueryBuilder(
   model?: ModelDef,
-  sourceName?: string
+  sourceName?: string,
+  updateQueryInURL?: (query: string | undefined, options: { run: boolean }) => void
 ): UseQueryBuilderResult {
-  const source =
-    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
-  const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(source));
+  const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
-  const [params, setParams] = useSearchParams();
+  // const [params, setParams] = useSearchParams();
   const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
 
-  const dataStyles = parseDataStyles(params.get("styles"));
+  const dataStyles = useRef<DataStyles>({});
 
   const querySummary = (() => {
-    if (source === undefined) {
+    if (queryBuilder.current.getSource() === undefined) {
       return undefined;
     }
-    const query = queryBuilder.current.getQuery();
-    const writer = new QueryWriter(query, source);
-    const summary = writer.getQuerySummary({}, dataStyles);
+    const writer = queryBuilder.current.getWriter();
+    const summary = writer.getQuerySummary({}, dataStyles.current);
     return summary;
   })();
 
@@ -139,7 +140,7 @@ export function useQueryBuilder(
     queryBuilder.current.updateSource(source);
   };
 
-  const queryName = source ? queryBuilder.current.getQuery().name : undefined;
+  const queryName = queryBuilder.current.getQuery()?.name;
 
   const {
     result,
@@ -163,93 +164,93 @@ export function useQueryBuilder(
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       runQueryRaw(queryString, query.name);
-      params.set("run", "true");
-      setParams(params, { replace: true });
+      // params.set("run", "true");
+      // setParams(params, { replace: true });
       setDirty(false);
     }
   };
 
   const modifyQuery = (
     modify: (queryBuilder: QueryBuilder) => void,
-    fromURL = false,
+    noURLUpdate = false,
     replace = false
   ) => {
+    console.log("Modify query: source", queryBuilder.current.getSource());
     modify(queryBuilder.current);
-    const query = queryBuilder.current.getQuery();
-    const writer = new QueryWriter(query, source);
+    const writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
-      if (!fromURL) {
-        params.delete("name");
-        params.delete("description");
-        params.set("query", queryString);
-        setParams(params, { replace });
+      if (!noURLUpdate) {
+        // params.delete("name");
+        // params.delete("description");
+        // params.set("query", queryString);
+        // setParams(params, { replace });
+        updateQueryInURL(queryString, { run: noURLUpdate });
       }
       setQueryString(queryString);
       setDirty(true);
     }
-    if (!fromURL) {
-      params.delete("run");
-      setParams(params, { replace: true });
-    }
   };
 
   const clearURL = (replace = true) => {
-    params.delete("query");
-    params.delete("styles");
-    params.delete("name");
-    params.delete("description");
-    params.delete("run");
-    setParams(params, { replace });
+    // params.delete("query");
+    // params.delete("styles");
+    // params.delete("name");
+    // params.delete("description");
+    // params.delete("run");
+    // setParams(params, { replace });
+    updateQueryInURL(undefined, { run: false });
   };
 
-  const clearQuery = (fromURL = false, replace = false) => {
-    setDataStyle(queryName, undefined);
+  const clearQuery = (noURLUpdate = false, replace = false) => {
+    setDataStyles({}, noURLUpdate);
     clearResult();
-    clearURL(replace);
-    modifyQuery((qb) => qb.clearQuery(), fromURL);
+    updateQueryInURL(undefined, { run: noURLUpdate });
+    modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
+    setQueryString("");
   };
 
-  useEffect(() => {
-    const setQuery = async () => {
-      // Note the `replace` here is sort of an intersting hack. If you create a new stage
-      // but don't add any fields to it, then refresh, the page fails to load the query.
-      // So we look for `-> { }` (with the newline in it that the Composer generates)
-      // And get rid of it. There are not very many cases where you create invalid malloy code
-      // when using the Composer, so we just special case this one for now... Someday we may want
-      // to do something different.
-      const newQueryString = params.get("query")?.replace(/->\s\{\n\}/g, "");
-      if (source) {
-        if (newQueryString === queryString) {
-          return;
-        }
-        if (newQueryString) {
-          try {
-            const query = await compileQuery(model, newQueryString);
-            modifyQuery((qb) => qb.setQuery(query), true);
-            const renderer = params.get("renderer") as RendererName;
-            if (renderer) {
-              params.delete("renderer");
-              setDataStyle(query.name, renderer, true);
-            }
-            if (params.has("run") && params.get("page") === "query") {
-              runQuery();
-            }
-            setQueryString(newQueryString);
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(error);
-            clearResult();
-            clearURL(true);
-            setError(error);
-          }
-        } else {
-          clearQuery(true);
-        }
-      }
-    };
-    setQuery();
-  }, [params, source]);
+  // useEffect(() => {
+  //   const setQuery = async () => {
+  //     console.log("NEW PARAMS", new Map(params.entries()));
+  //     // Note the `replace` here is sort of an intersting hack. If you create a new stage
+  //     // but don't add any fields to it, then refresh, the page fails to load the query.
+  //     // So we look for `-> { }` (with the newline in it that the Composer generates)
+  //     // And get rid of it. There are not very many cases where you create invalid malloy code
+  //     // when using the Composer, so we just special case this one for now... Someday we may want
+  //     // to do something different.
+  //     const newQueryString = params.get("query")?.replace(/->\s\{\n\}/g, "");
+  //     if (queryBuilder.current.getSource()) {
+  //       if (newQueryString === queryString) {
+  //         return;
+  //       }
+  //       if (newQueryString) {
+  //         try {
+  //           const query = await compileQuery(model, newQueryString);
+  //           modifyQuery((qb) => qb.setQuery(query), true);
+  //           const renderer = params.get("renderer") as RendererName;
+  //           if (renderer) {
+  //             params.delete("renderer");
+  //             setDataStyle(query.name, renderer, true);
+  //           }
+  //           if (params.has("run") && params.get("page") === "query") {
+  //             runQuery();
+  //           }
+  //           setQueryString(newQueryString);
+  //         } catch (error) {
+  //           // eslint-disable-next-line no-console
+  //           console.error(error);
+  //           clearResult();
+  //           clearURL(true);
+  //           setError(error);
+  //         }
+  //       } else {
+  //         clearQuery(true);
+  //       }
+  //     }
+  //   };
+  //   setQuery();
+  // }, [params]);
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
     modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));
@@ -343,6 +344,10 @@ export function useQueryBuilder(
     modifyQuery((qb) => qb.addNewField(stagePath, dimension));
   };
 
+  const setQuery = (query: NamedQuery, noURLUpdate = false) => {
+    modifyQuery((qb) => qb.setQuery(query), noURLUpdate);
+  };
+
   const editDimension = (
     stagePath: StagePath,
     fieldIndex: number,
@@ -367,7 +372,7 @@ export function useQueryBuilder(
 
   const replaceWithDefinition = (stagePath: StagePath, fieldIndex: number) => {
     modifyQuery((qb) =>
-      qb.replaceWithDefinition(stagePath, fieldIndex, source)
+      qb.replaceWithDefinition(stagePath, fieldIndex)
     );
   };
 
@@ -386,20 +391,26 @@ export function useQueryBuilder(
     });
   };
 
-  const setDataStyle = (name: string, renderer: RendererName | undefined, fromURL = false) => {
-    modifyQuery(() => {
-      const newDataStyles = { ...dataStyles };
-      if (renderer === undefined) {
-        if (name in newDataStyles) {
-          delete newDataStyles[name];
-        }
-      } else {
-        newDataStyles[name] = { renderer };
+  const setDataStyle = (name: string, renderer: RendererName | undefined, noURLUpdate = false) => {
+    const newDataStyles = { ...dataStyles.current };
+    if (renderer === undefined) {
+      if (name in newDataStyles) {
+        delete newDataStyles[name];
       }
-
-      params.set("styles", JSON.stringify(newDataStyles));
-    }, fromURL);
+    } else {
+      newDataStyles[name] = { renderer };
+    }
+    modifyQuery(() => {
+      dataStyles.current = newDataStyles;
+    }, noURLUpdate);
+    return newDataStyles;
   };
+
+  const setDataStyles = (styles: DataStyles, noURLUpdate = false) => {
+    modifyQuery(() => {
+      dataStyles.current = styles;
+    }, noURLUpdate);
+  }
 
   return {
     dirty,
@@ -410,13 +421,15 @@ export function useQueryBuilder(
     runQuery,
     isRunning,
     clearResult,
-    source,
+    source: queryBuilder.current.getSource(),
     querySummary,
-    dataStyles,
+    dataStyles: dataStyles.current,
     result,
     error,
     registerNewSource,
     queryModifiers: {
+      setDataStyles,
+      setQuery,
       addFilter,
       toggleField,
       addLimit,

@@ -18,7 +18,7 @@ export const MalloyLogo: React.FC = () => {
     <img
       src={logoSrc}
       alt="Malloy"
-      style={{ height: "30px", marginRight: "12px" }}
+      style={{ height: "43px", width: "43px", margin: "10px" }}
     />
   );
 };

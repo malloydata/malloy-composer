@@ -73,7 +73,6 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   editDimension,
   definition,
   saveDimension,
-  canSave,
   filterField,
   filterFieldPath,
   addFilter,
@@ -204,7 +203,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           id: "save_definition",
           label: "Save Dimension",
           iconName: "save",
-          isEnabled: canSave,
+          isEnabled: false,
           iconColor: "dimension",
           onClick: () => {
             saveDimension && saveDimension();

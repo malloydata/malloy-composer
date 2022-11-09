@@ -29,7 +29,7 @@ import {
   StreamingConnection,
   StructDef,
   URLReader,
-  Query,
+  NamedQuery,
 } from "@malloydata/malloy";
 
 class DummyFiles implements URLReader {
@@ -187,9 +187,6 @@ export async function compileMeasure(
   return field;
 }
 
-// TODO get this from Malloy
-export type NamedQuery = Query & { as?: string; name?: string };
-
 export async function compileQuery(
   modelDef: ModelDef,
   query: string
@@ -210,6 +207,7 @@ export async function compileQuery(
       : defaultName;
   return {
     ...preparedQuery._query,
+    type: "query",
     name,
   };
 }

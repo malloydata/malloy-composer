@@ -11,9 +11,9 @@
  * GNU General Public License for more details.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Dataset } from "../../types";
+import { Dataset, RendererName } from "../../types";
 import { useDatasets } from "../data/use_datasets";
 import { PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
@@ -23,12 +23,15 @@ import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
 import { useQueryBuilder } from "../hooks";
 import { ExploreQueryEditor } from "../ExploreQueryEditor";
-import { getSourceNameForQuery } from "../../core/compile";
+import { compileQuery, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
+import { ActionIcon } from "../ActionIcon";
+import { ListNest } from "../ListNest";
+import { FieldButton } from "../FieldButton";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -36,15 +39,44 @@ const KEY_MAP = {
 };
 
 export const Explore: React.FC = () => {
-  const [dataset, setDataset] = useState<Dataset | undefined>();
-  const [sourceName, setSourceName] = useState<string | undefined>();
   const datasets = useDatasets();
-
   const [params, setParams] = useSearchParams();
+  const dataset = datasets?.find(dataset => dataset.name === params.get("model"));
+  const sourceName = params.get("source");
+  const newParams = useRef("");
+
+  const updateQueryInURL = (newQuery: string | undefined, { run }: { run: boolean }) => {
+    const oldQuery = params.get("query") || undefined;
+    console.log("updateQueryInURL", { oldQuery, newQuery, change: newQuery !== oldQuery });
+    if (oldQuery === newQuery) {
+      return;
+    }
+    if (newQuery === undefined) {
+      params.delete("query");
+    } else {
+      params.set("query", newQuery);
+    }
+    if (run) {
+      params.set("run", "true");
+    } else {
+      params.delete("run");
+    }
+    newParams.current = params.toString();
+    console.log("set params 4");
+    setParams(params);
+  };
 
   const section = params.get("page") || "query";
   const setSection = (section: string) => {
     params.set("page", section);
+    if (section !== "query") {
+      params.delete("query");
+      params.delete("run");
+      params.delete("name");
+      params.delete("styles");
+    }
+    console.log("set params 5");
+    newParams.current = params.toString();
     setParams(params);
   };
 
@@ -52,6 +84,7 @@ export const Explore: React.FC = () => {
     queryMalloy,
     queryName,
     clearQuery,
+    clearResult,
     runQuery,
     isRunning,
     queryModifiers,
@@ -61,7 +94,7 @@ export const Explore: React.FC = () => {
     registerNewSource,
     error,
     dirty,
-  } = useQueryBuilder(dataset?.model, sourceName);
+  } = useQueryBuilder(dataset?.model, sourceName, updateQueryInURL);
 
   const model = dataset?.model;
   const source =
@@ -72,8 +105,8 @@ export const Explore: React.FC = () => {
     sourceName: string,
     fromURL = false
   ) => {
-    setDataset(dataset);
-    setSourceName(sourceName);
+    // setDataset(dataset);
+    // setSourceName(sourceName);
     if (!fromURL) {
       params.set("source", sourceName);
       params.set("model", dataset.name);
@@ -81,8 +114,10 @@ export const Explore: React.FC = () => {
       params.delete("query");
       params.delete("run");
       params.delete("name");
-      params.delete("renderer");
+      params.delete("styles");
       clearQuery();
+      newParams.current = params.toString();
+      console.log("set params 6");
       setParams(params);
     }
     registerNewSource(dataset.model.contents[sourceName] as StructDef);
@@ -90,21 +125,53 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     const loadDataset = async () => {
+      console.log({ params: params.toString(), newParams: newParams.current, change: params.toString() !== newParams.current  });
+      if (params.toString() === newParams.current) return;
+      console.log(new Map(params.entries()));
       const model = params.get("model");
       const query = params.get("query");
       const source = params.get("source");
+      const styles = params.get("styles");
+      const page = params.get("page");
+      console.log({ model, query, source, datasets});
       if (model && (query || source) && datasets) {
-        const isDatasetDifferent = !dataset || dataset.name !== model;
-        const isSourceDifferent = source !== sourceName;
-        if (isDatasetDifferent || isSourceDifferent) {
-          const newDataset = datasets.find((dataset) => dataset.name === model);
-          if (newDataset === undefined) {
-            throw new Error("Bad model");
-          }
-          const sourceName =
-            source || (await getSourceNameForQuery(newDataset.model, query));
-          setDatasetSource(newDataset, sourceName, true);
+        const newDataset = datasets.find((dataset) => dataset.name === model);
+        if (newDataset === undefined) {
+          throw new Error("Bad model");
         }
+        const sourceName =
+          source || (await getSourceNameForQuery(newDataset.model, query));
+        registerNewSource(newDataset.model.contents[sourceName] as StructDef);
+        if (query) {
+          if (page !== "query") return;
+          clearResult();
+          const compiledQuery = await compileQuery(newDataset.model, query);
+          if (styles) {
+            queryModifiers.setDataStyles(JSON.parse(styles), true);
+          }
+          queryModifiers.setQuery(compiledQuery, true);
+          if (params.has("run") && params.get("page") === "query") {
+            runQuery();
+          }
+        } else {
+          params.delete("query");
+          params.delete("run");
+          params.delete("name");
+          params.delete("styles");
+          clearQuery(true);
+        }
+        newParams.current = params.toString();
+        console.log("set params 7");
+      } else if (datasets && !dataset) {
+        const newDataset = datasets[0];
+        // setDataset(newDataset);
+        params.set("model", newDataset.name);
+        if (newDataset.readme) {
+          params.set("page", "about");
+        }
+        newParams.current = params.toString();
+        console.log("set params 1");
+        setParams(params);
       }
     };
     loadDataset();
@@ -126,48 +193,62 @@ export const Explore: React.FC = () => {
     params.set("query", query);
     params.set("page", "query");
     params.set("run", "true");
-    params.set("renderer", renderer);
     params.set("name", name);
+    registerNewSource(newDataset.model.contents[sourceName] as StructDef);
+    const compiledQuery = await compileQuery(newDataset.model, query);
+    queryModifiers.setQuery(compiledQuery, true);
+    if (renderer) {
+      const styles = queryModifiers.setDataStyle(compiledQuery.name, renderer as RendererName, true);
+      params.delete("renderer");
+      params.set("styles", JSON.stringify(styles));
+    }
+    runQuery();
+    newParams.current = params.toString();
+    console.log("set params 2");
     setParams(params);
-    setSourceName(sourceName);
+  };
+
+  const runQueryAction = () => {
+    runQuery();
+    params.set("run", "true");
+    newParams.current = params.toString();
+    console.log("set params 3");
+    setParams(params, { replace: true });
   };
 
   const handlers = {
     REMOVE_FIELDS: () => clearQuery(),
-    RUN_QUERY: runQuery,
+    RUN_QUERY: runQueryAction,
   };
 
   const topValues = useTopValues(dataset, source);
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
-      <Header>
-        <HeaderLeft>
-          <MalloyLogo />
-          <DatasetPicker
-            datasets={datasets}
-            dataset={dataset}
-            setSourceName={setDatasetSource}
-            sourceName={sourceName}
-          />
-        </HeaderLeft>
-      </Header>
       <Body>
         <Content>
           <Channel>
             <ChannelTop>
+              <MalloyLogo />
+              <ChannelButton
+                onClick={() => setSection("sources")}
+                text="Sources"
+                icon="source"
+                selected={section === "sources"}
+                disabled={dataset?.readme == undefined}
+              ></ChannelButton>
+              <ChannelButton
+                onClick={() => setSection("about")}
+                text="Home"
+                icon="about"
+                selected={section === "about"}
+                disabled={dataset?.readme == undefined}
+              ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("query")}
                 text="Query"
                 icon="query"
                 selected={section === "query"}
-              ></ChannelButton>
-              <ChannelButton
-                onClick={() => setSection("about")}
-                text="About"
-                icon="about"
-                selected={section === "about"}
-                disabled={dataset?.readme == undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom></ChannelBottom>
@@ -188,7 +269,7 @@ export const Explore: React.FC = () => {
                   dataStyles={dataStyles}
                   result={result}
                   isRunning={isRunning}
-                  runQuery={runQuery}
+                  runQuery={runQueryAction}
                   queryTitle={params.get("name")}
                 />
               )}
@@ -203,6 +284,48 @@ export const Explore: React.FC = () => {
                       loadQueryLink={loadQueryLink}
                     />
                   )}
+                </PageContent>
+              )}
+              {section === "sources" && (
+                <PageContent>
+                  {datasets &&
+                    datasets.map((dataset) => {
+                      const sources = Object.entries(dataset.model.contents)
+                        .map(([name, value]) => ({
+                          name,
+                          source: value,
+                        }))
+                        .filter((thing) => thing.source.type === "struct") as {
+                        name: string;
+                        source: StructDef;
+                      }[];
+                      return (
+                        <div key={dataset.id}>
+                          <FieldButton
+                            icon={<ActionIcon action="open-directory" color="other" />}
+                            name={dataset.name}
+                            color="other"
+                          />
+                          <ListNest>
+                            {sources.map((entry) => {
+                              return (
+                                <FieldButton
+                                  key={entry.name}
+                                  icon={
+                                    <ActionIcon action="analysis" color="dimension" />
+                                  }
+                                  onClick={() => {
+                                    setDatasetSource(dataset, entry.name);
+                                  }}
+                                  name={entry.name}
+                                  color="dimension"
+                                />
+                              );
+                            })}
+                          </ListNest>
+                        </div>
+                      );
+                    })}
                 </PageContent>
               )}
               <ErrorMessage error={error} />
@@ -257,12 +380,14 @@ const Channel = styled.div`
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
   justify-content: space-between;
+  align-items: center;
 `;
 
 const ChannelTop = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: center;
 `;
 
 const ChannelBottom = styled.div`
@@ -287,7 +412,10 @@ const HeaderLeft = styled.div`
   gap: 5px;
 `;
 
-const Page = styled(Content)``;
+const Page = styled(Content)`
+  margin-top: 10px;
+  height: unset;
+`;
 
 const RightChannel = styled.div`
   width: 10px;

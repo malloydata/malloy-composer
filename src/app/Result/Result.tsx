@@ -120,7 +120,7 @@ export const Result: React.FC<ResultProps> = ({
   return (
     <OuterDiv>
       <ResultHeader>
-        <ResultHeaderSection>{queryTitle}</ResultHeaderSection>
+        <ResultHeaderSection><QueryTitle>{queryTitle}</QueryTitle></ResultHeaderSection>
         <ResultHeaderSection>
           <ViewTab
             onClick={() => setView("malloy")}
@@ -200,6 +200,7 @@ const ResultHeader = styled(PageHeader)`
   justify-content: space-between;
   padding: 0px 20px;
   flex-direction: row;
+  width: auto;
 `;
 
 const ViewTab = styled.div<{
@@ -227,4 +228,8 @@ const ResultHeaderSection = styled.div`
   align-items: center;
   font-size: 11pt;
   color: #4d4d4d;
+`;
+
+const QueryTitle = styled.div`
+  font-weight: bold;
 `;

@@ -34,10 +34,9 @@ import {
   StructDef,
   TurtleDef,
   FieldTypeDef,
-  Query,
+  NamedQuery,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
-import { NamedQuery } from "./compile";
 
 class SourceUtils {
   constructor(protected _source: StructDef | undefined) {}
@@ -47,9 +46,6 @@ class SourceUtils {
   }
 
   getSource() {
-    if (this._source === undefined) {
-      throw new Error("Source has not been set");
-    }
     return this._source;
   }
 
@@ -631,8 +627,11 @@ export class QueryBuilder extends SourceUtils {
   replaceWithDefinition(
     stagePath: StagePath,
     fieldIndex: number,
-    structDef: StructDef
+    structDef?: StructDef
   ): void {
+    if (structDef === undefined) {
+      structDef = this._source;
+    }
     const stage = this.stageAtPath(stagePath);
     const field = stage.fields[fieldIndex];
     if (typeof field !== "string") {

@@ -131,6 +131,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              model={model}
               topValues={topValues}
               source={source}
               addFilter={(filter, as) =>
