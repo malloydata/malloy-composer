@@ -230,7 +230,7 @@ export function useQueryBuilder(
             const renderer = params.get("renderer") as RendererName;
             if (renderer) {
               params.delete("renderer");
-              setDataStyle(query.name, renderer);
+              setDataStyle(query.name, renderer, true);
             }
             if (params.has("run") && params.get("page") === "query") {
               runQuery();
@@ -386,7 +386,7 @@ export function useQueryBuilder(
     });
   };
 
-  const setDataStyle = (name: string, renderer: RendererName | undefined) => {
+  const setDataStyle = (name: string, renderer: RendererName | undefined, fromURL = false) => {
     modifyQuery(() => {
       const newDataStyles = { ...dataStyles };
       if (renderer === undefined) {
@@ -398,7 +398,7 @@ export function useQueryBuilder(
       }
 
       params.set("styles", JSON.stringify(newDataStyles));
-    });
+    }, fromURL);
   };
 
   return {
