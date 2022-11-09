@@ -198,3 +198,27 @@ export function downloadFile(
   downloadLink.setAttribute("download", filename);
   downloadLink.click();
 }
+
+// Regular expression for matching errors thrown by test compilations,
+// like those done by the New Measure and New Dimension dialogs.
+const ERROR_RE =
+  /Error\(s\) compiling model:\nFILE: internal:\/\/internal.malloy\nline 1: (.*)\n/;
+
+/**
+ * Extracts a string error message from an Error object, and
+ * specifically handles the case where
+ *
+ * @param error Caught error object
+ * @returns Cleaned up error message
+ */
+export function extractErrorMessage(error: Error): string {
+  let message = error.toString();
+  if (error.message) {
+    message = error.message;
+    const matches = message.match(ERROR_RE);
+    if (matches) {
+      message = matches[1];
+    }
+  }
+  return message;
+}

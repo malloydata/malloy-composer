@@ -148,7 +148,7 @@ export async function compileDimension(
   }
   const field = theQuery.pipeline[0].fields[0];
   if (typeof field === "string") {
-    throw new Error("Expected field definiton, not reference");
+    throw new Error("Expected field definition, not reference");
   } else if (isFilteredAliasedName(field)) {
     throw new Error("Expected field definition, not filtered aliased name");
   }
