@@ -185,13 +185,8 @@ export async function search(
   searchTerm: string,
   fieldPath?: string
 ): Promise<malloy.SearchIndexResult[] | undefined | Error> {
-  console.log("search", { model, source, searchTerm, fieldPath });
   const sourceName = source.as || source.name;
   const contents = { ...model.contents, [sourceName]: source };
-  console.log(model, {
-    ...model,
-    contents,
-  });
   return RUNTIME._loadModelFromModelDef({
     ...model,
     contents,
@@ -202,8 +197,8 @@ export async function topValues(
   model: malloy.ModelDef,
   source: malloy.StructDef
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
-  console.log("topValues", { model, source });
   const sourceName = source.as || source.name;
+  // TODO crs I'm pretty sure I don't need the source at all, because this doesn't seem to work for successive stages anyway.
   const contents = { ...model.contents, [sourceName]: source };
   return RUNTIME._loadModelFromModelDef({
     ...model,

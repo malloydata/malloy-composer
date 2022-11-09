@@ -121,7 +121,6 @@ export const Explore: React.FC = () => {
       throw new Error("Bad model");
     }
     const sourceName = await getSourceNameForQuery(newDataset.model, query);
-    setSourceName(sourceName);
     params.set("model", model);
     params.set("source", sourceName);
     params.set("query", query);
@@ -129,8 +128,8 @@ export const Explore: React.FC = () => {
     params.set("run", "true");
     params.set("renderer", renderer);
     params.set("name", name);
-    // params.set("description", description);
     setParams(params);
+    setSourceName(sourceName);
   };
 
   const handlers = {
