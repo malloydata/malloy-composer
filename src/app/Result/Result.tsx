@@ -30,7 +30,6 @@ interface ResultProps {
   malloy: string;
   onDrill: (filters: malloy.FilterExpression[]) => void;
   isRunning: boolean;
-  queryTitle?: string;
 }
 
 export const Result: React.FC<ResultProps> = ({
@@ -40,7 +39,6 @@ export const Result: React.FC<ResultProps> = ({
   malloy,
   onDrill,
   isRunning,
-  queryTitle,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedMalloy, setHighlightedMalloy] = useState<HTMLElement>();
@@ -120,7 +118,6 @@ export const Result: React.FC<ResultProps> = ({
   return (
     <OuterDiv>
       <ResultHeader>
-        <ResultHeaderSection><QueryTitle>{queryTitle}</QueryTitle></ResultHeaderSection>
         <ResultHeaderSection>
           <ViewTab
             onClick={() => setView("malloy")}
@@ -134,19 +131,21 @@ export const Result: React.FC<ResultProps> = ({
           <ViewTab onClick={() => setView("html")} selected={view === "html"}>
             Results
           </ViewTab>
+        </ResultHeaderSection>
+        <ResultHeaderSection>
           <DownloadMenu
-            disabled={!result || html === undefined || rendering}
-            onDownloadHTML={() =>
-              downloadFile(html?.outerHTML || "", "text/html", "result.html")
-            }
-            onDownloadJSON={() =>
-              downloadFile(
-                JSON.stringify(result?.data.toObject() || {}, null, 2),
-                "application/json",
-                "result.json"
-              )
-            }
-          />
+              disabled={!result || html === undefined || rendering}
+              onDownloadHTML={() =>
+                downloadFile(html?.outerHTML || "", "text/html", "result.html")
+              }
+              onDownloadJSON={() =>
+                downloadFile(
+                  JSON.stringify(result?.data.toObject() || {}, null, 2),
+                  "application/json",
+                  "result.json"
+                )
+              }
+            />
         </ResultHeaderSection>
       </ResultHeader>
       <ContentDiv>

@@ -117,7 +117,11 @@ export interface QueryModifiers {
 export function useQueryBuilder(
   model?: ModelDef,
   sourceName?: string,
-  updateQueryInURL?: (query: string | undefined, options: { run: boolean }) => void
+  updateQueryInURL?: (params: { 
+    run: boolean, 
+    query: string | undefined,
+    styles: DataStyles
+  }) => void,
 ): UseQueryBuilderResult {
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
@@ -181,7 +185,7 @@ export function useQueryBuilder(
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       if (!noURLUpdate) {
-        updateQueryInURL(queryString, { run: noURLUpdate });
+        updateQueryInURL({ run: noURLUpdate, query: queryString, styles: dataStyles.current });
       }
       setQueryString(queryString);
       setDirty(true);
@@ -192,65 +196,13 @@ export function useQueryBuilder(
     }
   };
 
-  const clearURL = (replace = true) => {
-    // params.delete("query");
-    // params.delete("styles");
-    // params.delete("name");
-    // params.delete("description");
-    // params.delete("run");
-    // setParams(params, { replace });
-    updateQueryInURL(undefined, { run: false });
-  };
-
   const clearQuery = (noURLUpdate = false, replace = false) => {
+    modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
     setDataStyles({}, noURLUpdate);
     clearResult();
-    updateQueryInURL(undefined, { run: noURLUpdate });
-    modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
+    updateQueryInURL({ run: false, query: undefined, styles: {} });
     setQueryString("");
   };
-
-  // useEffect(() => {
-  //   const setQuery = async () => {
-  //     console.log("NEW PARAMS", new Map(params.entries()));
-  //     // Note the `replace` here is sort of an intersting hack. If you create a new stage
-  //     // but don't add any fields to it, then refresh, the page fails to load the query.
-  //     // So we look for `-> { }` (with the newline in it that the Composer generates)
-  //     // And get rid of it. There are not very many cases where you create invalid malloy code
-  //     // when using the Composer, so we just special case this one for now... Someday we may want
-  //     // to do something different.
-  //     const newQueryString = params.get("query")?.replace(/->\s\{\n\}/g, "");
-  //     if (queryBuilder.current.getSource()) {
-  //       if (newQueryString === queryString) {
-  //         return;
-  //       }
-  //       if (newQueryString) {
-  //         try {
-  //           const query = await compileQuery(model, newQueryString);
-  //           modifyQuery((qb) => qb.setQuery(query), true);
-  //           const renderer = params.get("renderer") as RendererName;
-  //           if (renderer) {
-  //             params.delete("renderer");
-  //             setDataStyle(query.name, renderer, true);
-  //           }
-  //           if (params.has("run") && params.get("page") === "query") {
-  //             runQuery();
-  //           }
-  //           setQueryString(newQueryString);
-  //         } catch (error) {
-  //           // eslint-disable-next-line no-console
-  //           console.error(error);
-  //           clearResult();
-  //           clearURL(true);
-  //           setError(error);
-  //         }
-  //       } else {
-  //         clearQuery(true);
-  //       }
-  //     }
-  //   };
-  //   setQuery();
-  // }, [params]);
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
     modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));

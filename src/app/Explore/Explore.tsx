@@ -32,11 +32,19 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import { ActionIcon } from "../ActionIcon";
 import { ListNest } from "../ListNest";
 import { FieldButton } from "../FieldButton";
+import { DataStyles } from "@malloydata/render";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
   RUN_QUERY: "command+enter",
 };
+
+function toTitleCase(name: string) {
+  return name
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.substring(1))
+    .join(" ");
+}
 
 export const Explore: React.FC = () => {
   const datasets = useDatasets();
@@ -45,21 +53,34 @@ export const Explore: React.FC = () => {
   const sourceName = params.get("source");
   const newParams = useRef("");
 
-  const updateQueryInURL = (newQuery: string | undefined, { run }: { run: boolean }) => {
+  const updateQueryInURL = ({ run, query: newQuery, styles: newStylesJSON }: { 
+    run: boolean, 
+    query: string | undefined,
+    styles: DataStyles
+  }) => {
     const oldQuery = params.get("query") || undefined;
-    console.log("updateQueryInURL", { oldQuery, newQuery, change: newQuery !== oldQuery });
-    if (oldQuery === newQuery) {
+    let newStyles = JSON.stringify(newStylesJSON);
+    if (newStyles === "{}") newStyles = undefined;
+    const oldStyles = params.get("styles") || undefined;
+    console.log("updateQueryInURL", { oldQuery, newQuery, newStyles, oldStyles, change: !(oldQuery === newQuery && oldStyles === newStyles) });
+    if (oldQuery === newQuery && oldStyles === newStyles) {
       return;
     }
     if (newQuery === undefined) {
       params.delete("query");
     } else {
       params.set("query", newQuery);
+      params.delete("name");
     }
     if (run) {
       params.set("run", "true");
     } else {
       params.delete("run");
+    }
+    if (newStyles === undefined) {
+      params.delete("styles");
+    } else {
+      params.set("styles", newStyles);
     }
     newParams.current = params.toString();
     console.log("set params 4");
@@ -109,7 +130,7 @@ export const Explore: React.FC = () => {
     if (!fromURL) {
       params.set("source", sourceName);
       params.set("model", dataset.name);
-      params.set("page", "about");
+      params.set("page", "query");
       params.delete("query");
       params.delete("run");
       params.delete("name");
@@ -221,18 +242,24 @@ export const Explore: React.FC = () => {
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
+      <Header>
+        <HeaderLeft>
+          <MalloyLogo />
+          { dataset && <span>
+            { dataset.name }
+            { sourceName && (section === "query" || section === "sources") && <span>
+              {' ›'} {toTitleCase(sourceName)}
+              { (params.get("name") || queryName) && section === "query" && <span>
+                {' ›'} {params.get("name") || toTitleCase(queryName)}
+              </span> }
+            </span> }
+          </span> } 
+        </HeaderLeft>
+      </Header>
       <Body>
         <Content>
           <Channel>
             <ChannelTop>
-              <MalloyLogo />
-              <ChannelButton
-                onClick={() => setSection("sources")}
-                text="Sources"
-                icon="source"
-                selected={section === "sources"}
-                disabled={datasets === undefined}
-              ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("about")}
                 text="Home"
@@ -245,6 +272,13 @@ export const Explore: React.FC = () => {
                 text="Query"
                 icon="query"
                 selected={section === "query"}
+              ></ChannelButton>
+              <ChannelButton
+                onClick={() => setSection("sources")}
+                text="Sources"
+                icon="source"
+                selected={section === "sources"}
+                disabled={datasets === undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom></ChannelBottom>
@@ -266,7 +300,6 @@ export const Explore: React.FC = () => {
                   result={result}
                   isRunning={isRunning}
                   runQuery={runQueryAction}
-                  queryTitle={params.get("name")}
                 />
               )}
               {section === "about" && (

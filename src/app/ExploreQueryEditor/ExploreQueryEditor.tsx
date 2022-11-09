@@ -113,7 +113,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         malloy={queryMalloy}
         onDrill={queryModifiers.onDrill}
         isRunning={isRunning}
-        queryTitle={queryTitle}
       />
     </Outer>
   );
