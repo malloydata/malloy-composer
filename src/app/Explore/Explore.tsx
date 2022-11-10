@@ -47,12 +47,20 @@ function toTitleCase(name: string) {
 
 export const Explore: React.FC = () => {
   const datasets = useDatasets();
-  const [params, setParams] = useSearchParams();
+  const [urlParams, _setParams] = useSearchParams();
   const dataset = datasets?.find(
-    (dataset) => dataset.name === params.get("model")
+    (dataset) => dataset.name === urlParams.get("model")
   );
-  const sourceName = params.get("source");
-  const newParams = useRef("");
+  const sourceName = urlParams.get("source");
+  const params = useRef("");
+
+  const setParams = (
+    params: URLSearchParams,
+    options?: { replace: boolean }
+  ) => {
+    params.current = params.toString();
+    _setParams(params, options);
+  };
 
   const updateQueryInURL = ({
     run,
@@ -63,44 +71,42 @@ export const Explore: React.FC = () => {
     query: string | undefined;
     styles: DataStyles;
   }) => {
-    const oldQuery = params.get("query") || undefined;
+    const oldQuery = urlParams.get("query") || undefined;
     let newStyles = JSON.stringify(newStylesJSON);
     if (newStyles === "{}") newStyles = undefined;
-    const oldStyles = params.get("styles") || undefined;
+    const oldStyles = urlParams.get("styles") || undefined;
     if (oldQuery === newQuery && oldStyles === newStyles) {
       return;
     }
     if (newQuery === undefined) {
-      params.delete("query");
+      urlParams.delete("query");
     } else {
-      params.set("query", newQuery);
-      params.delete("name");
+      urlParams.set("query", newQuery);
+      urlParams.delete("name");
     }
     if (run) {
-      params.set("run", "true");
+      urlParams.set("run", "true");
     } else {
-      params.delete("run");
+      urlParams.delete("run");
     }
     if (newStyles === undefined) {
-      params.delete("styles");
+      urlParams.delete("styles");
     } else {
-      params.set("styles", newStyles);
+      urlParams.set("styles", newStyles);
     }
-    newParams.current = params.toString();
-    setParams(params);
+    setParams(urlParams);
   };
 
-  const section = params.get("page") || "query";
+  const section = urlParams.get("page") || "query";
   const setSection = (section: string) => {
-    params.set("page", section);
+    urlParams.set("page", section);
     if (section !== "query") {
-      params.delete("query");
-      params.delete("run");
-      params.delete("name");
-      params.delete("styles");
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
     }
-    newParams.current = params.toString();
-    setParams(params);
+    setParams(urlParams);
   };
 
   const {
@@ -137,28 +143,27 @@ export const Explore: React.FC = () => {
   ) => {
     registerNewSource(dataset.model.contents[sourceName] as StructDef);
     if (!fromURL) {
-      params.set("source", sourceName);
-      params.set("model", dataset.name);
-      params.set("page", "query");
-      params.delete("query");
-      params.delete("run");
-      params.delete("name");
-      params.delete("styles");
+      urlParams.set("source", sourceName);
+      urlParams.set("model", dataset.name);
+      urlParams.set("page", "query");
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
       clearQuery(true);
-      newParams.current = params.toString();
-      setParams(params);
+      setParams(urlParams);
     }
   };
 
   useEffect(() => {
     const loadDataset = async () => {
-      const model = params.get("model");
-      const query = params.get("query")?.replace(/->\s*{\n}/g, "");
-      const source = params.get("source");
-      const styles = params.get("styles");
-      const page = params.get("page");
+      const model = urlParams.get("model");
+      const query = urlParams.get("query")?.replace(/->\s*{\n}/g, "");
+      const source = urlParams.get("source");
+      const styles = urlParams.get("styles");
+      const page = urlParams.get("page");
       if (model && (query || source) && datasets) {
-        if (params.toString() === newParams.current) return;
+        if (urlParams.toString() === params.current) return;
         const newDataset = datasets.find((dataset) => dataset.name === model);
         if (newDataset === undefined) {
           throw new Error("Bad model");
@@ -172,29 +177,28 @@ export const Explore: React.FC = () => {
           const compiledQuery = await compileQuery(newDataset.model, query);
           queryModifiers.setDataStyles(styles ? JSON.parse(styles) : {}, true);
           queryModifiers.setQuery(compiledQuery, true);
-          if (params.has("run") && params.get("page") === "query") {
+          if (urlParams.has("run") && urlParams.get("page") === "query") {
             runQuery();
           }
         } else {
-          params.delete("query");
-          params.delete("run");
-          params.delete("name");
-          params.delete("styles");
+          urlParams.delete("query");
+          urlParams.delete("run");
+          urlParams.delete("name");
+          urlParams.delete("styles");
           clearQuery(true);
         }
-        newParams.current = params.toString();
+        params.current = urlParams.toString();
       } else if (datasets && !dataset) {
         const newDataset = datasets[0];
-        params.set("model", newDataset.name);
+        urlParams.set("model", newDataset.name);
         if (newDataset.readme) {
-          params.set("page", "about");
+          urlParams.set("page", "about");
         }
-        newParams.current = params.toString();
-        setParams(params);
+        setParams(urlParams);
       }
     };
     loadDataset();
-  }, [params, datasets]);
+  }, [urlParams, datasets]);
 
   const loadQueryLink = async (
     model: string,
@@ -207,12 +211,12 @@ export const Explore: React.FC = () => {
       throw new Error("Bad model");
     }
     const sourceName = await getSourceNameForQuery(newDataset.model, query);
-    params.set("model", model);
-    params.set("source", sourceName);
-    params.set("query", query);
-    params.set("page", "query");
-    params.set("run", "true");
-    params.set("name", name);
+    urlParams.set("model", model);
+    urlParams.set("source", sourceName);
+    urlParams.set("query", query);
+    urlParams.set("page", "query");
+    urlParams.set("run", "true");
+    urlParams.set("name", name);
     registerNewSource(newDataset.model.contents[sourceName] as StructDef);
     const compiledQuery = await compileQuery(newDataset.model, query);
     queryModifiers.setQuery(compiledQuery, true);
@@ -222,20 +226,17 @@ export const Explore: React.FC = () => {
         renderer as RendererName,
         true
       );
-      params.delete("renderer");
-      params.set("styles", JSON.stringify(styles));
+      urlParams.delete("renderer");
+      urlParams.set("styles", JSON.stringify(styles));
     }
     runQuery();
-    newParams.current = params.toString();
-    setParams(params);
+    setParams(urlParams);
   };
 
   const runQueryAction = () => {
     runQuery();
-    params.set("run", "true");
-    // TODO this pattern of setting params and setting `newParams` needs to be factored out
-    newParams.current = params.toString();
-    setParams(params, { replace: true });
+    urlParams.set("run", "true");
+    setParams(urlParams, { replace: true });
   };
 
   const handlers = {
@@ -256,9 +257,9 @@ export const Explore: React.FC = () => {
               {sourceName && (section === "query" || section === "sources") && (
                 <span>
                   {" ›"} {toTitleCase(sourceName)}
-                  {(params.get("name") || queryName) && section === "query" && (
+                  {(urlParams.get("name") || queryName) && section === "query" && (
                     <span>
-                      {" ›"} {params.get("name") || toTitleCase(queryName)}
+                      {" ›"} {urlParams.get("name") || toTitleCase(queryName)}
                     </span>
                   )}
                 </span>
