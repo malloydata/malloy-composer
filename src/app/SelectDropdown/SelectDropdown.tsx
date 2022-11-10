@@ -60,11 +60,7 @@ export const InputBox = styled.div`
   }
 `;
 
-interface OptionDivProps {
-  divider: boolean;
-}
-
-const OptionDiv = styled.label<OptionDivProps>`
+const OptionDiv = styled.label`
   padding: 0px 10px;
   height: 30px;
   cursor: pointer;
@@ -77,7 +73,6 @@ const OptionDiv = styled.label<OptionDivProps>`
   &:hover {
     background-color: ${COLORS.dimension.fillLight};
   }
-  ${({ divider }) => (divider ? "border-top: 1px solid #ececed" : "")}
 `;
 
 const OptionSpan = styled.span`
@@ -163,16 +158,18 @@ export function SelectList<T>({
         const isSelected =
           value !== undefined && valueEqual(value, option.value);
         return (
-          <OptionDiv
-            divider={option.divider}
-            key={index}
-            onClick={() => onChange(option.value)}
-            className={isSelected ? "selected" : ""}
-          >
-            <OptionRadio type="radio" defaultChecked={isSelected} />
-            <CheckIcon className={isSelected ? "selected" : ""} />
-            <OptionSpan>{option.label}</OptionSpan>
-          </OptionDiv>
+          <>
+            {option.divider && <OptionDivider key={"divider" + index} />}
+            <OptionDiv
+              key={index}
+              onClick={() => onChange(option.value)}
+              className={isSelected ? "selected" : ""}
+            >
+              <OptionRadio type="radio" defaultChecked={isSelected} />
+              <CheckIcon className={isSelected ? "selected" : ""} />
+              <OptionSpan>{option.label}</OptionSpan>
+            </OptionDiv>
+          </>
         );
       })}
     </SelectListDiv>
@@ -187,13 +184,12 @@ export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
   return (
     <SelectListDiv>
       {options.map((option, index) => (
-        <OptionDiv
-          divider={option.divider}
-          key={index}
-          onClick={() => option.onSelect()}
-        >
-          <OptionSpan>{option.label}</OptionSpan>
-        </OptionDiv>
+        <>
+          {option.divider && <OptionDivider key={"divider" + index} />}
+          <OptionDiv key={index} onClick={() => option.onSelect()}>
+            <OptionSpan>{option.label}</OptionSpan>
+          </OptionDiv>
+        </>
       ))}
     </SelectListDiv>
   );
@@ -213,4 +209,11 @@ const SelectListDiv = styled.div`
   padding: 10px 0;
   overflow-y: auto;
   max-height: 400px;
+`;
+
+const OptionDivider = styled.div`
+  border-top: 1px solid #ececec;
+  width: 100%;
+  margin: 0 10px;
+  margin: 5px 0;
 `;
