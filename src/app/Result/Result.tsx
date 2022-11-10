@@ -134,18 +134,18 @@ export const Result: React.FC<ResultProps> = ({
         </ResultHeaderSection>
         <ResultHeaderSection>
           <DownloadMenu
-              disabled={!result || html === undefined || rendering}
-              onDownloadHTML={() =>
-                downloadFile(html?.outerHTML || "", "text/html", "result.html")
-              }
-              onDownloadJSON={() =>
-                downloadFile(
-                  JSON.stringify(result?.data.toObject() || {}, null, 2),
-                  "application/json",
-                  "result.json"
-                )
-              }
-            />
+            disabled={!result || html === undefined || rendering}
+            onDownloadHTML={() =>
+              downloadFile(html?.outerHTML || "", "text/html", "result.html")
+            }
+            onDownloadJSON={() =>
+              downloadFile(
+                JSON.stringify(result?.data.toObject() || {}, null, 2),
+                "application/json",
+                "result.json"
+              )
+            }
+          />
         </ResultHeaderSection>
       </ResultHeader>
       <ContentDiv>
@@ -227,8 +227,4 @@ const ResultHeaderSection = styled.div`
   align-items: center;
   font-size: 11pt;
   color: #4d4d4d;
-`;
-
-const QueryTitle = styled.div`
-  font-weight: bold;
 `;

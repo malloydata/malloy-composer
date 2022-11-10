@@ -11,14 +11,13 @@
  * GNU General Public License for more details.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Dataset, RendererName } from "../../types";
 import { useDatasets } from "../data/use_datasets";
 import { PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
-import { DatasetPicker } from "../DatasetPicker";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
 import { useQueryBuilder } from "../hooks";
@@ -28,7 +27,7 @@ import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { ActionIcon } from "../ActionIcon";
 import { ListNest } from "../ListNest";
 import { FieldButton } from "../FieldButton";
@@ -42,29 +41,32 @@ const KEY_MAP = {
 function toTitleCase(name: string) {
   return name
     .split("_")
-    .map(word => word.charAt(0).toUpperCase() + word.substring(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
     .join(" ");
 }
 
 export const Explore: React.FC = () => {
   const datasets = useDatasets();
   const [params, setParams] = useSearchParams();
-  const dataset = datasets?.find(dataset => dataset.name === params.get("model"));
+  const dataset = datasets?.find(
+    (dataset) => dataset.name === params.get("model")
+  );
   const sourceName = params.get("source");
   const newParams = useRef("");
 
-  console.log({datasets});
-
-  const updateQueryInURL = ({ run, query: newQuery, styles: newStylesJSON }: { 
-    run: boolean, 
-    query: string | undefined,
-    styles: DataStyles
+  const updateQueryInURL = ({
+    run,
+    query: newQuery,
+    styles: newStylesJSON,
+  }: {
+    run: boolean;
+    query: string | undefined;
+    styles: DataStyles;
   }) => {
     const oldQuery = params.get("query") || undefined;
     let newStyles = JSON.stringify(newStylesJSON);
     if (newStyles === "{}") newStyles = undefined;
     const oldStyles = params.get("styles") || undefined;
-    console.log("updateQueryInURL", { oldQuery, newQuery, newStyles, oldStyles, change: !(oldQuery === newQuery && oldStyles === newStyles) });
     if (oldQuery === newQuery && oldStyles === newStyles) {
       return;
     }
@@ -85,7 +87,6 @@ export const Explore: React.FC = () => {
       params.set("styles", newStyles);
     }
     newParams.current = params.toString();
-    console.log("set params 4");
     setParams(params);
   };
 
@@ -98,7 +99,6 @@ export const Explore: React.FC = () => {
       params.delete("name");
       params.delete("styles");
     }
-    console.log("set params 5");
     newParams.current = params.toString();
     setParams(params);
   };
@@ -117,7 +117,13 @@ export const Explore: React.FC = () => {
     registerNewSource,
     error,
     dirty,
-  } = useQueryBuilder(dataset?.model, dataset?.modelPath, sourceName, updateQueryInURL, dataset?.styles);
+  } = useQueryBuilder(
+    dataset?.model,
+    dataset?.modelPath,
+    sourceName,
+    updateQueryInURL,
+    dataset?.styles
+  );
 
   const model = dataset?.model;
   const modelPath = dataset?.modelPath;
@@ -140,21 +146,17 @@ export const Explore: React.FC = () => {
       params.delete("styles");
       clearQuery(true);
       newParams.current = params.toString();
-      console.log("set params 6");
       setParams(params);
     }
   };
 
   useEffect(() => {
     const loadDataset = async () => {
-      console.log({ params: params.toString(), newParams: newParams.current, change: params.toString() !== newParams.current  });
-      console.log(new Map(params.entries()));
       const model = params.get("model");
       const query = params.get("query")?.replace(/->\s*{\n}/g, "");
       const source = params.get("source");
       const styles = params.get("styles");
       const page = params.get("page");
-      console.log({ model, query, source, datasets});
       if (model && (query || source) && datasets) {
         if (params.toString() === newParams.current) return;
         const newDataset = datasets.find((dataset) => dataset.name === model);
@@ -181,16 +183,13 @@ export const Explore: React.FC = () => {
           clearQuery(true);
         }
         newParams.current = params.toString();
-        console.log("set params 7");
       } else if (datasets && !dataset) {
         const newDataset = datasets[0];
-        // setDataset(newDataset);
         params.set("model", newDataset.name);
         if (newDataset.readme) {
           params.set("page", "about");
         }
         newParams.current = params.toString();
-        console.log("set params 1");
         setParams(params);
       }
     };
@@ -218,21 +217,24 @@ export const Explore: React.FC = () => {
     const compiledQuery = await compileQuery(newDataset.model, query);
     queryModifiers.setQuery(compiledQuery, true);
     if (renderer) {
-      const styles = queryModifiers.setDataStyle(compiledQuery.name, renderer as RendererName, true);
+      const styles = queryModifiers.setDataStyle(
+        compiledQuery.name,
+        renderer as RendererName,
+        true
+      );
       params.delete("renderer");
       params.set("styles", JSON.stringify(styles));
     }
     runQuery();
     newParams.current = params.toString();
-    console.log("set params 2");
     setParams(params);
   };
 
   const runQueryAction = () => {
     runQuery();
     params.set("run", "true");
+    // TODO this pattern of setting params and setting `newParams` needs to be factored out
     newParams.current = params.toString();
-    console.log("set params 3");
     setParams(params, { replace: true });
   };
 
@@ -248,15 +250,21 @@ export const Explore: React.FC = () => {
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          { dataset && <span>
-            { dataset.name }
-            { sourceName && (section === "query" || section === "sources") && <span>
-              {' ›'} {toTitleCase(sourceName)}
-              { (params.get("name") || queryName) && section === "query" && <span>
-                {' ›'} {params.get("name") || toTitleCase(queryName)}
-              </span> }
-            </span> }
-          </span> } 
+          {dataset && (
+            <span>
+              {dataset.name}
+              {sourceName && (section === "query" || section === "sources") && (
+                <span>
+                  {" ›"} {toTitleCase(sourceName)}
+                  {(params.get("name") || queryName) && section === "query" && (
+                    <span>
+                      {" ›"} {params.get("name") || toTitleCase(queryName)}
+                    </span>
+                  )}
+                </span>
+              )}
+            </span>
+          )}
         </HeaderLeft>
       </Header>
       <Body>
@@ -335,7 +343,12 @@ export const Explore: React.FC = () => {
                       return (
                         <div key={dataset.id}>
                           <FieldButton
-                            icon={<ActionIcon action="open-directory" color="other" />}
+                            icon={
+                              <ActionIcon
+                                action="open-directory"
+                                color="other"
+                              />
+                            }
                             name={dataset.name}
                             color="other"
                           />
@@ -345,7 +358,10 @@ export const Explore: React.FC = () => {
                                 <FieldButton
                                   key={entry.name}
                                   icon={
-                                    <ActionIcon action="analysis" color="dimension" />
+                                    <ActionIcon
+                                      action="analysis"
+                                      color="dimension"
+                                    />
                                   }
                                   onClick={() => {
                                     setDatasetSource(dataset, entry.name);

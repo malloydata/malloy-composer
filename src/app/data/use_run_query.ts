@@ -56,7 +56,7 @@ interface UseRunQueryResult {
 export function useRunQuery(
   onError: (error: Error) => void,
   model: malloy.ModelDef,
-  modelPath: string,
+  modelPath: string
 ): UseRunQueryResult {
   const { data, mutateAsync, isLoading, reset } = useMutation(
     ({ query, queryName }: { query: string; queryName: string }) =>

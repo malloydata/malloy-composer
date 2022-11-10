@@ -21,9 +21,7 @@ import { topValues } from "./top_values";
 
 export function routes(router: express.Router): void {
   router.get("/datasets", async (_, res: express.Response) => {
-    res.json(
-      await wrapErrors(async () => ({ datasets: await getDatasets() }))
-    );
+    res.json(await wrapErrors(async () => ({ datasets: await getDatasets() })));
   });
 
   router.post(

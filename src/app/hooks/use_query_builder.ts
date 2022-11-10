@@ -20,10 +20,8 @@ import {
   NamedQuery,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { compileQuery } from "../../core/compile";
-import { QueryBuilder, QueryWriter } from "../../core/query";
+import { useRef, useState } from "react";
+import { QueryBuilder } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useRunQuery } from "../data/use_run_query";
 
@@ -61,7 +59,11 @@ export interface QueryModifiers {
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
-  setDataStyle: (name: string, renderer: RendererName | undefined, noURLUpdate?: boolean) => DataStyles;
+  setDataStyle: (
+    name: string,
+    renderer: RendererName | undefined,
+    noURLUpdate?: boolean
+  ) => DataStyles;
   setDataStyles: (styles: DataStyles, noURLUpdate?: boolean) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
   loadQuery: (queryPath: string) => void;
@@ -118,10 +120,10 @@ export function useQueryBuilder(
   model?: ModelDef,
   modelPath?: string,
   sourceName?: string,
-  updateQueryInURL?: (params: { 
-    run: boolean, 
-    query: string | undefined,
-    styles: DataStyles
+  updateQueryInURL?: (params: {
+    run: boolean;
+    query: string | undefined;
+    styles: DataStyles;
   }) => void,
   modelDataStyles?: DataStyles
 ): UseQueryBuilderResult {
@@ -146,7 +148,10 @@ export function useQueryBuilder(
   } = useRunQuery(setError, model, modelPath);
 
   const runQuery = () => {
-    const summary = queryBuilder.current.getQuerySummary({ ...modelDataStyles, ...dataStyles.current });
+    const summary = queryBuilder.current.getQuerySummary({
+      ...modelDataStyles,
+      ...dataStyles.current,
+    });
     const topLevel = {
       stageIndex: summary ? summary.stages.length - 1 : 0,
     };
@@ -154,7 +159,7 @@ export function useQueryBuilder(
     if (!queryBuilder.current?.hasLimit(topLevel)) {
       // TODO magic number here: we run the query before we set this limit,
       //      and this limit just happens to be the default limit
-      modifyQuery((qb) => qb.addLimit(topLevel, 10), true, true);
+      modifyQuery((qb) => qb.addLimit(topLevel, 10), true);
     }
     const query = queryBuilder.current.getQuery();
     if (queryBuilder.current?.canRun()) {
@@ -166,16 +171,18 @@ export function useQueryBuilder(
 
   const modifyQuery = (
     modify: (queryBuilder: QueryBuilder) => void,
-    noURLUpdate = false,
-    replace = false
+    noURLUpdate = false
   ) => {
-    console.log("Modify query: source", queryBuilder.current.getSource());
     modify(queryBuilder.current);
     const writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
       const queryString = writer.getQueryStringForModel();
       if (!noURLUpdate) {
-        updateQueryInURL({ run: noURLUpdate, query: queryString, styles: dataStyles.current });
+        updateQueryInURL({
+          run: noURLUpdate,
+          query: queryString,
+          styles: dataStyles.current,
+        });
       }
       setQueryString(queryString);
       setDirty(true);
@@ -186,7 +193,7 @@ export function useQueryBuilder(
     }
   };
 
-  const clearQuery = (noURLUpdate = false, replace = false) => {
+  const clearQuery = (noURLUpdate = false) => {
     modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
     setDataStyles({}, noURLUpdate);
     clearResult();
@@ -313,9 +320,7 @@ export function useQueryBuilder(
   };
 
   const replaceWithDefinition = (stagePath: StagePath, fieldIndex: number) => {
-    modifyQuery((qb) =>
-      qb.replaceWithDefinition(stagePath, fieldIndex)
-    );
+    modifyQuery((qb) => qb.replaceWithDefinition(stagePath, fieldIndex));
   };
 
   const loadQuery = (queryPath: string) => {
@@ -333,7 +338,11 @@ export function useQueryBuilder(
     });
   };
 
-  const setDataStyle = (name: string, renderer: RendererName | undefined, noURLUpdate = false) => {
+  const setDataStyle = (
+    name: string,
+    renderer: RendererName | undefined,
+    noURLUpdate = false
+  ) => {
     const newDataStyles = { ...dataStyles.current };
     if (renderer === undefined) {
       if (name in newDataStyles) {
@@ -352,7 +361,7 @@ export function useQueryBuilder(
     modifyQuery(() => {
       dataStyles.current = styles;
     }, noURLUpdate);
-  }
+  };
 
   const currentDataStyles = { ...modelDataStyles, ...dataStyles.current };
   const querySummary = queryBuilder.current.getQuerySummary(currentDataStyles);

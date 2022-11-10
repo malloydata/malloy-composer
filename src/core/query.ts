@@ -911,17 +911,11 @@ export class QueryWriter extends SourceUtils {
     return items;
   }
 
-  getQuerySummary(
-    dataStyles: DataStyles
-  ): QuerySummary {
+  getQuerySummary(dataStyles: DataStyles): QuerySummary {
     const queryName = this.query.name;
     let stageSource = this.getSource();
     const stages = this.query.pipeline.map((stage, index) => {
-      const summary = this.getStageSummary(
-        stage,
-        stageSource,
-        dataStyles
-      );
+      const summary = this.getStageSummary(stage, stageSource, dataStyles);
       stageSource = this.modifySourceForStage(stage, stageSource);
       if (index === this.query.pipeline.length - 1) {
         const styleItem = this.getStyleItemForName(
@@ -1047,11 +1041,7 @@ export class QueryWriter extends SourceUtils {
     for (let fieldIndex = 0; fieldIndex < stage.fields.length; fieldIndex++) {
       const field = stage.fields[fieldIndex];
       try {
-        const styleItem = this.getStyleItem(
-          field,
-          source,
-          dataStyles
-        );
+        const styleItem = this.getStyleItem(field, source, dataStyles);
         const styleItems = styleItem ? [styleItem] : [];
         if (typeof field === "string") {
           const fieldDef = this.getField(source, field);
@@ -1119,13 +1109,7 @@ export class QueryWriter extends SourceUtils {
           const stages = [];
           let stageSource = source;
           for (const stage of field.pipeline) {
-            stages.push(
-              this.getStageSummary(
-                stage,
-                stageSource,
-                dataStyles
-              )
-            );
+            stages.push(this.getStageSummary(stage, stageSource, dataStyles));
             stageSource = this.modifySourceForStage(stage, stageSource);
           }
           items.push({

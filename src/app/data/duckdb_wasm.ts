@@ -13,7 +13,6 @@
 
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
 import * as malloy from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
 import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 

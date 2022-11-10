@@ -28,7 +28,6 @@ interface ExploreQueryEditorProps {
   isRunning: boolean;
   queryModifiers: QueryModifiers;
   runQuery: () => void;
-  queryTitle?: string;
   datasets: Dataset[];
   model: ModelDef;
   dirty: boolean;
@@ -49,7 +48,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   isRunning,
   queryMalloy,
   queryModifiers,
-  queryTitle,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   return (
@@ -88,7 +86,15 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}
-                className={isRunning ? "running" : queryMalloy === "" ? "blank" : dirty ? "dirty" : "clean"}
+                className={
+                  isRunning
+                    ? "running"
+                    : queryMalloy === ""
+                    ? "blank"
+                    : dirty
+                    ? "dirty"
+                    : "clean"
+                }
               />
             </>
           )}

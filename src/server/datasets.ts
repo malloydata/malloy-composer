@@ -19,9 +19,11 @@ import { HackyDataStylesAccumulator } from "../common/data_styles";
 import * as path from "path";
 import { getConfig } from "./config";
 
-export async function getDatasets() {
+export async function getDatasets(): Promise<explore.Dataset[]> {
   const { modelsPath } = await getConfig();
-  const samplesURL = new URL("file://" + path.join(modelsPath, "composer.json"));
+  const samplesURL = new URL(
+    "file://" + path.join(modelsPath, "composer.json")
+  );
   const response = await URL_READER.readURL(samplesURL);
   const samples = JSON.parse(response) as { datasets: explore.DatasetConfig[] };
   return await Promise.all(
@@ -30,7 +32,9 @@ export async function getDatasets() {
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
       const readme =
         sample.readme &&
-        (await URL_READER.readURL(new URL("file://" + path.join(modelsPath, sample.readme))));
+        (await URL_READER.readURL(
+          new URL("file://" + path.join(modelsPath, sample.readme))
+        ));
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new Runtime(urlReader, connections);
       const model = await runtime.getModel(modelURL);

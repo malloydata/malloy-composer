@@ -11,12 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import {
-  ModelDef,
-  Runtime,
-  SearchIndexResult,
-  StructDef,
-} from "@malloydata/malloy";
+import { Runtime, SearchIndexResult, StructDef } from "@malloydata/malloy";
 import { getConfig } from "./config";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";

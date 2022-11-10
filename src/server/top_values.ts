@@ -11,12 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import {
-  ModelDef,
-  Runtime,
-  SearchValueMapResult,
-  StructDef,
-} from "@malloydata/malloy";
+import { Runtime, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { getConfig } from "./config";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
@@ -31,7 +26,5 @@ export async function topValues(
   const sourceName = source.as || source.name;
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
-  return runtime
-    .loadModel(modelURL)
-    .searchValueMap(sourceName);
+  return runtime.loadModel(modelURL).searchValueMap(sourceName);
 }

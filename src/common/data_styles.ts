@@ -39,6 +39,7 @@ export async function dataStylesForFile(
       try {
         stylesText = await urlReader.readURL(new URL(fileName, url));
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(`Error loading data style '${fileName}': ${error}`);
         stylesText = "{}";
       }

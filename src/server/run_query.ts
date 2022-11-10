@@ -20,7 +20,7 @@ import { getConfig } from "./config";
 export async function runQuery(
   query: string,
   queryName: string,
-  modelPath: string,
+  modelPath: string
 ): Promise<Result> {
   const { modelsPath } = await getConfig();
   const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
@@ -33,9 +33,9 @@ export async function runQuery(
     model: baseModel,
     parse: Malloy.parse({ source: query }),
   });
-  const runnable = runtime._loadModelFromModelDef(
-    queryModel._modelDef
-  ).loadQueryByName(queryName);
+  const runnable = runtime
+    ._loadModelFromModelDef(queryModel._modelDef)
+    .loadQueryByName(queryName);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({ rowLimit });
 }
