@@ -55,11 +55,11 @@ export const Explore: React.FC = () => {
   const params = useRef("");
 
   const setParams = (
-    params: URLSearchParams,
+    newUrlParams: URLSearchParams,
     options?: { replace: boolean }
   ) => {
-    params.current = params.toString();
-    _setParams(params, options);
+    params.current = newUrlParams.toString();
+    _setParams(newUrlParams, options);
   };
 
   const updateQueryInURL = ({
@@ -126,7 +126,6 @@ export const Explore: React.FC = () => {
   } = useQueryBuilder(
     dataset?.model,
     dataset?.modelPath,
-    sourceName,
     updateQueryInURL,
     dataset?.styles
   );

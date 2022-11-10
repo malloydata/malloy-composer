@@ -119,7 +119,6 @@ export interface QueryModifiers {
 export function useQueryBuilder(
   model?: ModelDef,
   modelPath?: string,
-  sourceName?: string,
   updateQueryInURL?: (params: {
     run: boolean;
     query: string | undefined;
@@ -174,9 +173,8 @@ export function useQueryBuilder(
     noURLUpdate = false
   ) => {
     modify(queryBuilder.current);
-    const writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
-      const queryString = writer.getQueryStringForModel();
+      const queryString = queryBuilder.current.getQueryStringForModel();
       if (!noURLUpdate) {
         updateQueryInURL({
           run: noURLUpdate,
@@ -187,7 +185,7 @@ export function useQueryBuilder(
       setQueryString(queryString);
       setDirty(true);
     } else {
-      const queryString = writer.getQueryStringForModel();
+      const queryString = queryBuilder.current.getQueryStringForModel();
       setQueryString(queryString);
       setDirty(true);
     }
