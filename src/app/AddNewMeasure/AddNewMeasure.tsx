@@ -19,6 +19,7 @@ import {
   ContextMenuTitle,
   ContextMenuMain,
   RightButtonRow,
+  FormError,
   FormFieldList,
 } from "../CommonElements";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
@@ -40,6 +41,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 }) => {
   const [measure, setmeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
+  const [error, setError] = useState<Error>();
   const needsName = initialCode === undefined;
   return (
     <ContextMenuMain>
@@ -62,19 +64,21 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             label={needsName ? "Definition" : undefined}
           />
         </FormFieldList>
+        <FormError error={error} />
         <RightButtonRow>
           <Button
             type="submit"
             onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
               compileMeasure(source, newName, measure)
                 .then((measure) => {
                   addMeasure(measure);
                   onComplete();
                 })
-                // eslint-disable-next-line no-console
-                .catch(console.log);
-              event.preventDefault();
-              event.stopPropagation();
+                .catch((error) => {
+                  setError(error);
+                });
             }}
           >
             Done

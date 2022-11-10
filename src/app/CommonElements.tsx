@@ -15,6 +15,7 @@ import styled from "styled-components";
 import { ReactComponent as ChevronLeftIcon } from "./assets/img/chevrons/chevron_left.svg";
 import { ReactComponent as ChevronRightIcon } from "./assets/img/chevrons/chevron_right.svg";
 import { ColorKey, COLORS } from "./colors";
+import { extractErrorMessage } from "./utils";
 
 export const PanelTitle = styled.div`
   text-transform: uppercase;
@@ -240,6 +241,27 @@ export const FormItem = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
+
+const StyledFormError = styled.div`
+  background: #ffdddd;
+  display: flex;
+  padding: 6px;
+  margin-top: 10px;
+  border-radius: 3px;
+`;
+
+export interface FormErrorProps {
+  error: Error;
+}
+
+export const FormError: React.FC<FormErrorProps> = ({ error }) => {
+  if (error) {
+    const message = extractErrorMessage(error);
+    return <StyledFormError>{message}</StyledFormError>;
+  } else {
+    return null;
+  }
+};
 
 export const PageHeader = styled.div`
   overflow: hidden;
