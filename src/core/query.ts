@@ -111,6 +111,24 @@ export class QueryBuilder extends SourceUtils {
     return new QueryWriter(this.query, this._source);
   }
 
+  public getQuerySummary(dataStyles: DataStyles): QuerySummary | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQuerySummary(dataStyles);
+  }
+
+  public getQueryStringForModel(): string | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQueryStringForModel();
+  }
+
+  public getQueryStringForSource(name: string): string | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQueryStringForSource(name);
+  }
+
   getName(): string {
     return this.query.name;
   }
@@ -894,7 +912,6 @@ export class QueryWriter extends SourceUtils {
   }
 
   getQuerySummary(
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): QuerySummary {
     const queryName = this.query.name;
@@ -903,7 +920,6 @@ export class QueryWriter extends SourceUtils {
       const summary = this.getStageSummary(
         stage,
         stageSource,
-        modelDataStyles,
         dataStyles
       );
       stageSource = this.modifySourceForStage(stage, stageSource);
@@ -911,7 +927,6 @@ export class QueryWriter extends SourceUtils {
         const styleItem = this.getStyleItemForName(
           queryName,
           "query",
-          modelDataStyles,
           dataStyles
         );
         if (styleItem) {
@@ -934,7 +949,6 @@ export class QueryWriter extends SourceUtils {
   getStyleItem(
     field: QueryFieldDef,
     source: StructDef,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
     let name: string;
@@ -973,16 +987,15 @@ export class QueryWriter extends SourceUtils {
             : "dimension";
       }
     }
-    return this.getStyleItemForName(name, kind, modelDataStyles, dataStyles);
+    return this.getStyleItemForName(name, kind, dataStyles);
   }
 
   private getStyleItemForName(
     name: string,
     kind: string,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
-    const dataStyle = { ...modelDataStyles, ...dataStyles }[name];
+    const dataStyle = dataStyles[name];
     if (dataStyle === undefined || dataStyle.renderer === undefined) {
       return undefined;
     } else {
@@ -1024,7 +1037,6 @@ export class QueryWriter extends SourceUtils {
   getStageSummary(
     stage: PipeSegment,
     source: StructDef,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): StageSummary {
     const items: QuerySummaryItem[] = [];
@@ -1038,7 +1050,6 @@ export class QueryWriter extends SourceUtils {
         const styleItem = this.getStyleItem(
           field,
           source,
-          modelDataStyles,
           dataStyles
         );
         const styleItems = styleItem ? [styleItem] : [];
@@ -1112,7 +1123,6 @@ export class QueryWriter extends SourceUtils {
               this.getStageSummary(
                 stage,
                 stageSource,
-                modelDataStyles,
                 dataStyles
               )
             );

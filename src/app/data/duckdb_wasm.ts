@@ -13,6 +13,8 @@
 
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
 import * as malloy from "@malloydata/malloy";
+import { DataStyles } from "@malloydata/render";
+import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 
 export class DuckDBWasmLookup
@@ -56,22 +58,13 @@ const URL_READER = new BrowserURLReader();
 const DUCKDB_WASM = new DuckDBWasmLookup();
 const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
 
-interface SampleEntry {
-  name: string;
-  description: string;
-  tables: string[];
-  model: string;
-  readme?: string;
-  styles?: string;
-}
-
 export async function datasets(): Promise<explore.Dataset[]> {
   const base = window.location.href;
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
-  const samples = JSON.parse(response) as { datasets: SampleEntry[] };
+  const samples = JSON.parse(response) as { datasets: explore.DatasetConfig[] };
   return await Promise.all(
-    samples.datasets.map(async (sample: SampleEntry) => {
+    samples.datasets.map(async (sample: explore.DatasetConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
       await Promise.all(
         sample.tables.map((tableName) => {
@@ -82,21 +75,21 @@ export async function datasets(): Promise<explore.Dataset[]> {
         })
       );
       const modelURL = new URL(sample.model, base);
-      // const malloy = await URL_READER.readURL(modelURL);
       const readme =
         sample.readme &&
         (await URL_READER.readURL(new URL(sample.readme, base)));
-      const styles =
-        sample.styles &&
-        (await URL_READER.readURL(new URL(sample.styles, base)));
-      const model = await RUNTIME.getModel(modelURL);
+      const urlReader = new HackyDataStylesAccumulator(URL_READER);
+      const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
+      const model = await runtime.getModel(modelURL);
+      const dataStyles = urlReader.getHackyAccumulatedDataStyles();
       return {
         id: modelURL.toString(),
         name: sample.name,
         description: sample.description,
         model: model._modelDef,
+        modelPath: sample.model,
         readme,
-        styles,
+        styles: dataStyles,
       };
     })
   );

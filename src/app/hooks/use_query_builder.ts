@@ -116,29 +116,21 @@ export interface QueryModifiers {
 
 export function useQueryBuilder(
   model?: ModelDef,
+  modelPath?: string,
   sourceName?: string,
   updateQueryInURL?: (params: { 
     run: boolean, 
     query: string | undefined,
     styles: DataStyles
   }) => void,
+  modelDataStyles?: DataStyles
 ): UseQueryBuilderResult {
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
-  // const [params, setParams] = useSearchParams();
   const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
 
   const dataStyles = useRef<DataStyles>({});
-
-  const querySummary = (() => {
-    if (queryBuilder.current.getSource() === undefined) {
-      return undefined;
-    }
-    const writer = queryBuilder.current.getWriter();
-    const summary = writer.getQuerySummary({}, dataStyles.current);
-    return summary;
-  })();
 
   const registerNewSource = (source: StructDef) => {
     queryBuilder.current.updateSource(source);
@@ -151,11 +143,10 @@ export function useQueryBuilder(
     runQuery: runQueryRaw,
     isRunning,
     clearResult,
-  } = useRunQuery(setError, model);
+  } = useRunQuery(setError, model, modelPath);
 
   const runQuery = () => {
-    let writer = queryBuilder.current.getWriter();
-    const summary = writer.getQuerySummary({}, dataStyles.current);
+    const summary = queryBuilder.current.getQuerySummary({ ...modelDataStyles, ...dataStyles.current });
     const topLevel = {
       stageIndex: summary ? summary.stages.length - 1 : 0,
     };
@@ -166,9 +157,8 @@ export function useQueryBuilder(
       modifyQuery((qb) => qb.addLimit(topLevel, 10), true, true);
     }
     const query = queryBuilder.current.getQuery();
-    writer = queryBuilder.current.getWriter();
     if (queryBuilder.current?.canRun()) {
-      const queryString = writer.getQueryStringForModel();
+      const queryString = queryBuilder.current.getQueryStringForModel();
       runQueryRaw(queryString, query.name);
       setDirty(false);
     }
@@ -364,6 +354,9 @@ export function useQueryBuilder(
     }, noURLUpdate);
   }
 
+  const currentDataStyles = { ...modelDataStyles, ...dataStyles.current };
+  const querySummary = queryBuilder.current.getQuerySummary(currentDataStyles);
+
   return {
     dirty,
     queryBuilder,
@@ -375,7 +368,7 @@ export function useQueryBuilder(
     clearResult,
     source: queryBuilder.current.getSource(),
     querySummary,
-    dataStyles: dataStyles.current,
+    dataStyles: currentDataStyles,
     result,
     error,
     registerNewSource,
@@ -410,14 +403,4 @@ export function useQueryBuilder(
       onDrill,
     },
   };
-}
-
-function parseDataStyles(styles: string | undefined): DataStyles {
-  try {
-    return styles ? JSON.parse(styles) : {};
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return {};
-  }
 }

@@ -32,12 +32,6 @@ export function snakeToTitle(snake: string): string {
     .join(" ");
 }
 
-export function isElectron(): boolean {
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isElectron = userAgent.indexOf(" electron/") != -1;
-  return isElectron;
-}
-
 export function isDuckDBWASM(): boolean {
   return !!window.IS_DUCKDB_WASM;
 }

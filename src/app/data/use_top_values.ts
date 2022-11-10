@@ -14,7 +14,7 @@
 import { ModelDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
 import { Dataset } from "../../types";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
 async function fetchTopValues(
@@ -29,13 +29,6 @@ async function fetchTopValues(
     return duckDBWASM.topValues(model, source);
   }
 
-  if (isElectron()) {
-    const res = await window.malloy.topValues(model, source);
-    if (res instanceof Error) {
-      throw res;
-    }
-    return res;
-  }
   const raw = await (
     await fetch("api/top_values", {
       method: "POST",

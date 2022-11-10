@@ -11,71 +11,30 @@
  * GNU General Public License for more details.
  */
 
-import { FieldDef, StructDef } from "@malloydata/malloy";
+import { StructDef } from "@malloydata/malloy";
 import * as express from "express";
-import { getAnalysis, readMalloyDirectory } from "./directory";
+import { getDatasets } from "./datasets";
 import { wrapErrors } from "./errors";
-import { getModels } from "./models";
 import { runQuery } from "./run_query";
-import { saveField } from "./save_query";
-import { getSchema } from "./schema";
 import { searchIndex } from "./search";
 import { topValues } from "./top_values";
 
 export function routes(router: express.Router): void {
-  router.get("/models", async (_, res: express.Response) => {
-    res.json(await wrapErrors(async () => ({ models: await getModels() })));
-  });
-
-  router.get("/analyses", async (_, res: express.Response) => {
+  router.get("/datasets", async (_, res: express.Response) => {
     res.json(
-      await wrapErrors(async () => ({ directory: await readMalloyDirectory() }))
+      await wrapErrors(async () => ({ datasets: await getDatasets() }))
     );
-  });
-
-  router.get(
-    "/analysis",
-    async (req: express.Request, res: express.Response) => {
-      const analysisPath = req.query.path as string;
-      res.json(
-        await wrapErrors(async () => ({
-          analysis: await getAnalysis(analysisPath),
-        }))
-      );
-    }
-  );
-
-  router.get("/schema", async (req: express.Request, res: express.Response) => {
-    const analysableRef = req.query as unknown as Analysis;
-    res.json(await wrapErrors(async () => await getSchema(analysableRef)));
   });
 
   router.post(
     "/run_query",
     async (req: express.Request, res: express.Response) => {
       const query = req.body.query as string;
-      const queryName = req.body.queryName as string;
-      const analysis = req.body.analysis as unknown as Analysis;
+      const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
-          const result = await runQuery(query, queryName, analysis);
+          const result = await runQuery(query, modelPath);
           return { result: result.toJSON() };
-        })
-      );
-    }
-  );
-
-  router.post(
-    "/save_field",
-    async (req: express.Request, res: express.Response) => {
-      const field = req.body.field as FieldDef;
-      const name = req.body.name as string;
-      const analysis = req.body.analysis as Analysis;
-      const type = req.body.type as "query" | "dimension" | "measure";
-      res.json(
-        await wrapErrors(async () => {
-          const newAnalysis = await saveField(type, field, name, analysis);
-          return { analysis: newAnalysis };
         })
       );
     }

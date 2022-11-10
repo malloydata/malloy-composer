@@ -11,11 +11,11 @@
  * GNU General Public License for more details.
  */
 
-import { ModelDef } from "@malloydata/malloy";
 import {
   FilterExpression,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";

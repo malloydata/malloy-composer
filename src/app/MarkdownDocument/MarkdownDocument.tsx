@@ -14,9 +14,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Markdown, parseMarkdown } from "../../core/markdown";
-import { ActionIcon } from "../ActionIcon";
 import { COLORS } from "../colors";
-import { openInBrowser } from "../data";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
@@ -86,7 +84,7 @@ export const MarkdownNode: React.FC<{
       return <MarkdownParagraph>{children(node)}</MarkdownParagraph>;
     case "link":
       return (
-        <MarkdownLink href={node.url} onClick={() => openInBrowser(node.url)}>
+        <MarkdownLink href={node.url}>
           {children(node)}
           {node.title}
         </MarkdownLink>

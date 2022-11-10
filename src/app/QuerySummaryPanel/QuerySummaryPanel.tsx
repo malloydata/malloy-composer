@@ -89,6 +89,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               <ClickToPopover
                 popoverContent={({ closeMenu }) => (
                   <StageActionMenu
+                    model={model}
                     source={stage.inputSource}
                     toggleField={queryModifiers.toggleField}
                     addFilter={queryModifiers.addFilter}
@@ -805,6 +806,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 <ClickToPopover
                   popoverContent={({ closeMenu }) => (
                     <StageActionMenu
+                      model={model}
                       source={stage.inputSource}
                       toggleField={queryModifiers.toggleField}
                       addFilter={queryModifiers.addFilter}

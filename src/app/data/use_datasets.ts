@@ -13,7 +13,7 @@
 
 import { useQuery } from "react-query";
 import * as explore from "../../types";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
 export const KEY = "datasets";
@@ -22,15 +22,11 @@ export function useDatasets(): explore.Dataset[] | undefined {
   const { data: directory } = useQuery(
     KEY,
     async () => {
-      return duckDBWASM.datasets();
-      // if (isDuckDBWASM()) {
-      //   return duckDBWASM.directory();
-      // }
-      // if (isElectron()) {
-      //   return window.malloy.analyses(path);
-      // }
-      // const raw = await (await fetch("api/analyses")).json();
-      // return raw.directory as explore.Dataset[];
+      if (isDuckDBWASM()) {
+        return duckDBWASM.datasets();
+      }
+      const raw = await (await fetch("api/datasests")).json();
+      return raw.datasets as explore.Dataset[];
     },
     {
       refetchOnWindowFocus: false,

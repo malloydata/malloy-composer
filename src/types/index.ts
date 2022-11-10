@@ -17,13 +17,24 @@ import {
   QueryFieldDef,
   StructDef,
 } from "@malloydata/malloy";
+import { DataStyles } from "@malloydata/render";
+
+export interface DatasetConfig {
+  name: string;
+  description: string;
+  tables: string[];
+  model: string;
+  readme?: string;
+}
 
 export interface Dataset {
   id: string;
   name: string;
   description: string;
   model: ModelDef;
+  modelPath: string;
   readme: string;
+  styles?: DataStyles;
 }
 
 export interface SchemaFieldMeasure {

@@ -53,6 +53,8 @@ export const Explore: React.FC = () => {
   const sourceName = params.get("source");
   const newParams = useRef("");
 
+  console.log({datasets});
+
   const updateQueryInURL = ({ run, query: newQuery, styles: newStylesJSON }: { 
     run: boolean, 
     query: string | undefined,
@@ -115,7 +117,7 @@ export const Explore: React.FC = () => {
     registerNewSource,
     error,
     dirty,
-  } = useQueryBuilder(dataset?.model, sourceName, updateQueryInURL);
+  } = useQueryBuilder(dataset?.model, dataset?.modelPath, sourceName, updateQueryInURL, dataset?.styles);
 
   const model = dataset?.model;
   const source =

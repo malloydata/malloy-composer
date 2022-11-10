@@ -1,0 +1,23 @@
+{
+  "readme": "./faa.md",
+  "linkedReadmes": ["./flights.md", "./carriers.md"],
+  "title": "NTSB Flight Data",
+  "models": [
+    {
+      "model": "./flights.malloy",
+      "tables": ["flights.parquet", "carriers.parquet", "airports.parquet"],
+      "sources": [
+        {
+          "title": "Flights",
+          "source": "flights",
+          "description": "Look at all the flights that have flown up to 2003"
+        },
+        {
+          "title": "Carriers",
+          "source": "carriers",
+          "description": "Look at all the carriers that have flown up to 2003"
+        }
+      ]
+    }
+  ]
+}

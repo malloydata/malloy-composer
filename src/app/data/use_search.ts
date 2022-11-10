@@ -13,7 +13,7 @@
 
 import { ModelDef, SearchIndexResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
 async function search(
@@ -28,19 +28,6 @@ async function search(
 
   if (isDuckDBWASM()) {
     const res = await duckDBWASM.search(model, source, searchTerm, fieldPath);
-    if (res instanceof Error) {
-      throw res;
-    }
-    return res;
-  }
-
-  if (isElectron()) {
-    const res = await window.malloy.search(
-      model,
-      source,
-      searchTerm,
-      fieldPath
-    );
     if (res instanceof Error) {
       throw res;
     }

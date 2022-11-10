@@ -1,0 +1,8 @@
+{
+  "documents": [
+    {
+      "id": "flights",
+      "path": "./flights_composer.json"
+    }
+  ]
+}

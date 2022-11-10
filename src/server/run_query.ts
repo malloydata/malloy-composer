@@ -12,22 +12,19 @@
  */
 
 import { Result, Runtime } from "@malloydata/malloy";
-import { Analysis } from "../types";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
 
 export async function runQuery(
   query: string,
-  queryName: string,
-  analysis: Analysis
+  modelPath: string,
 ): Promise<Result> {
-  const connections = CONNECTION_MANAGER.getConnectionLookup(
-    new URL("file://" + (analysis.fullPath || analysis.modelFullPath))
-  );
+  const modelURL = new URL("file://" + modelPath);
+  const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
   const runnable = runtime
-    .loadModel(analysis.malloy + "\n" + query)
-    .loadQueryByName(queryName);
+    .loadModel(modelURL)
+    .loadQuery(query);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({ rowLimit });
 }
