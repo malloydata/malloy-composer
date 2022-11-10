@@ -71,10 +71,12 @@ interface NestQueryActionMenuProps {
   rename: (newName: string) => void;
   canSave: boolean;
   model: ModelDef | undefined;
+  modelPath: string | undefined;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   model,
+  modelPath,
   source,
   toggleField,
   addFilter,
@@ -97,6 +99,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
     <ActionMenu
       topValues={topValues}
       model={model}
+      modelPath={modelPath}
       valueSearchSource={source}
       addFilter={(filter) => addFilter(stagePath, filter)}
       closeMenu={closeMenu}
@@ -159,6 +162,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              modelPath={modelPath}
               model={model}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
