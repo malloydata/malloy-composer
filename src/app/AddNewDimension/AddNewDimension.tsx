@@ -19,6 +19,7 @@ import {
   ContextMenuMain,
   RightButtonRow,
   ContextMenuTitle,
+  FormError,
   FormFieldList,
 } from "../CommonElements";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
@@ -40,6 +41,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
 }) => {
   const [dimension, setDimension] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
+  const [error, setError] = useState<Error>();
   const needsName = initialCode === undefined;
   return (
     <ContextMenuMain>
@@ -64,6 +66,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             label={needsName ? "Definition" : undefined}
           />
         </FormFieldList>
+        <FormError error={error} />
         <RightButtonRow>
           <Button
             type="submit"
@@ -73,8 +76,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
                   addDimension(dimension);
                   onComplete();
                 })
-                // eslint-disable-next-line no-console
-                .catch(console.log);
+                .catch(setError);
               event?.stopPropagation();
               event?.preventDefault();
             }}
