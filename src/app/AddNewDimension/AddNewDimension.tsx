@@ -71,14 +71,14 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
           <Button
             type="submit"
             onClick={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
               compileDimension(source, newName, dimension)
                 .then((dimension) => {
                   addDimension(dimension);
                   onComplete();
                 })
                 .catch(setError);
-              event?.stopPropagation();
-              event?.preventDefault();
             }}
           >
             Done

@@ -23,9 +23,10 @@ interface SelectDropdownProps<T> {
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
-  options: { label: string; value: T }[];
+  options: { label: string; value: T; divider?: boolean }[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
+  width?: number;
 }
 
 const Wrapper = styled.div`
@@ -59,7 +60,11 @@ export const InputBox = styled.div`
   }
 `;
 
-const OptionDiv = styled.label`
+interface OptionDivProps {
+  divider: boolean;
+}
+
+const OptionDiv = styled.label<OptionDivProps>`
   padding: 0px 10px;
   height: 30px;
   cursor: pointer;
@@ -72,6 +77,7 @@ const OptionDiv = styled.label`
   &:hover {
     background-color: ${COLORS.dimension.fillLight};
   }
+  ${({ divider }) => (divider ? "border-top: 1px solid #ececed" : "")}
 `;
 
 const OptionSpan = styled.span`
@@ -96,6 +102,7 @@ export const SelectDropdown = <T,>({
   placeholder = "Select",
   disabled = false,
   valueEqual = (a: T, b: T) => a === b,
+  width = 200,
 }: SelectDropdownProps<T>): JSX.Element => {
   const [open, setOpen] = useState(false);
   const wrapperElement = useRef<HTMLDivElement>(null);
@@ -123,7 +130,7 @@ export const SelectDropdown = <T,>({
         open={open}
         setOpen={setOpen}
         placement="bottom-start"
-        width={200}
+        width={width}
         maxHeight={500}
       >
         <SelectList
@@ -139,7 +146,7 @@ export const SelectDropdown = <T,>({
 
 interface SelectListProps<T> {
   value: T | undefined;
-  options: { label: string; value: T }[];
+  options: { label: string; value: T; divider?: boolean }[];
   valueEqual?: (a: T, b: T) => boolean;
   onChange: (value: T) => void;
 }
@@ -157,6 +164,7 @@ export function SelectList<T>({
           value !== undefined && valueEqual(value, option.value);
         return (
           <OptionDiv
+            divider={option.divider}
             key={index}
             onClick={() => onChange(option.value)}
             className={isSelected ? "selected" : ""}
@@ -172,14 +180,18 @@ export function SelectList<T>({
 }
 
 interface DropdownMenuProps {
-  options: { label: string; onSelect: () => void }[];
+  options: { label: string; onSelect: () => void; divider?: boolean }[];
 }
 
 export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
   return (
     <SelectListDiv>
       {options.map((option, index) => (
-        <OptionDiv key={index} onClick={() => option.onSelect()}>
+        <OptionDiv
+          divider={option.divider}
+          key={index}
+          onClick={() => option.onSelect()}
+        >
           <OptionSpan>{option.label}</OptionSpan>
         </OptionDiv>
       ))}
