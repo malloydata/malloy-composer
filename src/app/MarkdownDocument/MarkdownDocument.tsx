@@ -291,18 +291,21 @@ const MarkdownPreWrapper = styled.div`
 `;
 
 const QueryLink = styled.div`
-  border: 1px solid #efefef;
+  border: 1px solid #d0d0d0;
   border-radius: 10px;
   padding: 10px 20px;
-  background-color: #fcfcfc;
+  background-color: white;
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
   cursor: pointer;
+  font-size: 15px;
+  color: #595959;
 
   &:hover {
     background-color: #f0f6ff;
+    border-color: #4285f4;
   }
 `;
 
@@ -314,6 +317,6 @@ const QueryLinkTitleRow = styled.div`
 `;
 
 const QueryLinkDescription = styled.div`
-  color: #696969;
+  color: #929292;
   font-size: 14px;
 `;

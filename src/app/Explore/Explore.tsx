@@ -28,9 +28,6 @@ import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
 import { useSearchParams } from "react-router-dom";
-import { ActionIcon } from "../ActionIcon";
-import { ListNest } from "../ListNest";
-import { FieldButton } from "../FieldButton";
 import { DataStyles } from "@malloydata/render";
 
 const KEY_MAP = {
@@ -329,52 +326,46 @@ export const Explore: React.FC = () => {
               )}
               {section === "sources" && (
                 <PageContent>
-                  {datasets &&
-                    datasets.map((dataset) => {
-                      const sources = Object.entries(dataset.model.contents)
-                        .map(([name, value]) => ({
-                          name,
-                          source: value,
-                        }))
-                        .filter((thing) => thing.source.type === "struct") as {
-                        name: string;
-                        source: StructDef;
-                      }[];
-                      return (
-                        <div key={dataset.id}>
-                          <FieldButton
-                            icon={
-                              <ActionIcon
-                                action="open-directory"
-                                color="other"
-                              />
-                            }
-                            name={dataset.name}
-                            color="other"
-                          />
-                          <ListNest>
-                            {sources.map((entry) => {
-                              return (
-                                <FieldButton
-                                  key={entry.name}
-                                  icon={
-                                    <ActionIcon
-                                      action="analysis"
-                                      color="dimension"
-                                    />
-                                  }
-                                  onClick={() => {
-                                    setDatasetSource(dataset, entry.name);
-                                  }}
-                                  name={entry.name}
-                                  color="dimension"
-                                />
-                              );
-                            })}
-                          </ListNest>
-                        </div>
-                      );
-                    })}
+                  <DatasetsWrapperOuter>
+                    <DatasetsWrapperInner>
+                      <Head1>Sources</Head1>
+                      {datasets &&
+                        datasets.map((dataset) => {
+                          const sources = Object.entries(dataset.model.contents)
+                            .map(([name, value]) => ({
+                              name,
+                              source: value,
+                            }))
+                            .filter(
+                              (thing) => thing.source.type === "struct"
+                            ) as {
+                            name: string;
+                            source: StructDef;
+                          }[];
+                          return (
+                            <>
+                              {sources.map((entry) => {
+                                return (
+                                  <SourceLink
+                                    key={entry.name}
+                                    onClick={() => {
+                                      setDatasetSource(dataset, entry.name);
+                                    }}
+                                  >
+                                    <SourceLinkTitleRow>
+                                      {toTitleCase(entry.name)}
+                                    </SourceLinkTitleRow>
+                                    <SourceLinkDescription>
+                                      In {dataset.name}
+                                    </SourceLinkDescription>
+                                  </SourceLink>
+                                );
+                              })}
+                            </>
+                          );
+                        })}
+                    </DatasetsWrapperInner>
+                  </DatasetsWrapperOuter>
                 </PageContent>
               )}
               <ErrorMessage error={error} />
@@ -482,4 +473,53 @@ const BottomChannel = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
+`;
+
+const SourceLink = styled.div`
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #595959;
+
+  &:hover {
+    background-color: #f0f6ff;
+    border-color: #4285f4;
+  }
+`;
+
+const SourceLinkTitleRow = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SourceLinkDescription = styled.div`
+  color: #929292;
+  font-size: 14px;
+`;
+
+const DatasetsWrapperOuter = styled.div`
+  padding: 10px 30px 30px 30px;
+  width: 100%;
+  font-family: Google Sans;
+  overflow-y: auto;
+`;
+
+const DatasetsWrapperInner = styled.div`
+  max-width: 900px;
+`;
+
+const Head1 = styled.h1`
+  font-size: 21px;
+  font-weight: 500;
+  margin-block-end: 8px;
+  margin-block-start: 16px;
 `;

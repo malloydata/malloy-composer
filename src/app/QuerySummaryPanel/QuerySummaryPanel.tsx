@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ import { VisIcon } from "../VisIcon";
 import { StageActionMenu } from "../StageActionMenu";
 import { BackPart, CloseIconStyled } from "../FieldButton/FieldButton";
 import { ErrorFieldActionMenu } from "../ErrorFieldActionMenu";
-import { isDuckDBWASM, notUndefined, scalarTypeOfField } from "../utils";
+import { notUndefined, scalarTypeOfField } from "../utils";
 import { useClickOutside } from "../hooks";
 import { HoverToPopover } from "../HoverToPopover";
 import { FieldDetailPanel } from "../FieldDetailPanel";
