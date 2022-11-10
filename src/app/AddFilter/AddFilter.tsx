@@ -57,10 +57,12 @@ interface AddFilterProps {
   addFilter: (filter: FilterExpression, as?: string) => void;
   needsRename: boolean;
   onComplete: () => void;
+  modelPath: string | undefined;
 }
 
 export const AddFilter: React.FC<AddFilterProps> = ({
   model,
+  modelPath,
   source,
   field,
   addFilter,
@@ -139,6 +141,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
         )}
         {type === "string" && (
           <StringFilterBuilder
+            modelPath={modelPath}
             model={model}
             source={source}
             fieldPath={fieldPath}

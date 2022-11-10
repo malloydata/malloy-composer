@@ -17,24 +17,21 @@ import {
   SearchValueMapResult,
   StructDef,
 } from "@malloydata/malloy";
+import { getConfig } from "./config";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
+import * as path from "path";
 
 export async function topValues(
-  model: ModelDef,
   source: StructDef,
   modelPath: string
 ): Promise<SearchValueMapResult[] | undefined> {
+  const { modelsPath } = await getConfig();
+  const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
   const sourceName = source.as || source.name;
-  const connections = CONNECTION_MANAGER.getConnectionLookup(
-    new URL("file://" + modelPath)
-  );
+  const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
-  const contents = { ...model.contents, [sourceName]: source };
   return runtime
-    ._loadModelFromModelDef({
-      ...model,
-      contents,
-    })
+    .loadModel(modelURL)
     .searchValueMap(sourceName);
 }

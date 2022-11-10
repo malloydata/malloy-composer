@@ -30,10 +30,11 @@ export function routes(router: express.Router): void {
     "/run_query",
     async (req: express.Request, res: express.Response) => {
       const query = req.body.query as string;
+      const queryName = req.body.queryName as string;
       const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
-          const result = await runQuery(query, modelPath);
+          const result = await runQuery(query, queryName, modelPath);
           return { result: result.toJSON() };
         })
       );
@@ -46,12 +47,10 @@ export function routes(router: express.Router): void {
       const source = req.body.source as unknown as StructDef;
       const searchTerm = req.body.searchTerm;
       const fieldPath = req.body.fieldPath;
-      const model = req.body.model;
       const modelPath = req.body.modelPath;
       res.json(
         await wrapErrors(async () => {
           const result = await searchIndex(
-            model,
             source,
             modelPath,
             searchTerm,
@@ -66,12 +65,11 @@ export function routes(router: express.Router): void {
   router.post(
     "/top_values",
     async (req: express.Request, res: express.Response) => {
-      const model = req.body.model;
       const source = req.body.source as unknown as StructDef;
       const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
-          const result = await topValues(model, source, modelPath);
+          const result = await topValues(source, modelPath);
           return { result: result };
         })
       );

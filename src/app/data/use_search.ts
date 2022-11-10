@@ -18,6 +18,7 @@ import * as duckDBWASM from "./duckdb_wasm";
 
 async function search(
   model: ModelDef,
+  modelPath: string,
   source: StructDef | undefined,
   searchTerm: string,
   fieldPath?: string
@@ -40,7 +41,7 @@ async function search(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ model, searchTerm, source, fieldPath }),
+      body: JSON.stringify({ modelPath, searchTerm, source, fieldPath }),
     })
   ).json();
   return (raw.result || []) as SearchIndexResult[];
@@ -53,13 +54,14 @@ interface UseSearchResult {
 
 export function useSearch(
   model: ModelDef,
+  modelPath: string,
   source: StructDef | undefined,
   searchTerm: string,
   fieldPath?: string
 ): UseSearchResult {
   const { data: searchResults, isLoading } = useQuery(
     [source, searchTerm, fieldPath],
-    () => search(model, source, searchTerm, fieldPath),
+    () => search(model, modelPath, source, searchTerm, fieldPath),
     {
       refetchOnWindowFocus: true,
     }

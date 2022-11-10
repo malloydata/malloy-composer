@@ -41,6 +41,7 @@ interface TopQueryActionMenuProps {
   isOnlyStage: boolean;
   queryModifiers: QueryModifiers;
   model: ModelDef | undefined;
+  modelPath: string | undefined;
 }
 
 export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
@@ -52,6 +53,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
   topValues,
   queryModifiers,
   model,
+  modelPath,
 }) => {
   return (
     <ActionMenu
@@ -60,6 +62,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
       addFilter={(filter) => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
       model={model}
+      modelPath={modelPath}
       actions={[
         {
           kind: "sub_menu",
@@ -131,6 +134,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              modelPath={modelPath}
               model={model}
               topValues={topValues}
               source={source}

@@ -52,10 +52,12 @@ interface QuerySummaryPanelProps {
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
   queryModifiers: QueryModifiers;
+  modelPath: string | undefined;
 }
 
 export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
   model,
+  modelPath,
   querySummary,
   stagePath,
   queryName,
@@ -90,6 +92,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                 popoverContent={({ closeMenu }) => (
                   <StageActionMenu
                     model={model}
+                    modelPath={modelPath}
                     source={stage.inputSource}
                     toggleField={queryModifiers.toggleField}
                     addFilter={queryModifiers.addFilter}
@@ -131,6 +134,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
             )}
             <StageSummaryUI
               model={model}
+              modelPath={modelPath}
               stage={stage}
               queryModifiers={queryModifiers}
               stagePath={nestStagePath}
@@ -153,10 +157,12 @@ interface SummaryStageProps {
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
+  modelPath: string | undefined;
 }
 
 const StageSummaryUI: React.FC<SummaryStageProps> = ({
   model,
+  modelPath,
   stage,
   topValues,
   queryModifiers,
@@ -204,6 +210,7 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
       {stage.items.map((item, index) => (
         <SummaryItem
           model={model}
+          modelPath={modelPath}
           key={`${item.type}/${index}`}
           item={item}
           stageSummary={stage.items}
@@ -283,10 +290,12 @@ interface SummaryItemProps {
   topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
+  modelPath: string | undefined;
 }
 
 const SummaryItem: React.FC<SummaryItemProps> = ({
   model,
+  modelPath,
   item,
   source,
   stagePath,
@@ -326,6 +335,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               return (
                 <DimensionActionMenu
                   model={model}
+                  modelPath={modelPath}
                   source={source}
                   removeField={() =>
                     queryModifiers.removeField(stagePath, item.fieldIndex)
@@ -391,6 +401,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               return (
                 <AggregateActionMenu
                   model={model}
+                  modelPath={modelPath}
                   stagePath={stagePath}
                   source={source}
                   removeField={() =>
@@ -556,6 +567,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             return (
               <NestQueryActionMenu
                 model={model}
+                modelPath={modelPath}
                 source={source}
                 toggleField={queryModifiers.toggleField}
                 addFilter={queryModifiers.addFilter}
@@ -807,6 +819,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   popoverContent={({ closeMenu }) => (
                     <StageActionMenu
                       model={model}
+                      modelPath={modelPath}
                       source={stage.inputSource}
                       toggleField={queryModifiers.toggleField}
                       addFilter={queryModifiers.addFilter}
@@ -848,25 +861,13 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               )}
               <StageSummaryUI
                 model={model}
+                modelPath={modelPath}
                 stage={stage}
                 stagePath={nestStagePath}
                 source={source}
                 topValues={topValues}
                 queryModifiers={queryModifiers}
               />
-              {/* <FieldListDiv>
-          { stage.items.map((item, index) => {
-            return <SummaryItem
-              key={"child:" + index}
-              item={item}
-              source={source}
-              stagePath={nestStagePath}
-              fieldIndex={fieldIndex}
-              stageSummary={stageSummary}
-              {...query}
-            />;
-          })}
-        </FieldListDiv> */}
             </ListNest>
           );
         })}
@@ -877,6 +878,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               return (
                 <SummaryItem
                   model={model}
+                  modelPath={modelPath}
                   key={"child:" + index}
                   item={childItem}
                   source={source}

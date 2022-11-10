@@ -16,19 +16,21 @@ import { Runtime } from "@malloydata/malloy";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
 import { HackyDataStylesAccumulator } from "../common/data_styles";
+import * as path from "path";
+import { getConfig } from "./config";
 
 export async function getDatasets() {
-  const base = window.location.href;
-  const samplesURL = new URL("file://./composer.json", base);
+  const { modelsPath } = await getConfig();
+  const samplesURL = new URL("file://" + path.join(modelsPath, "composer.json"));
   const response = await URL_READER.readURL(samplesURL);
   const samples = JSON.parse(response) as { datasets: explore.DatasetConfig[] };
   return await Promise.all(
     samples.datasets.map(async (sample: explore.DatasetConfig) => {
-      const modelURL = new URL(sample.model, base);
+      const modelURL = new URL("file://" + path.join(modelsPath, sample.model));
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
       const readme =
         sample.readme &&
-        (await URL_READER.readURL(new URL(sample.readme, base)));
+        (await URL_READER.readURL(new URL("file://" + path.join(modelsPath, sample.readme))));
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new Runtime(urlReader, connections);
       const model = await runtime.getModel(modelURL);

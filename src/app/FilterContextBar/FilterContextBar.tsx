@@ -48,10 +48,12 @@ interface FilterContextBarProps {
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;
   model: ModelDef;
+  modelPath: string;
 }
 
 export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   model,
+  modelPath,
   source,
   addFilter,
   onComplete,
@@ -60,7 +62,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
-  const { searchResults, isLoading } = useSearch(model, source, searchTerm);
+  const { searchResults, isLoading } = useSearch(model, modelPath, source, searchTerm);
   const stringSearchResults =
     searchResults &&
     searchResults.filter((r) => r.fieldType === "string").slice(0, 100);
@@ -101,6 +103,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
         {field && (
           <AddFilter
             model={model}
+            modelPath={modelPath}
             source={source}
             fieldPath={field.path}
             field={field.def}

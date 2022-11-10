@@ -44,6 +44,7 @@ import { largeNumberLabel } from "../utils";
 
 interface StringFilterBuilderProps {
   model: ModelDef;
+  modelPath: string;
   source: StructDef;
   fieldPath: string;
   filter: StringFilter;
@@ -52,6 +53,7 @@ interface StringFilterBuilderProps {
 
 export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
   model,
+  modelPath,
   source,
   filter,
   setFilter,
@@ -63,6 +65,7 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
 
   const equalTo = useStringEqualToOrNotBuilder(
     model,
+    modelPath,
     source,
     filter,
     setFilter,
@@ -151,6 +154,7 @@ const UtilRow = styled.div`
 
 function useStringEqualToOrNotBuilder(
   model: ModelDef,
+  modelPath: string,
   source: StructDef,
   filter: StringFilter,
   setFilter: (filter: StringEqualToFilter | StringNotEqualToFilter) => void,
@@ -159,6 +163,7 @@ function useStringEqualToOrNotBuilder(
   const [searchValue, setSearchValue] = useState("");
   const { searchResults, isLoading } = useSearch(
     model,
+    modelPath,
     source,
     searchValue,
     fieldPath

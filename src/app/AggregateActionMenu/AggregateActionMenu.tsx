@@ -51,10 +51,12 @@ interface AggregateActionMenuProps {
   orderByField: OrderByField;
   stagePath: StagePath;
   model: ModelDef | undefined;
+  modelPath: string;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   model,
+  modelPath,
   source,
   addFilter,
   rename,
@@ -87,6 +89,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           Component: ({ onComplete }) => (
             <FilterContextBar
               model={model}
+              modelPath={modelPath}
               source={source}
               addFilter={addFilter}
               onComplete={onComplete}

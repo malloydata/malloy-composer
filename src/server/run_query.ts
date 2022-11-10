@@ -11,20 +11,31 @@
  * GNU General Public License for more details.
  */
 
-import { Result, Runtime } from "@malloydata/malloy";
+import { Malloy, Result, Runtime } from "@malloydata/malloy";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
+import * as path from "path";
+import { getConfig } from "./config";
 
 export async function runQuery(
   query: string,
+  queryName: string,
   modelPath: string,
 ): Promise<Result> {
-  const modelURL = new URL("file://" + modelPath);
+  const { modelsPath } = await getConfig();
+  const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
-  const runnable = runtime
-    .loadModel(modelURL)
-    .loadQuery(query);
+  const baseModel = await runtime.getModel(modelURL);
+  const queryModel = await Malloy.compile({
+    urlReader: URL_READER,
+    connections,
+    model: baseModel,
+    parse: Malloy.parse({ source: query }),
+  });
+  const runnable = runtime._loadModelFromModelDef(
+    queryModel._modelDef
+  ).loadQueryByName(queryName);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({ rowLimit });
 }

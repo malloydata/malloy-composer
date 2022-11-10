@@ -63,10 +63,12 @@ interface ActionMenuProps {
   addFilter?: (filter: FilterExpression) => void;
   topValues?: SearchValueMapResult[] | undefined;
   model?: ModelDef | undefined;
+  modelPath?: string;
 }
 
 export const ActionMenu: React.FC<ActionMenuProps> = ({
   model,
+  modelPath,
   actions,
   closeMenu,
   searchItems,
@@ -82,6 +84,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const { searchResults, isLoading } = useSearch(
     model,
+    modelPath,
     valueSearchSource,
     searchTerm
   );

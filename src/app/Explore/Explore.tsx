@@ -120,6 +120,7 @@ export const Explore: React.FC = () => {
   } = useQueryBuilder(dataset?.model, dataset?.modelPath, sourceName, updateQueryInURL, dataset?.styles);
 
   const model = dataset?.model;
+  const modelPath = dataset?.modelPath;
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 
@@ -291,6 +292,7 @@ export const Explore: React.FC = () => {
                 <ExploreQueryEditor
                   dirty={dirty}
                   model={model}
+                  modelPath={modelPath}
                   source={source}
                   datasets={datasets}
                   queryModifiers={queryModifiers}

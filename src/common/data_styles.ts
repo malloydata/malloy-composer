@@ -24,8 +24,9 @@ export function compileDataStyles(styles: string): DataStyles {
 
 // TODO replace this with actual JSON metadata import functionality, when it exists
 export async function dataStylesForFile(
-  uri: string,
-  text: string
+  url: string,
+  text: string,
+  urlReader: URLReader
 ): Promise<DataStyles> {
   const PREFIX = "--! styles ";
   let styles: DataStyles = {};
@@ -36,7 +37,7 @@ export async function dataStylesForFile(
       //      created, so that the error can be shown there.
       let stylesText;
       try {
-        stylesText = await fetchFile(new URL(fileName, window.location.href));
+        stylesText = await urlReader.readURL(new URL(fileName, url));
       } catch (error) {
         console.error(`Error loading data style '${fileName}': ${error}`);
         stylesText = "{}";
@@ -53,18 +54,18 @@ export async function dataStylesForFile(
 //      we abuse the `URLReader` API to keep track of requested URLs
 //      and accumulate data styles for those files.
 export class HackyDataStylesAccumulator implements URLReader {
-  private uriReader: URLReader;
+  private urlReader: URLReader;
   private dataStyles: DataStyles = {};
 
-  constructor(uriReader: URLReader) {
-    this.uriReader = uriReader;
+  constructor(urlReader: URLReader) {
+    this.urlReader = urlReader;
   }
 
-  async readURL(uri: URL): Promise<string> {
-    const contents = await this.uriReader.readURL(uri);
+  async readURL(url: URL): Promise<string> {
+    const contents = await this.urlReader.readURL(url);
     this.dataStyles = {
       ...this.dataStyles,
-      ...(await dataStylesForFile(uri.toString(), contents)),
+      ...(await dataStylesForFile(url.toString(), contents, this.urlReader)),
     };
 
     return contents;

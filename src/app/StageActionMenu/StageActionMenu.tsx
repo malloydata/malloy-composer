@@ -66,6 +66,7 @@ interface StageActionMenuProps {
   topValues: SearchValueMapResult[] | undefined;
   isLastStage: boolean;
   model: ModelDef;
+  modelPath: string | undefined;
 }
 
 export const StageActionMenu: React.FC<StageActionMenuProps> = ({
@@ -84,6 +85,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   isLastStage,
   topValues,
   model,
+  modelPath,
 }) => {
   return (
     <ActionMenu
@@ -149,6 +151,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({ onComplete }) => (
             <FilterContextBar
               model={model}
+              modelPath={modelPath}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}

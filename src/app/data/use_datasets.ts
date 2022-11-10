@@ -25,7 +25,7 @@ export function useDatasets(): explore.Dataset[] | undefined {
       if (isDuckDBWASM()) {
         return duckDBWASM.datasets();
       }
-      const raw = await (await fetch("api/datasests")).json();
+      const raw = await (await fetch("api/datasets")).json();
       return raw.datasets as explore.Dataset[];
     },
     {

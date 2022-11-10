@@ -58,11 +58,13 @@ interface DimensionActionMenuProps {
     direction?: "asc" | "desc"
   ) => void;
   orderByField: OrderByField;
+  modelPath: string | undefined;
 }
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   source,
   model,
+  modelPath,
   rename,
   name,
   closeMenu,
@@ -106,6 +108,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
             filterField && filterFieldPath ? (
               <AddFilter
                 model={model}
+                modelPath={modelPath}
                 onComplete={onComplete}
                 source={source}
                 field={filterField}

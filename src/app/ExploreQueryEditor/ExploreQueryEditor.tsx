@@ -32,11 +32,13 @@ interface ExploreQueryEditorProps {
   datasets: Dataset[];
   model: ModelDef;
   dirty: boolean;
+  modelPath: string | undefined;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   dirty,
   model,
+  modelPath,
   source,
   queryName,
   topValues,
@@ -65,6 +67,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 <Popover open={insertOpen} setOpen={setInsertOpen}>
                   <TopQueryActionMenu
                     model={model}
+                    modelPath={modelPath}
                     source={source}
                     queryModifiers={queryModifiers}
                     stagePath={{ stageIndex: 0 }}
@@ -95,6 +98,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
             {querySummary && (
               <QuerySummaryPanel
                 model={model}
+                modelPath={modelPath}
                 source={source}
                 querySummary={querySummary}
                 queryModifiers={queryModifiers}

@@ -19,6 +19,7 @@ import * as duckDBWASM from "./duckdb_wasm";
 
 async function fetchTopValues(
   model?: ModelDef,
+  modelPath?: string,
   source?: StructDef
 ): Promise<SearchValueMapResult[] | undefined> {
   if (source === undefined || model === undefined) {
@@ -36,6 +37,7 @@ async function fetchTopValues(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        modelPath,
         source,
       }),
     })
@@ -49,7 +51,7 @@ export function useTopValues(
 ): SearchValueMapResult[] | undefined {
   const { data: models } = useQuery(
     ["top_values", dataset?.id, source?.name],
-    () => fetchTopValues(dataset?.model, source),
+    () => fetchTopValues(dataset?.model, dataset?.modelPath, source),
     {
       refetchOnWindowFocus: false,
     }
