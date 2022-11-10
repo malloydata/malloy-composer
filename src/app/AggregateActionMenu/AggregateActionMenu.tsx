@@ -41,8 +41,6 @@ interface AggregateActionMenuProps {
   definition: string | undefined;
   editMeasure: (fieldIndex: number, measure: QueryFieldDef) => void;
   topValues: SearchValueMapResult[] | undefined;
-  canSave: boolean;
-  saveMeasure?: () => void;
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,
@@ -70,7 +68,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   isEditable,
   fieldIndex,
   topValues,
-  saveMeasure,
   addOrderBy,
   orderByField,
   stagePath,
@@ -175,17 +172,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: "other",
           label: "Move",
           onClick: beginReorderingField,
-        },
-        {
-          kind: "one_click",
-          id: "save_definition",
-          label: "Save Measure",
-          iconName: "save",
-          isEnabled: false,
-          iconColor: "measure",
-          onClick: () => {
-            saveMeasure && saveMeasure();
-          },
         },
       ]}
     />

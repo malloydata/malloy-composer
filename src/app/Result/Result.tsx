@@ -77,10 +77,7 @@ export const Result: React.FC<ResultProps> = ({
       console.log(result.sql);
       const currentResultId = ++resultId.current;
       const rendered = await new render.HTMLView(document).render(result.data, {
-        dataStyles: {
-          // ...analysis.dataStyles,
-          ...dataStyles,
-        },
+        dataStyles,
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(

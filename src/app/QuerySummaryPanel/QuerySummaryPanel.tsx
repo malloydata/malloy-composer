@@ -365,20 +365,10 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   }
                   name={item.name}
                   isEditable={item.type === "field_definition"}
-                  canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                   definition={
                     item.type === "field_definition" ? item.source : undefined
                   }
                   addFilter={queryModifiers.addFilter}
-                  saveDimension={() => {
-                    // item.saveDefinition &&
-                    //   queryModifiers.saveDimension(
-                    //     stagePath,
-                    //     item.fieldIndex,
-                    //     item.name,
-                    //     item.saveDefinition
-                    //   );
-                  }}
                   editDimension={(fieldIndex, dimension) =>
                     queryModifiers.editDimension(
                       stagePath,
@@ -437,19 +427,9 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   definition={
                     item.type === "field_definition" ? item.source : undefined
                   }
-                  canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
                   editMeasure={(fieldIndex, dimension) =>
                     queryModifiers.editMeasure(stagePath, fieldIndex, dimension)
                   }
-                  saveMeasure={() => {
-                    // item.saveDefinition &&
-                    //   queryModifiers.saveMeasure(
-                    //     stagePath,
-                    //     item.fieldIndex,
-                    //     item.name,
-                    //     item.saveDefinition
-                    //   );
-                  }}
                   topValues={topValues}
                   addOrderBy={queryModifiers.addOrderBy}
                   orderByField={{
@@ -597,16 +577,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     item.fieldIndex,
                     newName
                   );
-                }}
-                canSave={!isDuckDBWASM() && item.saveDefinition !== undefined}
-                saveQuery={() => {
-                  // item.saveDefinition &&
-                  //   queryModifiers.saveNestQuery(
-                  //     stagePath,
-                  //     item.fieldIndex,
-                  //     item.name,
-                  //     item.saveDefinition
-                  //   );
                 }}
                 beginReorderingField={() => {
                   beginReorderingField(item.fieldIndex);

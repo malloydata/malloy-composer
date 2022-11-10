@@ -67,9 +67,7 @@ interface NestQueryActionMenuProps {
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   beginReorderingField: () => void;
   topValues: SearchValueMapResult[] | undefined;
-  saveQuery: () => void;
   rename: (newName: string) => void;
-  canSave: boolean;
   model: ModelDef | undefined;
   modelPath: string | undefined;
 }
@@ -92,7 +90,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   beginReorderingField,
   addStage,
   topValues,
-  saveQuery,
   rename,
 }) => {
   return (
@@ -231,19 +228,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
             />
           ),
         },
-        // {
-        //   kind: "sub_menu",
-        //   id: "reorder",
-        //   label: "Reorder Fields",
-        //   iconName: "order_by",
-        //   iconColor: "other",
-        //   closeOnComplete: true,
-        //   Component: ({ onComplete }) => <ReorderFieldsContextBar
-        //     stageSummary={stageSummary}
-        //     updateFieldOrder={(order) => updateFieldOrder(stagePath, order)}
-        //     onComplete={onComplete}
-        //   />
-        // },
         {
           kind: "sub_menu",
           id: "rename",
@@ -270,15 +254,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: "other",
           label: "Move",
           onClick: beginReorderingField,
-        },
-        {
-          kind: "one_click",
-          id: "save_definition",
-          label: "Save Query",
-          iconName: "save",
-          isEnabled: false,
-          iconColor: "query",
-          onClick: saveQuery,
         },
       ]}
       searchItems={flatFields(source).map(({ field, path }) => ({

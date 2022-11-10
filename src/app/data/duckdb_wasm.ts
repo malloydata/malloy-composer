@@ -113,64 +113,6 @@ export async function runQuery(
   return runnable.run({ rowLimit });
 }
 
-function mapField(
-  field: malloy.Field,
-  path: string | undefined
-): explore.SchemaField {
-  const newPath = path !== undefined ? `${path}.${field.name}` : field.name;
-  if (field.isExploreField()) {
-    return {
-      name: field.name,
-      path: newPath,
-      type: "source",
-      kind: "source",
-      fields: field.allFields.map((field) => mapField(field, newPath)),
-    };
-  } else if (field.isQueryField()) {
-    return {
-      name: field.name,
-      path: newPath,
-      type: "query",
-      kind: "query",
-    };
-  } else {
-    const kind = field.isAggregate() ? "measure" : "dimension";
-    return {
-      name: field.name,
-      path: newPath,
-      type: field.type,
-      kind,
-    };
-  }
-}
-
-export async function schema(
-  model: string,
-  sourceName: string
-): Promise<
-  | Error
-  | {
-      schema: explore.Schema;
-      modelDef: malloy.ModelDef;
-      malloy: string;
-    }
-> {
-  const compiledModel = await RUNTIME.getModel(model);
-  const source = compiledModel.explores.find(
-    (source) => source.name === sourceName
-  );
-  if (source === undefined) {
-    throw new Error(`No source with name ${sourceName}`);
-  }
-  return {
-    schema: {
-      fields: source.allFields.map((field) => mapField(field, undefined)),
-    },
-    modelDef: compiledModel._modelDef,
-    malloy: model,
-  };
-}
-
 export async function search(
   model: malloy.ModelDef,
   source: malloy.StructDef,
@@ -178,11 +120,12 @@ export async function search(
   fieldPath?: string
 ): Promise<malloy.SearchIndexResult[] | undefined | Error> {
   const sourceName = source.as || source.name;
-  const contents = { ...model.contents, [sourceName]: source };
-  return RUNTIME._loadModelFromModelDef({
-    ...model,
-    contents,
-  }).search(sourceName, searchTerm, undefined, fieldPath);
+  return RUNTIME._loadModelFromModelDef(model).search(
+    sourceName,
+    searchTerm,
+    undefined,
+    fieldPath
+  );
 }
 
 export async function topValues(
@@ -190,10 +133,5 @@ export async function topValues(
   source: malloy.StructDef
 ): Promise<malloy.SearchValueMapResult[] | undefined> {
   const sourceName = source.as || source.name;
-  // TODO crs I'm pretty sure I don't need the source at all, because this doesn't seem to work for successive stages anyway.
-  const contents = { ...model.contents, [sourceName]: source };
-  return RUNTIME._loadModelFromModelDef({
-    ...model,
-    contents,
-  }).searchValueMap(sourceName);
+  return RUNTIME._loadModelFromModelDef(model).searchValueMap(sourceName);
 }
