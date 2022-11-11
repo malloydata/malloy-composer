@@ -26,6 +26,14 @@ import {
 } from "../CommonElements";
 import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
+import {
+  generateMeasure,
+  getFieldType,
+  MeasureType,
+  sortFields,
+} from "../../core/fields";
+import { FieldButton } from "../FieldButton";
+import { TypeIcon } from "../TypeIcon";
 
 interface AddMeasureProps {
   source: StructDef;
@@ -35,17 +43,7 @@ interface AddMeasureProps {
   initialName?: string;
 }
 
-type MeasureType =
-  | "count"
-  | "distinct"
-  | "max"
-  | "min"
-  | "average"
-  | "sum"
-  | "percent"
-  | "custom";
-
-const COUNT_TYPES: MeasureType[] = ["count", "percent"];
+const COUNT_TYPES: MeasureType[] = ["count", "distinct", "percent"];
 
 export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   source,
@@ -61,33 +59,33 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    switch (measureType) {
-      case "count":
-        setMeasure("count()");
-        break;
-      case "distinct":
-        setMeasure(`count(distinct \`${field}\`)`);
-        break;
-      case "min":
-      case "max":
-      case "average":
-      case "sum":
-        setMeasure(`${measureType}(\`${field}\`)`);
-        break;
-      case "percent":
-        setMeasure(`count() / all(count(), \`${field}\`) * 100.0`);
-        break;
+    const newMeasure = generateMeasure(measureType, field);
+    if (newMeasure) {
+      setMeasure(newMeasure);
     }
   }, [measureType, field]);
 
-  const fields = source.fields
-    .reduce<Array<{ label: string; value: string }>>((acc, { type, name }) => {
-      if (COUNT_TYPES.includes(measureType) || type === "number") {
-        acc.push({ label: name, value: name });
-      }
-      return acc;
-    }, [])
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const fields = sortFields(source.fields).reduce<
+    Array<{ label: JSX.Element; value: string }>
+  >((acc, field) => {
+    const { type, kind } = getFieldType(field);
+
+    if (
+      kind === "dimension" &&
+      (COUNT_TYPES.includes(measureType) || type === "number")
+    ) {
+      const label = (
+        <FieldButton
+          name={field.name}
+          icon={<TypeIcon type={type} kind={kind} />}
+          color={kind}
+          disableHover={true}
+        />
+      );
+      acc.push({ label, value: field.name });
+    }
+    return acc;
+  }, []);
 
   const needsName = initialCode === undefined;
   return (
@@ -137,7 +135,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             <CodeTextArea
               value={measure}
               setValue={setMeasure}
-              placeholder="some_field * 10"
+              placeholder="count() * items_per_count"
               label={needsName ? "Definition" : undefined}
               rows={3}
             />
@@ -155,6 +153,9 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             onClick={(event) => {
@@ -182,7 +183,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 });
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>

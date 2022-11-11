@@ -18,17 +18,11 @@ import { ReactComponent as TypeIconString } from "../assets/img/type_icons/type-
 import { ReactComponent as TypeIconQuery } from "../assets/img/type_icons/type-icon-query.svg";
 import { ReactComponent as TypeIconSource } from "../assets/img/type_icons/type-icon-projection.svg";
 import { ReactComponent as TypeIconMeasure } from "../assets/img/type_icons/type-icon-number-measure.svg";
+import { FieldKind, FieldType } from "../../core/fields";
 
 interface TypeIconProps {
-  type:
-    | "string"
-    | "boolean"
-    | "number"
-    | "date"
-    | "timestamp"
-    | "query"
-    | "source";
-  kind: "measure" | "dimension" | "query" | "source";
+  type: FieldType;
+  kind: FieldKind;
 }
 
 export const TypeIcon: React.FC<TypeIconProps> = ({ type, kind }) => {

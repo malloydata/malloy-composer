@@ -119,8 +119,10 @@ const StyledTextArea = styled.textarea`
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;
+  min-height: calc(1em + 5px);
   padding: 5px 10px;
   outline: none;
+  resize: vertical;
   width: calc(100% - 22px);
 
   &:focus {

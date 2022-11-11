@@ -23,7 +23,7 @@ interface SelectDropdownProps<T> {
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
-  options: { label: string; value: T; divider?: boolean }[];
+  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
   width?: number;
@@ -82,6 +82,7 @@ const OptionSpan = styled.span`
 const CheckIcon = styled(Checkmark)`
   vertical-align: text-top;
   width: 20px;
+  min-width: 20px;
   opacity: 70%;
   visibility: hidden;
 
@@ -141,7 +142,7 @@ export const SelectDropdown = <T,>({
 
 interface SelectListProps<T> {
   value: T | undefined;
-  options: { label: string; value: T; divider?: boolean }[];
+  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
   valueEqual?: (a: T, b: T) => boolean;
   onChange: (value: T) => void;
 }
@@ -177,7 +178,11 @@ export function SelectList<T>({
 }
 
 interface DropdownMenuProps {
-  options: { label: string; onSelect: () => void; divider?: boolean }[];
+  options: {
+    label: string | JSX.Element;
+    onSelect: () => void;
+    divider?: boolean;
+  }[];
 }
 
 export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {

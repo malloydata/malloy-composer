@@ -68,6 +68,9 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
+          <Button outline={false} onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             onClick={(event) => {
@@ -81,7 +84,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
                 .catch(setError);
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>
