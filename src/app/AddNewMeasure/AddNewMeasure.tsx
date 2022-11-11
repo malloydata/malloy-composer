@@ -28,12 +28,12 @@ import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,
-  getFieldType,
   MeasureType,
-  sortFields,
+  sortFlatFields,
 } from "../../core/fields";
 import { FieldButton } from "../FieldButton";
 import { TypeIcon } from "../TypeIcon";
+import { flatFields, kindOfField, pathParent, typeOfField } from "../utils";
 
 interface AddMeasureProps {
   source: StructDef;
@@ -65,10 +65,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
     }
   }, [measureType, field]);
 
-  const fields = sortFields(source.fields).reduce<
+  const fields = sortFlatFields(flatFields(source)).reduce<
     Array<{ label: JSX.Element; value: string }>
-  >((acc, field) => {
-    const { type, kind } = getFieldType(field);
+  >((acc, { path, field }) => {
+    const type = typeOfField(field);
+    const kind = kindOfField(field);
 
     if (
       kind === "dimension" &&
@@ -79,6 +80,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
           name={field.name}
           icon={<TypeIcon type={type} kind={kind} />}
           color={kind}
+          detail={pathParent(path)}
           disableHover={true}
         />
       );

@@ -43,7 +43,7 @@ import styled from "styled-components";
 import { NumberFilterBuilder } from "./NumberFilterBuilder";
 import { TimeFilterBuilder } from "./TimeFilterBuilder";
 import { BooleanFilterBuilder } from "./BooleanFilterBuilder";
-import { getFieldType } from "../../core/fields";
+import { kindOfField, typeOfField } from "../utils";
 
 interface AddFilterProps {
   source: StructDef;
@@ -64,7 +64,8 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   fieldPath,
   analysisPath,
 }) => {
-  const { type, kind } = getFieldType(field);
+  const type = typeOfField(field);
+  const kind = kindOfField(field);
   const [stringFilter, setStringFilter] = useState<StringFilter>({
     type: "is_equal_to",
     values: [],

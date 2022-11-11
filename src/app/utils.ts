@@ -68,9 +68,18 @@ export async function highlightPre(
   return elem;
 }
 
-export function typeOfField(
-  fieldDef: FieldDef
-): "string" | "number" | "boolean" | "date" | "timestamp" | "query" | "source" {
+export type FieldType =
+  | "string"
+  | "boolean"
+  | "number"
+  | "date"
+  | "timestamp"
+  | "query"
+  | "source";
+
+export type FieldKind = "measure" | "dimension" | "query" | "source";
+
+export function typeOfField(fieldDef: FieldDef): FieldType {
   return fieldDef.type === "struct"
     ? "source"
     : fieldDef.type === "turtle"
@@ -80,7 +89,7 @@ export function typeOfField(
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
-): "string" | "number" | "boolean" | "date" | "timestamp" {
+): Omit<FieldType, "struct" | "turtle"> {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"
@@ -88,9 +97,7 @@ export function scalarTypeOfField(
     : fieldDef.type;
 }
 
-export function kindOfField(
-  fieldDef: FieldDef
-): "query" | "source" | "dimension" | "measure" {
+export function kindOfField(fieldDef: FieldDef): FieldKind {
   return fieldDef.type === "struct"
     ? "source"
     : fieldDef.type === "turtle"

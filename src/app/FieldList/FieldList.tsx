@@ -14,13 +14,13 @@
 import { FieldDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { useState } from "react";
 import styled from "styled-components";
-import { getFieldType } from "../../core/fields";
 import { ActionIcon } from "../ActionIcon";
 import { FieldButton } from "../FieldButton";
 import { FieldDetailPanel } from "../FieldDetailPanel";
 import { HoverToPopover } from "../HoverToPopover";
 import { ListNest } from "../ListNest";
 import { TypeIcon } from "../TypeIcon";
+import { kindOfField, typeOfField } from "../utils";
 
 interface FieldListProps {
   path?: string[];
@@ -47,7 +47,8 @@ export const FieldList: React.FC<FieldListProps> = ({
         )
         .map((field) => {
           if (filter(field)) {
-            const { type, kind } = getFieldType(field);
+            const type = typeOfField(field);
+            const kind = kindOfField(field);
             const fieldPath = [...path, field.as || field.name].join(".");
             return (
               <HoverToPopover

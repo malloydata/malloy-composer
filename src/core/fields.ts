@@ -55,38 +55,6 @@ export function generateMeasure(
   return;
 }
 
-export type FieldType =
-  | "string"
-  | "boolean"
-  | "number"
-  | "date"
-  | "timestamp"
-  | "query"
-  | "source";
-export type FieldKind = "measure" | "dimension" | "query" | "source";
-
-export function getFieldType(field: FieldDef): {
-  type: FieldType;
-  kind: FieldKind;
-} {
-  const type =
-    field.type === "struct"
-      ? "source"
-      : field.type === "turtle"
-      ? "query"
-      : field.type;
-  const kind =
-    field.type === "struct"
-      ? "source"
-      : field.type === "turtle"
-      ? "query"
-      : field.aggregate
-      ? "measure"
-      : "dimension";
-
-  return { type, kind };
-}
-
 export function sortFieldOrder(field: FieldDef): 0 | 1 | 2 | 3 {
   if (field.type === "struct") {
     return 3;
@@ -105,5 +73,20 @@ export function sortFields(fields: FieldDef[]): FieldDef[] {
     const orderB = sortFieldOrder(b);
 
     return orderA === orderB ? a.name.localeCompare(b.name) : orderB - orderA;
+  });
+}
+
+export type FlatField = { field: FieldDef; path: string };
+
+export function sortFlatFields(
+  fields: { field: FieldDef; path: string }[]
+): FlatField[] {
+  return fields.sort((a, b) => {
+    const orderA = sortFieldOrder(a.field);
+    const orderB = sortFieldOrder(b.field);
+
+    return orderA === orderB
+      ? a.field.name.localeCompare(b.field.name)
+      : orderB - orderA;
   });
 }
