@@ -115,7 +115,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                   value: "distinct",
                 },
                 { label: "Sum", value: "sum" },
-                { label: "Average", value: "average" },
+                { label: "Average", value: "avg" },
                 { label: "Max", value: "max" },
                 { label: "Min", value: "min" },
                 {
