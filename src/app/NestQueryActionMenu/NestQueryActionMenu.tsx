@@ -29,6 +29,7 @@ import {
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import {
@@ -66,13 +67,14 @@ interface NestQueryActionMenuProps {
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   beginReorderingField: () => void;
   topValues: SearchValueMapResult[] | undefined;
-  saveQuery: () => void;
   rename: (newName: string) => void;
-  canSave: boolean;
-  analysisPath: string;
+  model: ModelDef | undefined;
+  modelPath: string | undefined;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
+  model,
+  modelPath,
   source,
   toggleField,
   addFilter,
@@ -88,16 +90,14 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   beginReorderingField,
   addStage,
   topValues,
-  saveQuery,
-  canSave,
   rename,
-  analysisPath,
 }) => {
   return (
     <ActionMenu
       topValues={topValues}
+      model={model}
+      modelPath={modelPath}
       valueSearchSource={source}
-      valueSearchAnalysisPath={analysisPath}
       addFilter={(filter) => addFilter(stagePath, filter)}
       closeMenu={closeMenu}
       actions={[
@@ -159,7 +159,8 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
-              analysisPath={analysisPath}
+              modelPath={modelPath}
+              model={model}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}
@@ -227,19 +228,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
             />
           ),
         },
-        // {
-        //   kind: "sub_menu",
-        //   id: "reorder",
-        //   label: "Reorder Fields",
-        //   iconName: "order_by",
-        //   iconColor: "other",
-        //   closeOnComplete: true,
-        //   Component: ({ onComplete }) => <ReorderFieldsContextBar
-        //     stageSummary={stageSummary}
-        //     updateFieldOrder={(order) => updateFieldOrder(stagePath, order)}
-        //     onComplete={onComplete}
-        //   />
-        // },
         {
           kind: "sub_menu",
           id: "rename",
@@ -266,15 +254,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: "other",
           label: "Move",
           onClick: beginReorderingField,
-        },
-        {
-          kind: "one_click",
-          id: "save_definition",
-          label: "Save Query",
-          iconName: "save",
-          isEnabled: canSave,
-          iconColor: "query",
-          onClick: saveQuery,
         },
       ]}
       searchItems={flatFields(source).map(({ field, path }) => ({

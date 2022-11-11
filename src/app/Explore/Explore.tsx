@@ -11,25 +11,25 @@
  * GNU General Public License for more details.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { Analysis, Directory, Model } from "../../types";
-import { useDirectory } from "../data/use_directory";
-import { Button, PageContent } from "../CommonElements";
+import { Dataset, RendererName } from "../../types";
+import { useDatasets } from "../data/use_datasets";
+import { PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
-import { ActionIcon } from "../ActionIcon";
-import { DirectoryPicker } from "../DirectoryPicker";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
-import { useOpenDirectory } from "../data/use_open_directory";
 import { useQueryBuilder } from "../hooks";
 import { ExploreQueryEditor } from "../ExploreQueryEditor";
-import { compileModel } from "../../core/compile";
+import { compileQuery, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
-import { isDuckDBWASM } from "../utils";
+import { StructDef } from "@malloydata/malloy";
+import { useSearchParams } from "react-router-dom";
+import { DataStyles } from "@malloydata/render";
+import { snakeToTitle } from "../utils";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -37,130 +37,238 @@ const KEY_MAP = {
 };
 
 export const Explore: React.FC = () => {
-  const [analysis, setAnalysis] = useState<Analysis>();
-  const { openDirectory, beginOpenDirectory, isOpeningDirectory } =
-    useOpenDirectory();
-  const directory = useDirectory(openDirectory);
+  const datasets = useDatasets();
+  const [urlParams, _setParams] = useSearchParams();
+  const dataset = datasets?.find(
+    (dataset) => dataset.name === urlParams.get("model")
+  );
+  const sourceName = urlParams.get("source");
+  const params = useRef("");
+
+  const setParams = (
+    newUrlParams: URLSearchParams,
+    options?: { replace: boolean }
+  ) => {
+    params.current = newUrlParams.toString();
+    _setParams(newUrlParams, options);
+  };
+
+  const updateQueryInURL = ({
+    run,
+    query: newQuery,
+    styles: newStylesJSON,
+  }: {
+    run: boolean;
+    query: string | undefined;
+    styles: DataStyles;
+  }) => {
+    const oldQuery = urlParams.get("query") || undefined;
+    let newStyles = JSON.stringify(newStylesJSON);
+    if (newStyles === "{}") newStyles = undefined;
+    const oldStyles = urlParams.get("styles") || undefined;
+    if (oldQuery === newQuery && oldStyles === newStyles) {
+      return;
+    }
+    if (newQuery === undefined) {
+      urlParams.delete("query");
+    } else {
+      urlParams.set("query", newQuery);
+      urlParams.delete("name");
+    }
+    if (run) {
+      urlParams.set("run", "true");
+    } else {
+      urlParams.delete("run");
+    }
+    if (newStyles === undefined) {
+      urlParams.delete("styles");
+    } else {
+      urlParams.set("styles", newStyles);
+    }
+    setParams(urlParams);
+  };
+
+  const section = urlParams.get("page") || "query";
+  const setSection = (section: string) => {
+    urlParams.set("page", section);
+    if (section !== "query") {
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
+    }
+    setParams(urlParams);
+  };
+
   const {
     queryMalloy,
     queryName,
     clearQuery,
+    clearResult,
     runQuery,
     isRunning,
-    clearResult,
-    source,
     queryModifiers,
     querySummary,
     dataStyles,
     result,
+    registerNewSource,
     error,
-  } = useQueryBuilder({
-    analysis,
-    setAnalysis,
-    openDirectory,
-  });
+    dirty,
+  } = useQueryBuilder(
+    dataset?.model,
+    dataset?.modelPath,
+    updateQueryInURL,
+    dataset?.styles
+  );
 
-  const topValues = useTopValues(analysis);
-  const [section, setSection] = useState("query");
+  const model = dataset?.model;
+  const modelPath = dataset?.modelPath;
+  const source =
+    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 
-  const loadQueryLink = (
-    modelPath: string,
+  const setDatasetSource = (
+    dataset: Dataset,
     sourceName: string,
-    queryName: string
+    fromURL = false
   ) => {
-    let current: Directory | Model | Analysis | undefined = directory;
-    // Note, this only works for relative paths like ./dir/model.malloy
-    // and cannot go up the directory hierarchy. Therefore, it will only load
-    // models in the same directory.
-    for (const segment of modelPath.split("/")) {
-      if (segment === ".") {
-        continue;
-      } else if (current?.type !== "directory") {
-        return;
-      } else {
-        current = current.contents.find((item) => item.path === segment);
-      }
+    registerNewSource(dataset.model.contents[sourceName] as StructDef);
+    if (!fromURL) {
+      urlParams.set("source", sourceName);
+      urlParams.set("model", dataset.name);
+      urlParams.set("page", "query");
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
+      clearQuery(true);
+      setParams(urlParams);
     }
-    if (current?.type !== "model") {
-      return;
-    }
-    const model: Model = current;
-    const source = model.sources.find((source) => source.name === sourceName);
-    if (source === undefined) {
-      return;
-    }
-
-    const newSourceName = sourceName + "_analysis";
-    const pathWithProtocol = new URL(model.fullPath, "file:///");
-    const code = `import "${pathWithProtocol}"\n\n explore: ${newSourceName} is ${source.name} {}`;
-    compileModel(model.modelDef, code).then((modelDef) => {
-      const analysis: Analysis = {
-        type: "analysis",
-        malloy: code,
-        path: undefined,
-        fullPath: undefined,
-        modelFullPath: model.fullPath,
-        sourceName: newSourceName,
-        modelDef,
-        id: `${model.fullPath}/${source.name}`,
-        dataStyles: model.dataStyles,
-      };
-      queryModifiers.loadQueryInNewAnalysis(analysis, queryName);
-      setSection("query");
-    });
   };
 
   useEffect(() => {
-    if (directory) {
-      if (directory.readme) {
-        setSection("about");
+    const loadDataset = async () => {
+      const model = urlParams.get("model");
+      const query = urlParams.get("query")?.replace(/->\s*{\n}/g, "");
+      const source = urlParams.get("source");
+      const styles = urlParams.get("styles");
+      const page = urlParams.get("page");
+      if (model && (query || source) && datasets) {
+        if (urlParams.toString() === params.current) return;
+        const newDataset = datasets.find((dataset) => dataset.name === model);
+        if (newDataset === undefined) {
+          throw new Error("Bad model");
+        }
+        const sourceName =
+          source || (await getSourceNameForQuery(newDataset.model, query));
+        registerNewSource(newDataset.model.contents[sourceName] as StructDef);
+        if (query) {
+          if (page !== "query") return;
+          clearResult();
+          const compiledQuery = await compileQuery(newDataset.model, query);
+          queryModifiers.setDataStyles(styles ? JSON.parse(styles) : {}, true);
+          queryModifiers.setQuery(compiledQuery, true);
+          if (urlParams.has("run") && urlParams.get("page") === "query") {
+            runQuery();
+          }
+        } else {
+          urlParams.delete("query");
+          urlParams.delete("run");
+          urlParams.delete("name");
+          urlParams.delete("styles");
+          clearQuery(true);
+        }
+        params.current = urlParams.toString();
+      } else if (datasets && !dataset) {
+        const newDataset = datasets[0];
+        urlParams.set("model", newDataset.name);
+        if (newDataset.readme) {
+          urlParams.set("page", "about");
+        }
+        setParams(urlParams);
       }
-      setAnalysis(undefined);
-      clearQuery();
-    }
-  }, [directory]);
+    };
+    loadDataset();
+  }, [urlParams, datasets]);
 
-  const selectAnalysis = (analysis: Analysis) => {
-    setAnalysis(analysis);
-    clearQuery(analysis);
+  const loadQueryLink = async (
+    model: string,
+    query: string,
+    name?: string,
+    renderer?: string
+  ) => {
+    const newDataset = datasets.find((dataset) => dataset.name === model);
+    if (newDataset === undefined) {
+      throw new Error("Bad model");
+    }
+    const sourceName = await getSourceNameForQuery(newDataset.model, query);
+    urlParams.set("model", model);
+    urlParams.set("source", sourceName);
+    urlParams.set("query", query);
+    urlParams.set("page", "query");
+    urlParams.set("run", "true");
+    urlParams.set("name", name);
+    registerNewSource(newDataset.model.contents[sourceName] as StructDef);
+    const compiledQuery = await compileQuery(newDataset.model, query);
+    queryModifiers.setQuery(compiledQuery, true);
+    if (renderer) {
+      const styles = queryModifiers.setDataStyle(
+        compiledQuery.name,
+        renderer as RendererName,
+        true
+      );
+      urlParams.delete("renderer");
+      urlParams.set("styles", JSON.stringify(styles));
+    }
+    runQuery();
+    setParams(urlParams);
+  };
+
+  const runQueryAction = () => {
+    runQuery();
+    urlParams.set("run", "true");
+    setParams(urlParams, { replace: true });
   };
 
   const handlers = {
     REMOVE_FIELDS: () => clearQuery(),
-    RUN_QUERY: runQuery,
+    RUN_QUERY: runQueryAction,
   };
+
+  const topValues = useTopValues(dataset, source);
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          {!isDuckDBWASM() && (
-            <ActionIcon
-              action="open-directory"
-              onClick={() => {
-                !isOpeningDirectory && beginOpenDirectory();
-              }}
-              color="dimension"
-            />
+          {dataset && (
+            <span>
+              {dataset.name}
+              {sourceName && (section === "query" || section === "sources") && (
+                <span>
+                  {" ›"} {snakeToTitle(sourceName)}
+                  {(urlParams.get("name") || queryName) && section === "query" && (
+                    <span>
+                      {" ›"} {urlParams.get("name") || snakeToTitle(queryName)}
+                    </span>
+                  )}
+                </span>
+              )}
+            </span>
           )}
-          <DirectoryPicker
-            directory={directory}
-            analysis={analysis}
-            selectAnalysis={selectAnalysis}
-          />
         </HeaderLeft>
-        {!isRunning && <Button onClick={() => runQuery()}>Run</Button>}
-        {isRunning && (
-          <Button onClick={() => clearResult()} color="primary" outline={true}>
-            Cancel
-          </Button>
-        )}
       </Header>
       <Body>
         <Content>
           <Channel>
             <ChannelTop>
+              <ChannelButton
+                onClick={() => setSection("about")}
+                text="Home"
+                icon="about"
+                selected={section === "about"}
+                disabled={dataset?.readme === undefined}
+              ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("query")}
                 text="Query"
@@ -168,11 +276,11 @@ export const Explore: React.FC = () => {
                 selected={section === "query"}
               ></ChannelButton>
               <ChannelButton
-                onClick={() => setSection("about")}
-                text="About"
-                icon="about"
-                selected={section === "about"}
-                disabled={directory?.readme == undefined}
+                onClick={() => setSection("sources")}
+                text="Sources"
+                icon="source"
+                selected={section === "sources"}
+                disabled={datasets === undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom></ChannelBottom>
@@ -181,8 +289,11 @@ export const Explore: React.FC = () => {
             <PageContainer>
               {section === "query" && (
                 <ExploreQueryEditor
+                  dirty={dirty}
+                  model={model}
+                  modelPath={modelPath}
                   source={source}
-                  analysis={analysis}
+                  datasets={datasets}
                   queryModifiers={queryModifiers}
                   topValues={topValues}
                   queryName={queryName}
@@ -191,17 +302,64 @@ export const Explore: React.FC = () => {
                   dataStyles={dataStyles}
                   result={result}
                   isRunning={isRunning}
+                  runQuery={runQueryAction}
                 />
               )}
               {section === "about" && (
                 <PageContent>
-                  <MarkdownDocument
-                    content={
-                      directory?.readme ||
-                      "# No Readme\nThis project has no readme"
-                    }
-                    loadQueryLink={loadQueryLink}
-                  />
+                  {dataset && (
+                    <MarkdownDocument
+                      content={
+                        dataset.readme ||
+                        "# No Readme\nThis project has no readme"
+                      }
+                      loadQueryLink={loadQueryLink}
+                    />
+                  )}
+                </PageContent>
+              )}
+              {section === "sources" && (
+                <PageContent>
+                  <DatasetsWrapperOuter>
+                    <DatasetsWrapperInner>
+                      <Head1>Sources</Head1>
+                      {datasets &&
+                        datasets.map((dataset) => {
+                          const sources = Object.entries(dataset.model.contents)
+                            .map(([name, value]) => ({
+                              name,
+                              source: value,
+                            }))
+                            .filter(
+                              (thing) => thing.source.type === "struct"
+                            ) as {
+                            name: string;
+                            source: StructDef;
+                          }[];
+                          return (
+                            <>
+                              {sources.map((entry) => {
+                                return (
+                                  <SourceLink
+                                    key={entry.name}
+                                    onClick={() => {
+                                      setDatasetSource(dataset, entry.name);
+                                    }}
+                                  >
+                                    <SourceLinkTitleRow>
+                                      {snakeToTitle(entry.name)}
+                                    </SourceLinkTitleRow>
+                                    <SourceLinkDescription>
+                                      In {dataset.name}
+                                    </SourceLinkDescription>
+                                  </SourceLink>
+                                );
+                              })}
+                            </>
+                          );
+                        })}
+                    </DatasetsWrapperInner>
+                  </DatasetsWrapperOuter>
                 </PageContent>
               )}
               <ErrorMessage error={error} />
@@ -256,12 +414,14 @@ const Channel = styled.div`
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
   justify-content: space-between;
+  align-items: center;
 `;
 
 const ChannelTop = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: center;
 `;
 
 const ChannelBottom = styled.div`
@@ -286,7 +446,10 @@ const HeaderLeft = styled.div`
   gap: 5px;
 `;
 
-const Page = styled(Content)``;
+const Page = styled(Content)`
+  margin-top: 10px;
+  height: unset;
+`;
 
 const RightChannel = styled.div`
   width: 10px;
@@ -304,4 +467,53 @@ const BottomChannel = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
+`;
+
+const SourceLink = styled.div`
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #595959;
+
+  &:hover {
+    background-color: #f0f6ff;
+    border-color: #4285f4;
+  }
+`;
+
+const SourceLinkTitleRow = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SourceLinkDescription = styled.div`
+  color: #929292;
+  font-size: 14px;
+`;
+
+const DatasetsWrapperOuter = styled.div`
+  padding: 10px 30px 30px 30px;
+  width: 100%;
+  font-family: Google Sans;
+  overflow-y: auto;
+`;
+
+const DatasetsWrapperInner = styled.div`
+  max-width: 900px;
+`;
+
+const Head1 = styled.h1`
+  font-size: 21px;
+  font-weight: 500;
+  margin-block-end: 8px;
+  margin-block-start: 16px;
 `;

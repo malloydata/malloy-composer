@@ -16,6 +16,7 @@ import {
   FilterExpression,
   QueryFieldDef,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import {
   RendererName,
@@ -31,6 +32,7 @@ import { EditOrderBy } from "../EditOrderBy";
 import { RenameField } from "../RenameField";
 
 interface DimensionActionMenuProps {
+  model: ModelDef;
   removeField: () => void;
   rename: (name: string) => void;
   closeMenu: () => void;
@@ -44,8 +46,6 @@ interface DimensionActionMenuProps {
   name: string;
   definition: string | undefined;
   editDimension: (fieldIndex: number, dimension: QueryFieldDef) => void;
-  canSave: boolean;
-  saveDimension?: () => void;
   source: StructDef;
   filterField?: FieldDef;
   filterFieldPath?: string;
@@ -56,11 +56,13 @@ interface DimensionActionMenuProps {
     direction?: "asc" | "desc"
   ) => void;
   orderByField: OrderByField;
-  analysisPath: string;
+  modelPath: string | undefined;
 }
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   source,
+  model,
+  modelPath,
   rename,
   name,
   closeMenu,
@@ -70,15 +72,12 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   isEditable,
   editDimension,
   definition,
-  saveDimension,
-  canSave,
   filterField,
   filterFieldPath,
   addFilter,
   stagePath,
   addOrderBy,
   orderByField,
-  analysisPath,
 }) => {
   return (
     <ActionMenu
@@ -105,7 +104,8 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           Component: ({ onComplete }) =>
             filterField && filterFieldPath ? (
               <AddFilter
-                analysisPath={analysisPath}
+                model={model}
+                modelPath={modelPath}
                 onComplete={onComplete}
                 source={source}
                 field={filterField}
@@ -197,17 +197,6 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           iconColor: "other",
           label: "Move",
           onClick: beginReorderingField,
-        },
-        {
-          kind: "one_click",
-          id: "save_definition",
-          label: "Save Dimension",
-          iconName: "save",
-          isEnabled: canSave,
-          iconColor: "dimension",
-          onClick: () => {
-            saveDimension && saveDimension();
-          },
         },
       ]}
     />

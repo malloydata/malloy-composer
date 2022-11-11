@@ -13,6 +13,7 @@
 
 import {
   FilterExpression,
+  ModelDef,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
@@ -40,8 +41,6 @@ interface AggregateActionMenuProps {
   definition: string | undefined;
   editMeasure: (fieldIndex: number, measure: QueryFieldDef) => void;
   topValues: SearchValueMapResult[] | undefined;
-  canSave: boolean;
-  saveMeasure?: () => void;
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,
@@ -49,10 +48,13 @@ interface AggregateActionMenuProps {
   ) => void;
   orderByField: OrderByField;
   stagePath: StagePath;
-  analysisPath: string;
+  model: ModelDef | undefined;
+  modelPath: string;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
+  model,
+  modelPath,
   source,
   addFilter,
   rename,
@@ -66,12 +68,9 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   isEditable,
   fieldIndex,
   topValues,
-  saveMeasure,
-  canSave,
   addOrderBy,
   orderByField,
   stagePath,
-  analysisPath,
 }) => {
   return (
     <ActionMenu
@@ -86,7 +85,8 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
-              analysisPath={analysisPath}
+              model={model}
+              modelPath={modelPath}
               source={source}
               addFilter={addFilter}
               onComplete={onComplete}
@@ -172,17 +172,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: "other",
           label: "Move",
           onClick: beginReorderingField,
-        },
-        {
-          kind: "one_click",
-          id: "save_definition",
-          label: "Save Measure",
-          iconName: "save",
-          isEnabled: canSave,
-          iconColor: "measure",
-          onClick: () => {
-            saveMeasure && saveMeasure();
-          },
         },
       ]}
     />

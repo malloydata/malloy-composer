@@ -12,33 +12,22 @@
  */
 
 import { useMutation } from "react-query";
-import { Analysis } from "../../types";
 import * as malloy from "@malloydata/malloy";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-async function runQuery(query: string, queryName: string, analysis?: Analysis) {
-  if (analysis === undefined) {
-    return undefined;
-  }
-
+async function runQuery(
+  query: string,
+  model: malloy.ModelDef,
+  modelPath: string,
+  queryName: string
+) {
   if (isDuckDBWASM()) {
-    const result = await duckDBWASM.runQuery(query, queryName, analysis);
+    const result = await duckDBWASM.runQuery(query, queryName, model);
     if (result instanceof Error) {
       throw result;
     }
     return result;
-  }
-
-  if (isElectron()) {
-    const res = await window.malloy.runQuery(query, queryName, {
-      ...analysis,
-      modelDef: {} as unknown as malloy.ModelDef,
-    });
-    if (res instanceof Error) {
-      throw res;
-    }
-    return malloy.Result.fromJSON(res);
   }
 
   const raw = await (
@@ -49,8 +38,8 @@ async function runQuery(query: string, queryName: string, analysis?: Analysis) {
       },
       body: JSON.stringify({
         query,
+        modelPath,
         queryName,
-        analysis: { ...analysis, modelDef: {} },
       }),
     })
   ).json();
@@ -59,25 +48,25 @@ async function runQuery(query: string, queryName: string, analysis?: Analysis) {
 
 interface UseRunQueryResult {
   result: malloy.Result | undefined;
-  runQuery: () => void;
+  runQuery: (query: string, queryName: string) => void;
   isRunning: boolean;
   clearResult: () => void;
 }
 
 export function useRunQuery(
-  query: string,
-  queryName: string,
   onError: (error: Error) => void,
-  analysis?: Analysis
+  model: malloy.ModelDef,
+  modelPath: string
 ): UseRunQueryResult {
   const { data, mutateAsync, isLoading, reset } = useMutation(
-    () => runQuery(query, queryName, analysis),
+    ({ query, queryName }: { query: string; queryName: string }) =>
+      runQuery(query, model, modelPath, queryName),
     { onError }
   );
 
-  const runQueryRet = () => {
+  const runQueryRet = (query: string, queryName: string) => {
     reset();
-    mutateAsync();
+    mutateAsync({ query, queryName });
   };
 
   return {

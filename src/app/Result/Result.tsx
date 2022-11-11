@@ -16,7 +16,6 @@ import * as malloy from "@malloydata/malloy";
 import * as render from "@malloydata/render";
 import styled from "styled-components";
 import { LoadingSpinner } from "../Spinner";
-import { Analysis } from "../../types";
 import { usePrevious } from "../hooks";
 import { downloadFile, highlightPre, notUndefined } from "../utils";
 import { compileFilter } from "../../core/compile";
@@ -25,9 +24,8 @@ import { DOMElement } from "../DOMElement";
 import { PageContent, PageHeader } from "../CommonElements";
 
 interface ResultProps {
-  source: malloy.StructDef | undefined;
+  source: malloy.StructDef;
   result?: malloy.Result;
-  analysis: Analysis | undefined;
   dataStyles: render.DataStyles;
   malloy: string;
   onDrill: (filters: malloy.FilterExpression[]) => void;
@@ -37,7 +35,6 @@ interface ResultProps {
 export const Result: React.FC<ResultProps> = ({
   source,
   result,
-  analysis,
   dataStyles,
   malloy,
   onDrill,
@@ -61,7 +58,10 @@ export const Result: React.FC<ResultProps> = ({
   }, [malloy]);
 
   useEffect(() => {
-    if (result === previousResult && dataStyles === previousDataStyles) {
+    if (
+      result === previousResult &&
+      JSON.stringify(dataStyles) === JSON.stringify(previousDataStyles)
+    ) {
       return;
     }
     setRendering(false);
@@ -71,16 +71,13 @@ export const Result: React.FC<ResultProps> = ({
       return;
     }
     setTimeout(async () => {
-      if (analysis === undefined || source === undefined) {
-        return;
-      }
       setRendering(true);
       highlightPre(result.sql, "sql").then(setSQL);
       // eslint-disable-next-line no-console
       console.log(result.sql);
       const currentResultId = ++resultId.current;
       const rendered = await new render.HTMLView(document).render(result.data, {
-        dataStyles: { ...analysis.dataStyles, ...dataStyles },
+        dataStyles,
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(
@@ -113,33 +110,40 @@ export const Result: React.FC<ResultProps> = ({
         }, 0);
       }, 0);
     });
-  }, [result, dataStyles, analysis, previousDataStyles, previousResult]);
+  }, [result, dataStyles, previousDataStyles, previousResult]);
 
   return (
     <OuterDiv>
       <ResultHeader>
-        <ViewTab onClick={() => setView("malloy")} selected={view === "malloy"}>
-          Malloy
-        </ViewTab>
-        <ViewTab onClick={() => setView("sql")} selected={view === "sql"}>
-          SQL
-        </ViewTab>
-        <ViewTab onClick={() => setView("html")} selected={view === "html"}>
-          Results
-        </ViewTab>
-        <DownloadMenu
-          disabled={!result || html === undefined || rendering}
-          onDownloadHTML={() =>
-            downloadFile(html?.outerHTML || "", "text/html", "result.html")
-          }
-          onDownloadJSON={() =>
-            downloadFile(
-              JSON.stringify(result?.data.toObject() || {}, null, 2),
-              "application/json",
-              "result.json"
-            )
-          }
-        />
+        <ResultHeaderSection>
+          <ViewTab
+            onClick={() => setView("malloy")}
+            selected={view === "malloy"}
+          >
+            Malloy
+          </ViewTab>
+          <ViewTab onClick={() => setView("sql")} selected={view === "sql"}>
+            SQL
+          </ViewTab>
+          <ViewTab onClick={() => setView("html")} selected={view === "html"}>
+            Results
+          </ViewTab>
+        </ResultHeaderSection>
+        <ResultHeaderSection>
+          <DownloadMenu
+            disabled={!result || html === undefined || rendering}
+            onDownloadHTML={() =>
+              downloadFile(html?.outerHTML || "", "text/html", "result.html")
+            }
+            onDownloadJSON={() =>
+              downloadFile(
+                JSON.stringify(result?.data.toObject() || {}, null, 2),
+                "application/json",
+                "result.json"
+              )
+            }
+          />
+        </ResultHeaderSection>
       </ResultHeader>
       <ContentDiv>
         {isRunning && view !== "malloy" && <LoadingSpinner text="Running" />}
@@ -189,9 +193,10 @@ const ContentDiv = styled(PageContent)`
 
 const ResultHeader = styled(PageHeader)`
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0px 20px;
   flex-direction: row;
+  width: auto;
 `;
 
 const ViewTab = styled.div<{
@@ -212,4 +217,11 @@ const PreWrapper = styled.div`
   padding: 0 15px;
   font-family: "Roboto Mono";
   font-size: 14px;
+`;
+
+const ResultHeaderSection = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 11pt;
+  color: #4d4d4d;
 `;

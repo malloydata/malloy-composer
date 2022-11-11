@@ -67,22 +67,6 @@ export const commonServerConfig = (
   };
 };
 
-const commonElectronConfig = (
-  development = false,
-  target?: string
-): BuildOptions => {
-  return {
-    entryPoints: ["./src/electron/main.ts", "./src/electron/preload.ts"],
-    outdir: path.join(buildDirectory),
-    minify: !development,
-    sourcemap: development ? "inline" : false,
-    bundle: true,
-    platform: "node",
-    external: ["electron", "./duckdb-native.node"],
-    plugins: [makeDuckdbNoNodePreGypPlugin(target), ignorePgNativePlugin],
-  };
-};
-
 function copyDir(src: string, dest: string) {
   fs.mkdirSync(dest, { recursive: true });
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -176,7 +160,6 @@ export async function doBuild(target?: string): Promise<void> {
   copyDir("public", path.join(buildDirectory, appDirectory));
 
   await build(commonAppConfig(development)).catch(errorHandler);
-  await build(commonElectronConfig(development, target)).catch(errorHandler);
   await build(commonServerConfig(development, target)).catch(errorHandler);
 
   if (target) {

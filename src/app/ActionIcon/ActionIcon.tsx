@@ -21,6 +21,7 @@ import { ReactComponent as ActionItemRename } from "../assets/img/insert_icons/i
 import { ReactComponent as ActionIconEdit } from "../assets/img/insert_icons/item_edit.svg";
 import { ReactComponent as ActionItemRemove } from "../assets/img/query_clear_hover.svg";
 import { ReactComponent as ActionItemAdd } from "../assets/img/query_add_hover.svg";
+import { ReactComponent as ActionItemRun } from "../assets/img/query_run_hover.svg";
 import { ReactComponent as ActionItemSave } from "../assets/img/query_save_hover.svg";
 import { ReactComponent as ActionItemContainerClosed } from "../assets/img/chevrons/chevron_right.svg";
 import { ReactComponent as ActionItemContainerOpen } from "../assets/img/chevrons/chevron_down.svg";
@@ -58,7 +59,8 @@ export type ActionIconName =
   | "edit"
   | "search"
   | "analysis"
-  | "open-directory";
+  | "open-directory"
+  | "run";
 
 interface ActionIconProps {
   action: ActionIconName;
@@ -121,6 +123,8 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
         <ActionIconSearch {...props} />
       ) : action === "open-directory" ? (
         <ActionIconOpen {...props} />
+      ) : action === "run" ? (
+        <ActionItemRun {...props} />
       ) : action === "analysis" ? (
         <AnalysisIcon {...props} />
       ) : null}

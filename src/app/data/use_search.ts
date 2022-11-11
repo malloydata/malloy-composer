@@ -11,41 +11,24 @@
  * GNU General Public License for more details.
  */
 
-import { SearchIndexResult, StructDef } from "@malloydata/malloy";
+import { ModelDef, SearchIndexResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
 async function search(
+  model: ModelDef,
+  modelPath: string,
   source: StructDef | undefined,
-  analysisPath: string | undefined,
   searchTerm: string,
   fieldPath?: string
 ) {
-  if (source === undefined || analysisPath === undefined) {
+  if (source === undefined) {
     return undefined;
   }
 
   if (isDuckDBWASM()) {
-    const res = await duckDBWASM.search(
-      source,
-      analysisPath,
-      searchTerm,
-      fieldPath
-    );
-    if (res instanceof Error) {
-      throw res;
-    }
-    return res;
-  }
-
-  if (isElectron()) {
-    const res = await window.malloy.search(
-      source,
-      analysisPath,
-      searchTerm,
-      fieldPath
-    );
+    const res = await duckDBWASM.search(model, source, searchTerm, fieldPath);
     if (res instanceof Error) {
       throw res;
     }
@@ -58,7 +41,7 @@ async function search(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ searchTerm, source, fieldPath, analysisPath }),
+      body: JSON.stringify({ modelPath, searchTerm, source, fieldPath }),
     })
   ).json();
   return (raw.result || []) as SearchIndexResult[];
@@ -70,14 +53,15 @@ interface UseSearchResult {
 }
 
 export function useSearch(
+  model: ModelDef,
+  modelPath: string,
   source: StructDef | undefined,
-  analysisPath: string | undefined,
   searchTerm: string,
   fieldPath?: string
 ): UseSearchResult {
   const { data: searchResults, isLoading } = useQuery(
     [source, searchTerm, fieldPath],
-    () => search(source, analysisPath, searchTerm, fieldPath),
+    () => search(model, modelPath, source, searchTerm, fieldPath),
     {
       refetchOnWindowFocus: true,
     }

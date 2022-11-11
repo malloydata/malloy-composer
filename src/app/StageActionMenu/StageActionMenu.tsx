@@ -29,6 +29,7 @@ import {
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import {
@@ -64,7 +65,8 @@ interface StageActionMenuProps {
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   topValues: SearchValueMapResult[] | undefined;
   isLastStage: boolean;
-  analysisPath: string;
+  model: ModelDef;
+  modelPath: string | undefined;
 }
 
 export const StageActionMenu: React.FC<StageActionMenuProps> = ({
@@ -82,7 +84,8 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   setDataStyle,
   isLastStage,
   topValues,
-  analysisPath,
+  model,
+  modelPath,
 }) => {
   return (
     <ActionMenu
@@ -147,7 +150,8 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
-              analysisPath={analysisPath}
+              model={model}
+              modelPath={modelPath}
               source={source}
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}

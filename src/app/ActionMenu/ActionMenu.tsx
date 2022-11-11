@@ -15,6 +15,7 @@ import {
   FilterExpression,
   SearchValueMapResult,
   StructDef,
+  ModelDef,
 } from "@malloydata/malloy";
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
@@ -56,20 +57,22 @@ export type Action = OneClickAction | SubMenuAction;
 
 interface ActionMenuProps {
   valueSearchSource?: StructDef | undefined;
-  valueSearchAnalysisPath?: string;
   actions: Action[];
   closeMenu: () => void;
   searchItems?: SearchItem[];
   addFilter?: (filter: FilterExpression) => void;
   topValues?: SearchValueMapResult[] | undefined;
+  model?: ModelDef | undefined;
+  modelPath?: string;
 }
 
 export const ActionMenu: React.FC<ActionMenuProps> = ({
+  model,
+  modelPath,
   actions,
   closeMenu,
   searchItems,
   valueSearchSource,
-  valueSearchAnalysisPath,
   topValues,
   addFilter,
 }) => {
@@ -80,8 +83,9 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   );
   const [searchTerm, setSearchTerm] = useState("");
   const { searchResults, isLoading } = useSearch(
+    model,
+    modelPath,
     valueSearchSource,
-    valueSearchAnalysisPath,
     searchTerm
   );
   const stringSearchResults =

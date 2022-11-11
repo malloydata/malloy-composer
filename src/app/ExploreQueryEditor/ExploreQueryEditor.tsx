@@ -2,24 +2,23 @@ import {
   SearchValueMapResult,
   StructDef,
   Result as MalloyResult,
+  ModelDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useState } from "react";
 import styled from "styled-components";
-import { Analysis, QuerySummary } from "../../types";
+import { Dataset, QuerySummary } from "../../types";
 import { ActionIcon } from "../ActionIcon";
-import { EmptyMessage, PageContent, PageHeader } from "../CommonElements";
+import { PageContent, PageHeader } from "../CommonElements";
 import { QueryModifiers } from "../hooks/use_query_builder";
 import { Popover } from "../Popover";
 import { QuerySummaryPanel } from "../QuerySummaryPanel";
 import { Result } from "../Result";
-import { SaveQueryButton } from "../SaveQueryButton";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
-import { isDuckDBWASM } from "../utils";
+import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
-  analysis: Analysis | undefined;
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
   querySummary: QuerySummary | undefined;
@@ -28,13 +27,21 @@ interface ExploreQueryEditorProps {
   queryMalloy: string;
   isRunning: boolean;
   queryModifiers: QueryModifiers;
+  runQuery: () => void;
+  datasets: Dataset[];
+  model: ModelDef;
+  dirty: boolean;
+  modelPath: string | undefined;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
+  dirty,
+  model,
+  modelPath,
   source,
-  analysis,
   queryName,
   topValues,
+  runQuery,
   querySummary,
   result,
   dataStyles,
@@ -47,44 +54,57 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
     <Outer>
       <SidebarOuter>
         <SidebarHeader>
-          <ActionIcon
-            action="add"
-            onClick={() => analysis && setInsertOpen(true)}
-            color={analysis ? "dimension" : "other"}
-          />
-          <Popover open={insertOpen} setOpen={setInsertOpen}>
-            {analysis && source && (
-              <TopQueryActionMenu
-                analysisPath={analysis.fullPath || analysis.modelFullPath}
-                source={source}
-                queryModifiers={queryModifiers}
-                stagePath={{ stageIndex: 0 }}
-                orderByFields={querySummary?.stages[0].orderByFields || []}
-                closeMenu={() => setInsertOpen(false)}
-                queryName={queryName}
-                stageSummary={querySummary?.stages[0].items || []}
-                isOnlyStage={querySummary?.stages.length === 1}
-                topValues={topValues}
+          {source && (
+            <>
+              <div>
+                <ActionIcon
+                  action="add"
+                  onClick={() => setInsertOpen(true)}
+                  color="dimension"
+                />
+                <Popover open={insertOpen} setOpen={setInsertOpen}>
+                  <TopQueryActionMenu
+                    model={model}
+                    modelPath={modelPath}
+                    source={source}
+                    queryModifiers={queryModifiers}
+                    stagePath={{ stageIndex: 0 }}
+                    orderByFields={querySummary?.stages[0].orderByFields || []}
+                    closeMenu={() => setInsertOpen(false)}
+                    queryName={queryName}
+                    stageSummary={querySummary?.stages[0].items || []}
+                    isOnlyStage={querySummary?.stages.length === 1}
+                    topValues={topValues}
+                  />
+                </Popover>
+              </div>
+              <ActionIcon
+                action="remove"
+                onClick={() => queryModifiers.clearQuery()}
+                color="dimension"
               />
-            )}
-          </Popover>
-          {!isDuckDBWASM() && (
-            <SaveQueryButton
-              saveQuery={queryModifiers.saveCurrentQuery}
-              disabled={!analysis}
-            />
+              <StyledRunIcon
+                width="80px"
+                onClick={() => runQuery()}
+                className={
+                  isRunning
+                    ? "running"
+                    : queryMalloy === ""
+                    ? "blank"
+                    : dirty
+                    ? "dirty"
+                    : "clean"
+                }
+              />
+            </>
           )}
-          <ActionIcon
-            action="remove"
-            onClick={() => queryModifiers.clearQuery()}
-            color={analysis ? "dimension" : "other"}
-          />
         </SidebarHeader>
         <QueryBar>
           <QueryBarInner>
-            {source && querySummary && analysis && (
+            {querySummary && (
               <QuerySummaryPanel
-                analysisPath={analysis.fullPath || analysis.modelFullPath}
+                model={model}
+                modelPath={modelPath}
                 source={source}
                 querySummary={querySummary}
                 queryModifiers={queryModifiers}
@@ -93,16 +113,12 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 topValues={topValues}
               />
             )}
-            {!analysis && (
-              <EmptyMessage>Select an analysis to get started</EmptyMessage>
-            )}
           </QueryBarInner>
         </QueryBar>
       </SidebarOuter>
       <Result
         source={source}
         result={result}
-        analysis={analysis}
         dataStyles={dataStyles}
         malloy={queryMalloy}
         onDrill={queryModifiers.onDrill}
@@ -144,4 +160,21 @@ const SidebarHeader = styled(PageHeader)`
   gap: 20px;
   justify-content: center;
   align-items: center;
+`;
+
+const StyledRunIcon = styled(RunIcon)`
+  cursor: pointer;
+  &.running,
+  &.clean,
+  &.blank {
+    .backgroundfill {
+      fill: #e9e9e9;
+    }
+    .foregroundstroke {
+      stroke: #a7a7a7;
+    }
+    .foregroundfill {
+      fill: #a7a7a7;
+    }
+  }
 `;

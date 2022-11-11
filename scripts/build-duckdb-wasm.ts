@@ -37,7 +37,7 @@ export async function doBuild(): Promise<void> {
     entryNames: "app",
     bundle: true,
     minify: !development,
-    sourcemap: false,
+    sourcemap: development,
     outdir: "duckdb-wasm/dist/",
     platform: "browser",
     plugins: [svgrPlugin({ exportType: "named" })],

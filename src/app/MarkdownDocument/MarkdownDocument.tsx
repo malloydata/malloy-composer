@@ -15,16 +15,17 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Markdown, parseMarkdown } from "../../core/markdown";
 import { COLORS } from "../colors";
-import { openInBrowser } from "../data";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
+import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 
 interface MarkdownDocumentProps {
   content: string;
   loadQueryLink: (
-    modelPath: string,
-    sourceName: string,
-    queryName: string
+    model: string,
+    query: string,
+    name?: string,
+    renderer?: string
   ) => void;
 }
 
@@ -40,9 +41,10 @@ export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
 export const MarkdownNode: React.FC<{
   node: Markdown;
   loadQueryLink: (
-    modelPath: string,
-    sourceName: string,
-    queryName: string
+    model: string,
+    query: string,
+    name?: string,
+    renderer?: string
   ) => void;
 }> = ({ node, loadQueryLink }) => {
   const children = (node: { children: Markdown[] }) => (
@@ -82,7 +84,7 @@ export const MarkdownNode: React.FC<{
       return <MarkdownParagraph>{children(node)}</MarkdownParagraph>;
     case "link":
       return (
-        <MarkdownLink href={node.url} onClick={() => openInBrowser(node.url)}>
+        <MarkdownLink href={node.url}>
           {children(node)}
           {node.title}
         </MarkdownLink>
@@ -124,14 +126,17 @@ export const MarkdownNode: React.FC<{
       return <hr />;
     case "malloyQueryLink":
       return (
-        <MarkdownLink
-          href="#"
+        <QueryLink
           onClick={() => {
-            loadQueryLink(node.model, node.source, node.query);
+            loadQueryLink(node.model, node.query, node.name, node.renderer);
           }}
         >
-          <code>{node.value}</code>
-        </MarkdownLink>
+          <QueryLinkTitleRow>
+            {node.name}
+            <RunIcon width="80" height="22" />
+          </QueryLinkTitleRow>
+          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+        </QueryLink>
       );
   }
 };
@@ -283,4 +288,35 @@ const MarkdownPreWrapper = styled.div`
     padding: 10px;
     background-color: #fbfbfb;
   }
+`;
+
+const QueryLink = styled.div`
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #595959;
+
+  &:hover {
+    background-color: #f0f6ff;
+    border-color: #4285f4;
+  }
+`;
+
+const QueryLinkTitleRow = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const QueryLinkDescription = styled.div`
+  color: #929292;
+  font-size: 14px;
 `;

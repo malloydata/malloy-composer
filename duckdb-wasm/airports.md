@@ -1,75 +1,40 @@
-# About the IMDb Dataset
-
-IMDb makes data available for download via [their website](https://www.imdb.com/interfaces/). 
-Used with permission. 
-For personal / educational use only.
-
-
-## Tables
-
-**People** - All of the people who worked on a title, ranging from actors and directors to composers and crew.
-
-**Movies** - The `titles` table (aliased to `movies` in the model) has been filtered only to titles with > 10,000 ratings. Note: This model frequently uses `ratings.numVotes`, the number of votes the title has received. Where `ratings.averageRating` of course indicates how much people _liked_ a movie, `numVotes` is a better proxy for overall popularity of a title. 
-
-**Principals** A mapping table between people and titles, principals links the cast/crew to the titles they worked on.
-
+# Test
 
 ## Queries in `imdb.malloy`
 
-### <!--malloy-query model="airports.malloy" source="airports" query="by_state"--> `by_state`
+<!-- ### <!--malloy-query model="Airports" source="airports" query="by_state"--> `by_state` -->
 
-
-[MyQuery](malloy://foo.malloy/bar/my_query)
-
-
-<!-- mq model="airports.malloy" -->
-
-
-<!-- malloy-query 
-  name="My Cool Query"
-  description="This is a super cool query" 
--->
-```malloy
-source -> my_query { where: foo }
-```
-
-## Heres a list of cool queries
-
+Quisque pretium eu libero sed volutpat. Mauris sed luctus ante. Maecenas sit amet quam id massa finibus mollis nec et mi. Vivamus eget consequat justo. Maecenas ut justo urna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In blandit turpis vel diam convallis pretium.
 
 <!-- malloy-query  
-  name="My Cool Query"
-  description="This is a super cool query" 
-  code="source -> my_query { where: foo }"
+  name="By State"
+  description="Show number of airports by state." 
+  renderer="bar_chart"
+  model="Airports"
 -->
 ```malloy
-source -> my_query { where: foo }
+query: foo is airports -> by_state { where: 1 = 1 }
 ```
 
+<!-- malloy-set-model model="Airports" -->
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In dapibus ultricies magna, at ultrices urna viverra vitae. Etiam ante tortor, elementum ut vulputate vel, rhoncus sed lectus. Aenean sit amet neque at lectus lacinia sagittis. Nullam fermentum pellentesque orci ut hendrerit. Nulla facilisi. Nullam blandit justo ac libero sagittis hendrerit. Vivamus purus magna, dapibus eget velit id, tincidunt mattis nisi. Etiam a lorem lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. 
+
+Quisque pretium eu libero sed volutpat. Mauris sed luctus ante. Maecenas sit amet quam id massa finibus mollis nec et mi. Vivamus eget consequat justo. Maecenas ut justo urna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In blandit turpis vel diam convallis pretium.
+
 <!-- malloy-query  
-  name="My Cool Query"
-  description="This is a super cool query" 
-  code="source -> my_query { where: foo }"
+  name="All States"
+  description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In dapibus ultricies magna, at ultrices urna viverra vitae. Etiam ante tortor, elementum ut vulputate vel, rhoncus sed lectus. Aenean sit amet neque at lectus lacinia sagittis. Nullam fermentum pellentesque orci ut hendrerit. Nulla facilisi. Nullam blandit justo ac libero sagittis hendrerit. Vivamus purus magna, dapibus eget velit id, tincidunt mattis nisi. Etiam a lorem lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque pretium eu libero sed volutpat. Mauris sed luctus ante. Maecenas sit amet quam id massa finibus mollis nec et mi. Vivamus eget consequat justo. Maecenas ut justo urna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In blandit turpis vel diam convallis pretium." 
+  renderer="list"
 -->
 ```malloy
-source -> my_query { where: foo }
+query: foo is airports -> { group_by: state }
 ```
 
 <!-- malloy-query  
-  name="My Cool Query"
-  description="This is a super cool query" 
-  code="source -> my_query { where: foo }"
--->
-```malloy
-source -> my_query { where: foo }
-```
-
-<!-- malloy-query  
-  name="My Cool Query"
-  description="This is a super cool query" 
-  code="source -> my_query { where: foo }"
+  name="Broken Query"
+  description="This should break." 
   renderer="dashboard"
-  source="foo"
 -->
 ```malloy
-query: foo is { where: foo }
+query: foo is table('airports.parquet') -> { group_by: state }
 ```

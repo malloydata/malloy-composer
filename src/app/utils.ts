@@ -17,6 +17,12 @@ import { ILanguageRegistration } from "shiki";
 import { QuerySummaryItem } from "../types";
 import { MALLOY_GRAMMAR } from "./malloyGrammar";
 
+declare global {
+  interface Window {
+    IS_DUCKDB_WASM: boolean;
+  }
+}
+
 shiki.setCDN("https://unpkg.com/shiki/");
 
 export function snakeToTitle(snake: string): string {
@@ -26,14 +32,8 @@ export function snakeToTitle(snake: string): string {
     .join(" ");
 }
 
-export function isElectron(): boolean {
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isElectron = userAgent.indexOf(" electron/") != -1;
-  return isElectron;
-}
-
 export function isDuckDBWASM(): boolean {
-  return !!(window as unknown as { IS_DUCKDB_WASM: boolean }).IS_DUCKDB_WASM;
+  return !!window.IS_DUCKDB_WASM;
 }
 
 const HIGHLIGHTER = shiki.getHighlighter({

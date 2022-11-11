@@ -19,7 +19,7 @@ import { FilterContextBar } from "../FilterContextBar";
 import { AddLimit } from "../AddLimit";
 import { OrderByContextBar } from "../OrderByContextBar";
 import { ActionMenu } from "../ActionMenu";
-import { SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import { SearchValueMapResult, StructDef, ModelDef } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
 import { LoadQueryContextBar } from "../LoadQueryContextBar";
 import {
@@ -39,8 +39,9 @@ interface TopQueryActionMenuProps {
   stageSummary: QuerySummaryItem[];
   queryName: string;
   isOnlyStage: boolean;
-  analysisPath: string;
   queryModifiers: QueryModifiers;
+  model: ModelDef | undefined;
+  modelPath: string | undefined;
 }
 
 export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
@@ -50,16 +51,18 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
   closeMenu,
   queryName,
   topValues,
-  analysisPath,
   queryModifiers,
+  model,
+  modelPath,
 }) => {
   return (
     <ActionMenu
       topValues={topValues}
       valueSearchSource={source}
-      valueSearchAnalysisPath={analysisPath}
       addFilter={(filter) => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
+      model={model}
+      modelPath={modelPath}
       actions={[
         {
           kind: "sub_menu",
@@ -131,6 +134,8 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({ onComplete }) => (
             <FilterContextBar
+              modelPath={modelPath}
+              model={model}
               topValues={topValues}
               source={source}
               addFilter={(filter, as) =>
@@ -138,7 +143,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
               }
               onComplete={onComplete}
               needsRename={false}
-              analysisPath={analysisPath}
             />
           ),
         },

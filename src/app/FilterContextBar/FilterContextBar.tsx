@@ -14,6 +14,7 @@
 import {
   FieldDef,
   FilterExpression,
+  ModelDef,
   SearchValueMapResult,
   StructDef,
 } from "@malloydata/malloy";
@@ -46,22 +47,25 @@ interface FilterContextBarProps {
   onComplete: () => void;
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;
-  analysisPath: string;
+  model: ModelDef;
+  modelPath: string;
 }
 
 export const FilterContextBar: React.FC<FilterContextBarProps> = ({
+  model,
+  modelPath,
   source,
   addFilter,
   onComplete,
   needsRename,
   topValues,
-  analysisPath,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
   const { searchResults, isLoading } = useSearch(
+    model,
+    modelPath,
     source,
-    analysisPath,
     searchTerm
   );
   const stringSearchResults =
@@ -103,7 +107,8 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
       <div>
         {field && (
           <AddFilter
-            analysisPath={analysisPath}
+            model={model}
+            modelPath={modelPath}
             source={source}
             fieldPath={field.path}
             field={field.def}

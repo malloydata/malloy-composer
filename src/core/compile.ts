@@ -21,6 +21,7 @@ import {
   isFilteredAliasedName,
   Malloy,
   MalloyQueryData,
+  Model,
   ModelDef,
   PersistSQLResults,
   PooledConnection,
@@ -28,6 +29,7 @@ import {
   StreamingConnection,
   StructDef,
   URLReader,
+  NamedQuery,
 } from "@malloydata/malloy";
 
 class DummyFiles implements URLReader {
@@ -85,10 +87,10 @@ class DummyConnection implements Connection {
   }
 }
 
-export async function compileModel(
+export async function _compileModel(
   modelDef: ModelDef,
   malloy: string
-): Promise<ModelDef> {
+): Promise<Model> {
   const runtime = new Runtime(new DummyFiles(), new DummyConnection());
   const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
   // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
@@ -101,7 +103,14 @@ export async function compileModel(
     model: baseModel,
     parse: Malloy.parse({ source: malloy }),
   });
-  return model._modelDef;
+  return model;
+}
+
+export async function compileModel(
+  modelDef: ModelDef,
+  malloy: string
+): Promise<ModelDef> {
+  return (await _compileModel(modelDef, malloy))._modelDef;
 }
 
 function modelDefForSource(source: StructDef): ModelDef {
@@ -176,4 +185,42 @@ export async function compileMeasure(
     throw new Error("Expected field definition, not filtered aliased name");
   }
   return field;
+}
+
+export async function compileQuery(
+  modelDef: ModelDef,
+  query: string
+): Promise<NamedQuery> {
+  const model = await _compileModel(modelDef, query);
+  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const match = query.match(regex);
+  let preparedQuery = match
+    ? model.getPreparedQueryByName(match[1])
+    : model.preparedQuery;
+  const defaultName = "new_query";
+  if (preparedQuery._query.pipeHead) {
+    preparedQuery = preparedQuery.getFlattenedQuery(defaultName);
+  }
+  const name =
+    "as" in preparedQuery._query
+      ? preparedQuery._query.as || preparedQuery._query.name
+      : defaultName;
+  return {
+    ...preparedQuery._query,
+    type: "query",
+    name,
+  };
+}
+
+export async function getSourceNameForQuery(
+  modelDef: ModelDef,
+  query: string
+): Promise<string> {
+  const model = await _compileModel(modelDef, query);
+  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const match = query.match(regex);
+  const preparedQuery = match
+    ? model.getPreparedQueryByName(match[1])
+    : model.preparedQuery;
+  return preparedQuery.preparedResult._sourceExploreName;
 }

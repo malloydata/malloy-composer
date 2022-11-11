@@ -1,8 +1,18 @@
-[
-  {
-    "name": "Airports",
-    "dataTables": ["airports.parquet"],
-    "modelPath": "./airports.malloy",
-    "readme": "./airports.md"
-  }
-]
+{
+  "datasets": [
+    {
+      "name": "Airports",
+      "description": "A cool dataset",
+      "tables": ["airports.parquet"],
+      "model": "./airports.malloy",
+      "readme": "./airports.md"
+    },
+    {
+      "name": "Flights",
+      "description": "A cool dataset",
+      "tables": ["flights.parquet", "carriers.parquet", "airports.parquet"],
+      "model": "./flights.malloy",
+      "readme": "./flights.md"
+    }
+  ]
+}

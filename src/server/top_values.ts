@@ -12,23 +12,19 @@
  */
 
 import { Runtime, SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import { getConfig } from "./config";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
+import * as path from "path";
 
 export async function topValues(
   source: StructDef,
-  analysisPath: string
+  modelPath: string
 ): Promise<SearchValueMapResult[] | undefined> {
+  const { modelsPath } = await getConfig();
+  const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
   const sourceName = source.as || source.name;
-  const connections = CONNECTION_MANAGER.getConnectionLookup(
-    new URL("file://" + analysisPath)
-  );
+  const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
-  return runtime
-    ._loadModelFromModelDef({
-      name: "_generated",
-      contents: { [sourceName]: source },
-      exports: [],
-    })
-    .searchValueMap(sourceName);
+  return runtime.loadModel(modelURL).searchValueMap(sourceName);
 }

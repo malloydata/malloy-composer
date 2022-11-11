@@ -34,14 +34,19 @@ import {
   StructDef,
   TurtleDef,
   FieldTypeDef,
+  NamedQuery,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 
 class SourceUtils {
-  constructor(protected source: StructDef) {}
+  constructor(protected _source: StructDef | undefined) {}
 
   updateSource(source: StructDef) {
-    this.source = source;
+    this._source = source;
+  }
+
+  getSource() {
+    return this._source;
   }
 
   protected getField(source: StructDef, fieldName: string): FieldDef {
@@ -57,7 +62,7 @@ class SourceUtils {
         currentSource = found;
         parts = parts.slice(1);
       } else if (found.type === "turtle") {
-        let turtleSource = this.source;
+        let turtleSource = this.getSource();
         for (const stage of found.pipeline) {
           turtleSource = this.modifySourceForStage(stage, turtleSource);
         }
@@ -84,24 +89,60 @@ class SourceUtils {
   }
 }
 
+const BLANK_QUERY: TurtleDef = {
+  pipeline: [
+    {
+      type: "reduce",
+      fields: [],
+    },
+  ],
+  name: "new_query",
+  type: "turtle",
+};
+
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
   constructor(source: StructDef) {
     super(source);
-    this.query = {
-      pipeline: [
-        {
-          type: "reduce",
-          fields: [],
-        },
-      ],
-      name: "new_query",
-      type: "turtle",
-    };
+    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
+  }
+
+  public getWriter(): QueryWriter {
+    return new QueryWriter(this.query, this._source);
+  }
+
+  public getQuerySummary(dataStyles: DataStyles): QuerySummary | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQuerySummary(dataStyles);
+  }
+
+  public getQueryStringForModel(): string | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQueryStringForModel();
+  }
+
+  public getQueryStringForSource(name: string): string | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQueryStringForSource(name);
   }
 
   getName(): string {
     return this.query.name;
+  }
+
+  public clearQuery(): void {
+    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
+  }
+
+  public setQuery(query: NamedQuery): void {
+    this.query = {
+      pipeline: query.pipeline,
+      name: query.as || query.name,
+      type: "turtle",
+    };
   }
 
   private stageAtPath(stagePath: StagePath) {
@@ -135,7 +176,7 @@ export class QueryBuilder extends SourceUtils {
 
   private sourceForStageAtPath(stagePath: StagePath) {
     let currentPipeline = this.query.pipeline;
-    let currentSource = this.source;
+    let currentSource = this.getSource();
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const {
@@ -233,7 +274,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   loadQuery(queryPath: string): void {
-    const definition = this.getField(this.source, queryPath);
+    const definition = this.getField(this.getSource(), queryPath);
     if (definition.type !== "turtle") {
       throw new Error("Path does not refer to query.");
     }
@@ -604,8 +645,11 @@ export class QueryBuilder extends SourceUtils {
   replaceWithDefinition(
     stagePath: StagePath,
     fieldIndex: number,
-    structDef: StructDef
+    structDef?: StructDef
   ): void {
+    if (structDef === undefined) {
+      structDef = this._source;
+    }
     const stage = this.stageAtPath(stagePath);
     const field = stage.fields[fieldIndex];
     if (typeof field !== "string") {
@@ -837,11 +881,11 @@ export class QueryWriter extends SourceUtils {
     }
     if (!forSource) {
       initParts.push(
-        this.maybeQuoteIdentifier(this.source.as || this.source.name)
+        this.maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
     }
     const malloy: Fragment[] = [initParts.join(" ")];
-    let stageSource = this.source;
+    let stageSource = this.getSource();
     for (const stage of this.query.pipeline) {
       if (!forSource) {
         malloy.push(" ->");
@@ -867,25 +911,16 @@ export class QueryWriter extends SourceUtils {
     return items;
   }
 
-  getQuerySummary(
-    modelDataStyles: DataStyles,
-    dataStyles: DataStyles
-  ): QuerySummary {
+  getQuerySummary(dataStyles: DataStyles): QuerySummary {
     const queryName = this.query.name;
-    let stageSource = this.source;
+    let stageSource = this.getSource();
     const stages = this.query.pipeline.map((stage, index) => {
-      const summary = this.getStageSummary(
-        stage,
-        stageSource,
-        modelDataStyles,
-        dataStyles
-      );
+      const summary = this.getStageSummary(stage, stageSource, dataStyles);
       stageSource = this.modifySourceForStage(stage, stageSource);
       if (index === this.query.pipeline.length - 1) {
         const styleItem = this.getStyleItemForName(
           queryName,
           "query",
-          modelDataStyles,
           dataStyles
         );
         if (styleItem) {
@@ -908,7 +943,6 @@ export class QueryWriter extends SourceUtils {
   getStyleItem(
     field: QueryFieldDef,
     source: StructDef,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
     let name: string;
@@ -947,16 +981,15 @@ export class QueryWriter extends SourceUtils {
             : "dimension";
       }
     }
-    return this.getStyleItemForName(name, kind, modelDataStyles, dataStyles);
+    return this.getStyleItemForName(name, kind, dataStyles);
   }
 
   private getStyleItemForName(
     name: string,
     kind: string,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
-    const dataStyle = { ...modelDataStyles, ...dataStyles }[name];
+    const dataStyle = dataStyles[name];
     if (dataStyle === undefined || dataStyle.renderer === undefined) {
       return undefined;
     } else {
@@ -998,7 +1031,6 @@ export class QueryWriter extends SourceUtils {
   getStageSummary(
     stage: PipeSegment,
     source: StructDef,
-    modelDataStyles: DataStyles,
     dataStyles: DataStyles
   ): StageSummary {
     const items: QuerySummaryItem[] = [];
@@ -1009,12 +1041,7 @@ export class QueryWriter extends SourceUtils {
     for (let fieldIndex = 0; fieldIndex < stage.fields.length; fieldIndex++) {
       const field = stage.fields[fieldIndex];
       try {
-        const styleItem = this.getStyleItem(
-          field,
-          source,
-          modelDataStyles,
-          dataStyles
-        );
+        const styleItem = this.getStyleItem(field, source, dataStyles);
         const styleItems = styleItem ? [styleItem] : [];
         if (typeof field === "string") {
           const fieldDef = this.getField(source, field);
@@ -1061,7 +1088,7 @@ export class QueryWriter extends SourceUtils {
             type: "field",
             field: fieldDef,
             saveDefinition:
-              source === this.source && fieldDef.type !== "turtle"
+              source === this.getSource() && fieldDef.type !== "turtle"
                 ? this.fanToDef(field, fieldDef)
                 : undefined,
             fieldIndex,
@@ -1082,21 +1109,14 @@ export class QueryWriter extends SourceUtils {
           const stages = [];
           let stageSource = source;
           for (const stage of field.pipeline) {
-            stages.push(
-              this.getStageSummary(
-                stage,
-                stageSource,
-                modelDataStyles,
-                dataStyles
-              )
-            );
+            stages.push(this.getStageSummary(stage, stageSource, dataStyles));
             stageSource = this.modifySourceForStage(stage, stageSource);
           }
           items.push({
             type: "nested_query_definition",
             name: field.as || field.name,
             fieldIndex,
-            saveDefinition: source === this.source ? field : undefined,
+            saveDefinition: source === this.getSource() ? field : undefined,
             stages: stages,
             styles: styleItems,
           });
@@ -1106,7 +1126,7 @@ export class QueryWriter extends SourceUtils {
             name: field.as || field.name,
             fieldIndex,
             field,
-            saveDefinition: source === this.source ? field : undefined,
+            saveDefinition: source === this.getSource() ? field : undefined,
             source: field.code,
             kind: field.aggregate ? "measure" : "dimension",
             styles: styleItems,

@@ -11,45 +11,25 @@
  * GNU General Public License for more details.
  */
 
-import { SearchValueMapResult, StructDef } from "@malloydata/malloy";
+import { ModelDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
-import { Analysis } from "../../types";
-import { isDuckDBWASM, isElectron } from "../utils";
+import { Dataset } from "../../types";
+import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-export function KEY(analysis?: Analysis): string {
-  return analysis
-    ? analysis.fullPath
-      ? `top_values/analysis/${analysis.fullPath}`
-      : `top_values/model/${analysis.modelFullPath}/source/${analysis.sourceName}`
-    : `top_values/undefined`;
-}
-
 async function fetchTopValues(
-  analysis?: Analysis
+  model?: ModelDef,
+  modelPath?: string,
+  source?: StructDef
 ): Promise<SearchValueMapResult[] | undefined> {
-  if (analysis === undefined) {
+  if (source === undefined || model === undefined) {
     return undefined;
   }
-  const source = analysis && analysis.modelDef.contents[analysis.sourceName];
 
   if (isDuckDBWASM()) {
-    return duckDBWASM.topValues(
-      source as StructDef,
-      analysis.fullPath || analysis.modelFullPath
-    );
+    return duckDBWASM.topValues(model, source);
   }
 
-  if (isElectron()) {
-    const res = await window.malloy.topValues(
-      source,
-      analysis.fullPath || analysis.modelFullPath
-    );
-    if (res instanceof Error) {
-      throw res;
-    }
-    return res;
-  }
   const raw = await (
     await fetch("api/top_values", {
       method: "POST",
@@ -57,8 +37,8 @@ async function fetchTopValues(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        modelPath,
         source,
-        analysisPath: analysis.fullPath || analysis.modelFullPath,
       }),
     })
   ).json();
@@ -66,11 +46,12 @@ async function fetchTopValues(
 }
 
 export function useTopValues(
-  analysis?: Analysis
+  dataset?: Dataset,
+  source?: StructDef
 ): SearchValueMapResult[] | undefined {
   const { data: models } = useQuery(
-    KEY(analysis),
-    () => fetchTopValues(analysis),
+    ["top_values", dataset?.id, source?.name],
+    () => fetchTopValues(dataset?.model, dataset?.modelPath, source),
     {
       refetchOnWindowFocus: false,
     }
