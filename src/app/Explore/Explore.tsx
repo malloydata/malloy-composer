@@ -29,18 +29,12 @@ import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
 import { useSearchParams } from "react-router-dom";
 import { DataStyles } from "@malloydata/render";
+import { snakeToTitle } from "../utils";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
   RUN_QUERY: "command+enter",
 };
-
-function toTitleCase(name: string) {
-  return name
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
-    .join(" ");
-}
 
 export const Explore: React.FC = () => {
   const datasets = useDatasets();
@@ -252,10 +246,10 @@ export const Explore: React.FC = () => {
               {dataset.name}
               {sourceName && (section === "query" || section === "sources") && (
                 <span>
-                  {" ›"} {toTitleCase(sourceName)}
+                  {" ›"} {snakeToTitle(sourceName)}
                   {(urlParams.get("name") || queryName) && section === "query" && (
                     <span>
-                      {" ›"} {urlParams.get("name") || toTitleCase(queryName)}
+                      {" ›"} {urlParams.get("name") || snakeToTitle(queryName)}
                     </span>
                   )}
                 </span>
@@ -353,7 +347,7 @@ export const Explore: React.FC = () => {
                                     }}
                                   >
                                     <SourceLinkTitleRow>
-                                      {toTitleCase(entry.name)}
+                                      {snakeToTitle(entry.name)}
                                     </SourceLinkTitleRow>
                                     <SourceLinkDescription>
                                       In {dataset.name}
