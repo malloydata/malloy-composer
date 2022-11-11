@@ -120,13 +120,16 @@ export const ReorderFieldsContextBar: React.FC<
         <EmptyMessage>Query has no fields.</EmptyMessage>
       )}
       <RightButtonRow>
+        <Button color="secondary" onClick={() => onComplete()}>
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             updateFieldOrder(currentOrdering.map((item) => item.fieldIndex));
             onComplete();
           }}
         >
-          Done
+          Save
         </Button>
       </RightButtonRow>
     </ContextMenuMain>

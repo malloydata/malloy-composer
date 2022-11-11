@@ -47,8 +47,10 @@ export const EditFilter: React.FC<EditFilterProps> = ({
           autoFocus={true}
         />
         <RightButtonRow>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
-            type="submit"
             onClick={() => {
               compileFilter(source, filter).then((filterExpression) => {
                 editFilter(filterExpression);
@@ -56,7 +58,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
               });
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>

@@ -163,7 +163,6 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             Cancel
           </Button>
           <Button
-            type="submit"
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
