@@ -13,6 +13,8 @@
 
 import { StructDef } from "@malloydata/malloy";
 import * as express from "express";
+import { AppListing } from "../types";
+import { getApps } from "./apps";
 import { getDatasets } from "./datasets";
 import { wrapErrors } from "./errors";
 import { runQuery } from "./run_query";
@@ -20,8 +22,18 @@ import { searchIndex } from "./search";
 import { topValues } from "./top_values";
 
 export function routes(router: express.Router): void {
-  router.get("/datasets", async (_, res: express.Response) => {
-    res.json(await wrapErrors(async () => ({ datasets: await getDatasets() })));
+  router.post(
+    "/datasets",
+    async (req: express.Request, res: express.Response) => {
+      const app = req.body.app as AppListing;
+      res.json(
+        await wrapErrors(async () => ({ datasets: await getDatasets(app) }))
+      );
+    }
+  );
+
+  router.get("/apps", async (req: express.Request, res: express.Response) => {
+    res.json(await wrapErrors(async () => await getApps()));
   });
 
   router.post(

@@ -36,22 +36,29 @@ export function isDuckDBWASM(): boolean {
   return !!window.IS_DUCKDB_WASM;
 }
 
-const HIGHLIGHTER = shiki.getHighlighter({
-  theme: "light-plus",
-  langs: [
-    "sql",
-    "json",
-    {
-      id: "malloy",
-      scopeName: "source.malloy",
-      embeddedLangs: ["sql"],
-      grammar: MALLOY_GRAMMAR,
-    } as unknown as ILanguageRegistration,
-  ],
-});
+let HIGHLIGHTER: Promise<shiki.Highlighter>;
+function getHighlighter() {
+  if (HIGHLIGHTER !== undefined) {
+    return HIGHLIGHTER;
+  }
+  HIGHLIGHTER = shiki.getHighlighter({
+    theme: "light-plus",
+    langs: [
+      "sql",
+      "json",
+      {
+        id: "malloy",
+        scopeName: "source.malloy",
+        embeddedLangs: ["sql"],
+        grammar: MALLOY_GRAMMAR,
+      } as unknown as ILanguageRegistration,
+    ],
+  });
+  return HIGHLIGHTER;
+}
 
 export async function highlight(code: string, lang: string): Promise<string> {
-  const highlighter = await HIGHLIGHTER;
+  const highlighter = await getHighlighter();
   if (!highlighter.getLoadedLanguages().includes(lang as shiki.Lang)) {
     lang = "txt";
   }

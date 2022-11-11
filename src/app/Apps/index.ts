@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,15 +11,4 @@
  * GNU General Public License for more details.
  */
 
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Explore } from "./app";
-
-const client = new QueryClient();
-
-export const Main: React.FC = () => {
-  return (
-    <QueryClientProvider client={client}>
-      <Explore />
-    </QueryClientProvider>
-  );
-};
+export { Apps } from "./Apps";
