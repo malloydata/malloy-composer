@@ -17,7 +17,7 @@
   "license": "GPL-2.0",
   "scripts": {
     "lint": "eslint src scripts",
-    "start": "ts-node scripts/serve",
+    "start": "npm run server-start",
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./node_modules",
     "server-build": "ts-node scripts/package-server --skip-package",
@@ -32,11 +32,11 @@
     "malloy-unlink": "npm --no-fund --no-save --no-audit unlink $npm_package_config_malloy_packages && npm --no-fund --no-audit install --force"
   },
   "dependencies": {
-    "@malloydata/db-bigquery": "0.0.6",
-    "@malloydata/db-duckdb": "0.0.6",
-    "@malloydata/db-postgres": "0.0.6",
+    "@malloydata/db-bigquery": "0.0.7",
+    "@malloydata/db-duckdb": "0.0.7",
+    "@malloydata/db-postgres": "0.0.7",
     "@malloydata/malloy": "0.0.7",
-    "@malloydata/render": "0.0.6",
+    "@malloydata/render": "0.0.7",
     "@popperjs/core": "^2.11.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",

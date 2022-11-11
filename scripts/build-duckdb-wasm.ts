@@ -24,7 +24,7 @@ fs.mkdirSync(outDir, { recursive: true });
 let port: number | undefined;
 
 export async function doBuild(): Promise<void> {
-  const development = port !== undefined;
+  const development = process.env.NODE_ENV == "development";
 
   const options: BuildOptions = {
     define: {
