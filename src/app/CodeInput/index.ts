@@ -11,4 +11,4 @@
  * GNU General Public License for more details.
  */
 
-export { CodeInput } from "./CodeInput";
+export { CodeInput, CodeTextArea } from "./CodeInput";

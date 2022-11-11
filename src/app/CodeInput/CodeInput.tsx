@@ -15,7 +15,7 @@ import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { FormItem, FormInputLabel } from "../CommonElements";
 
-interface CodeInputProps {
+export interface CodeInputProps {
   value: string;
   setValue: (value: string) => void;
   placeholder?: string;
@@ -45,11 +45,11 @@ export const CodeInput: React.FC<CodeInputProps> = ({
       {label && <FormInputLabel>{label}</FormInputLabel>}
       <StyledInput
         ref={ref}
-        type="text"
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
         autoFocus={autoFocus}
+        type="text"
       />
     </FormItem>
   );
@@ -62,6 +62,67 @@ const StyledInput = styled.input`
   border: 1px solid #efefef;
   padding: 5px 10px;
   outline: none;
+  width: calc(100% - 22px);
+
+  &:focus {
+    border-color: #4285f4;
+  }
+`;
+
+export interface CodeTextAreaProps {
+  value: string;
+  setValue: (value: string) => void;
+  placeholder?: string;
+  label?: string;
+  autoFocus?: boolean;
+  autoSelect?: boolean;
+  rows?: number;
+  cols?: number;
+}
+
+export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
+  value,
+  setValue,
+  placeholder,
+  label,
+  autoFocus,
+  autoSelect,
+  rows = 1,
+  cols,
+}) => {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (autoSelect && ref.current) {
+      ref.current.select();
+    }
+  }, [autoSelect]);
+
+  return (
+    <FormItem>
+      {label && <FormInputLabel>{label}</FormInputLabel>}
+      <StyledTextArea
+        ref={ref}
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        autoFocus={autoFocus}
+        rows={rows}
+        cols={cols}
+      />
+    </FormItem>
+  );
+};
+
+const StyledTextArea = styled.textarea`
+  font-family: "Roboto Mono";
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #efefef;
+  min-height: calc(1em + 5px);
+  padding: 5px 10px;
+  outline: none;
+  resize: vertical;
   width: calc(100% - 22px);
 
   &:focus {

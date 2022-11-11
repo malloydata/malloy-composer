@@ -68,20 +68,23 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
+          <Button outline={false} onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             onClick={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
               compileDimension(source, newName, dimension)
                 .then((dimension) => {
                   addDimension(dimension);
                   onComplete();
                 })
                 .catch(setError);
-              event?.stopPropagation();
-              event?.preventDefault();
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>
