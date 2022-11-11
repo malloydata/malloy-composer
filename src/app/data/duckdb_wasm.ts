@@ -80,7 +80,7 @@ export async function datasets(
   const app = JSON.parse(response) as explore.AppConfig;
   const title = app.title;
   const readme =
-    app.readme && (await URL_READER.readURL(new URL(app.readme, base)));
+    app.readme && (await URL_READER.readURL(new URL(app.readme, samplesURL)));
   const models: explore.ModelInfo[] = await Promise.all(
     app.models.map(async (sample: explore.ModelConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
@@ -88,11 +88,11 @@ export async function datasets(
         sample.tables.map((tableName) => {
           return connection.database?.registerFileURL(
             tableName,
-            new URL(tableName, base).toString()
+            new URL(tableName, samplesURL).toString()
           );
         })
       );
-      const modelURL = new URL(sample.modelPath, base);
+      const modelURL = new URL(sample.modelPath, samplesURL);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
       const model = await runtime.getModel(modelURL);
