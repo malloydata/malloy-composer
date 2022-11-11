@@ -38,9 +38,8 @@ export async function getDatasets(
     ));
   const models: explore.ModelInfo[] = await Promise.all(
     app.models.map(async (sample: explore.ModelConfig) => {
-      const modelURL = new URL(
-        "file://" + path.join(appRoot, sample.modelPath)
-      );
+      const modelPath = path.join(appRoot, sample.modelPath);
+      const modelURL = new URL("file://" + modelPath);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
       const runtime = new Runtime(urlReader, connections);

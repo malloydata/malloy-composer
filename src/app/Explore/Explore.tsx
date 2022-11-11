@@ -105,6 +105,17 @@ export const Explore: React.FC = () => {
     setParams(urlParams);
   };
 
+  const model = modelInfo?.model;
+  const modelPath =
+    modelInfo && app
+      ? new URL(
+          modelInfo?.modelPath,
+          new URL(app.configPath, window.location.href)
+        ).pathname
+      : undefined;
+  const source =
+    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
+
   const {
     queryMalloy,
     queryName,
@@ -119,17 +130,7 @@ export const Explore: React.FC = () => {
     registerNewSource,
     error,
     dirty,
-  } = useQueryBuilder(
-    modelInfo?.model,
-    modelInfo?.modelPath,
-    updateQueryInURL,
-    modelInfo?.styles
-  );
-
-  const model = modelInfo?.model;
-  const modelPath = modelInfo?.modelPath;
-  const source =
-    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
+  } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
 
   const setDatasetSource = (
     modelInfo: ModelInfo,
@@ -199,8 +200,12 @@ export const Explore: React.FC = () => {
     name?: string,
     renderer?: string
   ) => {
+    const urlBase = window.location.href;
+    const targetHref = new URL(model, new URL(app.configPath, urlBase)).href;
     const newModelInfo = appInfo.models.find(
-      (modelInfo) => modelInfo.modelPath === model
+      (modelInfo) =>
+        new URL(modelInfo.modelPath, new URL(app.configPath, urlBase)).href ===
+        targetHref
     );
     if (newModelInfo === undefined) {
       throw new Error("Bad model");
@@ -239,11 +244,7 @@ export const Explore: React.FC = () => {
     RUN_QUERY: runQueryAction,
   };
 
-  const topValues = useTopValues(
-    modelInfo?.model,
-    modelInfo?.modelPath,
-    source
-  );
+  const topValues = useTopValues(model, modelPath, source);
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
