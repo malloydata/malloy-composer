@@ -22,7 +22,7 @@ export type MeasureType =
   | "distinct"
   | "max"
   | "min"
-  | "average"
+  | "avg"
   | "sum"
   | "percent"
   | "custom";
@@ -46,7 +46,7 @@ export function generateMeasure(
       return `count(distinct \`${fieldName}\`)`;
     case "min":
     case "max":
-    case "average":
+    case "avg":
     case "sum":
       return `${measureType}(\`${fieldName}\`)`;
     case "percent":
