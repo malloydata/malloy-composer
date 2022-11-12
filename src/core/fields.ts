@@ -27,6 +27,13 @@ export type MeasureType =
   | "percent"
   | "custom";
 
+function quoteField(fieldName: string) {
+  return fieldName
+    .split(".")
+    .map((part) => `\`${part}\``)
+    .join(".");
+}
+
 /**
  * Generates a new measure string based on a pre-defined type, and
  * a field name, if needed.
@@ -43,14 +50,14 @@ export function generateMeasure(
     case "count":
       return "count()";
     case "distinct":
-      return `count(distinct \`${fieldName}\`)`;
+      return `count(distinct ${quoteField(fieldName)})`;
     case "min":
     case "max":
     case "avg":
     case "sum":
-      return `${measureType}(\`${fieldName}\`)`;
+      return `${measureType}(${quoteField(fieldName)})`;
     case "percent":
-      return `count() / all(count(), \`${fieldName}\`) * 100.0`;
+      return `count() / all(count(), ${quoteField(fieldName)}) * 100.0`;
   }
   return;
 }

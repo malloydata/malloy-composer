@@ -54,7 +54,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 }) => {
   const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
-  const [measureType, setMeasureType] = useState<MeasureType>("count");
+  const [measureType, setMeasureType] = useState<MeasureType>(
+    // TODO(willscullin) Need to parse initialCode to determine if
+    // non-custom display can be used.
+    initialCode ? "custom" : "count"
+  );
   const [field, setField] = useState<string>("");
   const [error, setError] = useState<Error>();
 
@@ -84,7 +88,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
           disableHover={true}
         />
       );
-      acc.push({ label, value: field.name });
+      acc.push({ label, value: path });
     }
     return acc;
   }, []);
