@@ -336,27 +336,21 @@ export const Explore: React.FC = () => {
                             name: string;
                             source: StructDef;
                           }[];
-                          return (
-                            <>
-                              {sources.map((entry) => {
-                                return (
-                                  <SourceLink
-                                    key={entry.name}
-                                    onClick={() => {
-                                      setDatasetSource(dataset, entry.name);
-                                    }}
-                                  >
-                                    <SourceLinkTitleRow>
-                                      {snakeToTitle(entry.name)}
-                                    </SourceLinkTitleRow>
-                                    <SourceLinkDescription>
-                                      In {dataset.name}
-                                    </SourceLinkDescription>
-                                  </SourceLink>
-                                );
-                              })}
-                            </>
-                          );
+                          return sources.map((entry) => (
+                            <SourceLink
+                              key={entry.name}
+                              onClick={() => {
+                                setDatasetSource(dataset, entry.name);
+                              }}
+                            >
+                              <SourceLinkTitleRow>
+                                {snakeToTitle(entry.name)}
+                              </SourceLinkTitleRow>
+                              <SourceLinkDescription>
+                                In {dataset.name}
+                              </SourceLinkDescription>
+                            </SourceLink>
+                          ));
                         })}
                     </DatasetsWrapperInner>
                   </DatasetsWrapperOuter>

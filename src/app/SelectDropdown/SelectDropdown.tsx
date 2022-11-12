@@ -155,24 +155,25 @@ export function SelectList<T>({
 }: SelectListProps<T>): JSX.Element {
   return (
     <SelectListDiv>
-      {options.map((option, index) => {
+      {options.reduce<JSX.Element[]>((result, option, index) => {
         const isSelected =
           value !== undefined && valueEqual(value, option.value);
-        return (
-          <>
-            {option.divider && <OptionDivider key={"divider" + index} />}
-            <OptionDiv
-              key={index}
-              onClick={() => onChange(option.value)}
-              className={isSelected ? "selected" : ""}
-            >
-              <OptionRadio type="radio" defaultChecked={isSelected} />
-              <CheckIcon className={isSelected ? "selected" : ""} />
-              <OptionSpan>{option.label}</OptionSpan>
-            </OptionDiv>
-          </>
+        if (option.divider) {
+          result.push(<OptionDivider key={"divider" + index} />);
+        }
+        result.push(
+          <OptionDiv
+            key={index}
+            onClick={() => onChange(option.value)}
+            className={isSelected ? "selected" : ""}
+          >
+            <OptionRadio type="radio" defaultChecked={isSelected} />
+            <CheckIcon className={isSelected ? "selected" : ""} />
+            <OptionSpan>{option.label}</OptionSpan>
+          </OptionDiv>
         );
-      })}
+        return result;
+      }, [])}
     </SelectListDiv>
   );
 }
@@ -188,14 +189,17 @@ interface DropdownMenuProps {
 export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
   return (
     <SelectListDiv>
-      {options.map((option, index) => (
-        <>
-          {option.divider && <OptionDivider key={"divider" + index} />}
+      {options.reduce<JSX.Element[]>((result, option, index) => {
+        if (option.divider) {
+          result.push(<OptionDivider key={"divider" + index} />);
+        }
+        result.push(
           <OptionDiv key={index} onClick={() => option.onSelect()}>
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
-        </>
-      ))}
+        );
+        return result;
+      }, [])}
     </SelectListDiv>
   );
 }
