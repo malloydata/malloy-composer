@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Popover } from "../Popover";
 import { DropdownMenu } from "../SelectDropdown/SelectDropdown";
 import { ReactComponent as Icon } from "../assets/img/download_hover.svg";
@@ -30,11 +30,13 @@ export const DownloadMenu: React.FC<DownloadMenuProps> = ({
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLInputElement>();
 
   const andClose = (fun: (newTab: boolean) => void) => {
     return (event: React.MouseEvent) => {
       if (!disabled) {
-        fun(event.metaKey);
+        const meta = event.metaKey;
+        fun(ref.current?.checked ? !meta : meta);
         setIsOpen(false);
       }
     };
@@ -62,6 +64,10 @@ export const DownloadMenu: React.FC<DownloadMenuProps> = ({
             { label: "Download JSON", onSelect: andClose(onDownloadJSON) },
           ]}
         />
+        <NewTabContainer>
+          <NewTabCheck type="checkbox" ref={ref} id="new-tab-check" />
+          <NewTabLabel htmlFor="new-tab-check">Open in new tab</NewTabLabel>
+        </NewTabContainer>
       </Popover>
     </Wrapper>
   );
@@ -99,4 +105,17 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   user-select: none;
+`;
+
+const NewTabContainer = styled.div`
+  border-top: 1px solid #ececec;
+  font-family: Roboto;
+  padding: 10px 15px;
+`;
+
+const NewTabCheck = styled.input``;
+
+const NewTabLabel = styled.label`
+  margin-left: 8px;
+  color: #5f6368;
 `;
