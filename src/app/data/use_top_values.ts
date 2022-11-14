@@ -13,7 +13,6 @@
 
 import { ModelDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
 import { useQuery } from "react-query";
-import { Dataset } from "../../types";
 import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
@@ -46,12 +45,13 @@ async function fetchTopValues(
 }
 
 export function useTopValues(
-  dataset?: Dataset,
+  model?: ModelDef,
+  modelPath?: string,
   source?: StructDef
 ): SearchValueMapResult[] | undefined {
   const { data: models } = useQuery(
-    ["top_values", dataset?.id, source?.name],
-    () => fetchTopValues(dataset?.model, dataset?.modelPath, source),
+    ["top_values", modelPath, source?.name],
+    () => fetchTopValues(model, modelPath, source),
     {
       refetchOnWindowFocus: false,
     }

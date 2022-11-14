@@ -62,7 +62,7 @@ export const commonServerConfig = (
     sourcemap: development ? "inline" : false,
     bundle: true,
     platform: "node",
-    external: ["./duckdb-native.node"],
+    external: ["./duckdb-native.node", "vscode-oniguruma"],
     plugins: [makeDuckdbNoNodePreGypPlugin(target), ignorePgNativePlugin],
   };
 };

@@ -15,6 +15,7 @@ import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_con
 import * as malloy from "@malloydata/malloy";
 import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
+import { snakeToTitle } from "../utils";
 
 export class DuckDBWasmLookup
   implements malloy.LookupConnection<DuckDBWASMConnection>
@@ -57,41 +58,70 @@ const URL_READER = new BrowserURLReader();
 const DUCKDB_WASM = new DuckDBWasmLookup();
 const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
 
-export async function datasets(): Promise<explore.Dataset[]> {
+export async function apps(): Promise<explore.ComposerConfig> {
   const base = window.location.href;
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
-  const samples = JSON.parse(response) as { datasets: explore.DatasetConfig[] };
-  return await Promise.all(
-    samples.datasets.map(async (sample: explore.DatasetConfig) => {
+  const config = JSON.parse(response) as explore.ComposerConfig;
+  const readme =
+    config.readme && (await URL_READER.readURL(new URL(config.readme, base)));
+  return {
+    ...config,
+    readme,
+  };
+}
+
+export async function datasets(
+  _app: explore.AppListing
+): Promise<explore.AppInfo> {
+  const base = window.location.href;
+  const samplesURL = new URL(_app.configPath, base);
+  const response = await URL_READER.readURL(samplesURL);
+  const app = JSON.parse(response) as explore.AppConfig;
+  const title = app.title;
+  const readme =
+    app.readme && (await URL_READER.readURL(new URL(app.readme, samplesURL)));
+  const models: explore.ModelInfo[] = await Promise.all(
+    app.models.map(async (sample: explore.ModelConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
       await Promise.all(
         sample.tables.map((tableName) => {
           return connection.database?.registerFileURL(
             tableName,
-            new URL(tableName, base).toString()
+            new URL(tableName, samplesURL).toString()
           );
         })
       );
-      const modelURL = new URL(sample.model, base);
-      const readme =
-        sample.readme &&
-        (await URL_READER.readURL(new URL(sample.readme, base)));
+      const modelURL = new URL(sample.modelPath, samplesURL);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
       const model = await runtime.getModel(modelURL);
       const dataStyles = urlReader.getHackyAccumulatedDataStyles();
+      const sources =
+        sample.sources ||
+        Object.values(model._modelDef.contents)
+          .filter((obj) => obj.type === "struct")
+          .map((obj) => ({
+            title: snakeToTitle(obj.as || obj.name),
+            sourceName: obj.as || obj.name,
+            description: `Source ${obj.as} in ${sample.id}`,
+          }));
       return {
-        id: modelURL.toString(),
-        name: sample.name,
-        description: sample.description,
+        id: sample.id,
         model: model._modelDef,
-        modelPath: sample.model,
+        modelPath: sample.modelPath,
         readme,
         styles: dataStyles,
+        sources,
       };
     })
   );
+  return {
+    readme,
+    linkedReadmes: app.linkedReadmes,
+    title,
+    models,
+  };
 }
 
 export async function runQuery(

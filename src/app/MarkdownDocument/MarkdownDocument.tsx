@@ -18,24 +18,33 @@ import { COLORS } from "../colors";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
+import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
 
 interface MarkdownDocumentProps {
   content: string;
-  loadQueryLink: (
+  loadQueryLink?: (
     model: string,
     query: string,
     name?: string,
     renderer?: string
   ) => void;
+  loadApp?: (appId: string) => void;
 }
 
 export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
   content,
   loadQueryLink,
+  loadApp,
 }) => {
   const markdown = parseMarkdown(content);
 
-  return <MarkdownNode node={markdown} loadQueryLink={loadQueryLink} />;
+  return (
+    <MarkdownNode
+      node={markdown}
+      loadQueryLink={loadQueryLink}
+      loadApp={loadApp}
+    />
+  );
 };
 
 export const MarkdownNode: React.FC<{
@@ -46,9 +55,14 @@ export const MarkdownNode: React.FC<{
     name?: string,
     renderer?: string
   ) => void;
-}> = ({ node, loadQueryLink }) => {
+  loadApp?: (appId: string) => void;
+}> = ({ node, loadQueryLink, loadApp }) => {
   const children = (node: { children: Markdown[] }) => (
-    <MarkdownNodes nodes={node.children} loadQueryLink={loadQueryLink} />
+    <MarkdownNodes
+      nodes={node.children}
+      loadQueryLink={loadQueryLink}
+      loadApp={loadApp}
+    />
   );
 
   switch (node.type) {
@@ -138,6 +152,21 @@ export const MarkdownNode: React.FC<{
           <QueryLinkDescription>{node.description}</QueryLinkDescription>
         </QueryLink>
       );
+
+    case "malloyAppLink":
+      return (
+        <QueryLink
+          onClick={() => {
+            loadApp(node.appId);
+          }}
+        >
+          <QueryLinkTitleRow>
+            {node.name}
+            <ViewIcon width="80" height="22" />
+          </QueryLinkTitleRow>
+          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+        </QueryLink>
+      );
   }
 };
 
@@ -148,7 +177,8 @@ export const MarkdownNodes: React.FC<{
     sourceName: string,
     queryName: string
   ) => void;
-}> = ({ nodes, loadQueryLink }) => {
+  loadApp?: (appId: string) => void;
+}> = ({ nodes, loadQueryLink, loadApp }) => {
   return (
     <>
       {nodes.map((childNode, index) => (
@@ -156,6 +186,7 @@ export const MarkdownNodes: React.FC<{
           node={childNode}
           key={index}
           loadQueryLink={loadQueryLink}
+          loadApp={loadApp}
         />
       ))}
     </>
