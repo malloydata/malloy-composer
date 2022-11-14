@@ -36,7 +36,7 @@ export async function getDatasets(
     console.error(error);
     app = {};
   }
-  const title = app.title || "Malloy";
+  const title = app.title;
   const appRoot = path.dirname(path.join(workingDirectory, _app.configPath));
   const readme =
     app.readme &&

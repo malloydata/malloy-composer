@@ -257,7 +257,7 @@ export const Explore: React.FC = () => {
           <MalloyLogo />
           {appInfo && (
             <span>
-              {appInfo.title}
+              {appInfo.title || "Malloy"}
               {sourceName && (section === "query" || section === "sources") && (
                 <span>
                   {" ›"} {snakeToTitle(sourceName)}
