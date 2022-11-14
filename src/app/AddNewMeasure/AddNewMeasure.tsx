@@ -175,7 +175,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                   return setError(new Error("Enter a definition"));
                 }
               } else {
-                if (!field) {
+                if (measureType !== "count" && !field) {
                   return setError(new Error("Select a field"));
                 }
               }
