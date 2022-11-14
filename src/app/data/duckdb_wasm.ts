@@ -63,11 +63,21 @@ export async function apps(): Promise<explore.ComposerConfig> {
   const samplesURL = new URL("composer.json", base);
   const response = await URL_READER.readURL(samplesURL);
   const config = JSON.parse(response) as explore.ComposerConfig;
-  const readme =
-    config.readme && (await URL_READER.readURL(new URL(config.readme, base)));
+  if ("apps" in config) {
+    const readme =
+      config.readme && (await URL_READER.readURL(new URL(config.readme, base)));
+    return {
+      ...config,
+      readme,
+    };
+  }
   return {
-    ...config,
-    readme,
+    apps: [
+      {
+        id: "default",
+        configPath: "composer.json",
+      },
+    ],
   };
 }
 

@@ -15,6 +15,7 @@ import * as explore from "../types";
 import { Runtime } from "@malloydata/malloy";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
+import { promises as fs } from "fs";
 import { HackyDataStylesAccumulator } from "../common/data_styles";
 import * as path from "path";
 import { getConfig } from "./config";
@@ -23,21 +24,41 @@ import { snakeToTitle } from "../app/utils";
 export async function getDatasets(
   _app: explore.AppListing
 ): Promise<explore.AppInfo> {
-  const { modelsPath } = await getConfig();
-  const samplesURL = new URL(
-    "file://" + path.join(modelsPath, _app.configPath)
-  );
-  const response = await URL_READER.readURL(samplesURL);
-  const app = JSON.parse(response) as explore.AppConfig;
-  const title = app.title;
-  const appRoot = path.dirname(path.join(modelsPath, _app.configPath));
+  const { workingDirectory } = await getConfig();
+  const configPath = path.join(workingDirectory, _app.configPath);
+  const samplesURL = new URL("file://" + configPath);
+  let app: explore.AppConfig;
+  try {
+    const response = await URL_READER.readURL(samplesURL);
+    app = JSON.parse(response) as explore.AppConfig;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    app = {};
+  }
+  const title = app.title || "Malloy";
+  const appRoot = path.dirname(path.join(workingDirectory, _app.configPath));
   const readme =
     app.readme &&
     (await URL_READER.readURL(
       new URL("file://" + path.join(appRoot, app.readme))
     ));
+  let modelConfigs = app.models;
+  if (modelConfigs === undefined) {
+    const dirPath = path.dirname(configPath);
+    const items = await fs.readdir(dirPath);
+    modelConfigs = items
+      .filter((item) => item.endsWith(".malloy"))
+      .map((modelPath) => {
+        return {
+          id: modelPath,
+          modelPath,
+          tables: [],
+        };
+      });
+  }
   const models: explore.ModelInfo[] = await Promise.all(
-    app.models.map(async (sample: explore.ModelConfig) => {
+    modelConfigs.map(async (sample: explore.ModelConfig) => {
       const modelPath = path.join(appRoot, sample.modelPath);
       const modelURL = new URL("file://" + modelPath);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);

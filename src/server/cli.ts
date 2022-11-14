@@ -8,7 +8,11 @@ program
   .name("malloy-composer-cli")
   .description("CLI tool for Malloy Composer server")
   .version("0.0.1")
-  .option("-m, --models <string>", "directory containing malloy models", ".")
+  .option(
+    "-m, --datasets <string>",
+    "Datasets config file; one dataset config file; or directory containing a config file",
+    "."
+  )
   .option("-p, --port <integer>", "Port for server to listen on", "4000")
   .option("-h, --host <string>", "Hostname for server to bind to", "localhost");
 
@@ -19,7 +23,7 @@ const composerProcess = exec(`node ${path.join(__dirname, "server.js")}`, {
     ...process.env,
     PORT: `${program.opts().port}`,
     HOST: `${program.opts().host}`,
-    MODELS: `${program.opts().models}`,
+    DATASETS: `${program.opts().datasets}`,
   },
 });
 

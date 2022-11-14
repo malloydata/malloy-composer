@@ -43,10 +43,10 @@ export interface ModelConfig {
 }
 
 export interface AppConfig {
-  readme: string;
-  linkedReadmes: string[];
-  title: string;
-  models: ModelConfig[];
+  readme?: string;
+  linkedReadmes?: string[];
+  title?: string;
+  models?: ModelConfig[];
 }
 
 export interface ModelInfo {

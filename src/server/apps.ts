@@ -15,21 +15,36 @@ import { getConfig } from "./config";
 import { URL_READER } from "./urls";
 import * as explore from "../types";
 import * as path from "path";
+import * as fs from "fs";
 
 export async function getApps(): Promise<explore.ComposerConfig> {
-  const { modelsPath } = await getConfig();
-  const samplesURL = new URL(
-    "file://" + path.join(modelsPath, "composer.json")
-  );
-  const response = await URL_READER.readURL(samplesURL);
-  const config = JSON.parse(response) as explore.ComposerConfig;
-  const readme =
-    config.readme &&
-    (await URL_READER.readURL(
-      new URL("file://" + path.join(modelsPath, config.readme))
-    ));
+  const { configPath, workingDirectory } = await getConfig();
+  const fullConfigPath = path.join(workingDirectory, configPath);
+
+  if (fs.existsSync(fullConfigPath)) {
+    const response = await URL_READER.readURL(
+      new URL("file://" + fullConfigPath)
+    );
+    const config = JSON.parse(response) as explore.ComposerConfig;
+    if ("apps" in config) {
+      const readme =
+        config.readme &&
+        (await URL_READER.readURL(
+          new URL("file://" + path.join(workingDirectory, config.readme))
+        ));
+      return {
+        ...config,
+        readme,
+      };
+    }
+  }
+
   return {
-    ...config,
-    readme,
+    apps: [
+      {
+        id: "default",
+        configPath,
+      },
+    ],
   };
 }

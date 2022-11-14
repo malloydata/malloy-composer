@@ -187,7 +187,11 @@ export const Explore: React.FC = () => {
         }
         params.current = urlParams.toString();
       } else if (appInfo && !modelInfo && !page) {
-        urlParams.set("page", "about");
+        if (appInfo.readme) {
+          urlParams.set("page", "about");
+        } else {
+          urlParams.set("page", "sources");
+        }
         setParams(urlParams, { replace: true });
       }
     };
