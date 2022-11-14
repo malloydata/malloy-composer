@@ -93,18 +93,6 @@ export const Explore: React.FC = () => {
     setParams(urlParams);
   };
 
-  const section = urlParams.get("page") || "query";
-  const setSection = (section: string) => {
-    urlParams.set("page", section);
-    if (section !== "query") {
-      urlParams.delete("query");
-      urlParams.delete("run");
-      urlParams.delete("name");
-      urlParams.delete("styles");
-    }
-    setParams(urlParams);
-  };
-
   const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
@@ -134,7 +122,22 @@ export const Explore: React.FC = () => {
     canRedo,
     undo,
     redo,
+    resetUndoHistory,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
+
+  const section = urlParams.get("page") || "query";
+  const setSection = (section: string) => {
+    urlParams.set("page", section);
+    if (section !== "query") {
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
+      clearQuery(true);
+      resetUndoHistory();
+    }
+    setParams(urlParams);
+  };
 
   const setDatasetSource = (
     modelInfo: ModelInfo,

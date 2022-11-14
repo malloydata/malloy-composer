@@ -46,6 +46,7 @@ interface UseQueryBuilderResult {
   canRedo: boolean;
   undo: () => void;
   redo: () => void;
+  resetUndoHistory: () => void;
 }
 
 export interface QueryModifiers {
@@ -135,8 +136,7 @@ export function useQueryBuilder(
   const [error, setError] = useState<Error | undefined>();
   const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
-  const [historySize, setHistorySize] = useState(0);
-  const [historyPosition, setHistoryPosition] = useState(0);
+  const history = useRef({ size: 0, position: 0 });
   const navigate = useNavigate();
 
   const dataStyles = useRef<DataStyles>({});
@@ -189,8 +189,6 @@ export function useQueryBuilder(
           query: queryString,
           styles: dataStyles.current,
         });
-        setHistorySize(historyPosition + 1);
-        setHistoryPosition(historyPosition + 1);
       }
       setQueryString(queryString);
       setDirty(true);
@@ -199,22 +197,30 @@ export function useQueryBuilder(
       setQueryString(queryString);
       setDirty(true);
     }
+    if (!noURLUpdate) {
+      const newPosition = history.current.position + 1;
+      history.current.position = newPosition;
+      history.current.size = newPosition;
+    }
   };
 
-  const canUndo = historyPosition > 0;
   const undo = () => {
-    if (canUndo) {
-      setHistoryPosition(historyPosition - 1);
+    if (history.current.position > 0) {
+      history.current.position--;
       navigate(-1);
     }
   };
 
-  const canRedo = historyPosition < historySize;
   const redo = () => {
-    if (canRedo) {
-      setHistoryPosition(historyPosition + 1);
+    if (history.current.position < history.current.size) {
+      history.current.position++;
       navigate(1);
     }
+  };
+
+  const resetUndoHistory = () => {
+    history.current.position = 0;
+    history.current.size = 0;
   };
 
   const clearQuery = (noURLUpdate = false) => {
@@ -404,11 +410,12 @@ export function useQueryBuilder(
     dataStyles: currentDataStyles,
     result,
     error,
-    canUndo,
-    canRedo,
+    canUndo: history.current.position > 0,
+    canRedo: history.current.position < history.current.size,
     registerNewSource,
     undo,
     redo,
+    resetUndoHistory,
     queryModifiers: {
       setDataStyles,
       setQuery,
