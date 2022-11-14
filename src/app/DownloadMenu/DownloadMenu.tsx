@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Popover } from "../Popover";
 import { DropdownMenu } from "../SelectDropdown/SelectDropdown";
 import { ReactComponent as Icon } from "../assets/img/download_hover.svg";
@@ -19,8 +19,8 @@ import styled from "styled-components";
 import { COLORS } from "../colors";
 
 interface DownloadMenuProps {
-  onDownloadHTML: () => void;
-  onDownloadJSON: () => void;
+  onDownloadHTML: (newTab: boolean) => void;
+  onDownloadJSON: (newTab: boolean) => void;
   disabled?: boolean;
 }
 
@@ -31,10 +31,10 @@ export const DownloadMenu: React.FC<DownloadMenuProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const andClose = (fun: () => void) => {
-    return () => {
+  const andClose = (fun: (newTab: boolean) => void) => {
+    return (event: React.MouseEvent) => {
       if (!disabled) {
-        fun();
+        fun(event.metaKey);
         setIsOpen(false);
       }
     };

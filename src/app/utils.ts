@@ -203,13 +203,18 @@ export function largeNumberLabel(n: number): string {
 export function downloadFile(
   content: string,
   mimeType: string,
-  filename: string
+  filename: string,
+  newTab: boolean
 ): void {
   const downloadLink = document.createElement("a");
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   downloadLink.setAttribute("href", url);
-  downloadLink.setAttribute("download", filename);
+  if (newTab) {
+    downloadLink.setAttribute("target", "_blank");
+  } else {
+    downloadLink.setAttribute("download", filename);
+  }
   downloadLink.click();
 }
 

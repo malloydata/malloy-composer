@@ -181,7 +181,7 @@ export function SelectList<T>({
 interface DropdownMenuProps {
   options: {
     label: string | JSX.Element;
-    onSelect: () => void;
+    onSelect: (event: React.MouseEvent) => void;
     divider?: boolean;
   }[];
 }
@@ -194,7 +194,7 @@ export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
           result.push(<OptionDivider key={"divider" + index} />);
         }
         result.push(
-          <OptionDiv key={index} onClick={() => option.onSelect()}>
+          <OptionDiv key={index} onClick={(event) => option.onSelect(event)}>
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
         );
