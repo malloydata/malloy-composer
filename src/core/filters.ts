@@ -220,7 +220,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
       )}`;
     }
     case "is_before": {
-      return `${field}.${filter.granularity} > ${timeToString(
+      return `${field}.${filter.granularity} < ${timeToString(
         filter.date,
         filter.granularity
       )}`;
