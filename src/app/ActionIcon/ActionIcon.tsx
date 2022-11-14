@@ -34,8 +34,8 @@ import { ReactComponent as ActionIconMove } from "../assets/img/insert_icons/mov
 import { ReactComponent as ActionIconSearch } from "../assets/img/insert_icons/search.svg";
 import { ReactComponent as ActionIconOpen } from "../assets/img/insert_icons/header_folder.svg";
 import { ReactComponent as AnalysisIcon } from "../assets/img/source.svg";
-// TODO real icon
-import { ReactComponent as UndoIcon } from "../assets/img/vis_icons/viz_time.svg";
+import { ReactComponent as RedoIcon } from "../assets/img/query_redo_hover.svg";
+import { ReactComponent as UndoIcon } from "../assets/img/query_undo_hover.svg";
 import { ColorKey, COLORS } from "../colors";
 import styled from "styled-components";
 
@@ -63,7 +63,8 @@ export type ActionIconName =
   | "analysis"
   | "open-directory"
   | "run"
-  | "undo";
+  | "undo"
+  | "redo";
 
 interface ActionIconProps {
   action: ActionIconName;
@@ -131,7 +132,9 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
       ) : action === "analysis" ? (
         <AnalysisIcon {...props} />
       ) : action === "undo" ? (
-        <InsertNest {...props} />
+        <UndoIcon {...props} />
+      ) : action === "redo" ? (
+        <RedoIcon {...props} />
       ) : null}
     </IconWrapper>
   );

@@ -96,7 +96,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 color={canUndo ? "dimension" : "other"}
               />
               <ActionIcon
-                action="undo"
+                action="redo"
                 onClick={() => redo()}
                 color={canRedo ? "dimension" : "other"}
               />
