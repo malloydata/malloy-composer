@@ -19,22 +19,53 @@ import {
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 
-export interface DatasetConfig {
-  name: string;
-  description: string;
-  tables: string[];
-  model: string;
+export interface AppListing {
+  configPath: string;
+  id: string;
+}
+
+export interface ComposerConfig {
+  apps: AppListing[];
   readme?: string;
 }
 
-export interface Dataset {
-  id: string;
-  name: string;
+export interface SourceConfig {
+  title: string;
+  sourceName: string;
   description: string;
+}
+
+export interface ModelConfig {
+  id: string;
+  modelPath: string;
+  tables: string[];
+  sources?: SourceConfig[];
+}
+
+export interface AppConfig {
+  readme: string;
+  linkedReadmes: string[];
+  title: string;
+  models: ModelConfig[];
+}
+
+export interface ModelInfo {
+  id: string;
   model: ModelDef;
   modelPath: string;
+  styles: DataStyles;
+  sources: {
+    title: string;
+    sourceName: string;
+    description: string;
+  }[];
+}
+
+export interface AppInfo {
   readme: string;
-  styles?: DataStyles;
+  linkedReadmes: string[];
+  title: string;
+  models: ModelInfo[];
 }
 
 export interface SchemaFieldMeasure {

@@ -46,7 +46,8 @@ export type Markdown =
   | Image
   | Delete
   | ThematicBreak
-  | MalloyQueryLink;
+  | MalloyQueryLink
+  | MalloyAppLink;
 
 export interface Root {
   type: "root";
@@ -168,6 +169,13 @@ export interface MalloyQueryLink {
   renderer: string;
 }
 
+export interface MalloyAppLink {
+  type: "malloyAppLink";
+  appId: string;
+  name: string;
+  description: string;
+}
+
 const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
   let linkMarker: Marker | undefined = undefined;
   let savedModel = undefined;
@@ -181,6 +189,13 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
             savedModel = marker.parameters?.model?.toString();
           } else if (marker.name === "malloy-query") {
             linkMarker = marker;
+          } else if (marker.name === "malloy-app") {
+            return {
+              name: marker.parameters?.name?.toString() || "",
+              description: marker.parameters?.description?.toString() || "",
+              appId: marker.parameters?.app?.toString() || "",
+              type: "malloyAppLink",
+            };
           }
         }
         return markdownNode;

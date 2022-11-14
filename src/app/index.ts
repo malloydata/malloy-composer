@@ -12,3 +12,4 @@
  */
 
 export { Explore } from "./Explore";
+export { Apps } from "./Apps";

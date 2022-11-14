@@ -16,35 +16,20 @@ import * as explore from "../../types";
 import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-export function useDatasets(
-  app: explore.AppListing | undefined
-): explore.AppInfo | undefined {
-  const { data: directory } = useQuery(
-    ["datasets", app?.id || "empty"],
+export function useApps(): explore.ComposerConfig | undefined {
+  const { data: apps } = useQuery(
+    ["apps"],
     async () => {
-      if (app === undefined) {
-        return undefined;
-      }
       if (isDuckDBWASM()) {
-        return duckDBWASM.datasets(app);
+        return duckDBWASM.apps();
       }
-      const raw = await (
-        await fetch("api/datasets", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            app,
-          }),
-        })
-      ).json();
-      return raw.datasets as explore.AppInfo;
+      const raw = await (await fetch("api/apps")).json();
+      return raw as explore.ComposerConfig;
     },
     {
       refetchOnWindowFocus: false,
     }
   );
 
-  return directory;
+  return apps;
 }

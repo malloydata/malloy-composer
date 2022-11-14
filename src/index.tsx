@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,15 +14,29 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import { Main } from "./Main";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { RouterProvider, createHashRouter } from "react-router-dom";
+import { Explore, Apps } from "./app";
+
+const client = new QueryClient();
+
+const router = createHashRouter([
+  {
+    path: "/:appId",
+    element: <Explore />,
+  },
+  {
+    path: "*",
+    element: <Apps />,
+  },
+]);
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Main />
-    </BrowserRouter>
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
