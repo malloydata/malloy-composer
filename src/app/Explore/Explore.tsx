@@ -58,6 +58,12 @@ export const Explore: React.FC = () => {
     _setParams(newUrlParams, options);
   };
 
+  useEffect(() => {
+    if (appInfo) {
+      document.title = appInfo.title || "Malloy Composer";
+    }
+  }, [appInfo]);
+
   const updateQueryInURL = ({
     run,
     query: newQuery,

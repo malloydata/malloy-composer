@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApps } from "../data/use_apps";
 import { MarkdownDocument } from "../MarkdownDocument";
@@ -18,6 +19,11 @@ import { MarkdownDocument } from "../MarkdownDocument";
 export const Apps: React.FC = () => {
   const config = useApps();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Malloy Composer";
+  }, []);
+
   return (
     <div>
       {!config?.readme &&
