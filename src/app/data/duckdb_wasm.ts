@@ -75,17 +75,15 @@ export async function apps(): Promise<explore.ComposerConfig> {
     apps: [
       {
         id: "default",
-        configPath: "composer.json",
+        root: "composer.json",
       },
     ],
   };
 }
 
-export async function datasets(
-  _app: explore.AppListing
-): Promise<explore.AppInfo> {
+export async function datasets(appRoot: string): Promise<explore.AppInfo> {
   const base = window.location.href;
-  const samplesURL = new URL(_app.configPath, base);
+  const samplesURL = new URL(appRoot, base);
   const response = await URL_READER.readURL(samplesURL);
   const app = JSON.parse(response) as explore.AppConfig;
   const title = app.title;

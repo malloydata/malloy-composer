@@ -18,20 +18,18 @@ import { MarkdownDocument } from "../MarkdownDocument";
 export const Apps: React.FC = () => {
   const config = useApps();
   const navigate = useNavigate();
-  return (
+  return config?.readme ? (
+    <MarkdownDocument
+      content={config.readme}
+      loadApp={(appId) => navigate(`/${appId}`)}
+    />
+  ) : (
     <div>
-      {!config?.readme &&
-        config?.apps?.map((app) => (
-          <div key={app.id}>
-            <Link to={`/${app.id}`}>{app.configPath}</Link>
-          </div>
-        ))}
-      {config?.readme && (
-        <MarkdownDocument
-          content={config.readme}
-          loadApp={(appId) => navigate(`/${appId}`)}
-        />
-      )}
+      {config?.apps?.map((app) => (
+        <div key={app.id}>
+          <Link to={`/${app.id}`}>{app.root}</Link>
+        </div>
+      ))}
     </div>
   );
 };

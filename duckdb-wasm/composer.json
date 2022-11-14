@@ -2,7 +2,7 @@
   "apps": [
     {
       "id": "faa",
-      "configPath": "./flights_composer.json"
+      "root": "./flights_composer.json"
     }
   ],
   "readme": "./apps.md"

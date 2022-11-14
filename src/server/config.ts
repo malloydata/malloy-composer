@@ -15,22 +15,25 @@ import * as path from "path";
 import { promises as fs } from "fs";
 
 interface ComposerConfig {
+  // The root of all paths used by the server
   workingDirectory: string;
-  configPath: string;
+  // The "root" of the Composer instance. Can be a (datasets) .json,
+  // a (models) .json, a .malloy, or a directory
+  root: string;
 }
 
 export async function getConfig(): Promise<ComposerConfig> {
-  const configPath = path.resolve(process.cwd(), process.env.DATASETS || "");
-  const stat = await fs.lstat(configPath);
+  const root = path.resolve(process.cwd(), process.env.ROOT || "");
+  const stat = await fs.lstat(root);
   if (stat.isFile()) {
     return {
-      workingDirectory: path.dirname(configPath),
-      configPath: path.basename(configPath),
+      workingDirectory: path.dirname(root),
+      root: path.basename(root),
     };
   } else {
     return {
-      workingDirectory: configPath,
-      configPath: "composer.json",
+      workingDirectory: root,
+      root: ".",
     };
   }
 }

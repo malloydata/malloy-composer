@@ -25,27 +25,41 @@ export async function getDatasets(
   _app: explore.AppListing
 ): Promise<explore.AppInfo> {
   const { workingDirectory } = await getConfig();
-  const configPath = path.join(workingDirectory, _app.configPath);
-  const samplesURL = new URL("file://" + configPath);
-  let app: explore.AppConfig;
-  try {
-    const response = await URL_READER.readURL(samplesURL);
+  console.log({ workingDirectory, appRoot: _app.root });
+  const root = path.join(workingDirectory, _app.root);
+  let app: explore.AppConfig = {};
+  if (root.endsWith(".malloy")) {
+    app = {
+      models: [
+        {
+          id: root,
+          modelPath: root,
+          tables: [],
+        },
+      ],
+    };
+  } else if (root.endsWith(".json")) {
+    const response = await URL_READER.readURL(new URL("file://" + root));
     app = JSON.parse(response) as explore.AppConfig;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    app = {};
   }
   const title = app.title;
-  const appRoot = path.dirname(path.join(workingDirectory, _app.configPath));
+  const appPath = path.dirname(path.join(workingDirectory, _app.root));
   const readme =
     app.readme &&
     (await URL_READER.readURL(
-      new URL("file://" + path.join(appRoot, app.readme))
+      new URL("file://" + path.join(appPath, app.readme))
     ));
   let modelConfigs = app.models;
-  if (modelConfigs === undefined) {
-    const dirPath = path.dirname(configPath);
+  if (_app.root.endsWith(".malloy")) {
+    modelConfigs = [
+      {
+        id: _app.root,
+        modelPath: _app.root,
+        tables: [],
+      },
+    ];
+  } else {
+    const dirPath = path.dirname(root);
     const items = await fs.readdir(dirPath);
     modelConfigs = items
       .filter((item) => item.endsWith(".malloy"))
@@ -56,10 +70,10 @@ export async function getDatasets(
           tables: [],
         };
       });
-  }
+  } 
   const models: explore.ModelInfo[] = await Promise.all(
     modelConfigs.map(async (sample: explore.ModelConfig) => {
-      const modelPath = path.join(appRoot, sample.modelPath);
+      const modelPath = path.join(appPath, sample.modelPath);
       const modelURL = new URL("file://" + modelPath);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);

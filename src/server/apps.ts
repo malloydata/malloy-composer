@@ -18,15 +18,35 @@ import * as path from "path";
 import * as fs from "fs";
 
 export async function getApps(): Promise<explore.ComposerConfig> {
-  const { configPath, workingDirectory } = await getConfig();
-  const fullConfigPath = path.join(workingDirectory, configPath);
+  const config = await getConfig();
+  let root = config.root;
+  const workingDirectory = config.workingDirectory;
+  let rootPath = path.join(workingDirectory, root);
 
-  if (fs.existsSync(fullConfigPath)) {
-    const response = await URL_READER.readURL(
-      new URL("file://" + fullConfigPath)
-    );
+  const doesRootExist = fs.existsSync(rootPath);
+
+  if (!doesRootExist) {
+    throw new Error(`Root ${rootPath} does not exist.`);
+  }
+
+  const isRootDirectory = fs.lstatSync(rootPath).isDirectory();
+
+  if (isRootDirectory) {
+    const configFileName = "composer.json";
+    const configPath = path.join(rootPath, configFileName);
+    if (fs.existsSync(configPath)) {
+      rootPath = path.join(rootPath, configFileName);
+      root = path.join(root, configFileName);
+    }
+  }
+
+  const rootIsConfigFile = rootPath.endsWith(".json");
+
+  if (rootIsConfigFile) {
+    const response = await URL_READER.readURL(new URL("file://" + rootPath));
     const config = JSON.parse(response) as explore.ComposerConfig;
-    if ("apps" in config) {
+    const rootIsDatasetsConfigFile = "apps" in config;
+    if (rootIsDatasetsConfigFile) {
       const readme =
         config.readme &&
         (await URL_READER.readURL(
@@ -42,8 +62,8 @@ export async function getApps(): Promise<explore.ComposerConfig> {
   return {
     apps: [
       {
-        id: "default",
-        configPath,
+        root,
+        id: undefined,
       },
     ],
   };

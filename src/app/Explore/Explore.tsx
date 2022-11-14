@@ -32,6 +32,7 @@ import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
+import { Apps } from "../Apps";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -41,7 +42,10 @@ const KEY_MAP = {
 export const Explore: React.FC = () => {
   const config = useApps();
   const { appId } = useParams();
-  const app = config?.apps?.find((app) => app.id === appId);
+  const app =
+    config?.apps && config?.apps[0].id === undefined
+      ? config.apps[0]
+      : config?.apps?.find((app) => app.id === appId);
   const appInfo = useDatasets(app);
   const [urlParams, _setParams] = useSearchParams();
   const modelInfo = appInfo?.models.find(
@@ -93,7 +97,7 @@ export const Explore: React.FC = () => {
     setParams(urlParams);
   };
 
-  const section = urlParams.get("page") || "query";
+  const section = urlParams.get("page") || "datasets";
   const setSection = (section: string) => {
     urlParams.set("page", section);
     if (section !== "query") {
@@ -108,10 +112,8 @@ export const Explore: React.FC = () => {
   const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
-      ? new URL(
-          modelInfo?.modelPath,
-          new URL(app.configPath, window.location.href)
-        ).pathname
+      ? new URL(modelInfo?.modelPath, new URL(app.root, window.location.href))
+          .pathname
       : undefined;
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
@@ -205,10 +207,10 @@ export const Explore: React.FC = () => {
     renderer?: string
   ) => {
     const urlBase = window.location.href;
-    const targetHref = new URL(model, new URL(app.configPath, urlBase)).href;
+    const targetHref = new URL(model, new URL(app.root, urlBase)).href;
     const newModelInfo = appInfo.models.find(
       (modelInfo) =>
-        new URL(modelInfo.modelPath, new URL(app.configPath, urlBase)).href ===
+        new URL(modelInfo.modelPath, new URL(app.root, urlBase)).href ===
         targetHref
     );
     if (newModelInfo === undefined) {
@@ -277,8 +279,17 @@ export const Explore: React.FC = () => {
           <Channel>
             <ChannelTop>
               <ChannelButton
-                onClick={() => setSection("about")}
+                onClick={() => setSection("datasets")}
                 text="Home"
+                icon="home"
+                selected={section === "datasets"}
+                disabled={
+                  config === undefined || config?.apps[0].id === undefined
+                }
+              ></ChannelButton>
+              <ChannelButton
+                onClick={() => setSection("about")}
+                text="Dataset"
                 icon="about"
                 selected={section === "about"}
                 disabled={appInfo?.readme === undefined}
@@ -332,6 +343,11 @@ export const Explore: React.FC = () => {
                   )}
                 </PageContent>
               )}
+              {section === "datasets" &&
+                <PageContent>
+                  <Apps />
+                </PageContent>
+              }
               {section === "sources" && (
                 <PageContent>
                   <DatasetsWrapperOuter>
