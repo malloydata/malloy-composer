@@ -132,14 +132,20 @@ export const Result: React.FC<ResultProps> = ({
         <ResultHeaderSection>
           <DownloadMenu
             disabled={!result || html === undefined || rendering}
-            onDownloadHTML={() =>
-              downloadFile(html?.outerHTML || "", "text/html", "result.html")
+            onDownloadHTML={(newTab: boolean) =>
+              downloadFile(
+                html?.outerHTML || "",
+                "text/html",
+                "result.html",
+                newTab
+              )
             }
-            onDownloadJSON={() =>
+            onDownloadJSON={(newTab: boolean) =>
               downloadFile(
                 JSON.stringify(result?.data.toObject() || {}, null, 2),
                 "application/json",
-                "result.json"
+                "result.json",
+                newTab
               )
             }
           />
