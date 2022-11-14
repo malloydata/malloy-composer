@@ -23,9 +23,10 @@ interface SelectDropdownProps<T> {
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
-  options: { label: string; value: T }[];
+  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
+  width?: number;
 }
 
 const Wrapper = styled.div`
@@ -81,6 +82,7 @@ const OptionSpan = styled.span`
 const CheckIcon = styled(Checkmark)`
   vertical-align: text-top;
   width: 20px;
+  min-width: 20px;
   opacity: 70%;
   visibility: hidden;
 
@@ -96,6 +98,7 @@ export const SelectDropdown = <T,>({
   placeholder = "Select",
   disabled = false,
   valueEqual = (a: T, b: T) => a === b,
+  width = 200,
 }: SelectDropdownProps<T>): JSX.Element => {
   const [open, setOpen] = useState(false);
   const wrapperElement = useRef<HTMLDivElement>(null);
@@ -123,7 +126,7 @@ export const SelectDropdown = <T,>({
         open={open}
         setOpen={setOpen}
         placement="bottom-start"
-        width={200}
+        width={width}
         maxHeight={500}
       >
         <SelectList
@@ -139,7 +142,7 @@ export const SelectDropdown = <T,>({
 
 interface SelectListProps<T> {
   value: T | undefined;
-  options: { label: string; value: T }[];
+  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
   valueEqual?: (a: T, b: T) => boolean;
   onChange: (value: T) => void;
 }
@@ -152,10 +155,13 @@ export function SelectList<T>({
 }: SelectListProps<T>): JSX.Element {
   return (
     <SelectListDiv>
-      {options.map((option, index) => {
+      {options.reduce<JSX.Element[]>((result, option, index) => {
         const isSelected =
           value !== undefined && valueEqual(value, option.value);
-        return (
+        if (option.divider) {
+          result.push(<OptionDivider key={"divider" + index} />);
+        }
+        result.push(
           <OptionDiv
             key={index}
             onClick={() => onChange(option.value)}
@@ -166,23 +172,34 @@ export function SelectList<T>({
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
         );
-      })}
+        return result;
+      }, [])}
     </SelectListDiv>
   );
 }
 
 interface DropdownMenuProps {
-  options: { label: string; onSelect: () => void }[];
+  options: {
+    label: string | JSX.Element;
+    onSelect: () => void;
+    divider?: boolean;
+  }[];
 }
 
 export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
   return (
     <SelectListDiv>
-      {options.map((option, index) => (
-        <OptionDiv key={index} onClick={() => option.onSelect()}>
-          <OptionSpan>{option.label}</OptionSpan>
-        </OptionDiv>
-      ))}
+      {options.reduce<JSX.Element[]>((result, option, index) => {
+        if (option.divider) {
+          result.push(<OptionDivider key={"divider" + index} />);
+        }
+        result.push(
+          <OptionDiv key={index} onClick={() => option.onSelect()}>
+            <OptionSpan>{option.label}</OptionSpan>
+          </OptionDiv>
+        );
+        return result;
+      }, [])}
     </SelectListDiv>
   );
 }
@@ -201,4 +218,11 @@ const SelectListDiv = styled.div`
   padding: 10px 0;
   overflow-y: auto;
   max-height: 400px;
+`;
+
+const OptionDivider = styled.div`
+  border-top: 1px solid #ececec;
+  width: 100%;
+  margin: 0 10px;
+  margin: 5px 0;
 `;

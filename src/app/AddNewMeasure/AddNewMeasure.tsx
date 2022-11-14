@@ -11,9 +11,9 @@
  * GNU General Public License for more details.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { compileMeasure } from "../../core/compile";
-import { CodeInput } from "../CodeInput";
+import { CodeInput, CodeTextArea } from "../CodeInput";
 import {
   Button,
   ContextMenuTitle,
@@ -21,8 +21,19 @@ import {
   RightButtonRow,
   FormError,
   FormFieldList,
+  FormInputLabel,
+  FormItem,
 } from "../CommonElements";
+import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
+import {
+  generateMeasure,
+  MeasureType,
+  sortFlatFields,
+} from "../../core/fields";
+import { FieldButton } from "../FieldButton";
+import { TypeIcon } from "../TypeIcon";
+import { flatFields, kindOfField, pathParent, typeOfField } from "../utils";
 
 interface AddMeasureProps {
   source: StructDef;
@@ -32,6 +43,8 @@ interface AddMeasureProps {
   initialName?: string;
 }
 
+const COUNT_TYPES: MeasureType[] = ["count", "distinct", "percent"];
+
 export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   source,
   addMeasure,
@@ -39,9 +52,47 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialCode,
   initialName,
 }) => {
-  const [measure, setmeasure] = useState(initialCode || "");
+  const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
+  const [measureType, setMeasureType] = useState<MeasureType>(
+    // TODO(willscullin) Need to parse initialCode to determine if
+    // non-custom display can be used.
+    initialCode ? "custom" : "count"
+  );
+  const [field, setField] = useState<string>("");
   const [error, setError] = useState<Error>();
+
+  useEffect(() => {
+    const newMeasure = generateMeasure(measureType, field);
+    if (newMeasure) {
+      setMeasure(newMeasure);
+    }
+  }, [measureType, field]);
+
+  const fields = sortFlatFields(flatFields(source)).reduce<
+    Array<{ label: JSX.Element; value: string }>
+  >((acc, { path, field }) => {
+    const type = typeOfField(field);
+    const kind = kindOfField(field);
+
+    if (
+      kind === "dimension" &&
+      (COUNT_TYPES.includes(measureType) || type === "number")
+    ) {
+      const label = (
+        <FieldButton
+          name={field.name}
+          icon={<TypeIcon type={type} kind={kind} />}
+          color={kind}
+          detail={pathParent(path)}
+          disableHover={true}
+        />
+      );
+      acc.push({ label, value: path });
+    }
+    return acc;
+  }, []);
+
   const needsName = initialCode === undefined;
   return (
     <ContextMenuMain>
@@ -57,20 +108,77 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               autoFocus={true}
             />
           )}
-          <CodeInput
-            value={measure}
-            setValue={setmeasure}
-            placeholder="some_field * 10"
-            label={needsName ? "Definition" : undefined}
-          />
+          <FormItem>
+            <FormInputLabel>Type</FormInputLabel>
+            <SelectDropdown
+              value={measureType}
+              options={[
+                { label: "Count", value: "count" },
+                {
+                  label: "Count Distinct",
+                  value: "distinct",
+                },
+                { label: "Sum", value: "sum" },
+                { label: "Average", value: "avg" },
+                { label: "Max", value: "max" },
+                { label: "Min", value: "min" },
+                {
+                  label: "Percent of All",
+                  value: "percent",
+                  divider: true,
+                },
+                {
+                  label: "Custom",
+                  value: "custom",
+                  divider: true,
+                },
+              ]}
+              onChange={(value) => setMeasureType(value as MeasureType)}
+              width={300}
+            />
+          </FormItem>
+          {measureType === "custom" ? (
+            <CodeTextArea
+              value={measure}
+              setValue={setMeasure}
+              placeholder="count() * items_per_count"
+              label={needsName ? "Definition" : undefined}
+              rows={3}
+            />
+          ) : measureType === "count" ? null : (
+            <FormItem>
+              <FormInputLabel>Field to measure</FormInputLabel>
+              <SelectDropdown
+                value={field}
+                options={fields}
+                onChange={(value) => setField(value)}
+                width={300}
+              />
+            </FormItem>
+          )}
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
+              if (!newName) {
+                return setError(new Error("Enter a name"));
+              }
+              if (measureType === "custom") {
+                if (!measure) {
+                  return setError(new Error("Enter a definition"));
+                }
+              } else {
+                if (!field) {
+                  return setError(new Error("Select a field"));
+                }
+              }
               compileMeasure(source, newName, measure)
                 .then((measure) => {
                   addMeasure(measure);
@@ -81,7 +189,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 });
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>
