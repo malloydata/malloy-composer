@@ -130,6 +130,10 @@ export const Explore: React.FC = () => {
     registerNewSource,
     error,
     dirty,
+    canUndo,
+    canRedo,
+    undo,
+    redo,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
 
   const setDatasetSource = (
@@ -313,6 +317,10 @@ export const Explore: React.FC = () => {
                   result={result}
                   isRunning={isRunning}
                   runQuery={runQueryAction}
+                  canUndo={canUndo}
+                  canRedo={canRedo}
+                  undo={undo}
+                  redo={redo}
                 />
               )}
               {section === "about" && (

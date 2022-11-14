@@ -31,6 +31,10 @@ interface ExploreQueryEditorProps {
   model: ModelDef;
   dirty: boolean;
   modelPath: string | undefined;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
@@ -47,6 +51,10 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   isRunning,
   queryMalloy,
   queryModifiers,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   return (
@@ -81,6 +89,16 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 action="remove"
                 onClick={() => queryModifiers.clearQuery()}
                 color="dimension"
+              />
+              <ActionIcon
+                action="undo"
+                onClick={() => undo()}
+                color={canUndo ? "dimension" : "other"}
+              />
+              <ActionIcon
+                action="undo"
+                onClick={() => redo()}
+                color={canRedo ? "dimension" : "other"}
               />
               <StyledRunIcon
                 width="80px"

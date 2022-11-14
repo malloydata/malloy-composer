@@ -21,6 +21,7 @@ import {
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { QueryBuilder } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useRunQuery } from "../data/use_run_query";
@@ -41,6 +42,10 @@ interface UseQueryBuilderResult {
   error: Error | undefined;
   registerNewSource: (source: StructDef) => void;
   dirty: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  undo: () => void;
+  redo: () => void;
 }
 
 export interface QueryModifiers {
@@ -130,6 +135,9 @@ export function useQueryBuilder(
   const [error, setError] = useState<Error | undefined>();
   const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
+  const [historySize, setHistorySize] = useState(0);
+  const [historyPosition, setHistoryPosition] = useState(0);
+  const navigate = useNavigate();
 
   const dataStyles = useRef<DataStyles>({});
 
@@ -181,6 +189,8 @@ export function useQueryBuilder(
           query: queryString,
           styles: dataStyles.current,
         });
+        setHistorySize(historyPosition + 1);
+        setHistoryPosition(historyPosition + 1);
       }
       setQueryString(queryString);
       setDirty(true);
@@ -188,6 +198,22 @@ export function useQueryBuilder(
       const queryString = queryBuilder.current.getQueryStringForModel();
       setQueryString(queryString);
       setDirty(true);
+    }
+  };
+
+  const canUndo = historyPosition > 0;
+  const undo = () => {
+    if (canUndo) {
+      setHistoryPosition(historyPosition - 1);
+      navigate(-1);
+    }
+  };
+
+  const canRedo = historyPosition < historySize;
+  const redo = () => {
+    if (canRedo) {
+      setHistoryPosition(historyPosition + 1);
+      navigate(1);
     }
   };
 
@@ -378,7 +404,11 @@ export function useQueryBuilder(
     dataStyles: currentDataStyles,
     result,
     error,
+    canUndo,
+    canRedo,
     registerNewSource,
+    undo,
+    redo,
     queryModifiers: {
       setDataStyles,
       setQuery,
