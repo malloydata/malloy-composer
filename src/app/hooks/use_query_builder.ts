@@ -39,6 +39,7 @@ interface UseQueryBuilderResult {
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   error: Error | undefined;
+  setError: (error: Error | undefined) => void;
   registerNewSource: (source: StructDef) => void;
   dirty: boolean;
 }
@@ -378,6 +379,7 @@ export function useQueryBuilder(
     dataStyles: currentDataStyles,
     result,
     error,
+    setError,
     registerNewSource,
     queryModifiers: {
       setDataStyles,
