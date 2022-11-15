@@ -131,6 +131,7 @@ export const Explore: React.FC = () => {
     undo,
     redo,
     resetUndoHistory,
+    isQueryEmpty,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
 
   const section = urlParams.get("page") || "query";
@@ -142,8 +143,8 @@ export const Explore: React.FC = () => {
       urlParams.delete("name");
       urlParams.delete("styles");
       clearQuery(true);
-      setError(undefined);
       resetUndoHistory();
+      setError(undefined);
     }
     setParams(urlParams);
   };
@@ -346,6 +347,7 @@ export const Explore: React.FC = () => {
                   runQuery={runQueryAction}
                   canUndo={canUndo}
                   undo={undo}
+                  isQueryEmpty={isQueryEmpty}
                 />
               )}
               {section === "about" && (

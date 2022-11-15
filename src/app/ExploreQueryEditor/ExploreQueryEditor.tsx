@@ -38,6 +38,7 @@ interface ExploreQueryEditorProps {
   modelPath: string | undefined;
   undo: () => void;
   canUndo: boolean;
+  isQueryEmpty: boolean;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
@@ -56,6 +57,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   queryModifiers,
   undo,
   canUndo,
+  isQueryEmpty,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   return (
@@ -94,7 +96,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               <ActionIcon
                 action="remove"
                 onClick={() => queryModifiers.clearQuery()}
-                color="dimension"
+                color={isQueryEmpty ? "other" : "dimension"}
               />
               <StyledRunIcon
                 width="80px"

@@ -53,6 +53,7 @@ interface UseQueryBuilderResult {
   undo: () => void;
   redo: () => void;
   resetUndoHistory: () => void;
+  isQueryEmpty: boolean;
 }
 
 export interface QueryModifiers {
@@ -226,8 +227,11 @@ export function useQueryBuilder(
   };
 
   const clearQuery = (noURLUpdate = false) => {
-    modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
-    setDataStyles({}, noURLUpdate);
+    if (queryBuilder.current.isEmpty()) return;
+    modifyQuery((qb) => {
+      qb.clearQuery();
+      dataStyles.current = {};
+    }, noURLUpdate);
     clearResult();
     updateQueryInURL({ run: false, query: undefined, styles: {} });
   };
@@ -421,6 +425,7 @@ export function useQueryBuilder(
     undo,
     redo,
     resetUndoHistory,
+    isQueryEmpty: queryBuilder.current.isEmpty(),
     queryModifiers: {
       setDataStyles,
       setQuery,
