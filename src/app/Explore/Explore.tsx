@@ -36,6 +36,8 @@ import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
   RUN_QUERY: "command+enter",
+  UNDO: "command+z",
+  REDO: "shift+command+z",
 };
 
 export const Explore: React.FC = () => {
@@ -119,7 +121,6 @@ export const Explore: React.FC = () => {
     error,
     dirty,
     canUndo,
-    canRedo,
     undo,
     redo,
     resetUndoHistory,
@@ -249,6 +250,8 @@ export const Explore: React.FC = () => {
   const handlers = {
     REMOVE_FIELDS: () => clearQuery(),
     RUN_QUERY: runQueryAction,
+    UNDO: undo,
+    REDO: redo,
   };
 
   const topValues = useTopValues(model, modelPath, source);
@@ -321,9 +324,7 @@ export const Explore: React.FC = () => {
                   isRunning={isRunning}
                   runQuery={runQueryAction}
                   canUndo={canUndo}
-                  canRedo={canRedo}
                   undo={undo}
-                  redo={redo}
                 />
               )}
               {section === "about" && (
