@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { compileMeasure } from "../../core/compile";
 import { CodeInput, CodeTextArea } from "../CodeInput";
 import {
@@ -25,7 +25,7 @@ import {
   FormItem,
 } from "../CommonElements";
 import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
-import { QueryFieldDef, StructDef } from "@malloydata/malloy";
+import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,
   MeasureType,
@@ -33,7 +33,13 @@ import {
 } from "../../core/fields";
 import { FieldButton } from "../FieldButton";
 import { TypeIcon } from "../TypeIcon";
-import { flatFields, kindOfField, pathParent, typeOfField } from "../utils";
+import {
+  flatFields,
+  isAggregate,
+  kindOfField,
+  pathParent,
+  typeOfField,
+} from "../utils";
 
 interface AddMeasureProps {
   source: StructDef;
@@ -43,7 +49,41 @@ interface AddMeasureProps {
   initialName?: string;
 }
 
-const COUNT_TYPES: MeasureType[] = ["count", "distinct", "percent"];
+const VALID_MEASURES: Record<
+  "string" | "number" | "date" | "timestamp",
+  MeasureType[]
+> = {
+  string: ["count_distinct", "custom"],
+  number: ["count_distinct", "avg", "sum", "min", "max", "custom"],
+  date: ["count_distinct", "min", "max", "custom"],
+  timestamp: ["count_distinct", "min", "max", "custom"],
+};
+
+const MEASURE_OPTIONS: {
+  label: string;
+  value: MeasureType;
+  divider?: boolean;
+}[] = [
+  {
+    label: "Count Distinct",
+    value: "count_distinct",
+  },
+  { label: "Sum", value: "sum" },
+  { label: "Average", value: "avg" },
+  { label: "Max", value: "max" },
+  { label: "Min", value: "min" },
+  {
+    label: "Percent of All",
+    value: "percent",
+  },
+  {
+    label: "Custom",
+    value: "custom",
+    divider: true,
+  },
+];
+
+type FlatField = { field: FieldDef; path: string };
 
 export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   source,
@@ -57,41 +97,44 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   const [measureType, setMeasureType] = useState<MeasureType>(
     // TODO(willscullin) Need to parse initialCode to determine if
     // non-custom display can be used.
-    initialCode ? "custom" : "count"
+    initialName ? "custom" : undefined
   );
-  const [field, setField] = useState<string>("");
+  const [flatField, setFlatField] = useState<FlatField>();
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    const newMeasure = generateMeasure(measureType, field);
-    if (newMeasure) {
-      setMeasure(newMeasure);
+    if (flatField && measureType) {
+      const newMeasure = generateMeasure(measureType, flatField.path);
+      if (newMeasure) {
+        setMeasure(newMeasure);
+      }
     }
-  }, [measureType, field]);
+  }, [measureType, flatField]);
 
-  const fields = sortFlatFields(flatFields(source)).reduce<
-    Array<{ label: JSX.Element; value: string }>
-  >((acc, { path, field }) => {
-    const type = typeOfField(field);
-    const kind = kindOfField(field);
+  const flattened = useMemo(
+    () =>
+      sortFlatFields(flatFields(source)).reduce<
+        Array<{ label: JSX.Element; value: FlatField }>
+      >((acc, { path, field }) => {
+        const type = typeOfField(field);
+        const kind = kindOfField(field);
 
-    if (
-      kind === "dimension" &&
-      (COUNT_TYPES.includes(measureType) || type === "number")
-    ) {
-      const label = (
-        <FieldButton
-          name={field.name}
-          icon={<TypeIcon type={type} kind={kind} />}
-          color={kind}
-          detail={pathParent(path)}
-          disableHover={true}
-        />
-      );
-      acc.push({ label, value: path });
-    }
-    return acc;
-  }, []);
+        if (["dimension", "measure"].includes(kind)) {
+          const label = (
+            <FieldButton
+              name={field.name}
+              icon={<TypeIcon type={type} kind={kind} />}
+              color={kind}
+              detail={pathParent(path)}
+              disableHover={true}
+            />
+          );
+          acc.push({ label, value: { field, path } });
+        }
+        return acc;
+      }, []),
+    [source]
+  );
 
   const needsName = initialCode === undefined;
   return (
@@ -99,62 +142,52 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
       <ContextMenuTitle>{needsName ? "New" : "Edit"} measure</ContextMenuTitle>
       <form>
         <FormFieldList>
-          {needsName && (
-            <CodeInput
-              value={newName}
-              setValue={setNewName}
-              placeholder="field name"
-              label="Field Name"
-              autoFocus={true}
-            />
+          {!initialName && (
+            <FormItem>
+              <FormInputLabel>Field to measure</FormInputLabel>
+              <SelectDropdown
+                autoFocus={true}
+                value={flatField}
+                options={flattened}
+                onChange={(value) => setFlatField(value)}
+                width={300}
+              />
+            </FormItem>
           )}
-          <FormItem>
-            <FormInputLabel>Type</FormInputLabel>
-            <SelectDropdown
-              value={measureType}
-              options={[
-                { label: "Count", value: "count" },
-                {
-                  label: "Count Distinct",
-                  value: "distinct",
-                },
-                { label: "Sum", value: "sum" },
-                { label: "Average", value: "avg" },
-                { label: "Max", value: "max" },
-                { label: "Min", value: "min" },
-                {
-                  label: "Percent of All",
-                  value: "percent",
-                  divider: true,
-                },
-                {
-                  label: "Custom",
-                  value: "custom",
-                  divider: true,
-                },
-              ]}
-              onChange={(value) => setMeasureType(value as MeasureType)}
-              width={300}
-            />
-          </FormItem>
-          {measureType === "custom" ? (
+          {flatField && (
+            <FormItem>
+              <FormInputLabel>Type</FormInputLabel>
+              <SelectDropdown
+                value={measureType}
+                options={MEASURE_OPTIONS.filter(
+                  ({ value }) =>
+                    (isAggregate(flatField.field)
+                      ? value === "percent"
+                      : VALID_MEASURES[flatField.field.type].includes(value)) ||
+                    value === "custom"
+                )}
+                onChange={(value) => setMeasureType(value)}
+                width={300}
+              />
+            </FormItem>
+          )}
+          {measureType === "custom" && (
             <CodeTextArea
+              autoFocus={!!initialName}
               value={measure}
               setValue={setMeasure}
               placeholder="count() * items_per_count"
               label={needsName ? "Definition" : undefined}
               rows={3}
             />
-          ) : measureType === "count" ? null : (
-            <FormItem>
-              <FormInputLabel>Field to measure</FormInputLabel>
-              <SelectDropdown
-                value={field}
-                options={fields}
-                onChange={(value) => setField(value)}
-                width={300}
-              />
-            </FormItem>
+          )}
+          {needsName && (
+            <CodeInput
+              value={newName}
+              setValue={setNewName}
+              placeholder="New_Measure_Name"
+              label="Name"
+            />
           )}
         </FormFieldList>
         <FormError error={error} />
@@ -175,7 +208,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                   return setError(new Error("Enter a definition"));
                 }
               } else {
-                if (!field) {
+                if (!flatField) {
                   return setError(new Error("Select a field"));
                 }
               }
