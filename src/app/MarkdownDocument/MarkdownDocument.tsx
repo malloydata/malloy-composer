@@ -150,11 +150,11 @@ export const MarkdownNode: React.FC<{
             loadQueryLink(node.model, node.query, node.name, node.renderer);
           }}
         >
-          <QueryLinkTitleRow>
-            {node.name}
-            <RunIcon width="80" height="22" />
-          </QueryLinkTitleRow>
-          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.name}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <RunIcon width="80" height="22" />
         </QueryLink>
       );
     case "malloyAppLink":
@@ -164,11 +164,11 @@ export const MarkdownNode: React.FC<{
             loadApp(node.appId);
           }}
         >
-          <QueryLinkTitleRow>
-            {node.name}
-            <ViewIcon width="80" height="22" />
-          </QueryLinkTitleRow>
-          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.name}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <ViewIcon width="80" height="22" />
         </QueryLink>
       );
     case "malloySourceLink":
@@ -178,11 +178,11 @@ export const MarkdownNode: React.FC<{
             loadSource(node.model, node.source);
           }}
         >
-          <QueryLinkTitleRow>
-            {node.title}
-            <ViewIcon width="80" height="22" />
-          </QueryLinkTitleRow>
-          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.title}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <ViewIcon width="80" height="22" />
         </QueryLink>
       );
   }
@@ -341,15 +341,23 @@ const MarkdownPreWrapper = styled.div`
   }
 `;
 
-const QueryLink = styled.div`
-  border: 1px solid #d0d0d0;
-  border-radius: 10px;
-  padding: 10px 20px;
-  background-color: white;
+const QueryLinkInfo = styled.div`
+  width: 100%;
+  gap: 5px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
+`;
+
+const QueryLink = styled.div`
+  border: 1px solid #d7d7d7;
+  border-radius: 7px;
+  padding: 15px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  margin-bottom: 15px;
+  align-items: center;
   cursor: pointer;
   font-size: 15px;
   color: #595959;
@@ -365,6 +373,7 @@ const QueryLinkTitleRow = styled.div`
   gap: 10px;
   align-items: center;
   justify-content: space-between;
+  font-weight: bold;
 `;
 
 const QueryLinkDescription = styled.div`
