@@ -85,8 +85,8 @@ export const Button = styled.button<{
       `
         : color === "secondary" && !outline
         ? `
-        border: 1px solid #a5a5a5;
-        background-color: #dbdbdb;
+        border: 0;
+        background-color: transparent;
         color: #343434;
 
         &:active {

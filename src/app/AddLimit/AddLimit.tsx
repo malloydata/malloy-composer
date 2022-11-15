@@ -41,7 +41,10 @@ export const AddLimit: React.FC<LimitContextBarProps> = ({
           setValue={setLimit}
           autoFocus={true}
           autoSelect={true}
-        />
+        />{" "}
+        <Button color="secondary" onClick={() => onComplete()}>
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             const parsed = parseInt(limit);
@@ -50,9 +53,8 @@ export const AddLimit: React.FC<LimitContextBarProps> = ({
               onComplete();
             }
           }}
-          type="submit"
         >
-          Done
+          Save
         </Button>
       </ButtonAndInputRow>
     </ContextMenuMain>

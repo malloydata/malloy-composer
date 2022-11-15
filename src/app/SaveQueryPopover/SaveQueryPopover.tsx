@@ -41,7 +41,6 @@ export const SaveQueryPopover: React.FC<SaveQueryPopoverProps> = ({
             autoFocus={true}
           />
           <Button
-            type="submit"
             onClick={() => {
               saveQuery(name);
               setName("");

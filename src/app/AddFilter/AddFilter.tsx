@@ -170,8 +170,10 @@ export const AddFilter: React.FC<AddFilterProps> = ({
           />
         )}
         <RightButtonRow style={{ padding: "0 15px 15px 15px" }}>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
-            type="submit"
             onClick={(event) => {
               compileFilter(source, filter)
                 .then((filterExpression) => {
@@ -184,7 +186,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
               event.preventDefault();
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>

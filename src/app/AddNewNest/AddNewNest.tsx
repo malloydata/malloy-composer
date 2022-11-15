@@ -41,14 +41,16 @@ export const AddNewNest: React.FC<AddNewNestProps> = ({
           autoFocus={true}
         />
         <RightButtonRow>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
-            type="submit"
             onClick={() => {
               addNest(name);
               onComplete();
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>
