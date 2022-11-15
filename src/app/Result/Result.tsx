@@ -17,22 +17,37 @@ import * as render from "@malloydata/render";
 import styled from "styled-components";
 import { LoadingSpinner } from "../Spinner";
 import { usePrevious } from "../hooks";
-import { downloadFile, highlightPre, notUndefined } from "../utils";
-import { compileFilter } from "../../core/compile";
+import {
+  copyToClipboard,
+  downloadFile,
+  highlightPre,
+  indentCode,
+  notUndefined,
+} from "../utils";
+import { compileFilter, compileQueryToSQL } from "../../core/compile";
 import { DownloadMenu } from "../DownloadMenu";
 import { DOMElement } from "../DOMElement";
 import { PageContent, PageHeader } from "../CommonElements";
+import { SelectDropdown } from "../SelectDropdown";
+import { ActionIcon } from "../ActionIcon";
 
 interface ResultProps {
+  model: malloy.ModelDef;
   source: malloy.StructDef;
   result?: malloy.Result;
   dataStyles: render.DataStyles;
-  malloy: string;
+  malloy: {
+    source: string;
+    model: string;
+    markdown: string;
+    isRunnable: boolean;
+  };
   onDrill: (filters: malloy.FilterExpression[]) => void;
   isRunning: boolean;
 }
 
 export const Result: React.FC<ResultProps> = ({
+  model,
   source,
   result,
   dataStyles,
@@ -41,21 +56,67 @@ export const Result: React.FC<ResultProps> = ({
   isRunning,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
-  const [highlightedMalloy, setHighlightedMalloy] = useState<HTMLElement>();
+  const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
+    useState<HTMLElement>();
+  const [highlightedModelMalloy, setHighlightedModelMalloy] =
+    useState<HTMLElement>();
+  const [highlightedMarkdownMalloy, setHighlightedMarkdownMalloy] =
+    useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
   const [view, setView] = useState<"sql" | "malloy" | "html">("html");
+  const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
+  const [malloyType, setMalloyType] = useState("source");
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
   const previousDataStyles = usePrevious(dataStyles);
 
   useEffect(() => {
-    highlightPre(malloy, "malloy")
-      .then(setHighlightedMalloy)
+    highlightPre(malloy.markdown, "md")
+      .then(setHighlightedMarkdownMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(indentCode(malloy.source), "malloy")
+      .then(setHighlightedSourceMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(malloy.model, "malloy")
+      .then(setHighlightedModelMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
   }, [malloy]);
+
+  useEffect(() => {
+    let canceled = false;
+    const updateSQL = async () => {
+      let sql = result?.sql;
+      if (sql === undefined) {
+        if (
+          model === undefined ||
+          malloy.model === undefined ||
+          malloy.model === "" ||
+          !malloy.isRunnable
+        ) {
+          return;
+        }
+        try {
+          sql = await compileQueryToSQL(model, malloy.model);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
+      }
+      if (sql === undefined) return;
+      const highlighted = await highlightPre(sql, "sql");
+      if (canceled) return;
+      setSQL(highlighted);
+    };
+    updateSQL();
+    return () => {
+      canceled = true;
+    };
+  }, [result, malloy, model]);
 
   useEffect(() => {
     if (
@@ -72,7 +133,6 @@ export const Result: React.FC<ResultProps> = ({
     }
     setTimeout(async () => {
       setRendering(true);
-      highlightPre(result.sql, "sql").then(setSQL);
       // eslint-disable-next-line no-console
       console.log(result.sql);
       const currentResultId = ++resultId.current;
@@ -166,18 +226,64 @@ export const Result: React.FC<ResultProps> = ({
             )}
           </>
         )}
-        {result !== undefined && view === "sql" && (
+        {sql !== undefined && view === "sql" && (
           <PreWrapper>{sql && <DOMElement element={sql} />}</PreWrapper>
         )}
         {view === "malloy" && (
-          <PreWrapper>
-            {highlightedMalloy && <DOMElement element={highlightedMalloy} />}
+          <PreWrapper
+            style={{ marginLeft: malloyType === "source" ? "-2ch" : "" }}
+          >
+            {malloyType === "source" && highlightedSourceMalloy && (
+              <DOMElement element={highlightedSourceMalloy} />
+            )}
+            {malloyType === "model" && highlightedModelMalloy && (
+              <DOMElement element={highlightedModelMalloy} />
+            )}
+            {malloyType === "markdown" && highlightedMarkdownMalloy && (
+              <DOMElement element={highlightedMarkdownMalloy} />
+            )}
+            <MalloyTypeSwitcher>
+              <ActionIcon
+                action="copy"
+                onClick={() => {
+                  copyToClipboard(malloy[malloyType]);
+                  setCopiedMalloy(true);
+                }}
+                color={copiedMalloy ? "other" : "dimension"}
+              />
+              <SelectDropdown
+                value={malloyType}
+                onChange={(type) => {
+                  setMalloyType(type);
+                  setCopiedMalloy(false);
+                }}
+                options={[
+                  { value: "source", label: "Source" },
+                  { value: "model", label: "Model" },
+                  { value: "markdown", label: "Markdown" },
+                ]}
+              />
+            </MalloyTypeSwitcher>
           </PreWrapper>
         )}
       </ContentDiv>
     </OuterDiv>
   );
 };
+
+const MalloyTypeSwitcher = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 4px;
+  width: 140px;
+  justify-content: flex-end;
+  align-items: center;
+`;
 
 const ResultWrapper = styled.div`
   font-size: 14px;
@@ -223,6 +329,8 @@ const PreWrapper = styled.div`
   padding: 0 15px;
   font-family: "Roboto Mono";
   font-size: 14px;
+  position: relative;
+  width: 100%;
 `;
 
 const ResultHeaderSection = styled.div`

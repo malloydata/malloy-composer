@@ -37,6 +37,7 @@ import {
   NamedQuery,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
+import { snakeToTitle } from "../app/utils";
 
 class SourceUtils {
   constructor(protected _source: StructDef | undefined) {}
@@ -127,6 +128,33 @@ export class QueryBuilder extends SourceUtils {
     if (this._source === undefined) return undefined;
     const writer = this.getWriter();
     return writer.getQueryStringForSource(name);
+  }
+
+  public getQueryStringForMarkdown(
+    renderer: string | undefined,
+    modelPath: string
+  ): string | undefined {
+    if (this._source === undefined) return undefined;
+    const writer = this.getWriter();
+    return writer.getQueryStringForMarkdown(renderer, modelPath);
+  }
+
+  public getQueryStrings(
+    renderer: string | undefined,
+    modelPath: string
+  ): {
+    model: string;
+    markdown: string;
+    source: string;
+    isRunnable: boolean;
+  } {
+    const writer = this.getWriter();
+    return {
+      model: writer.getQueryStringForModel(),
+      source: writer.getQueryStringForSource(this.query.name),
+      markdown: writer.getQueryStringForMarkdown(renderer, modelPath),
+      isRunnable: this.canRun(),
+    };
   }
 
   getName(): string {
@@ -675,6 +703,26 @@ export class QueryWriter extends SourceUtils {
     super(source);
   }
 
+  getQueryStringForMarkdown(
+    renderer: string | undefined,
+    modelPath: string
+  ): string {
+    const malloy = this.getMalloyString(false, this.query.name);
+    return `<!-- malloy-query  
+  name="${snakeToTitle(this.query.name)}"
+  description="Add a description here." ${
+    renderer
+      ? `
+  renderer="${renderer}"`
+      : ""
+  }
+  model="${modelPath}"
+-->
+\`\`\`malloy
+${malloy}
+\`\`\``;
+  }
+
   getQueryStringForSource(name: string): string {
     return this.getMalloyString(true, name);
   }
@@ -872,10 +920,9 @@ export class QueryWriter extends SourceUtils {
   }
 
   private getMalloyString(forSource: boolean, name?: string): string {
+    if (this.getSource() === undefined) return "";
     const initParts = [];
-    if (!forSource) {
-      initParts.push("query:");
-    }
+    initParts.push("query:");
     if (name !== undefined) {
       initParts.push(`${this.maybeQuoteIdentifier(name)} is`);
     }

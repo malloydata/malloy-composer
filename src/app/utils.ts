@@ -46,6 +46,7 @@ function getHighlighter() {
     langs: [
       "sql",
       "json",
+      "md",
       {
         id: "malloy",
         scopeName: "source.malloy",
@@ -240,4 +241,15 @@ export function extractErrorMessage(error: Error): string {
     }
   }
   return message;
+}
+
+export function indentCode(code: string, spaces = 2): string {
+  return code
+    .split("\n")
+    .map((line) => " ".repeat(spaces) + line)
+    .join("\n");
+}
+
+export function copyToClipboard(text: string): void {
+  navigator.clipboard.writeText(text);
 }
