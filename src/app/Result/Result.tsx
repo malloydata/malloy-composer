@@ -24,23 +24,30 @@ import {
   indentCode,
   notUndefined,
 } from "../utils";
-import { compileFilter } from "../../core/compile";
+import { compileFilter, compileQueryToSQL } from "../../core/compile";
 import { DownloadMenu } from "../DownloadMenu";
 import { DOMElement } from "../DOMElement";
-import { Button, PageContent, PageHeader } from "../CommonElements";
+import { PageContent, PageHeader } from "../CommonElements";
 import { SelectDropdown } from "../SelectDropdown";
 import { ActionIcon } from "../ActionIcon";
 
 interface ResultProps {
+  model: malloy.ModelDef;
   source: malloy.StructDef;
   result?: malloy.Result;
   dataStyles: render.DataStyles;
-  malloy: { source: string; model: string; markdown: string };
+  malloy: {
+    source: string;
+    model: string;
+    markdown: string;
+    isRunnable: boolean;
+  };
   onDrill: (filters: malloy.FilterExpression[]) => void;
   isRunning: boolean;
 }
 
 export const Result: React.FC<ResultProps> = ({
+  model,
   source,
   result,
   dataStyles,
@@ -81,6 +88,37 @@ export const Result: React.FC<ResultProps> = ({
   }, [malloy]);
 
   useEffect(() => {
+    let canceled = false;
+    const updateSQL = async () => {
+      let sql = result?.sql;
+      if (sql === undefined) {
+        if (
+          model === undefined ||
+          malloy.model === undefined ||
+          malloy.model === "" ||
+          !malloy.isRunnable
+        ) {
+          return;
+        }
+        try {
+          sql = await compileQueryToSQL(model, malloy.model);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
+      }
+      if (sql === undefined) return;
+      const highlighted = await highlightPre(sql, "sql");
+      if (canceled) return;
+      setSQL(highlighted);
+    };
+    updateSQL();
+    return () => {
+      canceled = true;
+    };
+  }, [result, malloy, model]);
+
+  useEffect(() => {
     if (
       result === previousResult &&
       JSON.stringify(dataStyles) === JSON.stringify(previousDataStyles)
@@ -95,7 +133,6 @@ export const Result: React.FC<ResultProps> = ({
     }
     setTimeout(async () => {
       setRendering(true);
-      highlightPre(result.sql, "sql").then(setSQL);
       // eslint-disable-next-line no-console
       console.log(result.sql);
       const currentResultId = ++resultId.current;
@@ -189,7 +226,7 @@ export const Result: React.FC<ResultProps> = ({
             )}
           </>
         )}
-        {result !== undefined && view === "sql" && (
+        {sql !== undefined && view === "sql" && (
           <PreWrapper>{sql && <DOMElement element={sql} />}</PreWrapper>
         )}
         {view === "malloy" && (

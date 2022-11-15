@@ -27,7 +27,12 @@ import { useRunQuery } from "../data/use_run_query";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
-  queryMalloy: { model: string; source: string; markdown: string };
+  queryMalloy: {
+    model: string;
+    source: string;
+    markdown: string;
+    isRunnable: boolean;
+  };
   queryName: string;
   clearQuery: (noURLUpdate?: boolean) => void;
   runQuery: () => void;

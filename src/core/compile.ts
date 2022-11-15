@@ -30,6 +30,7 @@ import {
   StructDef,
   URLReader,
   NamedQuery,
+  PreparedQuery,
 } from "@malloydata/malloy";
 
 class DummyFiles implements URLReader {
@@ -187,24 +188,40 @@ export async function compileMeasure(
   return field;
 }
 
-export async function compileQuery(
+const DEFAULT_NAME = "new_query";
+async function _compileQuery(
   modelDef: ModelDef,
   query: string
-): Promise<NamedQuery> {
+): Promise<PreparedQuery> {
   const model = await _compileModel(modelDef, query);
   const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
   const match = query.match(regex);
   let preparedQuery = match
     ? model.getPreparedQueryByName(match[1])
     : model.preparedQuery;
-  const defaultName = "new_query";
   if (preparedQuery._query.pipeHead) {
-    preparedQuery = preparedQuery.getFlattenedQuery(defaultName);
+    preparedQuery = preparedQuery.getFlattenedQuery(DEFAULT_NAME);
   }
+  return preparedQuery;
+}
+
+export async function compileQueryToSQL(
+  modelDef: ModelDef,
+  query: string
+): Promise<string> {
+  const preparedQuery = await _compileQuery(modelDef, query);
+  return preparedQuery.preparedResult.sql;
+}
+
+export async function compileQuery(
+  modelDef: ModelDef,
+  query: string
+): Promise<NamedQuery> {
+  const preparedQuery = await _compileQuery(modelDef, query);
   const name =
     "as" in preparedQuery._query
       ? preparedQuery._query.as || preparedQuery._query.name
-      : defaultName;
+      : DEFAULT_NAME;
   return {
     ...preparedQuery._query,
     type: "query",

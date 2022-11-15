@@ -24,7 +24,12 @@ interface ExploreQueryEditorProps {
   querySummary: QuerySummary | undefined;
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
-  queryMalloy: { model: string; source: string; markdown: string };
+  queryMalloy: {
+    model: string;
+    source: string;
+    markdown: string;
+    isRunnable: boolean;
+  };
   isRunning: boolean;
   queryModifiers: QueryModifiers;
   runQuery: () => void;
@@ -116,6 +121,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         </QueryBar>
       </SidebarOuter>
       <Result
+        model={model}
         source={source}
         result={result}
         dataStyles={dataStyles}

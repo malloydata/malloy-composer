@@ -146,12 +146,14 @@ export class QueryBuilder extends SourceUtils {
     model: string;
     markdown: string;
     source: string;
+    isRunnable: boolean;
   } {
     const writer = this.getWriter();
     return {
       model: writer.getQueryStringForModel(),
       source: writer.getQueryStringForSource(this.query.name),
       markdown: writer.getQueryStringForMarkdown(renderer, modelPath),
+      isRunnable: this.canRun(),
     };
   }
 
