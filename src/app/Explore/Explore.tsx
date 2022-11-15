@@ -120,7 +120,6 @@ export const Explore: React.FC = () => {
           new URL(app.configPath, window.location.href)
         ).pathname
       : undefined;
-  console.log({ modelInfo, app, model, modelPath });
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 

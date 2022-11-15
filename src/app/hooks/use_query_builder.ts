@@ -129,7 +129,6 @@ export function useQueryBuilder(
 ): UseQueryBuilderResult {
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
-  const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
 
   const dataStyles = useRef<DataStyles>({});
@@ -140,7 +139,6 @@ export function useQueryBuilder(
 
   const queryName = queryBuilder.current.getQuery()?.name;
 
-  console.log({ modelPath });
   const {
     result,
     runQuery: runQueryRaw,
@@ -184,11 +182,8 @@ export function useQueryBuilder(
           styles: dataStyles.current,
         });
       }
-      setQueryString(queryString);
       setDirty(true);
     } else {
-      const queryString = queryBuilder.current.getQueryStringForModel();
-      setQueryString(queryString);
       setDirty(true);
     }
   };
@@ -198,7 +193,6 @@ export function useQueryBuilder(
     setDataStyles({}, noURLUpdate);
     clearResult();
     updateQueryInURL({ run: false, query: undefined, styles: {} });
-    setQueryString("");
   };
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
