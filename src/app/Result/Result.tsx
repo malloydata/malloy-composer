@@ -17,12 +17,19 @@ import * as render from "@malloydata/render";
 import styled from "styled-components";
 import { LoadingSpinner } from "../Spinner";
 import { usePrevious } from "../hooks";
-import { downloadFile, highlightPre, indentCode, notUndefined } from "../utils";
+import {
+  copyToClipboard,
+  downloadFile,
+  highlightPre,
+  indentCode,
+  notUndefined,
+} from "../utils";
 import { compileFilter } from "../../core/compile";
 import { DownloadMenu } from "../DownloadMenu";
 import { DOMElement } from "../DOMElement";
-import { PageContent, PageHeader } from "../CommonElements";
+import { Button, PageContent, PageHeader } from "../CommonElements";
 import { SelectDropdown } from "../SelectDropdown";
+import { ActionIcon } from "../ActionIcon";
 
 interface ResultProps {
   source: malloy.StructDef;
@@ -50,6 +57,7 @@ export const Result: React.FC<ResultProps> = ({
     useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
   const [view, setView] = useState<"sql" | "malloy" | "html">("html");
+  const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [malloyType, setMalloyType] = useState("source");
   const [displaying, setDisplaying] = useState(false);
@@ -198,9 +206,20 @@ export const Result: React.FC<ResultProps> = ({
               <DOMElement element={highlightedMarkdownMalloy} />
             )}
             <MalloyTypeSwitcher>
+              <ActionIcon
+                action="copy"
+                onClick={() => {
+                  copyToClipboard(malloy[malloyType]);
+                  setCopiedMalloy(true);
+                }}
+                color={copiedMalloy ? "other" : "dimension"}
+              />
               <SelectDropdown
                 value={malloyType}
-                onChange={setMalloyType}
+                onChange={(type) => {
+                  setMalloyType(type);
+                  setCopiedMalloy(false);
+                }}
                 options={[
                   { value: "source", label: "Source" },
                   { value: "model", label: "Model" },
@@ -216,12 +235,17 @@ export const Result: React.FC<ResultProps> = ({
 };
 
 const MalloyTypeSwitcher = styled.div`
-  width: 120px;
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
   position: absolute;
   top: 0;
   right: 0;
   background-color: white;
   border-radius: 4px;
+  width: 140px;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const ResultWrapper = styled.div`

@@ -249,3 +249,7 @@ export function indentCode(code: string, spaces = 2): string {
     .map((line) => " ".repeat(spaces) + line)
     .join("\n");
 }
+
+export function copyToClipboard(text: string): void {
+  navigator.clipboard.writeText(text);
+}
