@@ -41,10 +41,11 @@ const KEY_MAP = {
 export const Explore: React.FC = () => {
   const config = useApps();
   const { appId } = useParams();
-  const app =
-    config?.apps && config?.apps[0].id === undefined
-      ? config.apps[0]
-      : config?.apps?.find((app) => app.id === appId);
+  const onlyDefaultDataset =
+    config && config.apps && config.apps[0]?.id === undefined;
+  const app = onlyDefaultDataset
+    ? config.apps[0]
+    : config?.apps?.find((app) => app.id === appId);
   const appInfo = useDatasets(app);
   const [urlParams, _setParams] = useSearchParams();
   const modelInfo = appInfo?.models.find(
@@ -102,7 +103,10 @@ export const Explore: React.FC = () => {
     setParams(urlParams);
   };
 
-  const section = urlParams.get("page") || "datasets";
+  let section = urlParams.get("page") || "datasets";
+  if (onlyDefaultDataset && section === "datasets") {
+    section = "about";
+  }
   const setSection = (section: string) => {
     urlParams.set("page", section);
     if (section !== "query") {
@@ -312,15 +316,15 @@ export const Explore: React.FC = () => {
         <Content>
           <Channel>
             <ChannelTop>
-              <ChannelButton
-                onClick={() => setSection("datasets")}
-                text="Home"
-                icon="home"
-                selected={section === "datasets"}
-                disabled={
-                  config === undefined || config?.apps[0].id === undefined
-                }
-              ></ChannelButton>
+              {!onlyDefaultDataset && (
+                <ChannelButton
+                  onClick={() => setSection("datasets")}
+                  text="Home"
+                  icon="home"
+                  selected={section === "datasets"}
+                  disabled={config === undefined}
+                ></ChannelButton>
+              )}
               <ChannelButton
                 onClick={() => setSection("about")}
                 text="Dataset"
@@ -368,7 +372,7 @@ export const Explore: React.FC = () => {
                   )}
                 </PageContent>
               )}
-              {section === "datasets" && (
+              {section === "datasets" && config && (
                 <PageContent>
                   <Apps />
                 </PageContent>

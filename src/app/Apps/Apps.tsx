@@ -11,25 +11,35 @@
  * GNU General Public License for more details.
  */
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { ComposerConfig } from "../../types";
 import { useApps } from "../data/use_apps";
 import { MarkdownDocument } from "../MarkdownDocument";
+import { snakeToTitle } from "../utils";
 
 export const Apps: React.FC = () => {
   const config = useApps();
   const navigate = useNavigate();
-  return config?.readme ? (
+  return (
     <MarkdownDocument
-      content={config.readme}
+      content={config?.readme || generateReadme(config)}
       loadApp={(appId) => navigate(`/${appId}`)}
     />
-  ) : (
-    <div>
-      {config?.apps?.map((app) => (
-        <div key={app.id}>
-          <Link to={`/${app.id}`}>{app.root}</Link>
-        </div>
-      ))}
-    </div>
   );
 };
+
+function generateReadme(config: ComposerConfig): string {
+  let readme = "# Welcome to Malloy Composer\n\n";
+  readme += "Select one of the following datasets to get started!\n\n";
+  for (const dataset of config.apps) {
+    const id = dataset.id || "default";
+    const title = snakeToTitle(dataset.root);
+    readme += `
+<!-- malloy-app 
+  app="${id}" 
+  name="${title}" 
+  description="Generated from ${snakeToTitle(dataset.root)}" 
+-->`;
+  }
+  return readme;
+}
