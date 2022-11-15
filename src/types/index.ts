@@ -64,7 +64,7 @@ export interface ModelInfo {
 export interface AppInfo {
   readme: string;
   linkedReadmes: string[];
-  title: string;
+  title?: string;
   models: ModelInfo[];
 }
 

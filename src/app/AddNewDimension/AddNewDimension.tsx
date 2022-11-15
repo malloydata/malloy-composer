@@ -72,7 +72,6 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             Cancel
           </Button>
           <Button
-            type="submit"
             onClick={(event) => {
               event.stopPropagation();
               event.preventDefault();

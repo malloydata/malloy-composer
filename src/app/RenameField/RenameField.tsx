@@ -40,14 +40,16 @@ export const RenameField: React.FC<RenameFieldProps> = ({
           placeholder="new_name"
           autoFocus={true}
         />
+        <Button color="secondary" onClick={() => onComplete()}>
+          Cancel
+        </Button>
         <Button
-          type="submit"
           onClick={() => {
             rename(name);
             onComplete();
           }}
         >
-          Done
+          Save
         </Button>
       </ButtonAndInputRow>
     </ContextMenuMain>

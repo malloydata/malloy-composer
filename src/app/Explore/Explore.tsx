@@ -60,6 +60,12 @@ export const Explore: React.FC = () => {
     _setParams(newUrlParams, options);
   };
 
+  useEffect(() => {
+    if (appInfo) {
+      document.title = appInfo.title || "Malloy Composer";
+    }
+  }, [appInfo]);
+
   const updateQueryInURL = ({
     run,
     query: newQuery,
@@ -119,6 +125,7 @@ export const Explore: React.FC = () => {
     result,
     registerNewSource,
     error,
+    setError,
     dirty,
     canUndo,
     undo,
@@ -135,6 +142,7 @@ export const Explore: React.FC = () => {
       urlParams.delete("name");
       urlParams.delete("styles");
       clearQuery(true);
+      setError(undefined);
       resetUndoHistory();
     }
     setParams(urlParams);
@@ -174,26 +182,35 @@ export const Explore: React.FC = () => {
         if (newModelInfo === undefined) {
           throw new Error("Bad model");
         }
-        const sourceName =
-          source || (await getSourceNameForQuery(newModelInfo.model, query));
-        registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
-        if (query) {
-          if (page !== "query") return;
-          clearResult();
-          const compiledQuery = await compileQuery(newModelInfo.model, query);
-          queryModifiers.setDataStyles(styles ? JSON.parse(styles) : {}, true);
-          queryModifiers.setQuery(compiledQuery, true);
-          if (urlParams.has("run") && urlParams.get("page") === "query") {
-            runQuery();
+        try {
+          const sourceName =
+            source || (await getSourceNameForQuery(newModelInfo.model, query));
+          registerNewSource(
+            newModelInfo.model.contents[sourceName] as StructDef
+          );
+          if (query) {
+            if (page !== "query") return;
+            clearResult();
+            const compiledQuery = await compileQuery(newModelInfo.model, query);
+            queryModifiers.setDataStyles(
+              styles ? JSON.parse(styles) : {},
+              true
+            );
+            queryModifiers.setQuery(compiledQuery, true);
+            if (urlParams.has("run") && urlParams.get("page") === "query") {
+              runQuery();
+            }
+          } else {
+            urlParams.delete("query");
+            urlParams.delete("run");
+            urlParams.delete("name");
+            urlParams.delete("styles");
+            clearQuery(true);
           }
-        } else {
-          urlParams.delete("query");
-          urlParams.delete("run");
-          urlParams.delete("name");
-          urlParams.delete("styles");
-          clearQuery(true);
+          params.current = urlParams.toString();
+        } catch (error) {
+          setError(error);
         }
-        params.current = urlParams.toString();
       } else if (appInfo && !modelInfo && !page) {
         urlParams.set("page", "about");
         setParams(urlParams, { replace: true });
@@ -218,27 +235,31 @@ export const Explore: React.FC = () => {
     if (newModelInfo === undefined) {
       throw new Error("Bad model");
     }
-    const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
-    urlParams.set("model", newModelInfo.id);
-    urlParams.set("source", sourceName);
-    urlParams.set("query", query);
-    urlParams.set("page", "query");
-    urlParams.set("run", "true");
-    urlParams.set("name", name);
-    registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
-    const compiledQuery = await compileQuery(newModelInfo.model, query);
-    queryModifiers.setQuery(compiledQuery, true);
-    if (renderer) {
-      const styles = queryModifiers.setDataStyle(
-        compiledQuery.name,
-        renderer as RendererName,
-        true
-      );
-      urlParams.delete("renderer");
-      urlParams.set("styles", JSON.stringify(styles));
+    try {
+      const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
+      urlParams.set("model", newModelInfo.id);
+      urlParams.set("source", sourceName);
+      urlParams.set("query", query);
+      urlParams.set("page", "query");
+      urlParams.set("run", "true");
+      urlParams.set("name", name);
+      registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
+      const compiledQuery = await compileQuery(newModelInfo.model, query);
+      queryModifiers.setQuery(compiledQuery, true);
+      if (renderer) {
+        const styles = queryModifiers.setDataStyle(
+          compiledQuery.name,
+          renderer as RendererName,
+          true
+        );
+        urlParams.delete("renderer");
+        urlParams.set("styles", JSON.stringify(styles));
+      }
+      runQuery();
+      setParams(urlParams);
+    } catch (error) {
+      setError(error);
     }
-    runQuery();
-    setParams(urlParams);
   };
 
   const runQueryAction = () => {

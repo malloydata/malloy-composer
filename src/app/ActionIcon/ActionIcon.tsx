@@ -64,7 +64,8 @@ export type ActionIconName =
   | "open-directory"
   | "run"
   | "undo"
-  | "redo";
+  | "redo"
+  | "copy";
 
 interface ActionIconProps {
   action: ActionIconName;
@@ -110,6 +111,8 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
       ) : action === "container-closed" ? (
         <ActionItemContainerClosed {...props} />
       ) : action === "duplicate" ? (
+        <ActionItemDuplicate {...props} />
+      ) : action === "copy" ? (
         <ActionItemDuplicate {...props} />
       ) : action === "style" ? (
         <VisIconScatterChart {...props} />

@@ -28,7 +28,12 @@ import { useRunQuery } from "../data/use_run_query";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
-  queryMalloy: string;
+  queryMalloy: {
+    model: string;
+    source: string;
+    markdown: string;
+    isRunnable: boolean;
+  };
   queryName: string;
   clearQuery: (noURLUpdate?: boolean) => void;
   runQuery: () => void;
@@ -40,6 +45,7 @@ interface UseQueryBuilderResult {
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   error: Error | undefined;
+  setError: (error: Error | undefined) => void;
   registerNewSource: (source: StructDef) => void;
   dirty: boolean;
   canUndo: boolean;
@@ -134,7 +140,6 @@ export function useQueryBuilder(
 ): UseQueryBuilderResult {
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
-  const [queryString, setQueryString] = useState("");
   const [dirty, setDirty] = useState(false);
   const history = useRef({ size: 0, position: 0 });
   const navigate = useNavigate();
@@ -190,11 +195,8 @@ export function useQueryBuilder(
           styles: dataStyles.current,
         });
       }
-      setQueryString(queryString);
       setDirty(true);
     } else {
-      const queryString = queryBuilder.current.getQueryStringForModel();
-      setQueryString(queryString);
       setDirty(true);
     }
     if (!noURLUpdate) {
@@ -228,7 +230,6 @@ export function useQueryBuilder(
     setDataStyles({}, noURLUpdate);
     clearResult();
     updateQueryInURL({ run: false, query: undefined, styles: {} });
-    setQueryString("");
   };
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
@@ -399,7 +400,10 @@ export function useQueryBuilder(
   return {
     dirty,
     queryBuilder,
-    queryMalloy: queryString,
+    queryMalloy: queryBuilder.current.getQueryStrings(
+      dataStyles.current[queryName]?.renderer,
+      modelPath
+    ),
     queryName,
     clearQuery,
     runQuery,
@@ -412,6 +416,7 @@ export function useQueryBuilder(
     error,
     canUndo: history.current.position > 0,
     canRedo: history.current.position < history.current.size,
+    setError,
     registerNewSource,
     undo,
     redo,

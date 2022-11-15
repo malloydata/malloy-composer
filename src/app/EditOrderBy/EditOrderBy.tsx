@@ -38,13 +38,15 @@ interface EditOrderByProps {
   initialDirection?: "asc" | "desc";
 }
 
+type Direction = "asc" | "desc";
+
 export const EditOrderBy: React.FC<EditOrderByProps> = ({
   byField,
   addOrderBy,
   onComplete,
   initialDirection,
 }) => {
-  const [direction, setDirection] = useState<"asc" | "desc" | undefined>(
+  const [direction, setDirection] = useState<Direction | undefined>(
     initialDirection || "asc"
   );
   return (
@@ -66,8 +68,8 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
           <OptionsRow>
             <SelectList
               options={[
-                { value: "asc", label: "Ascending" },
-                { value: "desc", label: "Descending" },
+                { value: "asc" as Direction, label: "Ascending" },
+                { value: "desc" as Direction, label: "Descending" },
               ]}
               value={direction}
               onChange={setDirection}
@@ -75,8 +77,10 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
           </OptionsRow>
         </FormFieldList>
         <RightButtonRow>
+          <Button color="secondary" onClick={() => onComplete()}>
+            Cancel
+          </Button>
           <Button
-            type="submit"
             onClick={() => {
               if (byField !== undefined) {
                 addOrderBy(byField.fieldIndex, direction);
@@ -84,7 +88,7 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
               }
             }}
           >
-            Done
+            Save
           </Button>
         </RightButtonRow>
       </form>

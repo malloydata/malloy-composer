@@ -20,6 +20,7 @@ import { ReactComponent as Checkmark } from "../assets/img/checkmark.svg";
 import { COLORS } from "../colors";
 
 interface SelectDropdownProps<T> {
+  autoFocus?: boolean;
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
@@ -33,7 +34,8 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-export const InputBox = styled.div`
+const InputBox = styled.button`
+  background-color: transparent;
   font-size: 14px;
   border: 1px solid #efefef;
   border-radius: 4px;
@@ -49,15 +51,15 @@ export const InputBox = styled.div`
     border: 1px solid #ececed;
   }
   :focus {
-    border-box: none;
     box-shadow: none;
-    border: 1px solid #ececed;
+    border: 1px solid #4285f4;
     outline: none;
   }
   &[disabled] {
     cursor: default;
     background-color: #f6f6f6;
   }
+  width: 100%;
 `;
 
 const OptionDiv = styled.label`
@@ -92,6 +94,7 @@ const CheckIcon = styled(Checkmark)`
 `;
 
 export const SelectDropdown = <T,>({
+  autoFocus,
   value,
   onChange,
   options,
@@ -118,7 +121,10 @@ export const SelectDropdown = <T,>({
 
   return (
     <Wrapper ref={wrapperElement}>
-      <InputBox tabIndex={0} onClick={() => !disabled && setOpen(true)}>
+      <InputBox
+        autoFocus={autoFocus}
+        onClick={() => !disabled && setOpen(true)}
+      >
         {label}
         <ChevronDown width="22px" height="22px" />
       </InputBox>
@@ -181,7 +187,7 @@ export function SelectList<T>({
 interface DropdownMenuProps {
   options: {
     label: string | JSX.Element;
-    onSelect: () => void;
+    onSelect: (event: React.MouseEvent) => void;
     divider?: boolean;
   }[];
 }
@@ -194,7 +200,7 @@ export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
           result.push(<OptionDivider key={"divider" + index} />);
         }
         result.push(
-          <OptionDiv key={index} onClick={() => option.onSelect()}>
+          <OptionDiv key={index} onClick={(event) => option.onSelect(event)}>
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
         );

@@ -46,6 +46,7 @@ function getHighlighter() {
     langs: [
       "sql",
       "json",
+      "md",
       {
         id: "malloy",
         scopeName: "source.malloy",
@@ -203,13 +204,18 @@ export function largeNumberLabel(n: number): string {
 export function downloadFile(
   content: string,
   mimeType: string,
-  filename: string
+  filename: string,
+  newTab: boolean
 ): void {
   const downloadLink = document.createElement("a");
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   downloadLink.setAttribute("href", url);
-  downloadLink.setAttribute("download", filename);
+  if (newTab) {
+    downloadLink.setAttribute("target", "_blank");
+  } else {
+    downloadLink.setAttribute("download", filename);
+  }
   downloadLink.click();
 }
 
@@ -235,4 +241,15 @@ export function extractErrorMessage(error: Error): string {
     }
   }
   return message;
+}
+
+export function indentCode(code: string, spaces = 2): string {
+  return code
+    .split("\n")
+    .map((line) => " ".repeat(spaces) + line)
+    .join("\n");
+}
+
+export function copyToClipboard(text: string): void {
+  navigator.clipboard.writeText(text);
 }
