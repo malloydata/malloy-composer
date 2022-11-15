@@ -31,7 +31,6 @@ import { useSearchParams, useParams } from "react-router-dom";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
-import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
 import { Apps } from "../Apps";
 
 const KEY_MAP = {
@@ -206,11 +205,7 @@ export const Explore: React.FC = () => {
           setError(error);
         }
       } else if (appInfo && !modelInfo && !page) {
-        if (appInfo.readme) {
-          urlParams.set("page", "about");
-        } else {
-          urlParams.set("page", "sources");
-        }
+        urlParams.set("page", "about");
         setParams(urlParams, { replace: true });
       }
     };
@@ -299,7 +294,7 @@ export const Explore: React.FC = () => {
           {appInfo && (
             <span>
               {appInfo.title || "Malloy"}
-              {sourceName && (section === "query" || section === "sources") && (
+              {sourceName && section === "query" && (
                 <span>
                   {" ›"} {snakeToTitle(sourceName)}
                   {(urlParams.get("name") || queryName) && section === "query" && (

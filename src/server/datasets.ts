@@ -30,17 +30,7 @@ export async function getDatasets(
     ? root
     : path.dirname(root);
   let app: explore.AppConfig = {};
-  if (root.endsWith(".malloy")) {
-    app = {
-      models: [
-        {
-          id: root,
-          modelPath: root,
-          tables: [],
-        },
-      ],
-    };
-  } else if (root.endsWith(".json")) {
+  if (root.endsWith(".json")) {
     const response = await URL_READER.readURL(new URL("file://" + root));
     app = JSON.parse(response) as explore.AppConfig;
   }
@@ -54,8 +44,8 @@ export async function getDatasets(
   if (_app.root.endsWith(".malloy")) {
     modelConfigs = [
       {
-        id: _app.root,
-        modelPath: _app.root,
+        id: path.basename(root),
+        modelPath: path.basename(root),
         tables: [],
       },
     ];
@@ -66,7 +56,7 @@ export async function getDatasets(
       .map((modelPath) => {
         return {
           id: modelPath,
-          modelPath: modelPath,
+          modelPath,
           tables: [],
         };
       });
