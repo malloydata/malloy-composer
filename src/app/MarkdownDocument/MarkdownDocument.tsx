@@ -18,7 +18,8 @@ import { COLORS } from "../colors";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
-import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
+import { ReactComponent as QueryIcon } from "../assets/img/source_query.svg";
+import { ReactComponent as ViewIcon } from "../assets/img/dataset_view.svg";
 
 interface MarkdownDocumentProps {
   content: string;
@@ -182,7 +183,7 @@ export const MarkdownNode: React.FC<{
             <QueryLinkTitleRow>{node.title}</QueryLinkTitleRow>
             <QueryLinkDescription>{node.description}</QueryLinkDescription>
           </QueryLinkInfo>
-          <ViewIcon width="80" height="22" />
+          <QueryIcon width="80" height="22" />
         </QueryLink>
       );
   }
