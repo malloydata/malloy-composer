@@ -24,7 +24,7 @@ interface ExploreQueryEditorProps {
   querySummary: QuerySummary | undefined;
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
-  queryMalloy: string;
+  queryMalloy: { model: string; source: string; markdown: string };
   isRunning: boolean;
   queryModifiers: QueryModifiers;
   runQuery: () => void;
@@ -88,7 +88,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 className={
                   isRunning
                     ? "running"
-                    : queryMalloy === ""
+                    : queryMalloy.source === ""
                     ? "blank"
                     : dirty
                     ? "dirty"

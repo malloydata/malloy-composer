@@ -17,17 +17,18 @@ import * as render from "@malloydata/render";
 import styled from "styled-components";
 import { LoadingSpinner } from "../Spinner";
 import { usePrevious } from "../hooks";
-import { downloadFile, highlightPre, notUndefined } from "../utils";
+import { downloadFile, highlightPre, indentCode, notUndefined } from "../utils";
 import { compileFilter } from "../../core/compile";
 import { DownloadMenu } from "../DownloadMenu";
 import { DOMElement } from "../DOMElement";
 import { PageContent, PageHeader } from "../CommonElements";
+import { SelectDropdown } from "../SelectDropdown";
 
 interface ResultProps {
   source: malloy.StructDef;
   result?: malloy.Result;
   dataStyles: render.DataStyles;
-  malloy: string;
+  malloy: { source: string; model: string; markdown: string };
   onDrill: (filters: malloy.FilterExpression[]) => void;
   isRunning: boolean;
 }
@@ -41,18 +42,32 @@ export const Result: React.FC<ResultProps> = ({
   isRunning,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
-  const [highlightedMalloy, setHighlightedMalloy] = useState<HTMLElement>();
+  const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
+    useState<HTMLElement>();
+  const [highlightedModelMalloy, setHighlightedModelMalloy] =
+    useState<HTMLElement>();
+  const [highlightedMarkdownMalloy, setHighlightedMarkdownMalloy] =
+    useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
   const [view, setView] = useState<"sql" | "malloy" | "html">("html");
   const [rendering, setRendering] = useState(false);
+  const [malloyType, setMalloyType] = useState("source");
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
   const previousDataStyles = usePrevious(dataStyles);
 
   useEffect(() => {
-    highlightPre(malloy, "malloy")
-      .then(setHighlightedMalloy)
+    highlightPre(malloy.markdown, "md")
+      .then(setHighlightedMarkdownMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(indentCode(malloy.source), "malloy")
+      .then(setHighlightedSourceMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(malloy.model, "malloy")
+      .then(setHighlightedModelMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
   }, [malloy]);
@@ -170,14 +185,44 @@ export const Result: React.FC<ResultProps> = ({
           <PreWrapper>{sql && <DOMElement element={sql} />}</PreWrapper>
         )}
         {view === "malloy" && (
-          <PreWrapper>
-            {highlightedMalloy && <DOMElement element={highlightedMalloy} />}
+          <PreWrapper
+            style={{ marginLeft: malloyType === "source" ? "-2ch" : "" }}
+          >
+            {malloyType === "source" && highlightedSourceMalloy && (
+              <DOMElement element={highlightedSourceMalloy} />
+            )}
+            {malloyType === "model" && highlightedModelMalloy && (
+              <DOMElement element={highlightedModelMalloy} />
+            )}
+            {malloyType === "markdown" && highlightedMarkdownMalloy && (
+              <DOMElement element={highlightedMarkdownMalloy} />
+            )}
+            <MalloyTypeSwitcher>
+              <SelectDropdown
+                value={malloyType}
+                onChange={setMalloyType}
+                options={[
+                  { value: "source", label: "Source" },
+                  { value: "model", label: "Model" },
+                  { value: "markdown", label: "Markdown" },
+                ]}
+              />
+            </MalloyTypeSwitcher>
           </PreWrapper>
         )}
       </ContentDiv>
     </OuterDiv>
   );
 };
+
+const MalloyTypeSwitcher = styled.div`
+  width: 120px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 4px;
+`;
 
 const ResultWrapper = styled.div`
   font-size: 14px;
@@ -223,6 +268,8 @@ const PreWrapper = styled.div`
   padding: 0 15px;
   font-family: "Roboto Mono";
   font-size: 14px;
+  position: relative;
+  width: 100%;
 `;
 
 const ResultHeaderSection = styled.div`

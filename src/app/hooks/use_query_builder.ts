@@ -27,7 +27,7 @@ import { useRunQuery } from "../data/use_run_query";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
-  queryMalloy: string;
+  queryMalloy: { model: string; source: string; markdown: string };
   queryName: string;
   clearQuery: (noURLUpdate?: boolean) => void;
   runQuery: () => void;
@@ -140,6 +140,7 @@ export function useQueryBuilder(
 
   const queryName = queryBuilder.current.getQuery()?.name;
 
+  console.log({ modelPath });
   const {
     result,
     runQuery: runQueryRaw,
@@ -368,7 +369,10 @@ export function useQueryBuilder(
   return {
     dirty,
     queryBuilder,
-    queryMalloy: queryString,
+    queryMalloy: queryBuilder.current.getQueryStrings(
+      dataStyles.current[queryName]?.renderer,
+      modelPath
+    ),
     queryName,
     clearQuery,
     runQuery,
