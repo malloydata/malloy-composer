@@ -18,8 +18,7 @@ import { FieldDef } from "@malloydata/malloy";
  */
 
 export type MeasureType =
-  | "count"
-  | "distinct"
+  | "count_distinct"
   | "max"
   | "min"
   | "avg"
@@ -47,17 +46,16 @@ export function generateMeasure(
   fieldName: string
 ): string | undefined {
   switch (measureType) {
-    case "count":
-      return "count()";
-    case "distinct":
+    case "count_distinct":
       return `count(distinct ${quoteField(fieldName)})`;
-    case "min":
-    case "max":
     case "avg":
     case "sum":
+      return `${quoteField(fieldName)}.${measureType}()`;
+    case "min":
+    case "max":
       return `${measureType}(${quoteField(fieldName)})`;
     case "percent":
-      return `count() / all(count(), ${quoteField(fieldName)}) * 100.0`;
+      return `100 * ${quoteField(fieldName)} / all(${quoteField(fieldName)})`;
   }
   return;
 }
