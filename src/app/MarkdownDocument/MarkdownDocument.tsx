@@ -29,12 +29,14 @@ interface MarkdownDocumentProps {
     renderer?: string
   ) => void;
   loadApp?: (appId: string) => void;
+  loadSource?: (model: string, source: string) => void;
 }
 
 export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
   content,
   loadQueryLink,
   loadApp,
+  loadSource,
 }) => {
   const markdown = parseMarkdown(content);
 
@@ -43,6 +45,7 @@ export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
       node={markdown}
       loadQueryLink={loadQueryLink}
       loadApp={loadApp}
+      loadSource={loadSource}
     />
   );
 };
@@ -56,12 +59,14 @@ export const MarkdownNode: React.FC<{
     renderer?: string
   ) => void;
   loadApp?: (appId: string) => void;
-}> = ({ node, loadQueryLink, loadApp }) => {
+  loadSource?: (model: string, source: string) => void;
+}> = ({ node, loadQueryLink, loadApp, loadSource }) => {
   const children = (node: { children: Markdown[] }) => (
     <MarkdownNodes
       nodes={node.children}
       loadQueryLink={loadQueryLink}
       loadApp={loadApp}
+      loadSource={loadSource}
     />
   );
 
@@ -152,7 +157,6 @@ export const MarkdownNode: React.FC<{
           <QueryLinkDescription>{node.description}</QueryLinkDescription>
         </QueryLink>
       );
-
     case "malloyAppLink":
       return (
         <QueryLink
@@ -162,6 +166,20 @@ export const MarkdownNode: React.FC<{
         >
           <QueryLinkTitleRow>
             {node.name}
+            <ViewIcon width="80" height="22" />
+          </QueryLinkTitleRow>
+          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+        </QueryLink>
+      );
+    case "malloySourceLink":
+      return (
+        <QueryLink
+          onClick={() => {
+            loadSource(node.model, node.source);
+          }}
+        >
+          <QueryLinkTitleRow>
+            {node.title}
             <ViewIcon width="80" height="22" />
           </QueryLinkTitleRow>
           <QueryLinkDescription>{node.description}</QueryLinkDescription>
@@ -178,7 +196,8 @@ export const MarkdownNodes: React.FC<{
     queryName: string
   ) => void;
   loadApp?: (appId: string) => void;
-}> = ({ nodes, loadQueryLink, loadApp }) => {
+  loadSource?: (model: string, source: string) => void;
+}> = ({ nodes, loadQueryLink, loadApp, loadSource }) => {
   return (
     <>
       {nodes.map((childNode, index) => (
@@ -187,6 +206,7 @@ export const MarkdownNodes: React.FC<{
           key={index}
           loadQueryLink={loadQueryLink}
           loadApp={loadApp}
+          loadSource={loadSource}
         />
       ))}
     </>

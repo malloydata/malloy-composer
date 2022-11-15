@@ -25,8 +25,10 @@ export async function getDatasets(
   _app: explore.AppListing
 ): Promise<explore.AppInfo> {
   const { workingDirectory } = await getConfig();
-  console.log({ workingDirectory, appRoot: _app.root });
   const root = path.join(workingDirectory, _app.root);
+  const rootDirectory = (await fs.lstat(root)).isDirectory()
+    ? root
+    : path.dirname(root);
   let app: explore.AppConfig = {};
   if (root.endsWith(".malloy")) {
     app = {
@@ -43,11 +45,10 @@ export async function getDatasets(
     app = JSON.parse(response) as explore.AppConfig;
   }
   const title = app.title;
-  const appPath = path.dirname(path.join(workingDirectory, _app.root));
   const readme =
     app.readme &&
     (await URL_READER.readURL(
-      new URL("file://" + path.join(appPath, app.readme))
+      new URL("file://" + path.resolve(rootDirectory, app.readme))
     ));
   let modelConfigs = app.models;
   if (_app.root.endsWith(".malloy")) {
@@ -58,22 +59,21 @@ export async function getDatasets(
         tables: [],
       },
     ];
-  } else {
-    const dirPath = path.dirname(root);
-    const items = await fs.readdir(dirPath);
+  } else if (modelConfigs === undefined) {
+    const items = await fs.readdir(root);
     modelConfigs = items
       .filter((item) => item.endsWith(".malloy"))
       .map((modelPath) => {
         return {
           id: modelPath,
-          modelPath,
+          modelPath: modelPath,
           tables: [],
         };
       });
-  } 
+  }
   const models: explore.ModelInfo[] = await Promise.all(
     modelConfigs.map(async (sample: explore.ModelConfig) => {
-      const modelPath = path.join(appPath, sample.modelPath);
+      const modelPath = path.resolve(rootDirectory, sample.modelPath);
       const modelURL = new URL("file://" + modelPath);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);

@@ -19,7 +19,6 @@ import * as duckDBWASM from "./duckdb_wasm";
 export function useDatasets(
   app: { root: string; id?: string | undefined } | undefined
 ): explore.AppInfo | undefined {
-  console.log("thing", app ? app.id ?? "default" : "empty")
   const { data: directory } = useQuery(
     ["datasets", app ? app.id ?? "default" : "empty"],
     async () => {
