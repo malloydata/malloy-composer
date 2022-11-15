@@ -39,6 +39,7 @@ interface ExploreQueryEditorProps {
   undo: () => void;
   canUndo: boolean;
   isQueryEmpty: boolean;
+  canQueryRun: boolean;
 }
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
@@ -58,6 +59,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   undo,
   canUndo,
   isQueryEmpty,
+  canQueryRun,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   return (
@@ -104,7 +106,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 className={
                   isRunning
                     ? "running"
-                    : queryMalloy.source === ""
+                    : isQueryEmpty || !canQueryRun
                     ? "blank"
                     : dirty
                     ? "dirty"

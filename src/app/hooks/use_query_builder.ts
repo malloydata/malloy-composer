@@ -54,6 +54,7 @@ interface UseQueryBuilderResult {
   redo: () => void;
   resetUndoHistory: () => void;
   isQueryEmpty: boolean;
+  canQueryRun: boolean;
 }
 
 export interface QueryModifiers {
@@ -426,6 +427,7 @@ export function useQueryBuilder(
     redo,
     resetUndoHistory,
     isQueryEmpty: queryBuilder.current.isEmpty(),
+    canQueryRun: queryBuilder.current.canRun(),
     queryModifiers: {
       setDataStyles,
       setQuery,

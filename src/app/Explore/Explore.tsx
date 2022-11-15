@@ -132,6 +132,7 @@ export const Explore: React.FC = () => {
     redo,
     resetUndoHistory,
     isQueryEmpty,
+    canQueryRun,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
 
   const section = urlParams.get("page") || "query";
@@ -348,6 +349,7 @@ export const Explore: React.FC = () => {
                   canUndo={canUndo}
                   undo={undo}
                   isQueryEmpty={isQueryEmpty}
+                  canQueryRun={canQueryRun}
                 />
               )}
               {section === "about" && (
