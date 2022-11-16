@@ -27,6 +27,7 @@ import {
 import { SelectDropdown } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
+  degenerateMeasure,
   generateMeasure,
   MeasureType,
   sortFlatFields,
@@ -93,13 +94,28 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialCode,
   initialName,
 }) => {
-  // TODO(willscullin) Need to parse initialCode to determine if
-  // non-custom display can be used.
-  const [mode, setMode] = useState(initialName ? Mode.CUSTOM : Mode.FIELD);
+  let initialMode = Mode.FIELD;
+  let initialField: FlatField;
+  let initialType: MeasureType;
+  if (initialCode) {
+    const { measureType, field, path } = degenerateMeasure(source, initialCode);
+    initialMode =
+      measureType === "custom"
+        ? Mode.CUSTOM
+        : measureType === "count"
+        ? Mode.COUNT
+        : Mode.FIELD;
+    if (field) {
+      initialField = { field, path };
+    }
+    initialType = measureType;
+  }
+  const [mode, setMode] = useState(initialMode);
   const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
-  const [measureType, setMeasureType] = useState<MeasureType>();
-  const [flatField, setFlatField] = useState<FlatField>();
+  const [measureType, setMeasureType] = useState<MeasureType>(initialType);
+  const [flatField, setFlatField] = useState<FlatField>(initialField);
+
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
@@ -148,6 +164,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
           <FormItem>
             <FormInputLabel>Type</FormInputLabel>
             <SelectDropdown
+              autoFocus={true}
               value={mode}
               options={[
                 { label: "From a field", value: Mode.FIELD },
@@ -162,8 +179,8 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             <FormItem>
               <FormInputLabel>Field</FormInputLabel>
               <SelectDropdown
-                autoFocus={true}
                 value={flatField}
+                valueEqual={(a, b) => a.path === b.path}
                 options={flattened}
                 onChange={(value) => setFlatField(value)}
                 width={300}
