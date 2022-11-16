@@ -122,8 +122,13 @@ export const SelectDropdown = <T,>({
   return (
     <Wrapper ref={wrapperElement}>
       <InputBox
+        type="button"
         autoFocus={autoFocus}
-        onClick={() => !disabled && setOpen(true)}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (!disabled) setOpen(true);
+        }}
       >
         {label}
         <ChevronDown width="22px" height="22px" />

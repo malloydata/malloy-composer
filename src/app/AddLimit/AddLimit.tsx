@@ -42,7 +42,7 @@ export const AddLimit: React.FC<LimitContextBarProps> = ({
           autoFocus={true}
           autoSelect={true}
         />{" "}
-        <Button color="secondary" onClick={() => onComplete()}>
+        <Button type="button" color="secondary" onClick={onComplete}>
           Cancel
         </Button>
         <Button

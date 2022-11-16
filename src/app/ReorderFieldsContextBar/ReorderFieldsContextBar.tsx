@@ -120,7 +120,7 @@ export const ReorderFieldsContextBar: React.FC<
         <EmptyMessage>Query has no fields.</EmptyMessage>
       )}
       <RightButtonRow>
-        <Button color="secondary" onClick={() => onComplete()}>
+        <Button type="button" color="secondary" onClick={onComplete}>
           Cancel
         </Button>
         <Button

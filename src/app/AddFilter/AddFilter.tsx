@@ -170,7 +170,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
           />
         )}
         <RightButtonRow style={{ padding: "0 15px 15px 15px" }}>
-          <Button color="secondary" onClick={() => onComplete()}>
+          <Button type="button" color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button
