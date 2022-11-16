@@ -21,7 +21,7 @@ import {
 } from "../CommonElements";
 import { FieldDef, StructDef } from "@malloydata/malloy";
 import { FieldButton } from "../FieldButton";
-import { kindOfField, typeOfField } from "../utils";
+import { kindOfField, quoteIdentifier, typeOfField } from "../utils";
 import { TypeIcon } from "../TypeIcon";
 import { SelectDropdown } from "../SelectDropdown";
 
@@ -66,6 +66,7 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
               { label: "Day", value: "day" },
               { label: "Hour", value: "hour" },
               { label: "Minute", value: "minute" },
+              { label: "Seconds", value: "seconds" },
               { label: "Field Values", value: "", divider: true },
             ]}
             onChange={setGranularity}
@@ -76,11 +77,15 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
             Cancel
           </Button>
           <Button
+            type="submit"
             onClick={(event) => {
               event.stopPropagation();
               event.preventDefault();
               if (granularity) {
-                addGroupBy(`${path}_${granularity}`, `${path}.${granularity}`);
+                addGroupBy(
+                  `${path}_${granularity}`,
+                  `${quoteIdentifier(path)}.${granularity}`
+                );
               } else {
                 addGroupBy(path);
               }

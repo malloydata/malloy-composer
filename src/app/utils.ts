@@ -168,6 +168,15 @@ export function flatFields(
   });
 }
 
+export function quoteIdentifier(path: string): string {
+  //TODO(whscullin) combine the logic from maybeQuoteIdentifier() and
+  // a list of keywords to do this intelligently.
+  return path
+    .split(".")
+    .map((part) => `\`${part}\``)
+    .join(".");
+}
+
 export function pathSuffixes(path: string): string[] {
   const parts = path.split(".");
   return parts.map((_, index) => parts.slice(index).join("."));
