@@ -24,7 +24,7 @@ import {
   FormInputLabel,
   FormItem,
 } from "../CommonElements";
-import { SelectDropdown, SelectList } from "../SelectDropdown";
+import { SelectDropdown } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,
@@ -53,10 +53,10 @@ const VALID_MEASURES: Record<
   "string" | "number" | "date" | "timestamp",
   MeasureType[]
 > = {
-  string: ["count_distinct", "custom"],
-  number: ["count_distinct", "avg", "sum", "min", "max", "custom"],
-  date: ["count_distinct", "min", "max", "custom"],
-  timestamp: ["count_distinct", "min", "max", "custom"],
+  string: ["count_distinct"],
+  number: ["count_distinct", "avg", "sum", "min", "max"],
+  date: ["count_distinct", "min", "max"],
+  timestamp: ["count_distinct", "min", "max"],
 };
 
 const MEASURE_OPTIONS: {
@@ -76,17 +76,11 @@ const MEASURE_OPTIONS: {
     label: "Percent of All",
     value: "percent",
   },
-  {
-    label: "Custom",
-    value: "custom",
-    divider: true,
-  },
 ];
 
 type FlatField = { field: FieldDef; path: string };
 
 enum Mode {
-  UNDECIDED,
   FIELD,
   COUNT,
   CUSTOM,
@@ -101,7 +95,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 }) => {
   // TODO(willscullin) Need to parse initialCode to determine if
   // non-custom display can be used.
-  const [mode, setMode] = useState(initialName ? Mode.CUSTOM : Mode.UNDECIDED);
+  const [mode, setMode] = useState(initialName ? Mode.CUSTOM : Mode.FIELD);
   const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
   const [measureType, setMeasureType] = useState<MeasureType>();
@@ -146,28 +140,27 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 
   const needsName = initialCode === undefined;
 
-  if (mode === Mode.UNDECIDED) {
-    return (
-      <SelectList
-        value={mode}
-        options={[
-          { label: "From a field", value: Mode.FIELD },
-          { label: "Count", value: Mode.COUNT },
-          { label: "Custom", value: Mode.CUSTOM },
-        ]}
-        onChange={(value) => setMode(value)}
-      />
-    );
-  }
-
   return (
     <ContextMenuMain>
       <ContextMenuTitle>{needsName ? "New" : "Edit"} measure</ContextMenuTitle>
       <form>
         <FormFieldList>
+          <FormItem>
+            <FormInputLabel>Type</FormInputLabel>
+            <SelectDropdown
+              value={mode}
+              options={[
+                { label: "From a field", value: Mode.FIELD },
+                { label: "Count", value: Mode.COUNT },
+                { label: "Custom", value: Mode.CUSTOM },
+              ]}
+              onChange={(value) => setMode(value)}
+              width={300}
+            />
+          </FormItem>
           {mode == Mode.FIELD && (
             <FormItem>
-              <FormInputLabel>Field to measure</FormInputLabel>
+              <FormInputLabel>Field</FormInputLabel>
               <SelectDropdown
                 autoFocus={true}
                 value={flatField}
@@ -177,18 +170,20 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               />
             </FormItem>
           )}
-          {mode == Mode.FIELD && flatField && (
+          {mode == Mode.FIELD && (
             <FormItem>
               <FormInputLabel>Type</FormInputLabel>
               <SelectDropdown
                 value={measureType}
-                options={MEASURE_OPTIONS.filter(
-                  ({ value }) =>
-                    (isAggregate(flatField.field)
-                      ? value === "percent"
-                      : VALID_MEASURES[flatField.field.type].includes(value)) ||
-                    value === "custom"
-                )}
+                options={
+                  flatField
+                    ? MEASURE_OPTIONS.filter(({ value }) =>
+                        isAggregate(flatField.field)
+                          ? value === "percent"
+                          : VALID_MEASURES[flatField.field.type].includes(value)
+                      )
+                    : []
+                }
                 onChange={(value) => setMeasureType(value)}
                 width={300}
               />
@@ -208,7 +203,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             <CodeInput
               value={newName}
               setValue={setNewName}
-              placeholder="New_Measure_Name"
+              placeholder="new_measure"
               label="Name"
             />
           )}
