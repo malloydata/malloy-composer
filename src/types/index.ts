@@ -20,7 +20,7 @@ import {
 import { DataStyles } from "@malloydata/render";
 
 export interface AppListing {
-  root: string;
+  path: string;
   id: string;
 }
 
@@ -33,7 +33,7 @@ export type ComposerConfig =
       readme?: string | undefined;
       apps: [
         {
-          root: string;
+          path: string;
           id: undefined;
         }
       ];
@@ -47,7 +47,7 @@ export interface SourceConfig {
 
 export interface ModelConfig {
   id: string;
-  modelPath: string;
+  path: string;
   tables: string[];
   sources?: SourceConfig[];
 }
@@ -62,7 +62,7 @@ export interface AppConfig {
 export interface ModelInfo {
   id: string;
   model: ModelDef;
-  modelPath: string;
+  path: string;
   styles: DataStyles;
   sources: {
     title: string;

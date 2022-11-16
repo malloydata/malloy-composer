@@ -62,7 +62,7 @@ export async function getApps(): Promise<explore.ComposerConfig> {
   return {
     apps: [
       {
-        root,
+        path: root,
         id: undefined,
       },
     ],

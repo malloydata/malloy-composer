@@ -25,7 +25,7 @@ export async function getDatasets(
   _app: explore.AppListing
 ): Promise<explore.AppInfo> {
   const { workingDirectory } = await getConfig();
-  const root = path.join(workingDirectory, _app.root);
+  const root = path.join(workingDirectory, _app.path);
   const rootDirectory = (await fs.lstat(root)).isDirectory()
     ? root
     : path.dirname(root);
@@ -41,11 +41,11 @@ export async function getDatasets(
       new URL("file://" + path.resolve(rootDirectory, app.readme))
     ));
   let modelConfigs = app.models;
-  if (_app.root.endsWith(".malloy")) {
+  if (_app.path.endsWith(".malloy")) {
     modelConfigs = [
       {
         id: path.basename(root),
-        modelPath: path.basename(root),
+        path: path.basename(root),
         tables: [],
       },
     ];
@@ -56,14 +56,14 @@ export async function getDatasets(
       .map((modelPath) => {
         return {
           id: modelPath,
-          modelPath,
+          path: modelPath,
           tables: [],
         };
       });
   }
   const models: explore.ModelInfo[] = await Promise.all(
     modelConfigs.map(async (sample: explore.ModelConfig) => {
-      const modelPath = path.resolve(rootDirectory, sample.modelPath);
+      const modelPath = path.resolve(rootDirectory, sample.path);
       const modelURL = new URL("file://" + modelPath);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
@@ -82,7 +82,7 @@ export async function getDatasets(
       return {
         id: sample.id,
         model: model._modelDef,
-        modelPath: sample.modelPath,
+        path: sample.path,
         readme,
         styles: dataStyles,
         sources,
