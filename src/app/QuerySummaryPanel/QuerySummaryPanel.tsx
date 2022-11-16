@@ -483,8 +483,12 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
           } else if (item.type === "filter") {
             return (
               <FilterActionMenu
+                model={model}
+                modelPath={modelPath}
                 source={source}
                 filterSource={item.filterSource}
+                filterField={item.field}
+                parsedFilter={item.parsed}
                 removeFilter={() =>
                   queryModifiers.removeFilter(stagePath, item.filterIndex)
                 }
