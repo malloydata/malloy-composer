@@ -161,6 +161,10 @@ export class QueryBuilder extends SourceUtils {
     return this.query.name;
   }
 
+  public isEmpty(): boolean {
+    return JSON.stringify(this.query) === JSON.stringify(BLANK_QUERY);
+  }
+
   public clearQuery(): void {
     this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
   }

@@ -36,6 +36,8 @@ import { Apps } from "../Apps";
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
   RUN_QUERY: "command+enter",
+  UNDO: "command+z",
+  REDO: "shift+command+z",
 };
 
 export const Explore: React.FC = () => {
@@ -103,22 +105,6 @@ export const Explore: React.FC = () => {
     setParams(urlParams);
   };
 
-  let section = urlParams.get("page") || "datasets";
-  if (onlyDefaultDataset && section === "datasets") {
-    section = "about";
-  }
-  const setSection = (section: string) => {
-    urlParams.set("page", section);
-    if (section !== "query") {
-      urlParams.delete("query");
-      urlParams.delete("run");
-      urlParams.delete("name");
-      urlParams.delete("styles");
-    }
-    setError(undefined);
-    setParams(urlParams);
-  };
-
   const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
@@ -143,7 +129,31 @@ export const Explore: React.FC = () => {
     error,
     setError,
     dirty,
+    canUndo,
+    undo,
+    redo,
+    resetUndoHistory,
+    isQueryEmpty,
+    canQueryRun,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
+
+  let section = urlParams.get("page") || "datasets";
+  if (onlyDefaultDataset && section === "datasets") {
+    section = "about";
+  }
+  const setSection = (section: string) => {
+    urlParams.set("page", section);
+    if (section !== "query") {
+      urlParams.delete("query");
+      urlParams.delete("run");
+      urlParams.delete("name");
+      urlParams.delete("styles");
+      clearQuery(true);
+      resetUndoHistory();
+      setError(undefined);
+    }
+    setParams(urlParams);
+  };
 
   const setDatasetSource = (
     modelInfo: ModelInfo,
@@ -286,6 +296,8 @@ export const Explore: React.FC = () => {
   const handlers = {
     REMOVE_FIELDS: () => clearQuery(),
     RUN_QUERY: runQueryAction,
+    UNDO: undo,
+    REDO: redo,
   };
 
   const topValues = useTopValues(model, modelPath, source);
@@ -359,6 +371,10 @@ export const Explore: React.FC = () => {
                   result={result}
                   isRunning={isRunning}
                   runQuery={runQueryAction}
+                  canUndo={canUndo}
+                  undo={undo}
+                  isQueryEmpty={isQueryEmpty}
+                  canQueryRun={canQueryRun}
                 />
               )}
               {section === "about" && (

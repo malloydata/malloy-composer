@@ -21,6 +21,7 @@ import {
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { QueryBuilder } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useRunQuery } from "../data/use_run_query";
@@ -47,6 +48,13 @@ interface UseQueryBuilderResult {
   setError: (error: Error | undefined) => void;
   registerNewSource: (source: StructDef) => void;
   dirty: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  undo: () => void;
+  redo: () => void;
+  resetUndoHistory: () => void;
+  isQueryEmpty: boolean;
+  canQueryRun: boolean;
 }
 
 export interface QueryModifiers {
@@ -135,6 +143,9 @@ export function useQueryBuilder(
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
   const [dirty, setDirty] = useState(false);
+  const [, setVersion] = useState(0);
+  const history = useRef({ size: 0, position: 0 });
+  const navigate = useNavigate();
 
   const dataStyles = useRef<DataStyles>({});
 
@@ -178,6 +189,11 @@ export function useQueryBuilder(
     noURLUpdate = false
   ) => {
     modify(queryBuilder.current);
+    // TODO this is hack to get the calling component to always rerender
+    // when the query changes. This used to be done by setting a query
+    // string state variable, but that was annoying to keep track of.
+    // So instead we have a useless `version` which we update.
+    setVersion((x) => x + 1);
     if (queryBuilder.current?.canRun()) {
       const queryString = queryBuilder.current.getQueryStringForModel();
       if (!noURLUpdate) {
@@ -191,11 +207,38 @@ export function useQueryBuilder(
     } else {
       setDirty(true);
     }
+    if (!noURLUpdate) {
+      const newPosition = history.current.position + 1;
+      history.current.position = newPosition;
+      history.current.size = newPosition;
+    }
+  };
+
+  const undo = () => {
+    if (history.current.position > 0) {
+      history.current.position--;
+      navigate(-1);
+    }
+  };
+
+  const redo = () => {
+    if (history.current.position < history.current.size) {
+      history.current.position++;
+      navigate(1);
+    }
+  };
+
+  const resetUndoHistory = () => {
+    history.current.position = 0;
+    history.current.size = 0;
   };
 
   const clearQuery = (noURLUpdate = false) => {
-    modifyQuery((qb) => qb.clearQuery(), noURLUpdate);
-    setDataStyles({}, noURLUpdate);
+    if (queryBuilder.current.isEmpty()) return;
+    modifyQuery((qb) => {
+      qb.clearQuery();
+      dataStyles.current = {};
+    }, noURLUpdate);
     clearResult();
     updateQueryInURL({ run: false, query: undefined, styles: {} });
   };
@@ -382,8 +425,15 @@ export function useQueryBuilder(
     dataStyles: currentDataStyles,
     result,
     error,
+    canUndo: history.current.position > 0,
+    canRedo: history.current.position < history.current.size,
     setError,
     registerNewSource,
+    undo,
+    redo,
+    resetUndoHistory,
+    isQueryEmpty: queryBuilder.current.isEmpty(),
+    canQueryRun: queryBuilder.current.canRun(),
     queryModifiers: {
       setDataStyles,
       setQuery,
