@@ -22,8 +22,8 @@ export async function runQuery(
   queryName: string,
   modelPath: string
 ): Promise<Result> {
-  const { modelsPath } = await getConfig();
-  const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
+  const { workingDirectory } = await getConfig();
+  const modelURL = new URL("file://" + path.join(workingDirectory, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
   const baseModel = await runtime.getModel(modelURL);

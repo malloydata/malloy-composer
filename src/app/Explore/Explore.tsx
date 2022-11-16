@@ -13,7 +13,7 @@
 
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { ModelInfo, RendererName } from "../../types";
+import { AppInfo, ModelInfo, RendererName } from "../../types";
 import { useDatasets } from "../data/use_datasets";
 import { PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
@@ -31,7 +31,7 @@ import { useSearchParams, useParams } from "react-router-dom";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
-import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
+import { Apps } from "../Apps";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -43,7 +43,11 @@ const KEY_MAP = {
 export const Explore: React.FC = () => {
   const config = useApps();
   const { appId } = useParams();
-  const app = config?.apps?.find((app) => app.id === appId);
+  const onlyDefaultDataset =
+    config && config.apps && config.apps[0]?.id === undefined;
+  const app = onlyDefaultDataset
+    ? config.apps[0]
+    : config?.apps?.find((app) => app.id === appId);
   const appInfo = useDatasets(app);
   const [urlParams, _setParams] = useSearchParams();
   const modelInfo = appInfo?.models.find(
@@ -104,10 +108,8 @@ export const Explore: React.FC = () => {
   const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
-      ? new URL(
-          modelInfo?.modelPath,
-          new URL(app.configPath, window.location.href)
-        ).pathname
+      ? new URL(modelInfo?.modelPath, new URL(app.root, window.location.href))
+          .pathname
       : undefined;
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
@@ -135,7 +137,10 @@ export const Explore: React.FC = () => {
     canQueryRun,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
 
-  const section = urlParams.get("page") || "query";
+  let section = urlParams.get("page") || "datasets";
+  if (onlyDefaultDataset && section === "datasets") {
+    section = "about";
+  }
   const setSection = (section: string) => {
     urlParams.set("page", section);
     if (section !== "query") {
@@ -149,7 +154,7 @@ export const Explore: React.FC = () => {
     }
     setParams(urlParams);
   };
-
+  
   const setDatasetSource = (
     modelInfo: ModelInfo,
     sourceName: string,
@@ -221,23 +226,43 @@ export const Explore: React.FC = () => {
     loadDataset();
   }, [urlParams, appInfo]);
 
+  const findModelByMarkdownId = (model: string) => {
+    const urlBase = window.location.href;
+    const targetHref = new URL(model, new URL(app.root, urlBase)).href;
+    const modelInfo = appInfo?.models.find(
+      (modelInfo) =>
+        new URL(modelInfo.modelPath, new URL(app.root, urlBase)).href ===
+        targetHref
+    );
+    if (modelInfo === undefined) {
+      throw new Error(
+        `Bad model '${model}' referenced in Markdown link. Options are: ${appInfo.models
+          .map((modelInfo) => `'${modelInfo.modelPath}'`)
+          .join(", ")}.`
+      );
+    }
+    return modelInfo;
+  };
+
+  const loadSourceLink = async (model: string, source: string) => {
+    try {
+      const modelInfo = findModelByMarkdownId(model);
+      setDatasetSource(modelInfo, source);
+      urlParams.set("page", "query");
+      setParams(urlParams, { replace: true });
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   const loadQueryLink = async (
     model: string,
     query: string,
     name?: string,
     renderer?: string
   ) => {
-    const urlBase = window.location.href;
-    const targetHref = new URL(model, new URL(app.configPath, urlBase)).href;
-    const newModelInfo = appInfo.models.find(
-      (modelInfo) =>
-        new URL(modelInfo.modelPath, new URL(app.configPath, urlBase)).href ===
-        targetHref
-    );
-    if (newModelInfo === undefined) {
-      throw new Error("Bad model");
-    }
     try {
+      const newModelInfo = findModelByMarkdownId(model);
       const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
       urlParams.set("model", newModelInfo.id);
       urlParams.set("source", sourceName);
@@ -257,8 +282,6 @@ export const Explore: React.FC = () => {
         urlParams.delete("renderer");
         urlParams.set("styles", JSON.stringify(styles));
       }
-      runQuery();
-      setParams(urlParams);
     } catch (error) {
       setError(error);
     }
@@ -286,8 +309,8 @@ export const Explore: React.FC = () => {
           <MalloyLogo />
           {appInfo && (
             <span>
-              {appInfo.title}
-              {sourceName && (section === "query" || section === "sources") && (
+              {appInfo.title || "Malloy"}
+              {sourceName && section === "query" && (
                 <span>
                   {" ›"} {snakeToTitle(sourceName)}
                   {(urlParams.get("name") || queryName) && section === "query" && (
@@ -305,12 +328,21 @@ export const Explore: React.FC = () => {
         <Content>
           <Channel>
             <ChannelTop>
+              {!onlyDefaultDataset && (
+                <ChannelButton
+                  onClick={() => setSection("datasets")}
+                  text="Home"
+                  icon="home"
+                  selected={section === "datasets"}
+                  disabled={config === undefined}
+                ></ChannelButton>
+              )}
               <ChannelButton
                 onClick={() => setSection("about")}
-                text="Home"
+                text="Dataset"
                 icon="about"
                 selected={section === "about"}
-                disabled={appInfo?.readme === undefined}
+                disabled={appInfo === undefined}
               ></ChannelButton>
               <ChannelButton
                 onClick={() => setSection("query")}
@@ -318,13 +350,6 @@ export const Explore: React.FC = () => {
                 icon="query"
                 selected={section === "query"}
                 disabled={source === undefined}
-              ></ChannelButton>
-              <ChannelButton
-                onClick={() => setSection("sources")}
-                text="Sources"
-                icon="source"
-                selected={section === "sources"}
-                disabled={appInfo === undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom></ChannelBottom>
@@ -356,42 +381,16 @@ export const Explore: React.FC = () => {
                 <PageContent>
                   {appInfo && (
                     <MarkdownDocument
-                      content={
-                        appInfo.readme ||
-                        "# No Readme\nThis project has no readme"
-                      }
+                      content={appInfo.readme || generateReadme(appInfo)}
                       loadQueryLink={loadQueryLink}
+                      loadSource={loadSourceLink}
                     />
                   )}
                 </PageContent>
               )}
-              {section === "sources" && (
+              {section === "datasets" && config && (
                 <PageContent>
-                  <DatasetsWrapperOuter>
-                    <DatasetsWrapperInner>
-                      <Head1>Sources</Head1>
-                      {appInfo &&
-                        appInfo.models.flatMap((modelInfo) => {
-                          const sources = modelInfo.sources;
-                          return sources.map((entry) => (
-                            <SourceLink
-                              key={modelInfo.id + "/" + entry.sourceName}
-                              onClick={() => {
-                                setDatasetSource(modelInfo, entry.sourceName);
-                              }}
-                            >
-                              <SourceLinkTitleRow>
-                                {entry.title}
-                                <ViewIcon width="80" height="22" />
-                              </SourceLinkTitleRow>
-                              <SourceLinkDescription>
-                                {entry.description}
-                              </SourceLinkDescription>
-                            </SourceLink>
-                          ));
-                        })}
-                    </DatasetsWrapperInner>
-                  </DatasetsWrapperOuter>
+                  <Apps />
                 </PageContent>
               )}
               <ErrorMessage error={error} />
@@ -501,51 +500,26 @@ const BottomChannel = styled.div`
   background-color: ${COLORS.mainBackground};
 `;
 
-const SourceLink = styled.div`
-  border: 1px solid #d0d0d0;
-  border-radius: 10px;
-  padding: 10px 20px;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  color: #595959;
-
-  &:hover {
-    background-color: #f0f6ff;
-    border-color: #4285f4;
+function generateReadme(appInfo: AppInfo) {
+  let readme = "";
+  const title = appInfo.title || "Malloy";
+  readme += `# ${title}\n\n`;
+  readme += appInfo.title
+    ? `Welcome to the Malloy Composer for the ${appInfo.title} dataset!\n\n`
+    : `Welcome to the Malloy Composer. See below for a list of available sources.\n\n`;
+  readme += "## Sources\n\n";
+  for (const modelInfo of appInfo.models) {
+    for (const source of modelInfo.sources) {
+      readme += `
+<!-- malloy-source  
+title="${snakeToTitle(source.sourceName)}"
+description="${source.description}" 
+source="${source.sourceName}"
+model="${modelInfo.modelPath}"
+-->
+      `;
+    }
   }
-`;
 
-const SourceLinkTitleRow = styled.div`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const SourceLinkDescription = styled.div`
-  color: #929292;
-  font-size: 14px;
-`;
-
-const DatasetsWrapperOuter = styled.div`
-  padding: 10px 30px 30px 30px;
-  width: 100%;
-  font-family: Google Sans;
-  overflow-y: auto;
-`;
-
-const DatasetsWrapperInner = styled.div`
-  max-width: 900px;
-`;
-
-const Head1 = styled.h1`
-  font-size: 21px;
-  font-weight: 500;
-  margin-block-end: 8px;
-  margin-block-start: 16px;
-`;
+  return readme;
+}

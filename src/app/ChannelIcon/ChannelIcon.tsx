@@ -19,6 +19,7 @@ import { ReactComponent as ChannelIconQuery } from "../assets/img/channel_icons/
 import { ReactComponent as ChannelIconSamples } from "../assets/img/channel_icons/channel_samples.svg";
 import { ReactComponent as ChannelIconSettings } from "../assets/img/channel_icons/channel_settings.svg";
 import { ReactComponent as ChannelIconSource } from "../assets/img/channel_icons/channel_source.svg";
+import { ReactComponent as ChannelIconHome } from "../assets/img/channel_icons/channel_home.svg";
 
 export type ChannelIconName =
   | "about"
@@ -28,7 +29,8 @@ export type ChannelIconName =
   | "query"
   | "samples"
   | "settings"
-  | "source";
+  | "source"
+  | "home";
 
 export const ChannelIcon: React.FC<{ name: ChannelIconName }> = ({ name }) => {
   const sizeProps = { width: "18px", height: "18px" };
@@ -49,5 +51,7 @@ export const ChannelIcon: React.FC<{ name: ChannelIconName }> = ({ name }) => {
       return <ChannelIconSettings {...sizeProps} />;
     case "source":
       return <ChannelIconSource {...sizeProps} />;
+    case "home":
+      return <ChannelIconHome {...sizeProps} />;
   }
 };

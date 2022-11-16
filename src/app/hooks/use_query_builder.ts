@@ -143,6 +143,7 @@ export function useQueryBuilder(
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
   const [error, setError] = useState<Error | undefined>();
   const [dirty, setDirty] = useState(false);
+  const [, setVersion] = useState(0);
   const history = useRef({ size: 0, position: 0 });
   const navigate = useNavigate();
 
@@ -188,6 +189,11 @@ export function useQueryBuilder(
     noURLUpdate = false
   ) => {
     modify(queryBuilder.current);
+    // TODO this is hack to get the calling component to always rerender
+    // when the query changes. This used to be done by setting a query
+    // string state variable, but that was annoying to keep track of.
+    // So instead we have a useless `version` which we update.
+    setVersion((x) => x + 1);
     if (queryBuilder.current?.canRun()) {
       const queryString = queryBuilder.current.getQueryStringForModel();
       if (!noURLUpdate) {

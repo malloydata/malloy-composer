@@ -17,7 +17,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { RouterProvider, createHashRouter } from "react-router-dom";
-import { Explore, Apps } from "./app";
+import { Explore } from "./app";
 
 const client = new QueryClient();
 
@@ -28,7 +28,7 @@ const router = createHashRouter([
   },
   {
     path: "*",
-    element: <Apps />,
+    element: <Explore />,
   },
 ]);
 
