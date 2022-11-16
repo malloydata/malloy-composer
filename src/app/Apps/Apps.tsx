@@ -33,12 +33,12 @@ function generateReadme(config: ComposerConfig): string {
   readme += "Select one of the following datasets to get started!\n\n";
   for (const dataset of config.apps) {
     const id = dataset.id || "default";
-    const title = snakeToTitle(dataset.root);
+    const title = snakeToTitle(dataset.path);
     readme += `
 <!-- malloy-app 
   app="${id}" 
   name="${title}" 
-  description="Generated from ${snakeToTitle(dataset.root)}" 
+  description="Generated from ${snakeToTitle(dataset.path)}" 
 -->`;
   }
   return readme;

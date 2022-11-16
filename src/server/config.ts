@@ -23,7 +23,7 @@ interface ComposerConfig {
 }
 
 export async function getConfig(): Promise<ComposerConfig> {
-  const root = path.resolve(process.cwd(), process.env.ROOT || "");
+  const root = path.resolve(process.cwd(), process.env.ROOT || ".");
   const stat = await fs.lstat(root);
   if (stat.isFile()) {
     return {

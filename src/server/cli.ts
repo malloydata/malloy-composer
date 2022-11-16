@@ -8,8 +8,8 @@ program
   .name("malloy-composer-cli")
   .description("CLI tool for Malloy Composer server")
   .version("0.0.1")
-  .option(
-    "-m, --root <string>",
+  .argument(
+    "[path]",
     "The 'root' for this Malloy instance (a datasets JSON file, a models JSON file, a model Malloy file, or a directory)",
     "."
   )
@@ -23,7 +23,7 @@ const composerProcess = exec(`node ${path.join(__dirname, "server.js")}`, {
     ...process.env,
     PORT: `${program.opts().port}`,
     HOST: `${program.opts().host}`,
-    ROOT: `${program.opts().root}`,
+    ROOT: `${program.args[0]}`,
   },
 });
 

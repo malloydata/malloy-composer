@@ -75,7 +75,7 @@ export async function apps(): Promise<explore.ComposerConfig> {
     apps: [
       {
         id: "default",
-        root: "composer.json",
+        path: "composer.json",
       },
     ],
   };
@@ -100,7 +100,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
           );
         })
       );
-      const modelURL = new URL(sample.modelPath, samplesURL);
+      const modelURL = new URL(sample.path, samplesURL);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
       const model = await runtime.getModel(modelURL);
@@ -117,7 +117,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       return {
         id: sample.id,
         model: model._modelDef,
-        modelPath: sample.modelPath,
+        path: sample.path,
         readme,
         styles: dataStyles,
         sources,

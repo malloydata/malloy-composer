@@ -108,7 +108,7 @@ export const Explore: React.FC = () => {
   const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
-      ? new URL(modelInfo?.modelPath, new URL(app.root, window.location.href))
+      ? new URL(modelInfo?.path, new URL(app.path, window.location.href))
           .pathname
       : undefined;
   const source =
@@ -228,16 +228,15 @@ export const Explore: React.FC = () => {
 
   const findModelByMarkdownId = (model: string) => {
     const urlBase = window.location.href;
-    const targetHref = new URL(model, new URL(app.root, urlBase)).href;
+    const targetHref = new URL(model, new URL(app.path, urlBase)).href;
     const modelInfo = appInfo?.models.find(
       (modelInfo) =>
-        new URL(modelInfo.modelPath, new URL(app.root, urlBase)).href ===
-        targetHref
+        new URL(modelInfo.path, new URL(app.path, urlBase)).href === targetHref
     );
     if (modelInfo === undefined) {
       throw new Error(
         `Bad model '${model}' referenced in Markdown link. Options are: ${appInfo.models
-          .map((modelInfo) => `'${modelInfo.modelPath}'`)
+          .map((modelInfo) => `'${modelInfo.path}'`)
           .join(", ")}.`
       );
     }
@@ -517,7 +516,7 @@ function generateReadme(appInfo: AppInfo) {
 title="${snakeToTitle(source.sourceName)}"
 description="${source.description}" 
 source="${source.sourceName}"
-model="${modelInfo.modelPath}"
+model="${modelInfo.path}"
 -->
       `;
     }
