@@ -282,6 +282,8 @@ export const Explore: React.FC = () => {
         urlParams.delete("renderer");
         urlParams.set("styles", JSON.stringify(styles));
       }
+      runQuery();
+      setParams(urlParams);
     } catch (error) {
       setError(error);
     }
