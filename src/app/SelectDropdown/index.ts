@@ -11,4 +11,4 @@
  * GNU General Public License for more details.
  */
 
-export { SelectDropdown } from "./SelectDropdown";
+export { SelectDropdown, SelectList } from "./SelectDropdown";

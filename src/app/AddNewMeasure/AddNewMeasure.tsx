@@ -24,7 +24,7 @@ import {
   FormInputLabel,
   FormItem,
 } from "../CommonElements";
-import { SelectDropdown } from "../SelectDropdown";
+import { SelectDropdown, SelectList } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,
@@ -85,6 +85,13 @@ const MEASURE_OPTIONS: {
 
 type FlatField = { field: FieldDef; path: string };
 
+enum Mode {
+  UNDECIDED,
+  FIELD,
+  COUNT,
+  CUSTOM,
+}
+
 export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   source,
   addMeasure,
@@ -92,24 +99,25 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialCode,
   initialName,
 }) => {
+  // TODO(willscullin) Need to parse initialCode to determine if
+  // non-custom display can be used.
+  const [mode, setMode] = useState(initialName ? Mode.CUSTOM : Mode.UNDECIDED);
   const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
-  const [measureType, setMeasureType] = useState<MeasureType>(
-    // TODO(willscullin) Need to parse initialCode to determine if
-    // non-custom display can be used.
-    initialName ? "custom" : undefined
-  );
+  const [measureType, setMeasureType] = useState<MeasureType>();
   const [flatField, setFlatField] = useState<FlatField>();
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    if (flatField && measureType) {
+    if (mode === Mode.FIELD && flatField && measureType) {
       const newMeasure = generateMeasure(measureType, flatField.path);
       if (newMeasure) {
         setMeasure(newMeasure);
       }
+    } else if (mode === Mode.COUNT) {
+      setMeasure("count()");
     }
-  }, [measureType, flatField]);
+  }, [mode, measureType, flatField]);
 
   const flattened = useMemo(
     () =>
@@ -137,12 +145,27 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   );
 
   const needsName = initialCode === undefined;
+
+  if (mode === Mode.UNDECIDED) {
+    return (
+      <SelectList
+        value={mode}
+        options={[
+          { label: "From a field", value: Mode.FIELD },
+          { label: "Count", value: Mode.COUNT },
+          { label: "Custom", value: Mode.CUSTOM },
+        ]}
+        onChange={(value) => setMode(value)}
+      />
+    );
+  }
+
   return (
     <ContextMenuMain>
       <ContextMenuTitle>{needsName ? "New" : "Edit"} measure</ContextMenuTitle>
       <form>
         <FormFieldList>
-          {!initialName && (
+          {mode == Mode.FIELD && (
             <FormItem>
               <FormInputLabel>Field to measure</FormInputLabel>
               <SelectDropdown
@@ -154,7 +177,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               />
             </FormItem>
           )}
-          {flatField && (
+          {mode == Mode.FIELD && flatField && (
             <FormItem>
               <FormInputLabel>Type</FormInputLabel>
               <SelectDropdown
@@ -171,7 +194,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               />
             </FormItem>
           )}
-          {measureType === "custom" && (
+          {mode === Mode.CUSTOM && (
             <CodeTextArea
               autoFocus={!!initialName}
               value={measure}
@@ -202,11 +225,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               if (!newName) {
                 return setError(new Error("Enter a name"));
               }
-              if (measureType === "custom") {
+              if (mode === Mode.CUSTOM) {
                 if (!measure) {
                   return setError(new Error("Enter a definition"));
                 }
-              } else {
+              } else if (mode === Mode.FIELD) {
                 if (!flatField) {
                   return setError(new Error("Select a field"));
                 }
