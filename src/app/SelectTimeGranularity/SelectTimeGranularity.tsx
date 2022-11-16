@@ -73,7 +73,7 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
           />
         </FormFieldList>
         <RightButtonRow>
-          <Button color="secondary" onClick={onComplete}>
+          <Button type="button" color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button
