@@ -41,7 +41,7 @@ export const AddNewNest: React.FC<AddNewNestProps> = ({
           autoFocus={true}
         />
         <RightButtonRow>
-          <Button color="secondary" onClick={() => onComplete()}>
+          <Button type="button" color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button

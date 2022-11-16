@@ -192,7 +192,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
-          <Button color="secondary" onClick={() => onComplete()}>
+          <Button type="button" color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button

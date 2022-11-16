@@ -40,7 +40,7 @@ export const RenameField: React.FC<RenameFieldProps> = ({
           placeholder="new_name"
           autoFocus={true}
         />
-        <Button color="secondary" onClick={() => onComplete()}>
+        <Button type="button" color="secondary" onClick={onComplete}>
           Cancel
         </Button>
         <Button
