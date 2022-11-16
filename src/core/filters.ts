@@ -556,38 +556,6 @@ const TIME_BET_FILTER = new RegExp(
   `^(${FIELD})\\.(${TIME_UNIT})\\s*:\\s*(${DATE})\\s*to\\s*(${DATE})$`
 );
 
-// case "is_after": {
-//   return `${field}.${filter.granularity} > ${timeToString(
-//     filter.date,
-//     filter.granularity
-//   )}`;
-// }
-// case "is_before": {
-//   return `${field}.${filter.granularity} < ${timeToString(
-//     filter.date,
-//     filter.granularity
-//   )}`;
-// }
-// case "is_between": {
-//   return `${field}.${filter.granularity}: ${timeToString(
-//     filter.start,
-//     filter.granularity
-//   )} to ${timeToString(filter.end, filter.granularity)}`;
-// }
-
-// case "is_in_the_past":
-//   return `${field}: now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
-// case "is_last":
-//   return `${field}.${filter.period} = now.${filter.period} - 1 ${filter.period}`;
-// case "is_this":
-//   return `${field}.${filter.period} = now.${filter.period}`;
-// case "is_on": {
-//   return `${field}.${filter.granularity} = ${timeToString(
-//     filter.date,
-//     filter.granularity
-//   )}`;
-// }
-
 function extractField(fieldSyntax: string) {
   if (fieldSyntax.startsWith("`") && fieldSyntax.endsWith("`")) {
     return fieldSyntax.substring(1, fieldSyntax.length - 1);
