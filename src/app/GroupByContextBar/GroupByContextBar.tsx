@@ -12,13 +12,16 @@
  */
 
 import {
+  FieldDef,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
 } from "@malloydata/malloy";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ActionIcon } from "../ActionIcon";
 import { AddNewDimension } from "../AddNewDimension";
+import { SelectTimeGranularity } from "../SelectTimeGranularity";
+import { compileGroupBy } from "../../core/compile";
 import {
   ContextMenuContent,
   ContextMenuOuter,
@@ -39,7 +42,7 @@ import {
 
 interface GroupByContextBarProps {
   source: StructDef;
-  selectField: (fieldPath: string) => void;
+  toggleField: (fieldPath: string) => void;
   addNewDimension: (dimension: QueryFieldDef) => void;
   onComplete: () => void;
   topValues: SearchValueMapResult[] | undefined;
@@ -47,16 +50,34 @@ interface GroupByContextBarProps {
 
 export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
   source,
-  selectField,
+  toggleField,
   addNewDimension,
   onComplete,
   topValues,
 }) => {
   const [isAddingNewField, setIsAddingNewField] = useState(false);
+  const [isSelectingGranularity, setSelectingGranularity] = useState<{
+    field: FieldDef;
+    path: string;
+  }>();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const maybeSelectField = useCallback(
+    (path, field) => {
+      if (field.type === "date") {
+        setSelectingGranularity({ field, path });
+      } else if (field.type === "timestamp") {
+        setSelectingGranularity({ field, path });
+      } else {
+        toggleField(path);
+      }
+    },
+    [toggleField]
+  );
+
   return (
     <ContextMenuOuter>
-      {!isAddingNewField && (
+      {!isAddingNewField && !isSelectingGranularity && (
         <>
           <ContextMenuSearchHeader>
             <SearchInput
@@ -84,7 +105,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                       !field.aggregate
                     }
                     showNested={true}
-                    selectField={selectField}
+                    selectField={maybeSelectField}
                     topValues={topValues}
                   />
                 </>
@@ -101,7 +122,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                         terms: [...termsForField(field, path), "group_by"],
                         detail: pathParent(path),
                         key: keyFor(path),
-                        select: () => selectField(path),
+                        select: () => maybeSelectField(path, field),
                       }))}
                   />
                 </>
@@ -114,6 +135,18 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
         <AddNewDimension
           addDimension={addNewDimension}
           source={source}
+          onComplete={onComplete}
+        />
+      )}
+      {isSelectingGranularity && (
+        <SelectTimeGranularity
+          field={isSelectingGranularity.field}
+          path={isSelectingGranularity.path}
+          source={source}
+          addGroupBy={async (name, expression) => {
+            const field = await compileGroupBy(source, name, expression);
+            addNewDimension(field);
+          }}
           onComplete={onComplete}
         />
       )}

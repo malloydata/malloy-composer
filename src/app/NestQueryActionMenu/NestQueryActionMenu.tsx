@@ -111,7 +111,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({ onComplete }) => (
             <GroupByContextBar
               source={source}
-              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
+              toggleField={(fieldPath) => toggleField(stagePath, fieldPath)}
               addNewDimension={(def) => addNewDimension(stagePath, def)}
               onComplete={onComplete}
               topValues={topValues}

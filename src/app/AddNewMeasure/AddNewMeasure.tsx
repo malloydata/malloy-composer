@@ -24,7 +24,7 @@ import {
   FormInputLabel,
   FormItem,
 } from "../CommonElements";
-import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
+import { SelectDropdown } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,
@@ -192,7 +192,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
-          <Button color="secondary" onClick={() => onComplete()}>
+          <Button color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button

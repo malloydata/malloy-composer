@@ -68,7 +68,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
         </FormFieldList>
         <FormError error={error} />
         <RightButtonRow>
-          <Button outline={false} onClick={() => onComplete()}>
+          <Button color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button

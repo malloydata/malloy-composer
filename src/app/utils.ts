@@ -97,7 +97,7 @@ export function typeOfField(fieldDef: FieldDef): FieldType {
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
-): Omit<FieldType, "struct" | "turtle"> {
+): "string" | "number" | "boolean" | "date" | "timestamp" {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"
