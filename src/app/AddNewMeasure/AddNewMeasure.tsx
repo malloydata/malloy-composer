@@ -24,7 +24,7 @@ import {
   FormInputLabel,
   FormItem,
 } from "../CommonElements";
-import { SelectDropdown } from "../SelectDropdown/SelectDropdown";
+import { SelectDropdown } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
   generateMeasure,

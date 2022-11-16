@@ -78,7 +78,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
               addNewDimension={(dim) =>
                 queryModifiers.addNewDimension(stagePath, dim)
               }
-              selectField={(fieldPath) =>
+              toggleField={(fieldPath) =>
                 queryModifiers.toggleField(stagePath, fieldPath)
               }
               onComplete={onComplete}

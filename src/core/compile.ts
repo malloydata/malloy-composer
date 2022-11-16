@@ -31,7 +31,9 @@ import {
   URLReader,
   NamedQuery,
   PreparedQuery,
+  QueryFieldDef,
 } from "@malloydata/malloy";
+import { quoteIdentifier } from "../app/utils";
 
 class DummyFiles implements URLReader {
   async readURL(): Promise<string> {
@@ -140,6 +142,30 @@ export async function compileFilter(
     throw new Error("Expected a filter list");
   }
   return filterList[0];
+}
+
+export async function compileGroupBy(
+  source: StructDef,
+  name: string,
+  expression: string
+): Promise<QueryFieldDef> {
+  const groupBy = expression
+    ? `${quoteIdentifier(name)} is ${expression}`
+    : quoteIdentifier(name);
+  const malloy = `query: the_query is ${quoteIdentifier(
+    source.as || source.name
+  )} -> { group_by: ${groupBy} }`;
+  const modelDef = modelDefForSource(source);
+  const model = await compileModel(modelDef, malloy);
+  const theQuery = model.contents["the_query"];
+  if (theQuery.type !== "query") {
+    throw new Error("Expected the_query to be a query");
+  }
+  const fieldList = theQuery.pipeline[0].fields;
+  if (fieldList === undefined) {
+    throw new Error("Expected a field list");
+  }
+  return fieldList[0];
 }
 
 export async function compileDimension(
