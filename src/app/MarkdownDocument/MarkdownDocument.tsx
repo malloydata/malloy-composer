@@ -18,7 +18,8 @@ import { COLORS } from "../colors";
 import { DOMElement } from "../DOMElement";
 import { highlightPre } from "../utils";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
-import { ReactComponent as ViewIcon } from "../assets/img/source_view.svg";
+import { ReactComponent as QueryIcon } from "../assets/img/source_query.svg";
+import { ReactComponent as ViewIcon } from "../assets/img/dataset_view.svg";
 
 interface MarkdownDocumentProps {
   content: string;
@@ -29,12 +30,14 @@ interface MarkdownDocumentProps {
     renderer?: string
   ) => void;
   loadApp?: (appId: string) => void;
+  loadSource?: (model: string, source: string) => void;
 }
 
 export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
   content,
   loadQueryLink,
   loadApp,
+  loadSource,
 }) => {
   const markdown = parseMarkdown(content);
 
@@ -43,6 +46,7 @@ export const MarkdownDocument: React.FC<MarkdownDocumentProps> = ({
       node={markdown}
       loadQueryLink={loadQueryLink}
       loadApp={loadApp}
+      loadSource={loadSource}
     />
   );
 };
@@ -56,12 +60,14 @@ export const MarkdownNode: React.FC<{
     renderer?: string
   ) => void;
   loadApp?: (appId: string) => void;
-}> = ({ node, loadQueryLink, loadApp }) => {
+  loadSource?: (model: string, source: string) => void;
+}> = ({ node, loadQueryLink, loadApp, loadSource }) => {
   const children = (node: { children: Markdown[] }) => (
     <MarkdownNodes
       nodes={node.children}
       loadQueryLink={loadQueryLink}
       loadApp={loadApp}
+      loadSource={loadSource}
     />
   );
 
@@ -145,14 +151,13 @@ export const MarkdownNode: React.FC<{
             loadQueryLink(node.model, node.query, node.name, node.renderer);
           }}
         >
-          <QueryLinkTitleRow>
-            {node.name}
-            <RunIcon width="80" height="22" />
-          </QueryLinkTitleRow>
-          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.name}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <RunIcon width="80" height="22" />
         </QueryLink>
       );
-
     case "malloyAppLink":
       return (
         <QueryLink
@@ -160,11 +165,25 @@ export const MarkdownNode: React.FC<{
             loadApp(node.appId);
           }}
         >
-          <QueryLinkTitleRow>
-            {node.name}
-            <ViewIcon width="80" height="22" />
-          </QueryLinkTitleRow>
-          <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.name}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <ViewIcon width="80" height="22" />
+        </QueryLink>
+      );
+    case "malloySourceLink":
+      return (
+        <QueryLink
+          onClick={() => {
+            loadSource(node.model, node.source);
+          }}
+        >
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.title}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <QueryIcon width="80" height="22" />
         </QueryLink>
       );
   }
@@ -178,7 +197,8 @@ export const MarkdownNodes: React.FC<{
     queryName: string
   ) => void;
   loadApp?: (appId: string) => void;
-}> = ({ nodes, loadQueryLink, loadApp }) => {
+  loadSource?: (model: string, source: string) => void;
+}> = ({ nodes, loadQueryLink, loadApp, loadSource }) => {
   return (
     <>
       {nodes.map((childNode, index) => (
@@ -187,6 +207,7 @@ export const MarkdownNodes: React.FC<{
           key={index}
           loadQueryLink={loadQueryLink}
           loadApp={loadApp}
+          loadSource={loadSource}
         />
       ))}
     </>
@@ -321,15 +342,23 @@ const MarkdownPreWrapper = styled.div`
   }
 `;
 
-const QueryLink = styled.div`
-  border: 1px solid #d0d0d0;
-  border-radius: 10px;
-  padding: 10px 20px;
-  background-color: white;
+const QueryLinkInfo = styled.div`
+  width: 100%;
+  gap: 5px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
+`;
+
+const QueryLink = styled.div`
+  border: 1px solid #d7d7d7;
+  border-radius: 7px;
+  padding: 15px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  margin-bottom: 15px;
+  align-items: center;
   cursor: pointer;
   font-size: 15px;
   color: #595959;
@@ -345,6 +374,7 @@ const QueryLinkTitleRow = styled.div`
   gap: 10px;
   align-items: center;
   justify-content: space-between;
+  font-weight: bold;
 `;
 
 const QueryLinkDescription = styled.div`

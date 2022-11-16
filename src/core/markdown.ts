@@ -47,7 +47,8 @@ export type Markdown =
   | Delete
   | ThematicBreak
   | MalloyQueryLink
-  | MalloyAppLink;
+  | MalloyAppLink
+  | MalloySourceLink;
 
 export interface Root {
   type: "root";
@@ -162,38 +163,58 @@ export interface ThematicBreak {
 
 export interface MalloyQueryLink {
   type: "malloyQueryLink";
-  model: string;
-  query: string;
-  name: string;
-  description: string;
-  renderer: string;
+  model: string | undefined;
+  query: string | undefined;
+  name: string | undefined;
+  description: string | undefined;
+  renderer: string | undefined;
 }
 
 export interface MalloyAppLink {
   type: "malloyAppLink";
-  appId: string;
-  name: string;
-  description: string;
+  appId: string | undefined;
+  name: string | undefined;
+  description: string | undefined;
+}
+
+export interface MalloySourceLink {
+  type: "malloySourceLink";
+  model: string | undefined;
+  source: string | undefined;
+  title: string | undefined;
+  description: string | undefined;
+}
+
+function getMarkerParameter(marker: Marker, param: string): string | undefined {
+  return marker.parameters?.[param]?.toString();
 }
 
 const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
   let linkMarker: Marker | undefined = undefined;
   let savedModel = undefined;
   function transformer(tree: Node) {
-    function doThing(node: Node): Markdown {
+    function transformNode(node: Node): Markdown {
       const markdownNode = node as Markdown;
       if (markdownNode.type === "html") {
         const marker = commentMarker(markdownNode);
         if (marker) {
           if (marker.name === "malloy-set-model") {
-            savedModel = marker.parameters?.model?.toString();
+            savedModel = getMarkerParameter(marker, "model");
           } else if (marker.name === "malloy-query") {
             linkMarker = marker;
+          } else if (marker.name === "malloy-source") {
+            return {
+              source: getMarkerParameter(marker, "source"),
+              description: getMarkerParameter(marker, "description"),
+              model: getMarkerParameter(marker, "model"),
+              title: getMarkerParameter(marker, "title"),
+              type: "malloySourceLink",
+            };
           } else if (marker.name === "malloy-app") {
             return {
-              name: marker.parameters?.name?.toString() || "",
-              description: marker.parameters?.description?.toString() || "",
-              appId: marker.parameters?.app?.toString() || "",
+              name: getMarkerParameter(marker, "name"),
+              description: getMarkerParameter(marker, "description"),
+              appId: getMarkerParameter(marker, "app"),
               type: "malloyAppLink",
             };
           }
@@ -203,7 +224,7 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
         return {
           ...markdownNode,
           children: markdownNode.children.map((child) =>
-            doThing(child as Node)
+            transformNode(child as Node)
           ),
         };
       } else if (markdownNode.type === "code") {
@@ -211,11 +232,11 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
         if (marker) {
           linkMarker = undefined;
           return {
-            model: marker.parameters?.model?.toString() || savedModel || "",
+            model: getMarkerParameter(marker, "model") || savedModel,
             query: markdownNode.value,
-            name: marker.parameters?.name?.toString() || "",
-            description: marker.parameters?.description?.toString() || "",
-            renderer: marker.parameters?.renderer?.toString() || "",
+            name: getMarkerParameter(marker, "name"),
+            description: getMarkerParameter(marker, "description"),
+            renderer: getMarkerParameter(marker, "renderer"),
             type: "malloyQueryLink",
           };
         } else {
@@ -225,7 +246,7 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
         return markdownNode;
       }
     }
-    return doThing(tree);
+    return transformNode(tree);
   }
   return transformer as Transformer<Node, Root>;
 };

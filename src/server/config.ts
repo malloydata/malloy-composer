@@ -11,34 +11,29 @@
  * GNU General Public License for more details.
  */
 
-import * as fs from "fs";
 import * as path from "path";
-import * as os from "os";
+import { promises as fs } from "fs";
 
 interface ComposerConfig {
-  modelsPath: string;
+  // The root of all paths used by the server
+  workingDirectory: string;
+  // The "root" of the Composer instance. Can be a (datasets) .json,
+  // a (models) .json, a .malloy, or a directory
+  root: string;
 }
 
 export async function getConfig(): Promise<ComposerConfig> {
-  let config = {
-    modelsPath: path.resolve(process.cwd(), process.env.MODELS || ""),
-  };
-  const configFilePath = path.resolve("./composer_config.json");
-  if (fs.existsSync(configFilePath)) {
-    try {
-      const file = fs.readFileSync(configFilePath, "utf8");
-      const fileConfig = JSON.parse(file);
-      config = { ...config, ...fileConfig };
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    }
+  const root = path.resolve(process.cwd(), process.env.ROOT || "");
+  const stat = await fs.lstat(root);
+  if (stat.isFile()) {
+    return {
+      workingDirectory: path.dirname(root),
+      root: path.basename(root),
+    };
+  } else {
+    return {
+      workingDirectory: root,
+      root: ".",
+    };
   }
-
-  if (config.modelsPath.startsWith("~")) {
-    config.modelsPath = config.modelsPath.replace(/^~/, os.homedir());
-  }
-
-  config.modelsPath = path.resolve(config.modelsPath);
-  return config;
 }

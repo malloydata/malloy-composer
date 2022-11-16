@@ -17,16 +17,16 @@ import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
 export function useDatasets(
-  app: explore.AppListing | undefined
+  app: { root: string; id?: string | undefined } | undefined
 ): explore.AppInfo | undefined {
   const { data: directory } = useQuery(
-    ["datasets", app?.id || "empty"],
+    ["datasets", app ? app.id ?? "default" : "empty"],
     async () => {
       if (app === undefined) {
         return undefined;
       }
       if (isDuckDBWASM()) {
-        return duckDBWASM.datasets(app);
+        return duckDBWASM.datasets(app.root);
       }
       const raw = await (
         await fetch("api/datasets", {

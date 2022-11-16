@@ -23,8 +23,8 @@ export async function searchIndex(
   searchTerm: string,
   fieldPath?: string
 ): Promise<SearchIndexResult[] | undefined> {
-  const { modelsPath } = await getConfig();
-  const modelURL = new URL("file://" + path.join(modelsPath, modelPath));
+  const { workingDirectory } = await getConfig();
+  const modelURL = new URL("file://" + path.join(workingDirectory, modelPath));
   const sourceName = source.as || source.name;
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);

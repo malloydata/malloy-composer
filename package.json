@@ -21,7 +21,7 @@
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./node_modules",
     "server-build": "ts-node scripts/package-server --skip-package",
-    "server-start": "npm run server-build && node ./dist/cli.js --models ./malloy-samples",
+    "server-start": "npm run server-build && node ./dist/cli.js --datasets ./malloy-samples",
     "server-package": "ts-node scripts/package-server",
     "build-duckdb-wasm": "ts-node scripts/build-duckdb-wasm",
     "start-duckdb-wasm": "NODE_ENV=development npm run build-duckdb-wasm 9999",
