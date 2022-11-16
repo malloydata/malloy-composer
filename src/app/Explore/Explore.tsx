@@ -154,7 +154,7 @@ export const Explore: React.FC = () => {
     }
     setParams(urlParams);
   };
-  
+
   const setDatasetSource = (
     modelInfo: ModelInfo,
     sourceName: string,
