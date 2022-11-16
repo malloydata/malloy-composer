@@ -33,6 +33,9 @@ import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 
+const MALLOY_DOCS =
+  "https://looker-open-source.github.io/malloy/documentation/";
+
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
   RUN_QUERY: "command+enter",
@@ -353,7 +356,15 @@ export const Explore: React.FC = () => {
                 disabled={source === undefined}
               ></ChannelButton>
             </ChannelTop>
-            <ChannelBottom></ChannelBottom>
+            <ChannelBottom>
+              <ChannelButton
+                onClick={() => window.open(MALLOY_DOCS, "_blank")}
+                text="Malloy Docs"
+                icon="help"
+                selected={false}
+                disabled={false}
+              />
+            </ChannelBottom>
           </Channel>
           <Page>
             <PageContainer>
@@ -512,9 +523,9 @@ function generateReadme(appInfo: AppInfo) {
   for (const modelInfo of appInfo.models) {
     for (const source of modelInfo.sources) {
       readme += `
-<!-- malloy-source  
+<!-- malloy-source
 title="${snakeToTitle(source.sourceName)}"
-description="${source.description}" 
+description="${source.description}"
 source="${source.sourceName}"
 model="${modelInfo.path}"
 -->
