@@ -12,6 +12,7 @@
  */
 
 import { FieldDef } from "@malloydata/malloy";
+import { quoteIdentifier } from "../app/utils";
 
 /**
  * Pre-defined types for new measures.
@@ -26,13 +27,6 @@ export type MeasureType =
   | "percent"
   | "custom";
 
-function quoteField(fieldName: string) {
-  return fieldName
-    .split(".")
-    .map((part) => `\`${part}\``)
-    .join(".");
-}
-
 /**
  * Generates a new measure string based on a pre-defined type, and
  * a field name, if needed.
@@ -45,17 +39,18 @@ export function generateMeasure(
   measureType: MeasureType,
   fieldName: string
 ): string | undefined {
+  const quotedFieldName = quoteIdentifier(fieldName);
   switch (measureType) {
     case "count_distinct":
-      return `count(distinct ${quoteField(fieldName)})`;
+      return `count(distinct ${quotedFieldName})`;
     case "avg":
     case "sum":
-      return `${quoteField(fieldName)}.${measureType}()`;
+      return `${quotedFieldName}.${measureType}()`;
     case "min":
     case "max":
-      return `${measureType}(${quoteField(fieldName)})`;
+      return `${measureType}(${quotedFieldName})`;
     case "percent":
-      return `100 * ${quoteField(fieldName)} / all(${quoteField(fieldName)})`;
+      return `100 * ${quotedFieldName} / all(${quotedFieldName})`;
   }
   return;
 }

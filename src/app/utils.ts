@@ -97,7 +97,7 @@ export function typeOfField(fieldDef: FieldDef): FieldType {
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
-): Omit<FieldType, "struct" | "turtle"> {
+): "string" | "number" | "boolean" | "date" | "timestamp" {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"
@@ -166,6 +166,15 @@ export function flatFields(
       return [{ field, path: [...path, field.as || field.name].join(".") }];
     }
   });
+}
+
+export function quoteIdentifier(path: string): string {
+  //TODO(whscullin) combine the logic from maybeQuoteIdentifier() and
+  // a list of keywords to do this intelligently.
+  return path
+    .split(".")
+    .map((part) => `\`${part}\``)
+    .join(".");
 }
 
 export function pathSuffixes(path: string): string[] {

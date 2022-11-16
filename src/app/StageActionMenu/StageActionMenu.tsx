@@ -102,7 +102,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({ onComplete }) => (
             <GroupByContextBar
               source={source}
-              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
+              toggleField={(fieldPath) => toggleField(stagePath, fieldPath)}
               addNewDimension={(def) => addNewDimension(stagePath, def)}
               onComplete={onComplete}
               topValues={topValues}
