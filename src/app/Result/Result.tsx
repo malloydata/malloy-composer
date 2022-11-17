@@ -247,7 +247,11 @@ export const Result: React.FC<ResultProps> = ({
               <ActionIcon
                 action="copy"
                 onClick={() => {
-                  copyToClipboard(malloy[malloyType]);
+                  let code = malloy[malloyType];
+                  if (malloyType === "source") {
+                    code = indentCode(code);
+                  }
+                  copyToClipboard(code);
                   setCopiedMalloy(true);
                 }}
                 color={copiedMalloy ? "other" : "dimension"}
