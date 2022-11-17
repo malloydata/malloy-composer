@@ -12,6 +12,7 @@
  */
 
 import { useState } from "react";
+import styled from "styled-components";
 import {
   Button,
   ContextMenuMain,
@@ -67,8 +68,46 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
               { label: "Hour", value: "hour" },
               { label: "Minute", value: "minute" },
               { label: "Seconds", value: "seconds" },
-              { label: "Field Values", value: "", divider: true },
+              {
+                label: <Label detail="(1-366)">Day of year</Label>,
+                value: "extract_day_of_year",
+                divider: true,
+              },
+              {
+                label: <Label detail="(1-31)">Day of month</Label>,
+                value: "extract_day",
+              },
+              {
+                label: <Label detail="(1-7)">Day of week</Label>,
+                value: "extract_day_of_week",
+              },
+              {
+                label: <Label detail="(1-53)">Week in year</Label>,
+                value: "extract_week",
+              },
+              {
+                label: <Label detail="(1-12)">Month in year</Label>,
+                value: "extract_month",
+              },
+              {
+                label: <Label detail="(1-4)">Quarter in year</Label>,
+                value: "extract_quarter",
+              },
+              {
+                label: <Label detail="(0-23)">Hour of day</Label>,
+                value: "extract_hour",
+              },
+              {
+                label: <Label detail="(0-59)">Minute of hour</Label>,
+                value: "extract_minute",
+              },
+              {
+                label: <Label detail="(0-59)">Seconds of minute</Label>,
+                value: "extract_seconds",
+              },
+              { label: "Field values", value: "", divider: true },
             ]}
+            width={300}
             onChange={setGranularity}
           />
         </FormFieldList>
@@ -82,10 +121,18 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
               event.stopPropagation();
               event.preventDefault();
               if (granularity) {
-                addGroupBy(
-                  `${path}_${granularity}`,
-                  `${quoteIdentifier(path)}.${granularity}`
-                );
+                if (granularity.startsWith("extract_")) {
+                  const fun = granularity.substring("extract_".length);
+                  addGroupBy(
+                    `${path}_${fun}`,
+                    `${fun}(${quoteIdentifier(path)})`
+                  );
+                } else {
+                  addGroupBy(
+                    `${path}_${granularity}`,
+                    `${quoteIdentifier(path)}.${granularity}`
+                  );
+                }
               } else {
                 addGroupBy(path);
               }
@@ -99,3 +146,19 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
     </ContextMenuMain>
   );
 };
+
+interface LabelProps {
+  detail: string;
+}
+
+const Label: React.FC<LabelProps> = ({ children, detail }) => {
+  return (
+    <span>
+      {children} <Detail>{detail}</Detail>
+    </span>
+  );
+};
+
+const Detail = styled.span`
+  color: #939393;
+`;
