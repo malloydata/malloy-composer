@@ -28,7 +28,7 @@ This will start local webserver at [http://localhost:4000]() by default. The `pa
 - A path to a single `.malloy` file
 - A path to a directory containing multiple `.malloy` files*
 - A path to a dataset config `.json` file\**
-- A path to an app config `.json` file\**
+- A path to an app config `.json` file\**, specifying a `path` for multiple datasets. These dataset-specific paths can be any above path types.
 
 \*Note that if you pass a directory containing a `composer.json` file, it will be used as either a "dataset" config `.json` file\*\* or an "app" config `.json` file\*\* depending on its contents. 
 
