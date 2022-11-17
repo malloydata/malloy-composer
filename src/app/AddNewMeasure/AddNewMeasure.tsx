@@ -27,6 +27,7 @@ import {
 import { SelectDropdown } from "../SelectDropdown";
 import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
 import {
+  degenerateMeasure,
   generateMeasure,
   MeasureType,
   sortFlatFields,
@@ -53,10 +54,10 @@ const VALID_MEASURES: Record<
   "string" | "number" | "date" | "timestamp",
   MeasureType[]
 > = {
-  string: ["count_distinct", "custom"],
-  number: ["count_distinct", "avg", "sum", "min", "max", "custom"],
-  date: ["count_distinct", "min", "max", "custom"],
-  timestamp: ["count_distinct", "min", "max", "custom"],
+  string: ["count_distinct"],
+  number: ["count_distinct", "avg", "sum", "min", "max"],
+  date: ["count_distinct", "min", "max"],
+  timestamp: ["count_distinct", "min", "max"],
 };
 
 const MEASURE_OPTIONS: {
@@ -76,14 +77,15 @@ const MEASURE_OPTIONS: {
     label: "Percent of All",
     value: "percent",
   },
-  {
-    label: "Custom",
-    value: "custom",
-    divider: true,
-  },
 ];
 
 type FlatField = { field: FieldDef; path: string };
+
+enum Mode {
+  FIELD,
+  COUNT,
+  CUSTOM,
+}
 
 export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   source,
@@ -92,24 +94,40 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialCode,
   initialName,
 }) => {
+  let initialMode = Mode.FIELD;
+  let initialField: FlatField;
+  let initialType: MeasureType;
+  if (initialCode) {
+    const { measureType, field, path } = degenerateMeasure(source, initialCode);
+    initialMode =
+      measureType === "custom"
+        ? Mode.CUSTOM
+        : measureType === "count"
+        ? Mode.COUNT
+        : Mode.FIELD;
+    if (field) {
+      initialField = { field, path };
+    }
+    initialType = measureType;
+  }
+  const [mode, setMode] = useState(initialMode);
   const [measure, setMeasure] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
-  const [measureType, setMeasureType] = useState<MeasureType>(
-    // TODO(willscullin) Need to parse initialCode to determine if
-    // non-custom display can be used.
-    initialName ? "custom" : undefined
-  );
-  const [flatField, setFlatField] = useState<FlatField>();
+  const [measureType, setMeasureType] = useState<MeasureType>(initialType);
+  const [flatField, setFlatField] = useState<FlatField>(initialField);
+
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    if (flatField && measureType) {
+    if (mode === Mode.FIELD && flatField && measureType) {
       const newMeasure = generateMeasure(measureType, flatField.path);
       if (newMeasure) {
         setMeasure(newMeasure);
       }
+    } else if (mode === Mode.COUNT) {
+      setMeasure("count()");
     }
-  }, [measureType, flatField]);
+  }, [mode, measureType, flatField]);
 
   const flattened = useMemo(
     () =>
@@ -137,41 +155,58 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   );
 
   const needsName = initialCode === undefined;
+
   return (
     <ContextMenuMain>
       <ContextMenuTitle>{needsName ? "New" : "Edit"} measure</ContextMenuTitle>
       <form>
         <FormFieldList>
-          {!initialName && (
+          <FormItem>
+            <FormInputLabel>Type</FormInputLabel>
+            <SelectDropdown
+              autoFocus={true}
+              value={mode}
+              options={[
+                { label: "From a field", value: Mode.FIELD },
+                { label: "Count", value: Mode.COUNT },
+                { label: "Custom", value: Mode.CUSTOM },
+              ]}
+              onChange={(value) => setMode(value)}
+              width={300}
+            />
+          </FormItem>
+          {mode == Mode.FIELD && (
             <FormItem>
-              <FormInputLabel>Field to measure</FormInputLabel>
+              <FormInputLabel>Field</FormInputLabel>
               <SelectDropdown
-                autoFocus={true}
                 value={flatField}
+                valueEqual={(a, b) => a.path === b.path}
                 options={flattened}
                 onChange={(value) => setFlatField(value)}
                 width={300}
               />
             </FormItem>
           )}
-          {flatField && (
+          {mode == Mode.FIELD && (
             <FormItem>
               <FormInputLabel>Type</FormInputLabel>
               <SelectDropdown
                 value={measureType}
-                options={MEASURE_OPTIONS.filter(
-                  ({ value }) =>
-                    (isAggregate(flatField.field)
-                      ? value === "percent"
-                      : VALID_MEASURES[flatField.field.type].includes(value)) ||
-                    value === "custom"
-                )}
+                options={
+                  flatField
+                    ? MEASURE_OPTIONS.filter(({ value }) =>
+                        isAggregate(flatField.field)
+                          ? value === "percent"
+                          : VALID_MEASURES[flatField.field.type].includes(value)
+                      )
+                    : []
+                }
                 onChange={(value) => setMeasureType(value)}
                 width={300}
               />
             </FormItem>
           )}
-          {measureType === "custom" && (
+          {mode === Mode.CUSTOM && (
             <CodeTextArea
               autoFocus={!!initialName}
               value={measure}
@@ -185,7 +220,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             <CodeInput
               value={newName}
               setValue={setNewName}
-              placeholder="New_Measure_Name"
+              placeholder="new_measure"
               label="Name"
             />
           )}
@@ -202,11 +237,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               if (!newName) {
                 return setError(new Error("Enter a name"));
               }
-              if (measureType === "custom") {
+              if (mode === Mode.CUSTOM) {
                 if (!measure) {
                   return setError(new Error("Enter a definition"));
                 }
-              } else {
+              } else if (mode === Mode.FIELD) {
                 if (!flatField) {
                   return setError(new Error("Select a field"));
                 }

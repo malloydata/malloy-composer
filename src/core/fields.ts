@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-import { FieldDef } from "@malloydata/malloy";
+import { FieldDef, PipeSegment, Segment, StructDef } from "@malloydata/malloy";
 import { quoteIdentifier } from "../app/utils";
 
 /**
@@ -19,6 +19,7 @@ import { quoteIdentifier } from "../app/utils";
  */
 
 export type MeasureType =
+  | "count"
   | "count_distinct"
   | "max"
   | "min"
@@ -53,6 +54,130 @@ export function generateMeasure(
       return `100 * ${quotedFieldName} / all(${quotedFieldName})`;
   }
   return;
+}
+
+const unquoteIdentifier = (identifier: string) =>
+  identifier
+    .split(".")
+    .map((part) => part.replace(/(^`|`$)/g, ""))
+    .join(".");
+
+function findField(
+  source: StructDef,
+  identifier: string
+): FieldDef | undefined {
+  const modifySourceForStage = (
+    stage: PipeSegment,
+    source: StructDef
+  ): StructDef => Segment.nextStructDef(source, stage);
+
+  const _findField = (fields: FieldDef[], parts: string[]) => {
+    const field = fields.find((field) => (field.as || field.name) === parts[0]);
+    if (field) {
+      if (parts.length > 1) {
+        if (field.type === "struct") {
+          return _findField(field.fields, parts.slice(1));
+        } else if (field.type === "turtle") {
+          let turtleSource = source;
+          for (const stage of field.pipeline) {
+            turtleSource = modifySourceForStage(stage, turtleSource);
+          }
+          return _findField(turtleSource.fields, parts.slice(1));
+        } else {
+          // path is too long
+          return undefined;
+        }
+      } else {
+        return field;
+      }
+    } else {
+      // not found
+      return undefined;
+    }
+  };
+  const parts = unquoteIdentifier(identifier).split(".");
+  return _findField(source.fields, parts);
+}
+
+const MEASURE_COUNT = /^count\(\)$/;
+const MEASURE_COUNT_DISTINCT = /^count\(distinct (.*)\)$/;
+const MEASURE_AVG = /^(.*)\.avg\(\)$/;
+const MEASURE_SUM = /^(.*)\.sum\(\)$/;
+const MEASURE_MIN = /^min\((.*)\)/;
+const MEASURE_MAX = /^max\((.*)\)/;
+const MEASURE_PERCENT = /^100 \* (.*) \/ all\((.*)\)$/;
+
+export function degenerateMeasure(
+  source: StructDef,
+  measure: string
+): {
+  measureType: MeasureType;
+  path: string;
+  field: FieldDef | undefined;
+} {
+  let parts: RegExpExecArray;
+
+  parts = MEASURE_COUNT.exec(measure);
+  if (parts) {
+    return {
+      measureType: "count",
+      path: "",
+      field: undefined,
+    };
+  }
+  parts = MEASURE_COUNT_DISTINCT.exec(measure);
+  if (parts) {
+    return {
+      measureType: "count_distinct",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = MEASURE_AVG.exec(measure);
+  if (parts) {
+    return {
+      measureType: "avg",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = MEASURE_SUM.exec(measure);
+  if (parts) {
+    return {
+      measureType: "sum",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = MEASURE_MIN.exec(measure);
+  if (parts) {
+    return {
+      measureType: "min",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = MEASURE_MAX.exec(measure);
+  if (parts) {
+    return {
+      measureType: "max",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = MEASURE_PERCENT.exec(measure);
+  if (parts && parts[1] === parts[2]) {
+    return {
+      measureType: "percent",
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  return {
+    measureType: "custom",
+    path: "",
+    field: undefined,
+  };
 }
 
 export function sortFieldOrder(field: FieldDef): 0 | 1 | 2 | 3 {
