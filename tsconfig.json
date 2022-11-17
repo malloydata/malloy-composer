@@ -2,10 +2,11 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "jsx": "react-jsx",
+    "noEmit": true,
     "outDir": "out",
     "resolveJsonModule": true,
     "rootDir": "src",
-    "noEmit": true,
+    "skipLibCheck": true,
   },
   "include": ["src"],
 }
