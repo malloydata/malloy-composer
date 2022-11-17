@@ -228,6 +228,19 @@ export function downloadFile(
   downloadLink.click();
 }
 
+export function wrapHtml(html: string, title: string): string {
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+    <meta
+  </head>
+  <body>${html}</body>
+</html>
+  `;
+}
+
 // Regular expression for matching errors thrown by test compilations,
 // like those done by the New Measure and New Dimension dialogs.
 const ERROR_RE =

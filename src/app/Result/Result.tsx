@@ -23,6 +23,7 @@ import {
   highlightPre,
   indentCode,
   notUndefined,
+  wrapHtml,
 } from "../utils";
 import { compileFilter, compileQueryToSQL } from "../../core/compile";
 import { DownloadMenu } from "../DownloadMenu";
@@ -194,7 +195,7 @@ export const Result: React.FC<ResultProps> = ({
             disabled={!result || html === undefined || rendering}
             onDownloadHTML={(newTab: boolean) =>
               downloadFile(
-                html?.outerHTML || "",
+                html ? wrapHtml(html.outerHTML, "Malloy Download") : "",
                 "text/html",
                 "result.html",
                 newTab
