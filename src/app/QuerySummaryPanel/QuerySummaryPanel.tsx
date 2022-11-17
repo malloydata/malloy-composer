@@ -488,6 +488,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 source={source}
                 filterSource={item.filterSource}
                 filterField={item.field}
+                fieldPath={item.fieldPath}
                 parsedFilter={item.parsed}
                 removeFilter={() =>
                   queryModifiers.removeFilter(stagePath, item.filterIndex)

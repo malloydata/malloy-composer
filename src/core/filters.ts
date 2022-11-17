@@ -463,7 +463,8 @@ const ID_CHAR = "[a-zA-Z_]";
 const DIGIT = "[0-9]";
 const ID = `${ID_CHAR}(?:${ID_CHAR}|${DIGIT})*`;
 const QUOTED_ID = `\`${ID_CHAR}(?:${ID_CHAR}|${DIGIT}|\\s)*\``;
-const FIELD = `(?:${ID}|${QUOTED_ID})`;
+const ID_WITH_DOTS = `${ID}(?:\\.${ID})*`;
+const FIELD = `(?:${ID_WITH_DOTS}|${QUOTED_ID})`;
 
 const FALSE_FILTER = new RegExp(`^not (${FIELD})$`);
 const TRUE_FILTER = new RegExp(`^(${FIELD})$`);

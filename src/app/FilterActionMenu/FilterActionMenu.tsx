@@ -32,6 +32,7 @@ interface FilterActionMenuProps {
   closeMenu: () => void;
   filterField: FieldDef | undefined;
   parsedFilter: Filter | undefined;
+  fieldPath: string | undefined;
 }
 
 export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
@@ -43,6 +44,7 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
   parsedFilter,
   model,
   modelPath,
+  fieldPath,
 }) => {
   return (
     <ActionMenu
@@ -62,7 +64,7 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
                 source={source}
                 field={filterField}
                 addFilter={editFilter}
-                fieldPath={filterField.name}
+                fieldPath={fieldPath}
                 needsRename={false}
                 onComplete={onComplete}
                 modelPath={modelPath}

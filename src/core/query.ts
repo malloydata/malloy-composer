@@ -964,6 +964,7 @@ ${malloy}
         type: "filter",
         filterSource: filter.code,
         filterIndex,
+        fieldPath: parsed.field,
         field: parsed && this.getField(source, parsed.field),
         parsed: parsed && parsed.filter,
       });
