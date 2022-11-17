@@ -11,11 +11,11 @@
  * GNU General Public License for more details.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { AppInfo, ModelInfo, RendererName } from "../../types";
 import { useDatasets } from "../data/use_datasets";
-import { PageContent } from "../CommonElements";
+import { EmptyMessage, PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
 import { HotKeys } from "react-hotkeys";
@@ -32,6 +32,7 @@ import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
+import { LoadingSpinner } from "../Spinner";
 
 const MALLOY_DOCS =
   "https://looker-open-source.github.io/malloy/documentation/";
@@ -58,6 +59,7 @@ export const Explore: React.FC = () => {
   );
   const sourceName = urlParams.get("source");
   const params = useRef("");
+  const [loading, setLoading] = useState(0);
 
   const setParams = (
     newUrlParams: URLSearchParams,
@@ -193,6 +195,7 @@ export const Explore: React.FC = () => {
           throw new Error("Bad model");
         }
         try {
+          setLoading((loading) => ++loading);
           const sourceName =
             source || (await getSourceNameForQuery(newModelInfo.model, query));
           registerNewSource(
@@ -220,6 +223,8 @@ export const Explore: React.FC = () => {
           params.current = urlParams.toString();
         } catch (error) {
           setError(error);
+        } finally {
+          setLoading((loading) => --loading);
         }
       } else if (appInfo && !modelInfo && !page) {
         urlParams.set("page", "about");
@@ -248,12 +253,15 @@ export const Explore: React.FC = () => {
 
   const loadSourceLink = async (model: string, source: string) => {
     try {
+      setLoading((loading) => ++loading);
       const modelInfo = findModelByMarkdownId(model);
       setDatasetSource(modelInfo, source);
       urlParams.set("page", "query");
       setParams(urlParams, { replace: true });
     } catch (error) {
       setError(error);
+    } finally {
+      setLoading((loading) => --loading);
     }
   };
 
@@ -264,6 +272,7 @@ export const Explore: React.FC = () => {
     renderer?: string
   ) => {
     try {
+      setLoading((loading) => ++loading);
       const newModelInfo = findModelByMarkdownId(model);
       const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
       urlParams.set("model", newModelInfo.id);
@@ -288,6 +297,8 @@ export const Explore: React.FC = () => {
       setParams(urlParams);
     } catch (error) {
       setError(error);
+    } finally {
+      setLoading((loading) => --loading);
     }
   };
 
@@ -305,6 +316,9 @@ export const Explore: React.FC = () => {
   };
 
   const topValues = useTopValues(model, modelPath, source);
+  if (loading || (appId && !appInfo)) {
+    section = "loading";
+  }
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -359,7 +373,7 @@ export const Explore: React.FC = () => {
             <ChannelBottom>
               <ChannelButton
                 onClick={() => window.open(MALLOY_DOCS, "_blank")}
-                text="Malloy Docs"
+                text="Docs"
                 icon="help"
                 selected={false}
                 disabled={false}
@@ -406,6 +420,11 @@ export const Explore: React.FC = () => {
                 </PageContent>
               )}
               <ErrorMessage error={error} />
+              {section === "loading" && (
+                <EmptyMessage>
+                  <LoadingSpinner text="Loading..." />
+                </EmptyMessage>
+              )}
             </PageContainer>
           </Page>
           <RightChannel />
@@ -428,6 +447,7 @@ const Main = styled(HotKeys)`
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: 100%;
   gap: 10px;
 `;
