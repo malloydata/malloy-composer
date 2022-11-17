@@ -182,6 +182,9 @@ export interface QuerySummaryItemFilter {
   type: "filter";
   filterSource: string;
   filterIndex: number;
+  parsed?: Filter;
+  field?: FieldDef;
+  fieldPath?: string;
 }
 
 export interface QuerySummaryItemLimit {

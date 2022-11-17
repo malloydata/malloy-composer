@@ -34,6 +34,7 @@ import { TypeIcon } from "../TypeIcon";
 import { StringFilterBuilder } from "./StringFilterBuilder";
 import {
   BooleanFilter,
+  Filter,
   NumberFilter,
   StringFilter,
   TimeFilter,
@@ -59,6 +60,7 @@ interface AddFilterProps {
   needsRename: boolean;
   onComplete: () => void;
   modelPath: string | undefined;
+  initial?: Filter;
 }
 
 export const AddFilter: React.FC<AddFilterProps> = ({
@@ -70,25 +72,34 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   needsRename,
   onComplete,
   fieldPath,
+  initial,
 }) => {
   const type = typeOfField(field);
   const kind = kindOfField(field);
-  const [stringFilter, setStringFilter] = useState<StringFilter>({
-    type: "is_equal_to",
-    values: [],
-  });
-  const [numberFilter, setNumberFilter] = useState<NumberFilter>({
-    type: "is_equal_to",
-    values: [],
-  });
-  const [timeFilter, setTimeFilter] = useState<TimeFilter>({
-    type: "is_on",
-    date: new Date(),
-    granularity: "day",
-  });
-  const [booleanFilter, setBooleanFilter] = useState<BooleanFilter>({
-    type: "is_true",
-  });
+  const [stringFilter, setStringFilter] = useState<StringFilter>(
+    (type === "string" && (initial as StringFilter)) ?? {
+      type: "is_equal_to",
+      values: [],
+    }
+  );
+  const [numberFilter, setNumberFilter] = useState<NumberFilter>(
+    (type === "number" && (initial as NumberFilter)) ?? {
+      type: "is_equal_to",
+      values: [],
+    }
+  );
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>(
+    ((type === "date" || type === "timestamp") && (initial as TimeFilter)) ?? {
+      type: "is_on",
+      date: new Date(),
+      granularity: "day",
+    }
+  );
+  const [booleanFilter, setBooleanFilter] = useState<BooleanFilter>(
+    (type === "boolean" && (initial as BooleanFilter)) ?? {
+      type: "is_true",
+    }
+  );
   const [filter, setFilter] = useState(
     type === "string"
       ? stringFilterToString(fieldPath, stringFilter)

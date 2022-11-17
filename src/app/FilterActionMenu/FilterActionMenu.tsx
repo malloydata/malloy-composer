@@ -11,16 +11,28 @@
  * GNU General Public License for more details.
  */
 
-import { FilterExpression, StructDef } from "@malloydata/malloy";
+import {
+  FieldDef,
+  FilterExpression,
+  ModelDef,
+  StructDef,
+} from "@malloydata/malloy";
+import { Filter } from "../../types";
 import { ActionMenu } from "../ActionMenu";
+import { AddFilter } from "../AddFilter";
 import { EditFilter } from "../EditFilter";
 
 interface FilterActionMenuProps {
+  model: ModelDef | undefined;
+  modelPath: string;
   source: StructDef;
   filterSource: string;
   removeFilter: () => void;
   editFilter: (filter: FilterExpression) => void;
   closeMenu: () => void;
+  filterField: FieldDef | undefined;
+  parsedFilter: Filter | undefined;
+  fieldPath: string | undefined;
 }
 
 export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
@@ -28,6 +40,11 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
   editFilter,
   closeMenu,
   source,
+  filterField,
+  parsedFilter,
+  model,
+  modelPath,
+  fieldPath,
 }) => {
   return (
     <ActionMenu
@@ -40,14 +57,27 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
           iconColor: "filter",
           kind: "sub_menu",
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <EditFilter
-              editFilter={editFilter}
-              onComplete={onComplete}
-              existing={filterSource}
-              source={source}
-            />
-          ),
+          Component: ({ onComplete }) =>
+            filterField && parsedFilter ? (
+              <AddFilter
+                model={model}
+                source={source}
+                field={filterField}
+                addFilter={editFilter}
+                fieldPath={fieldPath}
+                needsRename={false}
+                onComplete={onComplete}
+                modelPath={modelPath}
+                initial={parsedFilter}
+              />
+            ) : (
+              <EditFilter
+                editFilter={editFilter}
+                onComplete={onComplete}
+                existing={filterSource}
+                source={source}
+              />
+            ),
         },
       ]}
     />

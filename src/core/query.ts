@@ -38,6 +38,7 @@ import {
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../app/utils";
+import { hackyTerribleStringToFilter } from "./filters";
 
 class SourceUtils {
   constructor(protected _source: StructDef | undefined) {}
@@ -948,6 +949,7 @@ ${malloy}
   }
 
   private getSummaryItemsForFilterList(
+    source: StructDef,
     filterList: FilterExpression[]
   ): QuerySummaryItemFilter[] {
     const items: QuerySummaryItemFilter[] = [];
@@ -957,7 +959,15 @@ ${malloy}
       filterIndex++
     ) {
       const filter = filterList[filterIndex];
-      items.push({ type: "filter", filterSource: filter.code, filterIndex });
+      const parsed = hackyTerribleStringToFilter(filter.code);
+      items.push({
+        type: "filter",
+        filterSource: filter.code,
+        filterIndex,
+        fieldPath: parsed.field,
+        field: parsed && this.getField(source, parsed.field),
+        parsed: parsed && parsed.filter,
+      });
     }
     return items;
   }
@@ -1087,7 +1097,9 @@ ${malloy}
     const items: QuerySummaryItem[] = [];
     const orderByFields: OrderByField[] = [];
     if (stage.filterList) {
-      items.push(...this.getSummaryItemsForFilterList(stage.filterList));
+      items.push(
+        ...this.getSummaryItemsForFilterList(source, stage.filterList)
+      );
     }
     for (let fieldIndex = 0; fieldIndex < stage.fields.length; fieldIndex++) {
       const field = stage.fields[fieldIndex];
@@ -1143,7 +1155,10 @@ ${malloy}
                 ? this.fanToDef(field, fieldDef)
                 : undefined,
             fieldIndex,
-            filters: this.getSummaryItemsForFilterList(field.filterList || []),
+            filters: this.getSummaryItemsForFilterList(
+              source,
+              field.filterList || []
+            ),
             styles: styleItems.filter((s) => s.canRemove),
             isRefined: true,
             path: field.name,

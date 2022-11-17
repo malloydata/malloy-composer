@@ -14,10 +14,13 @@
 import {
   BooleanFilter,
   BooleanFilterType,
+  Filter,
+  InThePastUnit,
   NumberFilter,
   NumberFilterType,
   StringFilter,
   StringFilterType,
+  ThisLastPeriod,
   TimeFilter,
   TimeFilterType,
 } from "../types";
@@ -293,7 +296,7 @@ export function timeToString(
       const month = digits(time.getUTCMonth() + 1, 2);
       const day = digits(time.getUTCDate(), 2);
       const hour = digits(time.getUTCHours(), 2);
-      return `@${year}-${month}-${day} ${hour}:00 for 1 hour`;
+      return `@${year}-${month}-${day} ${hour}:00`;
     }
     case "minute": {
       const year = digits(time.getUTCFullYear(), 2);
@@ -446,5 +449,563 @@ export function booleanFilterChangeType(
       return { type, partial: "" };
     default:
       return { type };
+  }
+}
+
+type HackyFilterParserResult<T> =
+  | {
+      field: string;
+      filter: T;
+    }
+  | undefined;
+
+const ID_CHAR = "[a-zA-Z_]";
+const DIGIT = "[0-9]";
+const ID = `${ID_CHAR}(?:${ID_CHAR}|${DIGIT})*`;
+const QUOTED_ID = `\`${ID_CHAR}(?:${ID_CHAR}|${DIGIT}|\\s)*\``;
+const ID_WITH_DOTS = `${ID}(?:\\.${ID})*`;
+const FIELD = `(?:${ID_WITH_DOTS}|${QUOTED_ID})`;
+
+const FALSE_FILTER = new RegExp(`^not (${FIELD})$`);
+const TRUE_FILTER = new RegExp(`^(${FIELD})$`);
+const TRUE_OR_NULL_FILTER = new RegExp(`^(${FIELD}):\\s*true\\s*\\|\\s*null$`);
+const FALSE_OR_NULL_FILTER = new RegExp(
+  `^(${FIELD}):\\s*false\\s*\\|\\s*null$`
+);
+const NULL_FILTER = new RegExp(`^(${FIELD})\\s*=\\s*null$`);
+const NOT_NULL_FILTER = new RegExp(`^(${FIELD})\\s*!=\\s*null$`);
+const CUSTOM_FILTER = new RegExp(`^(${FIELD}):\\s*(.*)$`);
+
+function ALTERNATION(kind: "|" | "&", thing: string) {
+  return `${thing}(?:\\s*\\${kind}\\s*${thing}\\s*)*`;
+}
+
+const STRING_ESCAPE = `(?:\\\\\\')|(?:\\\\\\\\)|(?:\\\\.)`;
+const STRING = `\\'(?:${STRING_ESCAPE}|[^\\\\\\\\'])*\\'`;
+const CONTAINS_STRING = `\\'%(?:${STRING_ESCAPE}|[^\\\\\\\\'])*%\\'`;
+const STARTS_STRING = `\\'(?:${STRING_ESCAPE}|[^\\\\\\\\'])*%\\'`;
+const ENDS_STRING = `\\'%(?:${STRING_ESCAPE}|[^\\\\\\\\'])*\\'`;
+const STR_BLANK_FILTER = new RegExp(`^(${FIELD})\\s*=\\s\\'\\'$`);
+const STR_NBLANK_FILTER = new RegExp(`^(${FIELD})\\s*!=\\s\\'\\'$`);
+const STR_EQ_FILTER = new RegExp(
+  `^(${FIELD})\\s*=\\s*(${ALTERNATION("|", STRING)})$`
+);
+const STR_NEQ_FILTER = new RegExp(
+  `^(${FIELD})\\s*!=\\s*(${ALTERNATION("&", STRING)})$`
+);
+const STR_CONTAINS_FILTER = new RegExp(
+  `^(${FIELD})\\s*~\\s*(${ALTERNATION("|", CONTAINS_STRING)})$`
+);
+const STR_NCONTAINS_FILTER = new RegExp(
+  `^(${FIELD})\\s*!~\\s*(${ALTERNATION("&", CONTAINS_STRING)})$`
+);
+const STR_STARTS_FILTER = new RegExp(
+  `^(${FIELD})\\s*~\\s*(${ALTERNATION("|", STARTS_STRING)})$`
+);
+const STR_ENDS_FILTER = new RegExp(
+  `^(${FIELD})\\s*~\\s*(${ALTERNATION("|", ENDS_STRING)})$`
+);
+const STR_NSTARTS_FILTER = new RegExp(
+  `^(${FIELD})\\s*!~\\s*(${ALTERNATION("&", STARTS_STRING)})$`
+);
+const STR_NENDS_FILTER = new RegExp(
+  `^(${FIELD})\\s*!~\\s*(${ALTERNATION("&", ENDS_STRING)})$`
+);
+const NUMBER = `${DIGIT}+(?:\\.${DIGIT}*)?`;
+const NUM_EQ_FILTER = new RegExp(
+  `^(${FIELD})\\s*=\\s*(${ALTERNATION("|", NUMBER)})$`
+);
+const NUM_NEQ_FILTER = new RegExp(
+  `^(${FIELD})\\s*!=\\s*(${ALTERNATION("&", NUMBER)})$`
+);
+const NUM_BET_FILTER = new RegExp(
+  `^(${FIELD})\\s*:\\s*(${NUMBER})\\s*to\\s*(${NUMBER})$`
+);
+const NUM_GT_FILTER = new RegExp(`^(${FIELD})\\s*>\\s*(${NUMBER})$`);
+const NUM_LT_FILTER = new RegExp(`^(${FIELD})\\s*<\\s*(${NUMBER})$`);
+const NUM_LTE_FILTER = new RegExp(`^(${FIELD})\\s*>=\\s*(${NUMBER})$`);
+const NUM_GTE_FILTER = new RegExp(`^(${FIELD})\\s*<=\\s*(${NUMBER})$`);
+
+const TIME_UNIT = `(?:year|quarter|month|week|day|hour|minute|second)`;
+const TIME_PAST_FILTER = new RegExp(
+  `^(${FIELD})\\s*:\\s*now\\s*-\\s*(${NUMBER})\\s*(${TIME_UNIT})s?\\s*for\\s*\\s*(${NUMBER})\\s*(${TIME_UNIT})s?$`
+);
+const TIME_LAST_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*=\\s*now\\.(${TIME_UNIT})\\s*-\\s*1\\s*(${TIME_UNIT})$`
+);
+const TIME_THIS_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*=\\s*now\\.(${TIME_UNIT})$`
+);
+
+const YEAR = `${DIGIT}{4}`;
+const DD = `${DIGIT}{2}`;
+const TIME = `@${YEAR}(?:-${DD}(?:-${DD}(?: ${DD}:${DD}(?::${DD})?)?)?)?`;
+const QUARTER = `@${YEAR}-Q[1234]`;
+const WEEK = `@WK${YEAR}-${DD}-${DD}`;
+
+const DATE = `(?:${TIME}|${QUARTER}|${WEEK})`;
+const TIME_ON_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*=\\s*(${DATE})$`
+);
+const TIME_AFT_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*>\\s*(${DATE})$`
+);
+const TIME_BEF_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*<\\s*(${DATE})$`
+);
+const TIME_BET_FILTER = new RegExp(
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*:\\s*(${DATE})\\s*to\\s*(${DATE})$`
+);
+
+function extractField(fieldSyntax: string) {
+  if (fieldSyntax.startsWith("`") && fieldSyntax.endsWith("`")) {
+    return fieldSyntax.substring(1, fieldSyntax.length - 1);
+  }
+  return fieldSyntax;
+}
+
+export function hackyTerribleStringToFilter(
+  filterString: string
+): HackyFilterParserResult<Filter> {
+  return (
+    hackyTerribleStringToBooleanFilter(filterString) ??
+    hackyTerribleStringToStringFilter(filterString) ??
+    hackyTerribleStringToNumberFilter(filterString) ??
+    hackyTerribleStringToTimeFilter(filterString) ??
+    hackyTerribleStringToAnyFilter(filterString)
+  );
+}
+
+function hackyTerribleStringToBooleanFilter(
+  filterString: string
+): HackyFilterParserResult<BooleanFilter> {
+  const isFalseMatch = filterString.match(FALSE_FILTER);
+  if (isFalseMatch) {
+    return {
+      field: extractField(isFalseMatch[1]),
+      filter: { type: "is_false" },
+    };
+  }
+  const isTrueMatch = filterString.match(TRUE_FILTER);
+  if (isTrueMatch) {
+    return {
+      field: extractField(isTrueMatch[1]),
+      filter: { type: "is_true" },
+    };
+  }
+  const isTrueOrNullMatch = filterString.match(TRUE_OR_NULL_FILTER);
+  if (isTrueOrNullMatch) {
+    return {
+      field: extractField(isTrueOrNullMatch[1]),
+      filter: { type: "is_true_or_null" },
+    };
+  }
+  const isFalseOrNullMatch = filterString.match(FALSE_OR_NULL_FILTER);
+  if (isFalseOrNullMatch) {
+    return {
+      field: extractField(isFalseOrNullMatch[1]),
+      filter: { type: "is_false_or_null" },
+    };
+  }
+}
+
+function hackyTerribleStringToAnyFilter(
+  filterString
+): HackyFilterParserResult<Filter> {
+  const isNullMatch = filterString.match(NULL_FILTER);
+  if (isNullMatch) {
+    return {
+      field: extractField(isNullMatch[1]),
+      filter: { type: "is_null" },
+    };
+  }
+  const isNotNullMatch = filterString.match(NOT_NULL_FILTER);
+  if (isNotNullMatch) {
+    return {
+      field: extractField(isNotNullMatch[1]),
+      filter: { type: "is_not_null" },
+    };
+  }
+  const isCustomMatch = filterString.match(CUSTOM_FILTER);
+  if (isCustomMatch) {
+    return {
+      field: extractField(isCustomMatch[1]),
+      filter: { type: "custom", partial: isCustomMatch[2] },
+    };
+  }
+}
+
+function deQuote(stringString: string) {
+  return stringString.substring(1, stringString.length - 1);
+}
+
+function deContains(stringString: string) {
+  return stringString.substring(1, stringString.length - 1);
+}
+
+function deStarts(stringString: string) {
+  return stringString.substring(0, stringString.length - 1);
+}
+
+function deEnds(stringString: string) {
+  return stringString.substring(1);
+}
+
+function toNumber(numberString: string) {
+  return parseFloat(numberString);
+}
+
+function getAlternationValues(kind: "|" | "&", alternation: string) {
+  return alternation.split(new RegExp(`\\s*\\${kind}\\s*`));
+}
+
+function toTimeUnit(timeUnitString: string): InThePastUnit {
+  if (
+    [
+      "year",
+      "quarter",
+      "month",
+      "week",
+      "day",
+      "hour",
+      "minute",
+      "second",
+    ].includes(timeUnitString)
+  ) {
+    return (timeUnitString + "s") as InThePastUnit;
+  }
+  throw new Error(`Invalid time unit '${timeUnitString}'`);
+}
+
+function toTimePeriod(timeUnitString: string): ThisLastPeriod {
+  if (
+    [
+      "year",
+      "quarter",
+      "month",
+      "week",
+      "day",
+      "hour",
+      "minute",
+      "second",
+    ].includes(timeUnitString)
+  ) {
+    return timeUnitString as ThisLastPeriod;
+  }
+  throw new Error(`Invalid time period '${timeUnitString}'`);
+}
+
+function toDate(dateString: string): Date {
+  const isDate = dateString.match(new RegExp(`^${TIME}$`));
+  const isWeek = dateString.match(new RegExp(`^${WEEK}$`));
+  if (isDate || isWeek) {
+    const str = isDate ? dateString.substring(1) : dateString.substring(3);
+    if (str.length === 4) {
+      return new Date(parseInt(dateString.substring(0, 4)), 0, 1);
+    } else if (str.length === 7) {
+      return new Date(
+        parseInt(str.substring(0, 4)),
+        parseInt(str.substring(5, 7)) - 1,
+        1
+      );
+    } else if (str.length === 10) {
+      return new Date(
+        parseInt(str.substring(0, 4)),
+        parseInt(str.substring(5, 7)) - 1,
+        parseInt(str.substring(8, 10))
+      );
+    } else if (str.length === 16) {
+      return new Date(
+        parseInt(str.substring(0, 4)),
+        parseInt(str.substring(5, 7)) - 1,
+        parseInt(str.substring(8, 10)),
+        parseInt(str.substring(11, 13)),
+        parseInt(str.substring(14, 16))
+      );
+    } else {
+      return new Date(
+        parseInt(str.substring(0, 4)),
+        parseInt(str.substring(5, 7)) - 1,
+        parseInt(str.substring(8, 10)),
+        parseInt(str.substring(11, 13)),
+        parseInt(str.substring(14, 16)),
+        parseInt(str.substring(17, 19))
+      );
+    }
+  } else if (dateString.match(new RegExp(`^${QUARTER}$`))) {
+    return new Date(
+      parseInt(dateString.substring(1, 5)),
+      3 * parseInt(dateString.substring(7, 8)) - 1,
+      1
+    );
+  }
+  throw new Error(`Invalid Malloy date: ${dateString}`);
+}
+
+function hackyTerribleStringToStringFilter(
+  filterString: string
+): HackyFilterParserResult<StringFilter> {
+  const isBlankMatch = filterString.match(STR_BLANK_FILTER);
+  if (isBlankMatch) {
+    return {
+      field: extractField(isBlankMatch[1]),
+      filter: { type: "is_blank" },
+    };
+  }
+  const isNotBlankMatch = filterString.match(STR_NBLANK_FILTER);
+  if (isNotBlankMatch) {
+    return {
+      field: extractField(isNotBlankMatch[1]),
+      filter: { type: "is_not_blank" },
+    };
+  }
+  const isEqualMatch = filterString.match(STR_EQ_FILTER);
+  if (isEqualMatch) {
+    return {
+      field: extractField(isEqualMatch[1]),
+      filter: {
+        type: "is_equal_to",
+        values: getAlternationValues("|", isEqualMatch[2]).map(deQuote),
+      },
+    };
+  }
+  const isNotEqualMatch = filterString.match(STR_NEQ_FILTER);
+  if (isNotEqualMatch) {
+    return {
+      field: extractField(isNotEqualMatch[1]),
+      filter: {
+        type: "is_not_equal_to",
+        values: getAlternationValues("&", isNotEqualMatch[2]).map(deQuote),
+      },
+    };
+  }
+  const isContainsMatch = filterString.match(STR_CONTAINS_FILTER);
+  if (isContainsMatch) {
+    return {
+      field: extractField(isContainsMatch[1]),
+      filter: {
+        type: "contains",
+        values: getAlternationValues("|", isContainsMatch[2])
+          .map(deQuote)
+          .map(deContains),
+      },
+    };
+  }
+  const isNotContainsMatch = filterString.match(STR_NCONTAINS_FILTER);
+  if (isNotContainsMatch) {
+    return {
+      field: extractField(isNotContainsMatch[1]),
+      filter: {
+        type: "does_not_contain",
+        values: getAlternationValues("&", isNotContainsMatch[2])
+          .map(deQuote)
+          .map(deContains),
+      },
+    };
+  }
+  const isStartsMatch = filterString.match(STR_STARTS_FILTER);
+  if (isStartsMatch) {
+    return {
+      field: extractField(isStartsMatch[1]),
+      filter: {
+        type: "starts_with",
+        values: getAlternationValues("|", isStartsMatch[2])
+          .map(deQuote)
+          .map(deStarts),
+      },
+    };
+  }
+  const isEndsMatch = filterString.match(STR_ENDS_FILTER);
+  if (isEndsMatch) {
+    return {
+      field: extractField(isEndsMatch[1]),
+      filter: {
+        type: "ends_with",
+        values: getAlternationValues("|", isEndsMatch[2])
+          .map(deQuote)
+          .map(deEnds),
+      },
+    };
+  }
+  const isNotStartsMatch = filterString.match(STR_NSTARTS_FILTER);
+  if (isNotStartsMatch) {
+    return {
+      field: extractField(isNotStartsMatch[1]),
+      filter: {
+        type: "does_not_start_with",
+        values: getAlternationValues("&", isNotStartsMatch[2])
+          .map(deQuote)
+          .map(deStarts),
+      },
+    };
+  }
+  const isNotEndsMatch = filterString.match(STR_NENDS_FILTER);
+  if (isNotEndsMatch) {
+    return {
+      field: extractField(isNotEndsMatch[1]),
+      filter: {
+        type: "does_not_end_with",
+        values: getAlternationValues("&", isNotEndsMatch[2])
+          .map(deQuote)
+          .map(deEnds),
+      },
+    };
+  }
+}
+
+function hackyTerribleStringToNumberFilter(
+  filterString: string
+): HackyFilterParserResult<NumberFilter> {
+  const isEqualMatch = filterString.match(NUM_EQ_FILTER);
+  if (isEqualMatch) {
+    return {
+      field: extractField(isEqualMatch[1]),
+      filter: {
+        type: "is_equal_to",
+        values: getAlternationValues("|", isEqualMatch[2]).map(toNumber),
+      },
+    };
+  }
+  const isNotEqualMatch = filterString.match(NUM_NEQ_FILTER);
+  if (isNotEqualMatch) {
+    return {
+      field: extractField(isNotEqualMatch[1]),
+      filter: {
+        type: "is_not_equal_to",
+        values: getAlternationValues("&", isNotEqualMatch[2]).map(toNumber),
+      },
+    };
+  }
+  const isGTMatch = filterString.match(NUM_GT_FILTER);
+  if (isGTMatch) {
+    return {
+      field: extractField(isGTMatch[1]),
+      filter: {
+        type: "is_greater_than",
+        value: toNumber(extractField(isGTMatch[2])),
+      },
+    };
+  }
+  const isLTMatch = filterString.match(NUM_LT_FILTER);
+  if (isLTMatch) {
+    return {
+      field: extractField(isLTMatch[1]),
+      filter: {
+        type: "is_less_than",
+        value: toNumber(extractField(isLTMatch[2])),
+      },
+    };
+  }
+  const isGTEMatch = filterString.match(NUM_GTE_FILTER);
+  if (isGTEMatch) {
+    return {
+      field: extractField(isGTEMatch[1]),
+      filter: {
+        type: "is_greater_than_or_equal_to",
+        value: toNumber(extractField(isGTEMatch[2])),
+      },
+    };
+  }
+  const isLTEMatch = filterString.match(NUM_LTE_FILTER);
+  if (isLTEMatch) {
+    return {
+      field: extractField(isLTEMatch[1]),
+      filter: {
+        type: "is_less_than_or_equal_to",
+        value: toNumber(extractField(isLTEMatch[2])),
+      },
+    };
+  }
+  const isBetweenMatch = filterString.match(NUM_BET_FILTER);
+  if (isBetweenMatch) {
+    return {
+      field: extractField(isBetweenMatch[1]),
+      filter: {
+        type: "is_between",
+        lowerBound: toNumber(extractField(isBetweenMatch[2])),
+        upperBound: toNumber(extractField(isBetweenMatch[3])),
+      },
+    };
+  }
+}
+
+function hackyTerribleStringToTimeFilter(
+  filterString: string
+): HackyFilterParserResult<TimeFilter> {
+  const isPastMatch = filterString.match(TIME_PAST_FILTER);
+  if (isPastMatch) {
+    return {
+      field: extractField(isPastMatch[1]),
+      filter: {
+        type: "is_in_the_past",
+        amount: toNumber(extractField(isPastMatch[2])),
+        unit: toTimeUnit(extractField(isPastMatch[3])),
+      },
+    };
+  }
+  const isLastMatch = filterString.match(TIME_LAST_FILTER);
+  if (isLastMatch) {
+    return {
+      field: extractField(isLastMatch[1]),
+      filter: {
+        type: "is_last",
+        period: toTimePeriod(extractField(isLastMatch[2])),
+      },
+    };
+  }
+  const isThisMatch = filterString.match(TIME_THIS_FILTER);
+  if (isThisMatch) {
+    return {
+      field: extractField(isThisMatch[1]),
+      filter: {
+        type: "is_this",
+        period: toTimePeriod(extractField(isThisMatch[2])),
+      },
+    };
+  }
+  const isOnMatch = filterString.match(TIME_ON_FILTER);
+  if (isOnMatch) {
+    return {
+      field: extractField(isOnMatch[1]),
+      filter: {
+        type: "is_on",
+        granularity: toTimePeriod(extractField(isOnMatch[2])),
+        date: toDate(extractField(isOnMatch[3])),
+      },
+    };
+  }
+  const isAfterMatch = filterString.match(TIME_AFT_FILTER);
+  if (isAfterMatch) {
+    return {
+      field: extractField(isAfterMatch[1]),
+      filter: {
+        type: "is_after",
+        granularity: toTimePeriod(extractField(isAfterMatch[2])),
+        date: toDate(extractField(isAfterMatch[3])),
+      },
+    };
+  }
+  const isBeforeMatch = filterString.match(TIME_BEF_FILTER);
+  if (isBeforeMatch) {
+    return {
+      field: extractField(isBeforeMatch[1]),
+      filter: {
+        type: "is_before",
+        granularity: toTimePeriod(extractField(isBeforeMatch[2])),
+        date: toDate(extractField(isBeforeMatch[3])),
+      },
+    };
+  }
+  const isBetweenMatch = filterString.match(TIME_BET_FILTER);
+  if (isBetweenMatch) {
+    return {
+      field: extractField(isBetweenMatch[1]),
+      filter: {
+        type: "is_between",
+        granularity: toTimePeriod(extractField(isBetweenMatch[2])),
+        start: toDate(extractField(isBetweenMatch[3])),
+        end: toDate(extractField(isBetweenMatch[4])),
+      },
+    };
   }
 }
