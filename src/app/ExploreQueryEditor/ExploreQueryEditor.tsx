@@ -92,16 +92,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                   />
                 </Popover>
               </div>
-              <ActionIcon
-                action="undo"
-                onClick={() => undo()}
-                color={canUndo ? "dimension" : "other"}
-              />
-              <ActionIcon
-                action="remove"
-                onClick={() => queryModifiers.clearQuery()}
-                color={isQueryEmpty ? "other" : "dimension"}
-              />
               <div>
                 <ActionIcon
                   action="load"
@@ -117,6 +107,16 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                   />
                 </Popover>
               </div>
+              <ActionIcon
+                action="undo"
+                onClick={() => undo()}
+                color={canUndo ? "dimension" : "other"}
+              />
+              <ActionIcon
+                action="remove"
+                onClick={() => queryModifiers.clearQuery()}
+                color={isQueryEmpty ? "other" : "dimension"}
+              />
               <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}

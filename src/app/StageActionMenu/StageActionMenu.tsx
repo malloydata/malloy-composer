@@ -94,6 +94,42 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
       actions={[
         {
           kind: "sub_menu",
+          id: "filter",
+          label: "Filter",
+          iconName: "filter",
+          iconColor: "filter",
+          closeOnComplete: true,
+          Component: ({ onComplete }) => (
+            <FilterContextBar
+              model={model}
+              modelPath={modelPath}
+              source={source}
+              addFilter={(filter, as) => addFilter(stagePath, filter, as)}
+              onComplete={onComplete}
+              needsRename={false}
+              topValues={topValues}
+            />
+          ),
+        },
+        {
+          kind: "sub_menu",
+          id: "nest",
+          label: "Nest",
+          iconName: "nest",
+          iconColor: "query",
+          closeOnComplete: true,
+          divider: true,
+          Component: ({ onComplete }) => (
+            <NestContextBar
+              source={source}
+              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
+              selectNewNest={(name) => addNewNestedQuery(stagePath, name)}
+              onComplete={onComplete}
+            />
+          ),
+        },
+        {
+          kind: "sub_menu",
           id: "group_by",
           label: "Group By",
           iconName: "group_by",
@@ -122,41 +158,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
               selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
               addNewMeasure={(def) => addNewMeasure(stagePath, def)}
               onComplete={onComplete}
-            />
-          ),
-        },
-        {
-          kind: "sub_menu",
-          id: "nest",
-          label: "Nest",
-          iconName: "nest",
-          iconColor: "query",
-          closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <NestContextBar
-              source={source}
-              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
-              selectNewNest={(name) => addNewNestedQuery(stagePath, name)}
-              onComplete={onComplete}
-            />
-          ),
-        },
-        {
-          kind: "sub_menu",
-          id: "filter",
-          label: "Filter",
-          iconName: "filter",
-          iconColor: "filter",
-          closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <FilterContextBar
-              model={model}
-              modelPath={modelPath}
-              source={source}
-              addFilter={(filter, as) => addFilter(stagePath, filter, as)}
-              onComplete={onComplete}
-              needsRename={false}
-              topValues={topValues}
             />
           ),
         },
