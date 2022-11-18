@@ -18,6 +18,7 @@ import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { RouterProvider, createHashRouter } from "react-router-dom";
 import { Explore } from "./app";
+import { ErrorElement } from "./app/ErrorElement";
 
 const client = new QueryClient();
 
@@ -25,10 +26,12 @@ const router = createHashRouter([
   {
     path: "/:appId",
     element: <Explore />,
+    errorElement: <ErrorElement />,
   },
   {
     path: "*",
     element: <Explore />,
+    errorElement: <ErrorElement />,
   },
 ]);
 
