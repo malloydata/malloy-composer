@@ -17,7 +17,7 @@
   "license": "GPL-2.0",
   "scripts": {
     "lint": "eslint src scripts",
-    "start": "npm run server-start",
+    "start": "npm run server-build && node ./dist/cli.js",
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./node_modules",
     "server-build": "ts-node scripts/package-server --skip-package",

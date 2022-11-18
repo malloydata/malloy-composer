@@ -14,58 +14,76 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 2. `git submodule init` and
 3. `git submodule update` to install git dependencies
 
-Make sure you have a [database connected](https://looker-open-source.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/looker-open-source/malloy#installing-the-extension) to view and edit Malloy files.
+Make sure you have a [database connected](https://looker-open-source.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
 
-### Launch the Composer
+### Launch the Composer (Local Server)
 
-Run:
+To launch the Composer local server, run:
 
-1. `npm run build` (you need to do this in addition to the above build in the top-level directory)
-2. `npm run start`
+1. `npm run build` 
+2. `npm run start <path>`
 
-This will start a desktop application. You should see any sources defined in `.malloy` files you place in a the Malloy models directory (by default, this is the samples directory but can be configured, as described below) listed in the "Select analysis..." menu at the top left. If you don't already have Malloy models built you'd like to work with, try making a copy of one of the [samples](https://github.com/malloydata/malloy-samples); these are all built on public BigQuery datasets!
+This will start local webserver at [http://localhost:4000]() by default. The `path` argument allows you to configure what Malloy files you want the composer to have access to. There are several different options for what the `path` can be.
 
-Troubleshooting notes:
+- A path to a single `.malloy` file
+- A path to a directory containing multiple `.malloy` files*
+- A path to a dataset config `.json` file\**
+- A path to an app config `.json` file\**, specifying a `path` for multiple datasets. These dataset-specific paths can be any above path types.
 
-- If you have models in your Malloy models directory and one or all of them are not showing up in the composer menu, you may have an error in your Malloy code. Try opening them up in VS Code with the Malloy Extension installed to find the problem.
+\*Note that if you pass a directory containing a `composer.json` file, it will be used as either a "dataset" config `.json` file\*\* or an "app" config `.json` file\*\* depending on its contents. 
+
+\*\*See below for example config files
+
+If you don't have a particular dataset you want to try out, you can always use the sample models: `npm run start ./malloy-samples`. You can also view these sample models in [an online version of the composer](https://malloydata.github.io/malloy-samples/wasm/).
+
+### Troubleshooting Notes
+
+- If your datasets are visible, but clicking on one doesn't work, check in the output of the `npm run start` command for errors. One of your Malloy files or config files may have an error in it.
 - You'll need to define a [source](https://looker-open-source.github.io/malloy/documentation/language/source.html) for it to be explorable; top-level named queries that are not inside a source are not explorable.
 
-### Set up Query Saving
+### Config File Examples
 
-The composer can write saved queries back to `.a.malloy` files in the Malloy models directory (see below).
-
-1. Create a new file with the suffix `.a.malloy` (e.g. `flights.a.malloy`). You'll need separate ones for each source you want to make explorable.
-2. [Import](https://looker-open-source.github.io/malloy/documentation/language/imports.html) the base file in this `.a.malloy` file, then create a refinement of a source named in the base file. For example, if your base file looks like:
-
-```malloy
-source: flights_base is table('malloy-data.faa.flights'){}
-```
-
-Your `.a.malloy` file might look like this:
-
-```
-import "file:///Users/anikaks/malloy/flights.malloy"
-
-source: flights is flights_base {}
-```
-
-You should now see the name of your new source appear in the top left menu, and when you click the start icon in the top menu you should be able to save named queries and see them appear inside the new source. _Note: Only the **last source** in a `.a.malloy` file will appear in the menu._
-
-The composer is a two-way tool; saved queries are saved into this source by the app, but you can also add/edit named queries, add fields, joins, etc.
-
-### Settings
-
-The Malloy models directory is `./malloy-samples` by default, but you can set it to another directory by adding a `composer_config.json` file (see `composer_config.sample.json` for a sample of this file).
-
-For example, a `composer_config.json` with the following content would configure the Composer to look for models in the `~/malloy` directory.
-
-```
+"Dataset" config `.json` file:
+```json
 {
-  "modelsPath": "~/malloy"
+  "readme": <path to a readme file>,
+  "title": <title of dataset>,
+  "models": [
+    {
+      "id": "flights",
+      "path": <path to a .malloy file>,
+      "sources": [
+        {
+          "title": <title of source>,
+          "sourceName": <name of source in the .malloy file>,
+          "description": "Look at all the flights that have flown up to 2003"
+        },
+        ...
+      ]
+    }
+  ]
 }
 ```
 
-### Running against a local version of Malloy
+"App" config `.json` file:
+```json
+{
+  "apps": [
+    {
+      "id": "faa",
+      "path": <path to dataset>
+    },
+    ...
+  ],
+  "readme": <path to readme file>
+}
+```
+
+# Development
+
+## Running against a local version of Malloy
+
+If you're working on developing Malloy, and have changes to one of the other Malloy libraries locally on your machine, you can link the Composer to that version.
 
 1. In your local Malloy repository, run `npm link -ws`. That will make your development packages locally available for development.
 2. In your VS Code extension repository, run `npm run malloy-link` to use your local Malloy packages.
@@ -73,9 +91,9 @@ For example, a `composer_config.json` with the following content would configure
 4. Once that release completes, run `npm run malloy-update` to update dependencies to that release. This will break the link to your local version of Malloy, so if you want to resume local development, re-run `npm run malloy-link`
 5. To manually unlink without updating, you may run `npm run malloy-unlink`
 
-### Debugging
+## Debugging
 
-## Using VSCode
+### Using VSCode
 
 - From VSCode Run & Debug Panel Select "Launch Composer" from the dropdown, then "Start Debugging" using the Run button or `F5`
 - Then select "Launch Composer" from the dropdown, then "Start Debugging" using the Run button or `F5`
@@ -85,18 +103,7 @@ For example, a `composer_config.json` with the following content would configure
 
 There is a `duckdb-wasm` folder which should be served on a webserver in order to run an instance of the DuckDB WASM Mode Composer. The `duckdb-wasm/dist` folder contains the compiled app after running `npm run build-duckdb-wasm`. You can also run `npm run start-duckdb-wasm` to run the DuckDB WASM Mode Composer on port 9999.
 
-The WASM Mode Composer can be easily added to any project that already uses the Fiddle, or it can be added to any repo with Malloy files using CSV or parquet files to simply serve the Composer experience on top of those files. All you need is to host the generated `app.js` and `app.css` files on some CDN (it can be the same CDN that serves the data and malloy files, or a different one), then to add a `composer.json` file that lists the available datasets, e.g.
-
-```json
-[
-  {
-    "name": "Airports",
-    "dataTables": ["airports.parquet"],
-    "modelPath": "./airports.malloy",
-    "readme": "./airports.md"
-  }
-]
-```
+The WASM Mode Composer can be easily added to any project that already uses the Fiddle, or it can be added to any repo with Malloy files using CSV or parquet files to simply serve the Composer experience on top of those files. All you need is to host the generated `app.js` and `app.css` files on some CDN (it can be the same CDN that serves the data and malloy files, or a different one), then to add a `composer.json` file that lists the available datasets (see the "app" config `.json` file example above).
 
 Finally, add an `index.html` file, like this:
 
