@@ -91,6 +91,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: "nest",
           iconColor: "query",
           closeOnComplete: true,
+          divider: true,
           Component: ({ onComplete }) => (
             <NestContextBar
               source={source}

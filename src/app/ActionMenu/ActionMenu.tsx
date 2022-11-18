@@ -40,6 +40,7 @@ interface ActionBase {
   iconName: ActionIconName;
   iconColor: ColorKey;
   isEnabled?: boolean;
+  divider?: boolean;
 }
 
 interface OneClickAction extends ActionBase {
@@ -124,8 +125,8 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                 <ActionButtons>
                   {actions
                     .filter((action) => action.isEnabled !== false)
-                    .map((action) => {
-                      return (
+                    .flatMap((action) => {
+                      const components = [
                         <ActionButton
                           key={action.id}
                           color={action.iconColor}
@@ -143,8 +144,14 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                             color={action.iconColor}
                           />
                           <ActionButtonLabel>{action.label}</ActionButtonLabel>
-                        </ActionButton>
-                      );
+                        </ActionButton>,
+                      ];
+                      if (action.divider) {
+                        components.push(
+                          <Divider key={action.id + "/divider"} />
+                        );
+                      }
+                      return components;
                     })}
                 </ActionButtons>
               </ContextMenuContent>
@@ -229,6 +236,12 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
     </OuterDiv>
   );
 };
+
+const Divider = styled.div`
+  width: calc(100% + 20px);
+  margin: 5px -10px;
+  border-bottom: 1px solid #efefef;
+`;
 
 const OuterDiv = styled.div``;
 
