@@ -188,6 +188,7 @@ export function useQueryBuilder(
     modify: (queryBuilder: QueryBuilder) => void,
     noURLUpdate = false
   ) => {
+    const backup = JSON.parse(JSON.stringify(queryBuilder.current.getQuery()));
     modify(queryBuilder.current);
     // TODO this is hack to get the calling component to always rerender
     // when the query changes. This used to be done by setting a query
@@ -195,15 +196,21 @@ export function useQueryBuilder(
     // So instead we have a useless `version` which we update.
     setVersion((x) => x + 1);
     if (queryBuilder.current?.canRun()) {
-      const queryString = queryBuilder.current.getQueryStringForModel();
-      if (!noURLUpdate) {
-        updateQueryInURL({
-          run: noURLUpdate,
-          query: queryString,
-          styles: dataStyles.current,
-        });
+      try {
+        const queryString = queryBuilder.current.getQueryStringForModel();
+        if (!noURLUpdate) {
+          updateQueryInURL({
+            run: noURLUpdate,
+            query: queryString,
+            styles: dataStyles.current,
+          });
+        }
+        setDirty(true);
+        setError(undefined);
+      } catch (error) {
+        queryBuilder.current.setQuery(backup);
+        setError(error);
       }
-      setDirty(true);
     } else {
       setDirty(true);
     }
