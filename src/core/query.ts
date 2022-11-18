@@ -354,8 +354,15 @@ export class QueryBuilder extends SourceUtils {
   }
 
   public replaceQuery(field: TurtleDef): void {
+    const filters =
+      this.query.pipeline.length === 1 &&
+      this.query.pipeline[0].fields.length === 0
+        ? this.query.pipeline[0].filterList || []
+        : [];
+    const pipeline = JSON.parse(JSON.stringify(field.pipeline));
+    pipeline[0].filterList = [...filters, ...(pipeline[0].filterList || [])];
     this.query = {
-      pipeline: JSON.parse(JSON.stringify(field.pipeline)),
+      pipeline,
       name: field.as || field.name,
       type: "turtle",
     };

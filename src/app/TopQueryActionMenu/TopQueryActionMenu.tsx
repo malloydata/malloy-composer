@@ -21,7 +21,6 @@ import { OrderByContextBar } from "../OrderByContextBar";
 import { ActionMenu } from "../ActionMenu";
 import { SearchValueMapResult, StructDef, ModelDef } from "@malloydata/malloy";
 import { DataStyleContextBar } from "../DataStyleContextBar";
-import { LoadQueryContextBar } from "../LoadQueryContextBar";
 import {
   fieldToSummaryItem,
   flatFields,
@@ -66,6 +65,47 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
       actions={[
         {
           kind: "sub_menu",
+          id: "filter",
+          label: "Filter",
+          iconName: "filter",
+          iconColor: "filter",
+          closeOnComplete: true,
+          Component: ({ onComplete }) => (
+            <FilterContextBar
+              modelPath={modelPath}
+              model={model}
+              topValues={topValues}
+              source={source}
+              addFilter={(filter, as) =>
+                queryModifiers.addFilter(stagePath, filter, as)
+              }
+              onComplete={onComplete}
+              needsRename={false}
+            />
+          ),
+        },
+        {
+          kind: "sub_menu",
+          id: "nest",
+          label: "Nest",
+          iconName: "nest",
+          iconColor: "query",
+          closeOnComplete: true,
+          Component: ({ onComplete }) => (
+            <NestContextBar
+              source={source}
+              selectField={(fieldPath) =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              selectNewNest={(name) =>
+                queryModifiers.addNewNestedQuery(stagePath, name)
+              }
+              onComplete={onComplete}
+            />
+          ),
+        },
+        {
+          kind: "sub_menu",
           id: "group_by",
           label: "Group By",
           iconName: "group_by",
@@ -102,47 +142,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
                 queryModifiers.addNewMeasure(stagePath, def)
               }
               onComplete={onComplete}
-            />
-          ),
-        },
-        {
-          kind: "sub_menu",
-          id: "nest",
-          label: "Nest",
-          iconName: "nest",
-          iconColor: "query",
-          closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <NestContextBar
-              source={source}
-              selectField={(fieldPath) =>
-                queryModifiers.toggleField(stagePath, fieldPath)
-              }
-              selectNewNest={(name) =>
-                queryModifiers.addNewNestedQuery(stagePath, name)
-              }
-              onComplete={onComplete}
-            />
-          ),
-        },
-        {
-          kind: "sub_menu",
-          id: "filter",
-          label: "Filter",
-          iconName: "filter",
-          iconColor: "filter",
-          closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <FilterContextBar
-              modelPath={modelPath}
-              model={model}
-              topValues={topValues}
-              source={source}
-              addFilter={(filter, as) =>
-                queryModifiers.addFilter(stagePath, filter, as)
-              }
-              onComplete={onComplete}
-              needsRename={false}
             />
           ),
         },
@@ -214,21 +213,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: "stage",
           iconColor: "other",
           onClick: () => queryModifiers.addStage(undefined),
-        },
-        {
-          kind: "sub_menu",
-          id: "load_query",
-          label: "Load Query",
-          iconName: "load",
-          iconColor: "query",
-          closeOnComplete: true,
-          Component: ({ onComplete }) => (
-            <LoadQueryContextBar
-              source={source}
-              selectField={queryModifiers.loadQuery}
-              onComplete={onComplete}
-            />
-          ),
         },
       ]}
       searchItems={flatFields(source).map(({ field, path }) => ({
