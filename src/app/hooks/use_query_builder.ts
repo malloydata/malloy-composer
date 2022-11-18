@@ -18,6 +18,7 @@ import {
   Result as MalloyResult,
   ModelDef,
   NamedQuery,
+  TurtleDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { useRef, useState } from "react";
@@ -80,6 +81,7 @@ export interface QueryModifiers {
   ) => DataStyles;
   setDataStyles: (styles: DataStyles, noURLUpdate?: boolean) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
+  replaceQuery: (field: TurtleDef) => void;
   loadQuery: (queryPath: string) => void;
   updateFieldOrder: (stagePath: StagePath, newOrdering: number[]) => void;
   removeField: (stagePath: StagePath, fieldIndex: number) => void;
@@ -376,6 +378,10 @@ export function useQueryBuilder(
     modifyQuery((qb) => qb.loadQuery(queryPath));
   };
 
+  const replaceQuery = (field: TurtleDef) => {
+    modifyQuery((qb) => qb.replaceQuery(field));
+  };
+
   const addNewMeasure = addNewDimension;
 
   const onDrill = (filters: FilterExpression[]) => {
@@ -454,6 +460,7 @@ export function useQueryBuilder(
       setDataStyle,
       addStage,
       loadQuery,
+      replaceQuery,
       updateFieldOrder,
       removeField,
       removeFilter,
