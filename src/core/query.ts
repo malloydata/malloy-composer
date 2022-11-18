@@ -353,7 +353,7 @@ export class QueryBuilder extends SourceUtils {
     this.query.name = definition.as || definition.name;
   }
 
-  public replaceQuery(field: TurtleDef) {
+  public replaceQuery(field: TurtleDef): void {
     this.query = {
       pipeline: JSON.parse(JSON.stringify(field.pipeline)),
       name: field.as || field.name,
