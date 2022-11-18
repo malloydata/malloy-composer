@@ -51,6 +51,16 @@ class SourceUtils {
     return this._source;
   }
 
+  protected fieldDefForQueryFieldDef(field: QueryFieldDef, source: StructDef) {
+    if (typeof field === "string") {
+      return this.getField(source, field);
+    } else if (isFilteredAliasedName(field)) {
+      return this.getField(source, field.name);
+    } else {
+      return field;
+    }
+  }
+
   protected getField(source: StructDef, fieldName: string): FieldDef {
     let parts = fieldName.split(".");
     let currentSource = source;
@@ -101,6 +111,12 @@ const BLANK_QUERY: TurtleDef = {
   name: "new_query",
   type: "turtle",
 };
+
+class NotAStageError extends Error {
+  constructor(message: string, public readonly field: QueryFieldDef) {
+    super(message);
+  }
+}
 
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
@@ -178,6 +194,25 @@ export class QueryBuilder extends SourceUtils {
     };
   }
 
+  private autoExpandStageAtPath(stagePath: StagePath) {
+    try {
+      return this.stageAtPath(stagePath);
+    } catch (error) {
+      if (error instanceof NotAStageError) {
+        const { stagePath: newStagePath, fieldIndex } = stagePathPop(stagePath);
+        const fieldDef = this.fieldDefForQueryFieldDef(
+          error.field,
+          this.sourceForStageAtPath(newStagePath)
+        );
+        if (fieldDef.type === "turtle") {
+          this.replaceWithDefinition(newStagePath, fieldIndex);
+          return this.stageAtPath(stagePath);
+        }
+      }
+      throw error;
+    }
+  }
+
   private stageAtPath(stagePath: StagePath) {
     let current = this.query.pipeline;
     // eslint-disable-next-line no-constant-condition
@@ -194,7 +229,10 @@ export class QueryBuilder extends SourceUtils {
           isFilteredAliasedName(newField) ||
           newField.type !== "turtle"
         ) {
-          throw new Error("Path does not refer to a stage correctly");
+          throw new NotAStageError(
+            "Path does not refer to a stage correctly",
+            newField
+          );
         }
         current = newField.pipeline;
         if (newStagePath === undefined) {
@@ -259,16 +297,6 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
-  private fieldDefForQueryFieldDef(field: QueryFieldDef, source: StructDef) {
-    if (typeof field === "string") {
-      return this.getField(source, field);
-    } else if (isFilteredAliasedName(field)) {
-      return this.getField(source, field.name);
-    } else {
-      return field;
-    }
-  }
-
   private getIndexToInsertNewField(
     stagePath: StagePath,
     queryFieldDef: QueryFieldDef
@@ -297,7 +325,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   private insertField(stagePath: StagePath, field: QueryFieldDef) {
-    const stage = this.stageAtPath(stagePath);
+    const stage = this.autoExpandStageAtPath(stagePath);
     const insertIndex = this.getIndexToInsertNewField(stagePath, field);
     stage.fields.splice(insertIndex, 0, field);
   }
@@ -416,6 +444,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   toggleField(stagePath: StagePath, fieldPath: string): void {
+    this.autoExpandStageAtPath(stagePath);
     const fieldIndex = this.getFieldIndex(stagePath, fieldPath);
     if (fieldIndex !== undefined) {
       this.removeField(stagePath, fieldIndex);
@@ -429,7 +458,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   addFilter(stagePath: StagePath, filter: FilterExpression): void {
-    const stage = this.stageAtPath(stagePath);
+    const stage = this.autoExpandStageAtPath(stagePath);
     stage.filterList = [...(stage.filterList || []), filter];
   }
 
@@ -489,7 +518,7 @@ export class QueryBuilder extends SourceUtils {
     byField?: SchemaField,
     direction?: "asc" | "desc"
   ): void {
-    const stage = this.stageAtPath(stagePath);
+    const stage = this.autoExpandStageAtPath(stagePath);
     if (stage.type !== "reduce") {
       throw new Error("Don't know how to handle this yet");
     }
@@ -509,7 +538,7 @@ export class QueryBuilder extends SourceUtils {
     byFieldIndex: number,
     direction?: "asc" | "desc"
   ): void {
-    const stage = this.stageAtPath(stagePath);
+    const stage = this.autoExpandStageAtPath(stagePath);
     if (stage.type !== "reduce") {
       throw new Error("Don't know how to handle this yet");
     }
@@ -551,12 +580,17 @@ export class QueryBuilder extends SourceUtils {
         throw new Error("fieldIndex must be provided if stagePath is");
       }
       const field = parentStage.fields[fieldIndex];
-      if (
-        typeof field !== "string" &&
-        !isFilteredAliasedName(field) &&
-        field.type === "turtle"
-      ) {
-        query = field;
+      const fieldDef = this.fieldDefForQueryFieldDef(
+        field,
+        this.sourceForStageAtPath(stagePath)
+      );
+      if (fieldDef.type === "turtle") {
+        if (typeof field === "string" || isFilteredAliasedName(field)) {
+          this.replaceWithDefinition(stagePath, fieldIndex);
+          query = parentStage.fields[fieldIndex];
+        } else {
+          query = field;
+        }
       } else {
         throw new Error("Invalid field to add stage to.");
       }
@@ -1119,10 +1153,18 @@ ${malloy}
     for (let fieldIndex = 0; fieldIndex < stage.fields.length; fieldIndex++) {
       const field = stage.fields[fieldIndex];
       try {
+        const stages = [];
+        const fieldDef = this.fieldDefForQueryFieldDef(field, source);
+        if (fieldDef.type === "turtle") {
+          let stageSource = source;
+          for (const stage of fieldDef.pipeline) {
+            stages.push(this.getStageSummary(stage, stageSource, dataStyles));
+            stageSource = this.modifySourceForStage(stage, stageSource);
+          }
+        }
         const styleItem = this.getStyleItem(field, source, dataStyles);
         const styleItems = styleItem ? [styleItem] : [];
         if (typeof field === "string") {
-          const fieldDef = this.getField(source, field);
           if (fieldDef.type === "struct") {
             throw new Error("Don't know how to deal with this");
           }
@@ -1142,6 +1184,7 @@ ${malloy}
                 ? "measure"
                 : "dimension",
             name: fieldDef.as || fieldDef.name,
+            stages,
           });
           if (fieldDef.type !== "turtle") {
             orderByFields.push({
@@ -1151,7 +1194,6 @@ ${malloy}
             });
           }
         } else if (isFilteredAliasedName(field)) {
-          const fieldDef = this.getField(source, field.name);
           if (fieldDef.type === "struct") {
             throw new Error("Don't know how to deal with this");
           }
@@ -1185,14 +1227,9 @@ ${malloy}
                 : fieldDef.aggregate
                 ? "measure"
                 : "dimension",
+            stages,
           });
         } else if (field.type === "turtle") {
-          const stages = [];
-          let stageSource = source;
-          for (const stage of field.pipeline) {
-            stages.push(this.getStageSummary(stage, stageSource, dataStyles));
-            stageSource = this.modifySourceForStage(stage, stageSource);
-          }
           items.push({
             type: "nested_query_definition",
             name: field.as || field.name,

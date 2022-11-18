@@ -143,18 +143,37 @@ export interface Schema {
   fields: SchemaField[];
 }
 
-export interface QuerySummaryItemField {
+export type QuerySummaryItemField =
+  | QuerySummaryItemFieldScalar
+  | QuerySummaryItemFieldQuery;
+
+export interface QuerySummaryItemFieldScalar {
   type: "field";
   field: FieldDef;
   isRefined: boolean;
   isRenamed: boolean;
   saveDefinition: FieldDef | undefined;
   fieldIndex: number;
-  kind: "dimension" | "measure" | "query";
+  kind: "dimension" | "measure";
   name: string;
   path: string;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
+}
+
+export interface QuerySummaryItemFieldQuery {
+  type: "field";
+  field: FieldDef;
+  isRefined: boolean;
+  isRenamed: boolean;
+  saveDefinition: FieldDef | undefined;
+  fieldIndex: number;
+  kind: "query";
+  name: string;
+  path: string;
+  filters?: QuerySummaryItemFilter[];
+  styles?: QuerySummaryItemDataStyle[];
+  stages: StageSummary[];
 }
 
 export interface QuerySummaryItemNestedQueryDefinition {
