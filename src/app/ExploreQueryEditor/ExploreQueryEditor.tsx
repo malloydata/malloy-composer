@@ -16,6 +16,7 @@ import { QuerySummaryPanel } from "../QuerySummaryPanel";
 import { Result } from "../Result";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
+import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -62,6 +63,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   canQueryRun,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
+  const [loadOpen, setLoadOpen] = useState(false);
   return (
     <Outer>
       <SidebarOuter>
@@ -100,6 +102,21 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                 onClick={() => queryModifiers.clearQuery()}
                 color={isQueryEmpty ? "other" : "dimension"}
               />
+              <div>
+                <ActionIcon
+                  action="load"
+                  onClick={() => setLoadOpen(true)}
+                  color="query"
+                />
+                <Popover open={loadOpen} setOpen={setLoadOpen}>
+                  <LoadTopQueryContextBar
+                    model={model}
+                    source={source}
+                    selectField={queryModifiers.replaceQuery}
+                    onComplete={() => setLoadOpen(false)}
+                  />
+                </Popover>
+              </div>
               <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}
