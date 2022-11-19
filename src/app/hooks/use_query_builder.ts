@@ -211,6 +211,8 @@ export function useQueryBuilder(
         setError(undefined);
       } catch (error) {
         queryBuilder.current.setQuery(backup);
+        // eslint-disable-next-line no-console
+        console.error(error);
         setError(error);
       }
     } else {

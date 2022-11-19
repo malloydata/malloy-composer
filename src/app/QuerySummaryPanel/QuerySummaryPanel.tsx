@@ -330,7 +330,10 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
     <div ref={ref}>
       <ClickToPopover
         popoverContent={({ closeMenu }) => {
-          if (item.type === "field" || item.type === "field_definition") {
+          if (
+            (item.type === "field" || item.type === "field_definition") &&
+            item.kind !== "query"
+          ) {
             if (item.kind === "dimension") {
               return (
                 <DimensionActionMenu
@@ -439,46 +442,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   }}
                 />
               );
-            } else {
-              return (
-                <SavedQueryActionMenu
-                  source={source}
-                  removeField={() =>
-                    queryModifiers.removeField(stagePath, item.fieldIndex)
-                  }
-                  addFilter={(filter) =>
-                    queryModifiers.addFilterToField(
-                      stagePath,
-                      item.fieldIndex,
-                      filter
-                    )
-                  }
-                  renameField={(newName) => {
-                    queryModifiers.renameField(
-                      stagePath,
-                      item.fieldIndex,
-                      newName
-                    );
-                  }}
-                  addLimit={() => {
-                    /* unused, unimplemented */
-                  }}
-                  replaceWithDefinition={() =>
-                    queryModifiers.replaceWithDefinition(
-                      stagePath,
-                      item.fieldIndex
-                    )
-                  }
-                  closeMenu={closeMenu}
-                  setDataStyle={(renderer) =>
-                    queryModifiers.setDataStyle(item.name, renderer)
-                  }
-                  beginReorderingField={() => {
-                    beginReorderingField(item.fieldIndex);
-                    closeMenu();
-                  }}
-                />
-              );
             }
           } else if (item.type === "filter") {
             return (
@@ -544,7 +507,10 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 allowedRenderers={item.allowedRenderers}
               />
             );
-          } else if (item.type === "nested_query_definition") {
+          } else if (
+            item.type === "nested_query_definition" ||
+            (item.type === "field" && item.kind === "query")
+          ) {
             const nestStagePath = stagePathPush(stagePath, {
               fieldIndex: item.fieldIndex,
               stageIndex: 0,

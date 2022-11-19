@@ -222,6 +222,8 @@ export const Explore: React.FC = () => {
           }
           params.current = urlParams.toString();
         } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(error);
           setError(error);
         } finally {
           setLoading((loading) => --loading);
@@ -259,6 +261,8 @@ export const Explore: React.FC = () => {
       urlParams.set("page", "query");
       setParams(urlParams, { replace: true });
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
       setError(error);
     } finally {
       setLoading((loading) => --loading);
@@ -296,6 +300,8 @@ export const Explore: React.FC = () => {
       runQuery();
       setParams(urlParams);
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
       setError(error);
     } finally {
       setLoading((loading) => --loading);
