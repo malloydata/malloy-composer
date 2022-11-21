@@ -14,7 +14,7 @@
 import { FilterExpression, StructDef } from "@malloydata/malloy";
 import { useState } from "react";
 import { compileFilter } from "../../core/compile";
-import { CodeInput } from "../CodeInput";
+import { CodeTextArea } from "../CodeInput";
 import {
   Button,
   RightButtonRow,
@@ -40,11 +40,12 @@ export const EditFilter: React.FC<EditFilterProps> = ({
     <ContextMenuMain>
       <ContextMenuTitle>Edit Filter</ContextMenuTitle>
       <form>
-        <CodeInput
+        <CodeTextArea
           value={filter}
           setValue={setFilter}
           placeholder="filter_expression"
           autoFocus={true}
+          rows={3}
         />
         <RightButtonRow>
           <Button type="button" color="secondary" onClick={onComplete}>
