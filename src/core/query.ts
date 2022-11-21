@@ -762,7 +762,7 @@ export class QueryWriter extends SourceUtils {
     modelPath: string
   ): string {
     const malloy = this.getMalloyString(false, this.query.name);
-    return `<!-- malloy-query  
+    return `<!-- malloy-query
   name="${snakeToTitle(this.query.name)}"
   description="Add a description here." ${
     renderer
@@ -1013,7 +1013,7 @@ ${malloy}
         type: "filter",
         filterSource: filter.code,
         filterIndex,
-        fieldPath: parsed.field,
+        fieldPath: parsed && parsed.field,
         field: parsed && this.getField(source, parsed.field),
         parsed: parsed && parsed.filter,
       });
