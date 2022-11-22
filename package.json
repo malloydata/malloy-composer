@@ -20,6 +20,7 @@
     "start": "npm run server-build && node ./dist/cli.js",
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./node_modules",
+    "create-bundle": "npx ts-node scripts/create-release-bundles",
     "server-build": "ts-node scripts/package-server --skip-package",
     "server-start": "npm run server-build && node ./dist/cli.js ./malloy-samples",
     "server-package": "ts-node scripts/package-server",
@@ -56,6 +57,7 @@
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
+    "@types/archiver": "^5.3.1",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/moment": "^2.13.0",
@@ -64,6 +66,7 @@
     "@types/styled-components": "^5.1.19",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
     "@typescript-eslint/parser": "^4.18.0",
+    "archiver": "^5.3.1",
     "commander": "^9.4.0",
     "concurrently": "^6.2.1",
     "esbuild": "0.14.13",
