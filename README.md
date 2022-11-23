@@ -10,9 +10,9 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 ## Downloading and Running Composer
 
-1. Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
-2. Unzip the archive.
-3.`./composer malloy-samples`
+1.  Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
+2.  Unzip the archive.
+3.  `./composer malloy-samples`
 
 ## Running Composer from Source
 
@@ -24,7 +24,7 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 ## Database Connections
 
-You don't need to setup anything to run the DuckDB examples (the data is inclded with the samples).
+You don't need to setup anything to run the DuckDB examples (the data is included with the samples).
 
 To run the BigQuery Samples uou will need to have a [Google Cloud Account](https://cloud.google.com/), access to BigQuery, and the [gcloud CLI](https://cloud.google.com/sdk/gcloud) installed. Once the gcloud CLI is installed, open a terminal and type the following:
 
