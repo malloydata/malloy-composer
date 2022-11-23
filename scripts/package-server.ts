@@ -38,7 +38,8 @@ async function packageServer(
   version = "dev"
 ) {
   let target = `${platform}-${architecture}`;
-  doBuild(target);
+
+  await doBuild(target);
 
   if (sign) {
     console.log(`Signing not yet implemented`);
@@ -62,6 +63,7 @@ async function packageServer(
     console.log("Skipping final packaging step");
     return;
   }
+
   await pkg.exec([
     "-c",
     "package.json",
@@ -139,6 +141,9 @@ interface PackageTarget {
       },
     ];
   }
+
+  fs.rmSync("pkg/", { recursive: true, force: true });
+  fs.mkdirSync("pkg/", { recursive: true });
 
   console.log(JSON.stringify(options));
   const versionBits = getVersionBits();
