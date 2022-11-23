@@ -17,7 +17,7 @@ import { build, BuildOptions, Plugin } from "esbuild";
 import svgrPlugin from "esbuild-plugin-svgr";
 import * as path from "path";
 import fs from "fs";
-import copyDirSync from "./utils";
+import { copyDirSync } from "./utils";
 
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
@@ -30,6 +30,7 @@ export const targetDuckDBMap: Record<string, string> = {
 
 export const buildDirectory = "build/";
 export const appDirectory = "app/";
+export const serverBuildDirectory = "dist/";
 
 export const commonAppConfig = (development = false): BuildOptions => {
   return {
@@ -58,7 +59,7 @@ export const commonServerConfig = (
 ): BuildOptions => {
   return {
     entryPoints: ["./src/server/cli.ts", "./src/server/server.js"],
-    outdir: "dist/",
+    outdir: serverBuildDirectory,
     minify: !development,
     sourcemap: development ? "inline" : false,
     bundle: true,
@@ -143,6 +144,9 @@ export async function doBuild(target?: string): Promise<void> {
 
   fs.rmSync(buildDirectory, { recursive: true, force: true });
   fs.mkdirSync(buildDirectory, { recursive: true });
+
+  fs.rmSync(serverBuildDirectory, { recursive: true, force: true });
+  fs.mkdirSync(serverBuildDirectory, { recursive: true });
 
   copyDirSync("public", path.join(buildDirectory, appDirectory));
 
