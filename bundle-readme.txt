@@ -6,7 +6,7 @@ For MacOS, Linux:
 For MacOS
   Remove apple quarantine flag:
 
-    xattr -d apple.com.quarantine ./composer
+    xattr -d com.apple.quarantine ./composer
 
 To launch composer execute the following, then visit localhost:4000 in a web browser
 
