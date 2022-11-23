@@ -35,7 +35,7 @@ import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
 
 const MALLOY_DOCS =
-  "https://looker-open-source.github.io/malloy/documentation/";
+  "https://malloydata.github.io/malloy/documentation/";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",

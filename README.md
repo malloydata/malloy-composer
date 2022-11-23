@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 2. `git submodule init` and
 3. `git submodule update` to install git dependencies
 
-Make sure you have a [database connected](https://looker-open-source.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
+Make sure you have a [database connected](https://malloydata.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
 
 ### Launch the Composer (Local Server)
 
@@ -39,7 +39,7 @@ If you don't have a particular dataset you want to try out, you can always use t
 ### Troubleshooting Notes
 
 - If your datasets are visible, but clicking on one doesn't work, check in the output of the `npm run start` command for errors. One of your Malloy files or config files may have an error in it.
-- You'll need to define a [source](https://looker-open-source.github.io/malloy/documentation/language/source.html) for it to be explorable; top-level named queries that are not inside a source are not explorable.
+- You'll need to define a [source](https://malloydata.github.io/malloy/documentation/language/source.html) for it to be explorable; top-level named queries that are not inside a source are not explorable.
 
 ### Config File Examples
 
