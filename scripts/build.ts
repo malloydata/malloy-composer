@@ -17,6 +17,7 @@ import { build, BuildOptions, Plugin } from "esbuild";
 import svgrPlugin from "esbuild-plugin-svgr";
 import * as path from "path";
 import fs from "fs";
+import { copyDirSync } from "./utils";
 
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
@@ -29,6 +30,7 @@ export const targetDuckDBMap: Record<string, string> = {
 
 export const buildDirectory = "build/";
 export const appDirectory = "app/";
+export const serverBuildDirectory = "dist/";
 
 export const commonAppConfig = (development = false): BuildOptions => {
   return {
@@ -57,7 +59,7 @@ export const commonServerConfig = (
 ): BuildOptions => {
   return {
     entryPoints: ["./src/server/cli.ts", "./src/server/server.js"],
-    outdir: "dist/",
+    outdir: serverBuildDirectory,
     minify: !development,
     sourcemap: development ? "inline" : false,
     bundle: true,
@@ -66,20 +68,6 @@ export const commonServerConfig = (
     plugins: [makeDuckdbNoNodePreGypPlugin(target), ignorePgNativePlugin],
   };
 };
-
-function copyDir(src: string, dest: string) {
-  fs.mkdirSync(dest, { recursive: true });
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    entry.isDirectory()
-      ? copyDir(srcPath, destPath)
-      : fs.copyFileSync(srcPath, destPath);
-  }
-}
 
 const errorHandler = (e: unknown) => {
   console.log(e);
@@ -157,7 +145,10 @@ export async function doBuild(target?: string): Promise<void> {
   fs.rmSync(buildDirectory, { recursive: true, force: true });
   fs.mkdirSync(buildDirectory, { recursive: true });
 
-  copyDir("public", path.join(buildDirectory, appDirectory));
+  fs.rmSync(serverBuildDirectory, { recursive: true, force: true });
+  fs.mkdirSync(serverBuildDirectory, { recursive: true });
+
+  copyDirSync("public", path.join(buildDirectory, appDirectory));
 
   await build(commonAppConfig(development)).catch(errorHandler);
   await build(commonServerConfig(development, target)).catch(errorHandler);

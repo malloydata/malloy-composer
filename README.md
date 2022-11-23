@@ -8,20 +8,37 @@ _GitHub mutes videos by default, so make sure to unmute._
 
 https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b038-450c33903ad5.mov
 
-## Running the Composer
+## Downloading and Running Composer
+
+1.  Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
+2.  Unzip the archive.
+3.  `./composer malloy-samples`
+
+## Running Composer from Source
 
 1. `npm install` to install package dependencies
 2. `git submodule init` and
 3. `git submodule update` to install git dependencies
+4  `npm run build` 
+5. `npm run start malloy-samples`
 
-Make sure you have a [database connected](https://malloydata.github.io/malloy/documentation/connection_instructions.html), and you'll also likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
+## Database Connections
 
-### Launch the Composer (Local Server)
+You don't need to setup anything to run the DuckDB examples (the data is included with the samples).
 
-To launch the Composer local server, run:
+To run the BigQuery Samples uou will need to have a [Google Cloud Account](https://cloud.google.com/), access to BigQuery, and the [gcloud CLI](https://cloud.google.com/sdk/gcloud) installed. Once the gcloud CLI is installed, open a terminal and type the following:
 
-1. `npm run build` 
-2. `npm run start <path>`
+```
+gcloud auth login --update-adc
+gcloud config set project {my_project_id} --installation
+```
+
+Replace *{my_project_id}* with the **ID** of the BigQuery project you want to use & bill to. If you're not sure what this ID is, open Cloud Console, and click on the dropdown at the top (just to the right of the "Google Cloud Platform" text) to view projects you have access to. If you don't already have a project, create one.
+
+## VSCode 
+You will likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
+
+## Composer Parameters
 
 This will start local webserver at [http://localhost:4000]() by default. The `path` argument allows you to configure what Malloy files you want the composer to have access to. There are several different options for what the `path` can be.
 

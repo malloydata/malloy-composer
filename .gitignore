@@ -6,6 +6,7 @@ node_modules
 out
 pkg
 public/js
+bundle/
 
 # misc
 .DS_Store
