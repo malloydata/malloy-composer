@@ -117,9 +117,9 @@ If you're working on developing Malloy, and have changes to one of the other Mal
 - To connect to the render process select "Attach to Composer Render Process"
 
 ## Running Composer entirely in Browser Mode (using DuckDB WASM)
+Composer can run entirely in a browser with an included SQL engine.  Data and the composer applicaition is servered from a vanilla web server ([See lloyd's blogpost on the subject](https://lloydtabb.substack.com/p/exploring-data-with-only-a-webserver)).
 
-There is a `duckdb-wasm` folder which should be served on a webserver in order to run an instance of the DuckDB WASM Mode Composer (
-[See lloyd's blogpost on the subject](https://lloydtabb.substack.com/p/exploring-data-with-only-a-webserver)). The `duckdb-wasm/dist` folder contains the compiled app after running `npm run build-duckdb-wasm`. You can also run `npm run start-duckdb-wasm` to run the DuckDB WASM Mode Composer on port 9999.
+There is a `duckdb-wasm` folder which should be served on a webserver in order to run an instance of the DuckDB WASM Mode Composer. The `duckdb-wasm/dist` folder contains the compiled app after running `npm run build-duckdb-wasm`. You can also run `npm run start-duckdb-wasm` to run the DuckDB WASM Mode Composer on port 9999.
 
 The WASM Mode Composer can be easily added to any project that already uses the Fiddle, or it can be added to any repo with Malloy files using CSV or parquet files to simply serve the Composer experience on top of those files. All you need is to host the generated `app.js` and `app.css` files on some CDN (it can be the same CDN that serves the data and malloy files, or a different one), then to add a `composer.json` file that lists the available datasets (see the "app" config `.json` file example above).
 
