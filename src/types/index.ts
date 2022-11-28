@@ -45,10 +45,14 @@ export interface SourceConfig {
   description: string;
 }
 
+export interface RemoteTable {
+  name: string;
+  url: string;
+}
 export interface ModelConfig {
   id: string;
   path: string;
-  tables: string[];
+  tables: Array<string | RemoteTable>;
   sources?: SourceConfig[];
 }
 

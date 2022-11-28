@@ -428,7 +428,7 @@ export const Explore: React.FC = () => {
               <ErrorMessage error={error} />
               {section === "loading" && (
                 <EmptyMessage>
-                  <LoadingSpinner text="Loading..." />
+                  <LoadingSpinner text="Loading Data..." />
                 </EmptyMessage>
               )}
             </PageContainer>
