@@ -34,8 +34,7 @@ import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
 
-const MALLOY_DOCS =
-  "https://malloydata.github.io/malloy/documentation/";
+const MALLOY_DOCS = "https://malloydata.github.io/malloy/documentation/";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
@@ -428,7 +427,7 @@ export const Explore: React.FC = () => {
               <ErrorMessage error={error} />
               {section === "loading" && (
                 <EmptyMessage>
-                  <LoadingSpinner text="Loading..." />
+                  <LoadingSpinner text="Loading Data..." />
                 </EmptyMessage>
               )}
             </PageContainer>

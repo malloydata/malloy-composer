@@ -24,7 +24,6 @@ import { ActionIcon } from "../ActionIcon";
 import { Popover } from "../Popover";
 import { DimensionActionMenu } from "../DimensionActionMenu";
 import { AggregateActionMenu } from "../AggregateActionMenu";
-import { SavedQueryActionMenu } from "../SavedQueryActionMenu";
 import { LimitActionMenu } from "../LimitActionMenu";
 import { ListNest } from "../ListNest";
 import { NestQueryActionMenu } from "../NestQueryActionMenu";
@@ -553,6 +552,13 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   beginReorderingField(item.fieldIndex);
                   closeMenu();
                 }}
+                isExpanded={item.type === "nested_query_definition"}
+                replaceWithDefinition={() =>
+                  queryModifiers.replaceWithDefinition(
+                    stagePath,
+                    item.fieldIndex
+                  )
+                }
               />
             );
           } else if (item.type === "error_field") {

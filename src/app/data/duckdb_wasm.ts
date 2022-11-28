@@ -13,6 +13,7 @@
 
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
 import * as malloy from "@malloydata/malloy";
+import e from "express";
 import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 import { snakeToTitle } from "../utils";
@@ -93,11 +94,17 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
     app.models.map(async (sample: explore.ModelConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
       await Promise.all(
-        sample.tables.map((tableName) => {
-          return connection.database?.registerFileURL(
-            tableName,
-            new URL(tableName, samplesURL).toString()
-          );
+        sample.tables.map((table) => {
+          let tableName: string;
+          let tableUrl: string;
+          if (typeof table === "string") {
+            tableName = table;
+            tableUrl = new URL(tableName, samplesURL).toString();
+          } else {
+            tableName = table.name;
+            tableUrl = table.url;
+          }
+          return connection.database?.registerFileURL(tableName, tableUrl);
         })
       );
       const modelURL = new URL(sample.path, samplesURL);

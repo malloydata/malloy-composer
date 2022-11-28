@@ -12,7 +12,10 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 1.  Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
 2.  Unzip the archive.
-3.  `./composer malloy-samples`
+3.  _For MacOS, Linux_: 
+    - Make sure the binary is executable: `chmod a+x ./composer`
+    - Remove the Apple quarantine flag: `xattr -d com.apple.quarantine ./composer`
+4.  In your newly unzipped directory, run `./composer malloy-samples`
 
 ## Running Composer from Source
 

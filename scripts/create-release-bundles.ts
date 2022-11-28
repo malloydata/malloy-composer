@@ -33,7 +33,18 @@ async function createReleaseBundle(
     throw new Error(`Could not find: ${targetBinary}`);
 
   const targetName = path.basename(targetBinary);
-  fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR), { recursive: true });
+  const matches = targetName.match(/^.+-(.+)$/);
+  if (!matches) {
+    throw new Error(`Unknown binary name format: ${targetName}`);
+  }
+  const version = matches[1];
+  const outName = targetName.substring(
+    0,
+    targetName.length - version.length - 1
+  );
+  fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR, version), {
+    recursive: true,
+  });
 
   // Create bundle zip
   const archiveWrapper = new Promise<void>((resolve, reject) => {
@@ -41,7 +52,8 @@ async function createReleaseBundle(
       __dirname,
       "..",
       OUT_DIR,
-      `${targetName}.zip`
+      version,
+      `${outName}.zip`
     );
     const zipFile = fs.createWriteStream(targetZip);
     console.log(`Creating zip bundle:`);
