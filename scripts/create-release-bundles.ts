@@ -35,11 +35,16 @@ async function createReleaseBundle(
   const targetName = path.basename(targetBinary);
   const matches = targetName.match(/^.+-(.+)$/);
   if (!matches) {
-    throw new Error(`Unknown binary name format: ${targetName}`)
+    throw new Error(`Unknown binary name format: ${targetName}`);
   }
   const version = matches[1];
-  const outName = targetName.substring(0, targetName.length - version.length - 1);
-  fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR, version), { recursive: true });
+  const outName = targetName.substring(
+    0,
+    targetName.length - version.length - 1
+  );
+  fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR, version), {
+    recursive: true,
+  });
 
   // Create bundle zip
   const archiveWrapper = new Promise<void>((resolve, reject) => {
