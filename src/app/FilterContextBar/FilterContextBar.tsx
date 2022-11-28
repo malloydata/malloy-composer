@@ -40,6 +40,7 @@ import {
 import { FieldButton } from "../FieldButton";
 import { ActionIcon } from "../ActionIcon";
 import { compileFilter } from "../../core/compile";
+import { stringFilterToString } from "../../core/filters";
 
 interface FilterContextBarProps {
   source: StructDef;
@@ -165,7 +166,10 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                               onClick={() => {
                                 compileFilter(
                                   source,
-                                  `${searchResult.fieldName} = '${searchResult.fieldValue}'`
+                                  stringFilterToString(searchResult.fieldName, {
+                                    type: "is_equal_to",
+                                    values: [searchResult.fieldValue],
+                                  })
                                 ).then((expression) => {
                                   addFilter && addFilter(expression);
                                   onComplete();
