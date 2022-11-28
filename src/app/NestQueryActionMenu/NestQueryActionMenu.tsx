@@ -70,6 +70,8 @@ interface NestQueryActionMenuProps {
   rename: (newName: string) => void;
   model: ModelDef | undefined;
   modelPath: string | undefined;
+  isExpanded: boolean;
+  replaceWithDefinition: () => void;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
@@ -91,6 +93,8 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   addStage,
   topValues,
   rename,
+  isExpanded,
+  replaceWithDefinition,
 }) => {
   return (
     <ActionMenu
@@ -247,6 +251,15 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: "stage",
           iconColor: "other",
           onClick: addStage,
+        },
+        {
+          kind: "one_click",
+          id: "expand_definition",
+          label: "Duplicate",
+          iconName: "duplicate",
+          iconColor: "other",
+          isEnabled: !isExpanded,
+          onClick: replaceWithDefinition,
         },
         {
           kind: "one_click",
