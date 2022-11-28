@@ -24,6 +24,7 @@ import {
   TimeFilter,
   TimeFilterType,
 } from "../types";
+import { maybeQuoteIdentifier, unquoteIdentifier } from "./utils";
 
 function alternationOf(alternator: "|" | "&", values: string[]): string {
   if (values.length === 0) {
@@ -37,12 +38,13 @@ export function numberFilterToString(
   field: string,
   filter: NumberFilter
 ): string {
+  const quotedField = maybeQuoteIdentifier(field);
   switch (filter.type) {
     case "is_equal_to": {
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} = ${alternationOf(
+      return `${quotedField} = ${alternationOf(
         "|",
         filter.values.map((n) => n.toString())
       )}`;
@@ -51,27 +53,27 @@ export function numberFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} != ${alternationOf(
+      return `${quotedField} != ${alternationOf(
         "&",
         filter.values.map((n) => n.toString())
       )}`;
     }
     case "is_between":
-      return `${field}: ${filter.lowerBound} to ${filter.upperBound}`;
+      return `${quotedField}: ${filter.lowerBound} to ${filter.upperBound}`;
     case "is_greater_than":
-      return `${field} > ${filter.value}`;
+      return `${quotedField} > ${filter.value}`;
     case "is_less_than":
-      return `${field} < ${filter.value}`;
+      return `${quotedField} < ${filter.value}`;
     case "is_greater_than_or_equal_to":
-      return `${field} >= ${filter.value}`;
+      return `${quotedField} >= ${filter.value}`;
     case "is_less_than_or_equal_to":
-      return `${field} <= ${filter.value}`;
+      return `${quotedField} <= ${filter.value}`;
     case "is_null":
-      return `${field} = null`;
+      return `${quotedField} = null`;
     case "is_not_null":
-      return `${field} != null`;
+      return `${quotedField} != null`;
     case "custom":
-      return `${field}: ${filter.partial}`;
+      return `${quotedField}: ${filter.partial}`;
   }
 }
 
@@ -79,18 +81,22 @@ export function stringFilterToString(
   field: string,
   filter: StringFilter
 ): string {
+  const quotedField = maybeQuoteIdentifier(field);
   switch (filter.type) {
     case "is_equal_to": {
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} = ${alternationOf("|", filter.values.map(quoteString))}`;
+      return `${quotedField} = ${alternationOf(
+        "|",
+        filter.values.map(quoteString)
+      )}`;
     }
     case "is_not_equal_to": {
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} != ${alternationOf(
+      return `${quotedField} != ${alternationOf(
         "&",
         filter.values.map(quoteString)
       )}`;
@@ -99,7 +105,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} ~ ${alternationOf(
+      return `${quotedField} ~ ${alternationOf(
         "|",
         filter.values
           .map(escapePercents)
@@ -111,7 +117,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} !~ ${alternationOf(
+      return `${quotedField} !~ ${alternationOf(
         "&",
         filter.values
           .map(escapePercents)
@@ -123,7 +129,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} ~ ${alternationOf(
+      return `${quotedField} ~ ${alternationOf(
         "|",
         filter.values
           .map(escapePercents)
@@ -135,7 +141,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} !~ ${alternationOf(
+      return `${quotedField} !~ ${alternationOf(
         "&",
         filter.values
           .map(escapePercents)
@@ -147,7 +153,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} ~ ${alternationOf(
+      return `${quotedField} ~ ${alternationOf(
         "|",
         filter.values
           .map(escapePercents)
@@ -159,7 +165,7 @@ export function stringFilterToString(
       if (filter.values.length === 0) {
         return `true`;
       }
-      return `${field} !~ ${alternationOf(
+      return `${quotedField} !~ ${alternationOf(
         "&",
         filter.values
           .map(escapePercents)
@@ -168,15 +174,15 @@ export function stringFilterToString(
       )}`;
     }
     case "is_null":
-      return `${field} = null`;
+      return `${quotedField} = null`;
     case "is_not_null":
-      return `${field} != null`;
+      return `${quotedField} != null`;
     case "is_blank":
-      return `${field} = ''`;
+      return `${quotedField} = ''`;
     case "is_not_blank":
-      return `${field} != ''`;
+      return `${quotedField} != ''`;
     case "custom":
-      return `${field}: ${filter.partial}`;
+      return `${quotedField}: ${filter.partial}`;
   }
 }
 
@@ -184,62 +190,64 @@ export function booleanFilterToString(
   field: string,
   filter: BooleanFilter
 ): string {
+  const quotedField = maybeQuoteIdentifier(field);
   switch (filter.type) {
     case "is_false":
-      return `not ${field}`;
+      return `not ${quotedField}`;
     case "is_true":
-      return `${field}`;
+      return `${quotedField}`;
     case "is_true_or_null":
-      return `${field}: true | null`;
+      return `${quotedField}: true | null`;
     case "is_false_or_null":
-      return `${field}: false | null`;
+      return `${quotedField}: false | null`;
     case "is_null":
-      return `${field} = null`;
+      return `${quotedField} = null`;
     case "is_not_null":
-      return `${field} != null`;
+      return `${quotedField} != null`;
     case "custom":
-      return `${field}: ${filter.partial}`;
+      return `${quotedField}: ${filter.partial}`;
   }
 }
 
 export function timeFilterToString(field: string, filter: TimeFilter): string {
+  const quotedField = maybeQuoteIdentifier(field);
   switch (filter.type) {
     case "is_in_the_past":
-      return `${field}: now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
+      return `${quotedField}: now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
     case "is_last":
-      return `${field}.${filter.period} = now.${filter.period} - 1 ${filter.period}`;
+      return `${quotedField}.${filter.period} = now.${filter.period} - 1 ${filter.period}`;
     case "is_this":
-      return `${field}.${filter.period} = now.${filter.period}`;
+      return `${quotedField}.${filter.period} = now.${filter.period}`;
     case "is_on": {
-      return `${field}.${filter.granularity} = ${timeToString(
+      return `${quotedField}.${filter.granularity} = ${timeToString(
         filter.date,
         filter.granularity
       )}`;
     }
     case "is_after": {
-      return `${field}.${filter.granularity} > ${timeToString(
+      return `${quotedField}.${filter.granularity} > ${timeToString(
         filter.date,
         filter.granularity
       )}`;
     }
     case "is_before": {
-      return `${field}.${filter.granularity} < ${timeToString(
+      return `${quotedField}.${filter.granularity} < ${timeToString(
         filter.date,
         filter.granularity
       )}`;
     }
     case "is_between": {
-      return `${field}.${filter.granularity}: ${timeToString(
+      return `${quotedField}.${filter.granularity}: ${timeToString(
         filter.start,
         filter.granularity
       )} to ${timeToString(filter.end, filter.granularity)}`;
     }
     case "is_null":
-      return `${field} = null`;
+      return `${quotedField} = null`;
     case "is_not_null":
-      return `${field} != null`;
+      return `${quotedField} != null`;
     case "custom":
-      return `${field}: ${filter.partial}`;
+      return `${quotedField}: ${filter.partial}`;
   }
 }
 
@@ -463,8 +471,8 @@ const ID_CHAR = "[a-zA-Z_]";
 const DIGIT = "[0-9]";
 const ID = `${ID_CHAR}(?:${ID_CHAR}|${DIGIT})*`;
 const QUOTED_ID = `\`${ID_CHAR}(?:${ID_CHAR}|${DIGIT}|\\s)*\``;
-const ID_WITH_DOTS = `${ID}(?:\\.${ID})*`;
-const FIELD = `(?:${ID_WITH_DOTS}|${QUOTED_ID})`;
+const ID_WITH_DOTS = `(?:${ID}|${QUOTED_ID})(?:\\.(?:${ID}|${QUOTED_ID}))*`;
+const FIELD = `(?:${ID_WITH_DOTS})`;
 
 const FALSE_FILTER = new RegExp(`^not (${FIELD})$`);
 const TRUE_FILTER = new RegExp(`^(${FIELD})$`);
@@ -558,10 +566,7 @@ const TIME_BET_FILTER = new RegExp(
 );
 
 function extractField(fieldSyntax: string) {
-  if (fieldSyntax.startsWith("`") && fieldSyntax.endsWith("`")) {
-    return fieldSyntax.substring(1, fieldSyntax.length - 1);
-  }
-  return fieldSyntax;
+  return unquoteIdentifier(fieldSyntax);
 }
 
 export function hackyTerribleStringToFilter(

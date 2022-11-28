@@ -24,7 +24,6 @@ import { ActionIcon } from "../ActionIcon";
 import { Popover } from "../Popover";
 import { DimensionActionMenu } from "../DimensionActionMenu";
 import { AggregateActionMenu } from "../AggregateActionMenu";
-import { SavedQueryActionMenu } from "../SavedQueryActionMenu";
 import { LimitActionMenu } from "../LimitActionMenu";
 import { ListNest } from "../ListNest";
 import { NestQueryActionMenu } from "../NestQueryActionMenu";

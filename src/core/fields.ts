@@ -12,7 +12,7 @@
  */
 
 import { FieldDef, PipeSegment, Segment, StructDef } from "@malloydata/malloy";
-import { quoteIdentifier } from "../app/utils";
+import { maybeQuoteIdentifier, unquoteIdentifier } from "./utils";
 
 /**
  * Pre-defined types for new measures.
@@ -40,7 +40,7 @@ export function generateMeasure(
   measureType: MeasureType,
   fieldName: string
 ): string | undefined {
-  const quotedFieldName = quoteIdentifier(fieldName);
+  const quotedFieldName = maybeQuoteIdentifier(fieldName);
   switch (measureType) {
     case "count_distinct":
       return `count(distinct ${quotedFieldName})`;
@@ -55,12 +55,6 @@ export function generateMeasure(
   }
   return;
 }
-
-const unquoteIdentifier = (identifier: string) =>
-  identifier
-    .split(".")
-    .map((part) => part.replace(/(^`|`$)/g, ""))
-    .join(".");
 
 function findField(
   source: StructDef,

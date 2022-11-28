@@ -33,7 +33,7 @@ import {
   PreparedQuery,
   QueryFieldDef,
 } from "@malloydata/malloy";
-import { quoteIdentifier } from "../app/utils";
+import { maybeQuoteIdentifier } from "./utils";
 
 class DummyFiles implements URLReader {
   async readURL(): Promise<string> {
@@ -149,10 +149,9 @@ export async function compileGroupBy(
   name: string,
   expression: string
 ): Promise<QueryFieldDef> {
-  const groupBy = expression
-    ? `${quoteIdentifier(name)} is ${expression}`
-    : quoteIdentifier(name);
-  const malloy = `query: the_query is ${quoteIdentifier(
+  const quotedName = maybeQuoteIdentifier(name);
+  const groupBy = expression ? `${quotedName} is ${expression}` : quotedName;
+  const malloy = `query: the_query is ${maybeQuoteIdentifier(
     source.as || source.name
   )} -> { group_by: ${groupBy} }`;
   const modelDef = modelDefForSource(source);
