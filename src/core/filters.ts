@@ -256,8 +256,7 @@ function escapePercents(str: string) {
 }
 
 function quoteString(str: string) {
-  // TODO escape quotes
-  return `'${str}'`;
+  return `'${str.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
 }
 
 export function timeToString(
@@ -640,6 +639,10 @@ function hackyTerribleStringToAnyFilter(
   }
 }
 
+function deEscape(stringString: string) {
+  return stringString.replace(/\\(.)/g, "$1");
+}
+
 function deQuote(stringString: string) {
   return stringString.substring(1, stringString.length - 1);
 }
@@ -770,7 +773,9 @@ function hackyTerribleStringToStringFilter(
       field: extractField(isEqualMatch[1]),
       filter: {
         type: "is_equal_to",
-        values: getAlternationValues("|", isEqualMatch[2]).map(deQuote),
+        values: getAlternationValues("|", isEqualMatch[2])
+          .map(deQuote)
+          .map(deEscape),
       },
     };
   }
@@ -780,7 +785,9 @@ function hackyTerribleStringToStringFilter(
       field: extractField(isNotEqualMatch[1]),
       filter: {
         type: "is_not_equal_to",
-        values: getAlternationValues("&", isNotEqualMatch[2]).map(deQuote),
+        values: getAlternationValues("&", isNotEqualMatch[2])
+          .map(deQuote)
+          .map(deEscape),
       },
     };
   }
@@ -792,6 +799,7 @@ function hackyTerribleStringToStringFilter(
         type: "contains",
         values: getAlternationValues("|", isContainsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deContains),
       },
     };
@@ -804,6 +812,7 @@ function hackyTerribleStringToStringFilter(
         type: "does_not_contain",
         values: getAlternationValues("&", isNotContainsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deContains),
       },
     };
@@ -816,6 +825,7 @@ function hackyTerribleStringToStringFilter(
         type: "starts_with",
         values: getAlternationValues("|", isStartsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deStarts),
       },
     };
@@ -828,6 +838,7 @@ function hackyTerribleStringToStringFilter(
         type: "ends_with",
         values: getAlternationValues("|", isEndsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deEnds),
       },
     };
@@ -840,6 +851,7 @@ function hackyTerribleStringToStringFilter(
         type: "does_not_start_with",
         values: getAlternationValues("&", isNotStartsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deStarts),
       },
     };
@@ -852,6 +864,7 @@ function hackyTerribleStringToStringFilter(
         type: "does_not_end_with",
         values: getAlternationValues("&", isNotEndsMatch[2])
           .map(deQuote)
+          .map(deEscape)
           .map(deEnds),
       },
     };
