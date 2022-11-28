@@ -20,6 +20,7 @@ import {
 import { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { compileFilter } from "../../core/compile";
+import { stringFilterToString } from "../../core/filters";
 import { ActionIcon, ActionIconName } from "../ActionIcon";
 import { ColorKey, COLORS } from "../colors";
 import {
@@ -189,7 +190,10 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                               onClick={() => {
                                 compileFilter(
                                   valueSearchSource,
-                                  `${searchResult.fieldName} = '${searchResult.fieldValue}'`
+                                  stringFilterToString(searchResult.fieldName, {
+                                    type: "is_equal_to",
+                                    values: [searchResult.fieldValue],
+                                  })
                                 ).then((expression) => {
                                   addFilter && addFilter(expression);
                                   closeMenu();
