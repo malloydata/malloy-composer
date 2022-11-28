@@ -39,6 +39,7 @@ import {
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../app/utils";
 import { hackyTerribleStringToFilter } from "./filters";
+import { maybeQuoteIdentifier } from "./utils";
 
 class SourceUtils {
   constructor(protected _source: StructDef | undefined) {}
@@ -806,16 +807,6 @@ ${malloy}
     return fragments;
   }
 
-  private maybeQuoteIdentifier(name: string) {
-    const path = name.split(".");
-    for (let i = 0; i < path.length; i++) {
-      if (!path[i].match(/^[A-Za-z_][A-Za-z_0-9]*$/)) {
-        path[i] = `\`${path[i]}\``;
-      }
-    }
-    return path.join(".");
-  }
-
   private codeInfoForField(
     field: QueryFieldDef,
     source: StructDef,
@@ -833,7 +824,7 @@ ${malloy}
             : fieldDef.aggregate
             ? "aggregate"
             : "group_by";
-        return { property, malloy: [this.maybeQuoteIdentifier(field)] };
+        return { property, malloy: [maybeQuoteIdentifier(field)] };
       } else if (isFilteredAliasedName(field)) {
         const fieldDef = this.getField(source, field.name);
         if (fieldDef.type === "struct") {
@@ -847,10 +838,8 @@ ${malloy}
             : "group_by";
         const malloy: Fragment[] = [];
         const newNameIs =
-          field.as === undefined
-            ? ""
-            : `${this.maybeQuoteIdentifier(field.as)} is `;
-        malloy.push(`${newNameIs}${this.maybeQuoteIdentifier(field.name)}`);
+          field.as === undefined ? "" : `${maybeQuoteIdentifier(field.as)} is `;
+        malloy.push(`${newNameIs}${maybeQuoteIdentifier(field.name)}`);
         if (field.filterList && field.filterList.length > 0) {
           malloy.push(" {", INDENT, "where:");
           malloy.push(...this.getFiltersString(field.filterList || []));
@@ -859,7 +848,7 @@ ${malloy}
         return { property, malloy };
       } else if (field.type === "turtle") {
         const malloy: Fragment[] = [];
-        malloy.push(`${this.maybeQuoteIdentifier(field.as || field.name)} is`);
+        malloy.push(`${maybeQuoteIdentifier(field.as || field.name)} is`);
         let stageSource = source;
         let head = true;
         for (const stage of field.pipeline) {
@@ -876,9 +865,7 @@ ${malloy}
       } else {
         const property = field.aggregate ? "aggregate" : "group_by";
         const malloy: Fragment[] = [
-          `${this.maybeQuoteIdentifier(field.as || field.name)} is ${
-            field.code
-          }`,
+          `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
         return { property, malloy };
       }
@@ -962,7 +949,7 @@ ${malloy}
               name = order.field;
             }
             return `${
-              typeof name === "string" ? this.maybeQuoteIdentifier(name) : name
+              typeof name === "string" ? maybeQuoteIdentifier(name) : name
             }${order.dir ? " " + order.dir : ""}`;
           })
           .join(", "),
@@ -978,11 +965,11 @@ ${malloy}
     const initParts = [];
     initParts.push("query:");
     if (name !== undefined) {
-      initParts.push(`${this.maybeQuoteIdentifier(name)} is`);
+      initParts.push(`${maybeQuoteIdentifier(name)} is`);
     }
     if (!forSource) {
       initParts.push(
-        this.maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
+        maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
     }
     const malloy: Fragment[] = [initParts.join(" ")];

@@ -22,9 +22,10 @@ import {
 } from "../CommonElements";
 import { FieldDef, StructDef } from "@malloydata/malloy";
 import { FieldButton } from "../FieldButton";
-import { kindOfField, quoteIdentifier, typeOfField } from "../utils";
+import { kindOfField, typeOfField } from "../utils";
 import { TypeIcon } from "../TypeIcon";
 import { SelectDropdown } from "../SelectDropdown";
+import { maybeQuoteIdentifier } from "../../core/utils";
 
 interface SelectTimeGranularityProps {
   field: FieldDef;
@@ -125,12 +126,12 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
                   const fun = granularity.substring("extract_".length);
                   addGroupBy(
                     `${path}_${fun}`,
-                    `${fun}(${quoteIdentifier(path)})`
+                    `${fun}(${maybeQuoteIdentifier(path)})`
                   );
                 } else {
                   addGroupBy(
                     `${path}_${granularity}`,
-                    `${quoteIdentifier(path)}.${granularity}`
+                    `${maybeQuoteIdentifier(path)}.${granularity}`
                   );
                 }
               } else {
