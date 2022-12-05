@@ -2,7 +2,7 @@
 
 The Malloy Composer Demo is provided as a working example of an application built on top of Malloy. If you have any questions about getting it running, please reach out to us for help! If you find bugs or have feature requests, you can submit them as issues in this repo. [Learn how to use the composer](https://docs.google.com/presentation/d/18KUl_rrz2K-hbsiKJYS3rtTcYxZMXKklyPllLmTtIYY/edit#slide=id.g1269816dcbe_0_140)
 
-Malloy Composer can be run with a built in web server (Full Mode) and can access BigQuery, Postgres and DuckDB or in WASM Mode, running entirely in a web browser.  In WasMM Mode, Malloy Composer can only access csv and parquet files (via DuckDB).
+Malloy Composer can be run with a built in web server (Full Mode) and can access BigQuery, Postgres and DuckDB or in WASM Mode, running entirely in a web browser.  In WASM Mode, Malloy Composer can only access csv and parquet files (via DuckDB).
 
 The composer is only intended for demo purposes, and is not a finished or supported product.
 
