@@ -2,13 +2,15 @@
 
 The Malloy Composer Demo is provided as a working example of an application built on top of Malloy. If you have any questions about getting it running, please reach out to us for help! If you find bugs or have feature requests, you can submit them as issues in this repo. [Learn how to use the composer](https://docs.google.com/presentation/d/18KUl_rrz2K-hbsiKJYS3rtTcYxZMXKklyPllLmTtIYY/edit#slide=id.g1269816dcbe_0_140)
 
+Malloy Composer can be run with a built in web server (Full Mode) and can access BigQuery, Postgres and DuckDB or in WASMM Mode, running entirely in a web browser.  In WasMM Mode, Malloy Composer can only access csv and parquet files (via DuckDB).
+
 The composer is only intended for demo purposes, and is not a finished or supported product.
 
 _GitHub mutes videos by default, so make sure to unmute._
 
 https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b038-450c33903ad5.mov
 
-## Downloading and Running Composer
+## Downloading and Running Composer (Full Mode)
 
 1.  Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
 2.  Unzip the archive.
