@@ -33,14 +33,16 @@ async function createReleaseBundle(
     throw new Error(`Could not find: ${targetBinary}`);
 
   const targetName = path.basename(targetBinary);
-  const matches = targetName.match(/^.+-(.+)$/);
+  const matches = targetName.match(/^.+-([0-9.]+)(\.exe)?$/);
   if (!matches) {
     throw new Error(`Unknown binary name format: ${targetName}`);
   }
   const version = matches[1];
+  const isExe = matches.length > 2;
+  const extensionOffset = isExe ? 5 : 1;
   const outName = targetName.substring(
     0,
-    targetName.length - version.length - 1
+    targetName.length - version.length - extensionOffset
   );
   fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR, version), {
     recursive: true,
@@ -83,7 +85,7 @@ async function createReleaseBundle(
       .glob(`${MALLOY_SAMPLES_DIR}/*.md`, { cwd: globCwd })
       .glob(`${MALLOY_SAMPLES_DIR}/*.json`, { cwd: globCwd })
       .glob(`${MALLOY_SAMPLES_DIR}/LICENSE`, { cwd: globCwd })
-      .file(targetBinary, { name: BINARY_NAME })
+      .file(targetBinary, { name: BINARY_NAME + (isExe ? ".exe" : "") })
       .file(path.resolve(__dirname, "..", BUNDLE_README), {
         name: BUNDLE_README_NAME,
       })
