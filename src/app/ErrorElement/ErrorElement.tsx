@@ -11,9 +11,9 @@
  * GNU General Public License for more details.
  */
 
+import styled from "styled-components";
 import { useRouteError } from "react-router-dom";
-import { EmptyMessage } from "../CommonElements";
-import { MalloyLogo } from "../MalloyLogo";
+import { Wipeout } from "../Wipeout";
 
 export const ErrorElement = (): JSX.Element => {
   const error = useRouteError() as Error;
@@ -22,13 +22,36 @@ export const ErrorElement = (): JSX.Element => {
   console.error(error);
 
   return (
-    <EmptyMessage>
-      <MalloyLogo />
-      <h1>Oops, something went wrong.</h1>
-      <div>
-        <div>{error.message}</div>
-        <div>Try reloading the page.</div>
-      </div>
-    </EmptyMessage>
+    <ErrorMessage>
+      <Wipeout />
+      <ErrorHeader>Oops!</ErrorHeader>
+      <ErrorBody>
+        <div>Something went wrong.</div>
+        <div>Please reload.</div>
+      </ErrorBody>
+    </ErrorMessage>
   );
 };
+
+const ErrorHeader = styled.div`
+  font-weight: bold;
+  font-size: 18pt;
+  line-height: 1.6em;
+`;
+
+const ErrorBody = styled.div`
+  font-size: 14pt;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ErrorMessage = styled.div`
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #5f6368;
+`;
