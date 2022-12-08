@@ -38,7 +38,7 @@ async function createReleaseBundle(
     throw new Error(`Unknown binary name format: ${targetName}`);
   }
   const version = matches[1];
-  const isExe = matches.length > 2;
+  const isExe = matches[2]?.length > 0 ?? false;
   const extensionOffset = isExe ? 5 : 1;
   const outName = targetName.substring(
     0,
