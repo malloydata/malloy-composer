@@ -26,6 +26,7 @@ const duckDbTargetMap = new Map<string, string>([
   ["darwin-arm64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`],
   ["darwin-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`],
   ["linux-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`],
+  ["win32-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`],
 ]);
 
 const nodeTarget = "node16";
@@ -115,6 +116,7 @@ interface PackageTarget {
       { platform: "darwin", architecture: "x64" },
       { platform: "darwin", architecture: "arm64" },
       { platform: "linux", architecture: "x64" },
+      { platform: "win32", architecture: "x64" },
     ];
   } else {
     if (options.platform) {
