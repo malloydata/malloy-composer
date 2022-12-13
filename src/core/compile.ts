@@ -13,8 +13,6 @@
 
 import {
   Connection,
-  FetchSchemaAndRunSimultaneously,
-  FetchSchemaAndRunStreamSimultaneously,
   FieldDef,
   FilterExpression,
   FixedConnectionMap,
@@ -55,6 +53,13 @@ class DummyConnection implements Connection {
     throw new Error("Dummy connection cannot run SQL blocks.");
   }
 
+  fetchSchemaForSQLBlock(): Promise<
+    | { structDef: StructDef; error?: undefined }
+    | { error: string; structDef?: undefined }
+  > {
+    throw new Error("Dummy connection cannot fetch schemas.");
+  }
+
   fetchSchemaForSQLBlocks(): Promise<{
     schemas: Record<string, StructDef>;
     errors: Record<string, string>;
@@ -77,15 +82,7 @@ class DummyConnection implements Connection {
     return false;
   }
 
-  canFetchSchemaAndRunSimultaneously(): this is FetchSchemaAndRunSimultaneously {
-    return false;
-  }
-
   canStream(): this is StreamingConnection {
-    return false;
-  }
-
-  canFetchSchemaAndRunStreamSimultaneously(): this is FetchSchemaAndRunStreamSimultaneously {
     return false;
   }
 }

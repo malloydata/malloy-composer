@@ -16,7 +16,7 @@
   "author": "Malloy",
   "license": "GPL-2.0",
   "scripts": {
-    "lint": "eslint src scripts",
+    "lint": "tsc && eslint .",
     "start": "npm run server-build && node ./dist/cli.js",
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./build && rm -rf ./dist && rm -rf ./pkg",

@@ -24,11 +24,7 @@ module.exports = {
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
   ],
-  ignorePatterns: [
-    "*.d.ts",
-    "node_modules/",
-    "packages/malloy/src/lang/lib/Malloy",
-  ],
+  ignorePatterns: ["*.d.ts", "node_modules", "build", "dist"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     warnOnUnsupportedTypeScriptVersion: false,
