@@ -13,7 +13,7 @@
 
 import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
 import * as malloy from "@malloydata/malloy";
-import e from "express";
+import { DuckDBDataProtocol } from "@duckdb/duckdb-wasm";
 import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 import { snakeToTitle } from "../utils";
@@ -104,7 +104,12 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
             tableName = table.name;
             tableUrl = table.url;
           }
-          return connection.database?.registerFileURL(tableName, tableUrl);
+          return connection.database?.registerFileURL(
+            tableName,
+            tableUrl,
+            DuckDBDataProtocol.HTTP,
+            true
+          );
         })
       );
       const modelURL = new URL(sample.path, samplesURL);
