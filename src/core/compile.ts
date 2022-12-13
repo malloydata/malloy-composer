@@ -82,15 +82,7 @@ class DummyConnection implements Connection {
     return false;
   }
 
-  canFetchSchemaAndRunSimultaneously() {
-    return false;
-  }
-
   canStream(): this is StreamingConnection {
-    return false;
-  }
-
-  canFetchSchemaAndRunStreamSimultaneously() {
     return false;
   }
 }
