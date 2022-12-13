@@ -137,7 +137,7 @@ export function fieldToSummaryItem(
       isRenamed: false,
       fieldIndex: -1,
       kind,
-    };
+    } as QuerySummaryItem;
   }
 }
 
