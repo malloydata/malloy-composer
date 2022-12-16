@@ -17,17 +17,9 @@ import * as pkg from "pkg";
 import * as fs from "fs";
 import * as path from "path";
 import { Command } from "commander";
+import { targetDuckDBMap } from "./utils/fetch_duckdb";
 
-import duckdbPackage from "@malloydata/db-duckdb/package.json";
-const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
-const duckdbPath = "../malloy-third-party/third_party/github.com/duckdb/duckdb";
-
-const duckDbTargetMap = new Map<string, string>([
-  ["darwin-arm64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`],
-  ["darwin-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`],
-  ["linux-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`],
-  ["win32-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`],
-]);
+const duckdbPath = "../third_party/github.com/duckdb/duckdb";
 
 const nodeTarget = "node16";
 
@@ -46,12 +38,12 @@ async function packageServer(
     console.log(`Signing not yet implemented`);
   }
 
-  if (!duckDbTargetMap.has(target)) {
+  if (!targetDuckDBMap[target]) {
     throw new Error(`No DuckDb defined for target: ${target}`);
   }
 
   fs.copyFileSync(
-    path.resolve(__dirname, `${duckdbPath}/${duckDbTargetMap.get(target)}`),
+    path.resolve(__dirname, `${duckdbPath}/${targetDuckDBMap[target]}`),
     path.resolve(__dirname, "../dist/duckdb-native.node"),
     fs.constants.COPYFILE_FICLONE
   );

@@ -20,6 +20,7 @@ import fs from "fs";
 import { copyDirSync } from "./utils";
 
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
+import { fetchDuckDB } from "./utils/fetch_duckdb";
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
 
 export const targetDuckDBMap: Record<string, string> = {
@@ -159,17 +160,8 @@ export async function doBuild(target?: string): Promise<void> {
     if (duckDBBinaryName === undefined) {
       throw new Error(`No DuckDB binary for ${target} is available`);
     }
-    fs.copyFileSync(
-      path.join(
-        "malloy-third-party",
-        "third_party",
-        "github.com",
-        "duckdb",
-        "duckdb",
-        duckDBBinaryName
-      ),
-      path.join(buildDirectory, "duckdb-native.node")
-    );
+    const fileName = await fetchDuckDB(target);
+    fs.copyFileSync(fileName, path.join(buildDirectory, "duckdb-native.node"));
   }
 }
 
