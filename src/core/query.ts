@@ -35,6 +35,7 @@ import {
   TurtleDef,
   FieldTypeDef,
   NamedQuery,
+  expressionIsCalculation,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../app/utils";
@@ -291,7 +292,7 @@ export class QueryBuilder extends SourceUtils {
       return 3;
     } else if (field.type === "turtle") {
       return 2;
-    } else if (field.aggregate) {
+    } else if (expressionIsCalculation(field.expressionType)) {
       return 1;
     } else {
       return 0;
@@ -821,7 +822,7 @@ ${malloy}
         const property =
           fieldDef.type === "turtle"
             ? "nest"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "aggregate"
             : "group_by";
         return { property, malloy: [maybeQuoteIdentifier(field)] };
@@ -833,7 +834,7 @@ ${malloy}
         const property =
           fieldDef.type === "turtle"
             ? "nest"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "aggregate"
             : "group_by";
         const malloy: Fragment[] = [];
@@ -863,7 +864,9 @@ ${malloy}
         }
         return { property: "nest", malloy };
       } else {
-        const property = field.aggregate ? "aggregate" : "group_by";
+        const property = expressionIsCalculation(field.expressionType)
+          ? "aggregate"
+          : "group_by";
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
@@ -1053,7 +1056,7 @@ ${malloy}
       kind =
         fieldDef.type === "turtle"
           ? "query"
-          : fieldDef.aggregate
+          : expressionIsCalculation(fieldDef.expressionType)
           ? "measure"
           : "dimension";
     } else {
@@ -1066,14 +1069,14 @@ ${malloy}
         kind =
           fieldDef.type === "turtle"
             ? "query"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "measure"
             : "dimension";
       } else {
         kind =
           field.type === "turtle"
             ? "query"
-            : field.aggregate
+            : expressionIsCalculation(field.expressionType)
             ? "measure"
             : "dimension";
       }
@@ -1167,7 +1170,7 @@ ${malloy}
             kind:
               fieldDef.type === "turtle"
                 ? "query"
-                : fieldDef.aggregate
+                : expressionIsCalculation(fieldDef.expressionType)
                 ? "measure"
                 : "dimension",
             name: fieldDef.as || fieldDef.name,
@@ -1211,7 +1214,7 @@ ${malloy}
             kind:
               fieldDef.type === "turtle"
                 ? "query"
-                : fieldDef.aggregate
+                : expressionIsCalculation(fieldDef.expressionType)
                 ? "measure"
                 : "dimension",
             stages,
@@ -1233,7 +1236,9 @@ ${malloy}
             field,
             saveDefinition: source === this.getSource() ? field : undefined,
             source: field.code,
-            kind: field.aggregate ? "measure" : "dimension",
+            kind: expressionIsCalculation(field.expressionType)
+              ? "measure"
+              : "dimension",
             styles: styleItems,
           });
           orderByFields.push({
@@ -1314,7 +1319,7 @@ ${malloy}
       type: def.type,
       name: fan.as || fan.name,
       e: ["ignore"],
-      aggregate: def.aggregate,
+      expressionType: def.expressionType,
       code,
     };
   }

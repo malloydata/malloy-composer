@@ -12,6 +12,7 @@
  */
 
 import {
+  expressionIsCalculation,
   FieldDef,
   QueryFieldDef,
   SearchValueMapResult,
@@ -102,7 +103,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                     filter={(field) =>
                       field.type !== "turtle" &&
                       field.type !== "struct" &&
-                      !field.aggregate
+                      !expressionIsCalculation(field.expressionType)
                     }
                     showNested={true}
                     selectField={maybeSelectField}
