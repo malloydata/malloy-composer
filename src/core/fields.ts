@@ -11,7 +11,13 @@
  * GNU General Public License for more details.
  */
 
-import { FieldDef, PipeSegment, Segment, StructDef } from "@malloydata/malloy";
+import {
+  expressionIsCalculation,
+  FieldDef,
+  PipeSegment,
+  Segment,
+  StructDef,
+} from "@malloydata/malloy";
 import { maybeQuoteIdentifier, unquoteIdentifier } from "./utils";
 
 /**
@@ -179,7 +185,7 @@ export function sortFieldOrder(field: FieldDef): 0 | 1 | 2 | 3 {
     return 3;
   } else if (field.type === "turtle") {
     return 2;
-  } else if (field.aggregate) {
+  } else if (expressionIsCalculation(field.expressionType)) {
     return 1;
   } else {
     return 0;

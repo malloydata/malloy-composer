@@ -110,7 +110,7 @@ export function kindOfField(fieldDef: FieldDef): FieldKind {
     ? "source"
     : fieldDef.type === "turtle"
     ? "query"
-    : fieldDef.aggregate
+    : fieldDef.expressionType !== "scalar"
     ? "measure"
     : "dimension";
 }
@@ -143,12 +143,18 @@ export function fieldToSummaryItem(
 
 export function isAggregate(field: FieldDef): boolean {
   return (
-    field.type !== "struct" && field.type !== "turtle" && !!field.aggregate
+    field.type !== "struct" &&
+    field.type !== "turtle" &&
+    field.expressionType !== "scalar"
   );
 }
 
 export function isDimension(field: FieldDef): boolean {
-  return field.type !== "struct" && field.type !== "turtle" && !field.aggregate;
+  return (
+    field.type !== "struct" &&
+    field.type !== "turtle" &&
+    field.expressionType === "scalar"
+  );
 }
 
 export function isQuery(field: FieldDef): boolean {
