@@ -15,6 +15,7 @@ import { ReactComponent as TypeIconBoolean } from "../assets/img/type_icons/type
 import { ReactComponent as TypeIconDate } from "../assets/img/type_icons/type-icon-date.svg";
 import { ReactComponent as TypeIconNumber } from "../assets/img/type_icons/type-icon-number.svg";
 import { ReactComponent as TypeIconString } from "../assets/img/type_icons/type-icon-string.svg";
+import { ReactComponent as TypeIconJSON } from "../assets/img/type_icons/type-icon-json.svg";
 import { ReactComponent as TypeIconQuery } from "../assets/img/type_icons/type-icon-query.svg";
 import { ReactComponent as TypeIconSource } from "../assets/img/type_icons/type-icon-projection.svg";
 import { ReactComponent as TypeIconMeasure } from "../assets/img/type_icons/type-icon-number-measure.svg";
@@ -33,6 +34,8 @@ export const TypeIcon: React.FC<TypeIconProps> = ({ type, kind }) => {
     return <TypeIconString {...sizeProps} />;
   } else if (type === "boolean") {
     return <TypeIconBoolean {...sizeProps} />;
+  } else if (type === "json") {
+    return <TypeIconJSON {...sizeProps} />;
   } else if (type === "number") {
     return <TypeIconNumber {...sizeProps} />;
   } else if (type === "date") {
