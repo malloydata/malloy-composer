@@ -11,7 +11,11 @@
  * GNU General Public License for more details.
  */
 
-import { FieldDef, StructDef } from "@malloydata/malloy";
+import {
+  FieldDef,
+  StructDef,
+  expressionIsCalculation,
+} from "@malloydata/malloy";
 import * as shiki from "shiki";
 import { ILanguageRegistration } from "shiki";
 import { QuerySummaryItem } from "../types";
@@ -111,7 +115,7 @@ export function kindOfField(fieldDef: FieldDef): FieldKind {
     ? "source"
     : fieldDef.type === "turtle"
     ? "query"
-    : fieldDef.expressionType !== "scalar"
+    : expressionIsCalculation(fieldDef.expressionType)
     ? "measure"
     : "dimension";
 }
@@ -146,7 +150,7 @@ export function isAggregate(field: FieldDef): boolean {
   return (
     field.type !== "struct" &&
     field.type !== "turtle" &&
-    field.expressionType !== "scalar"
+    expressionIsCalculation(field.expressionType)
   );
 }
 
