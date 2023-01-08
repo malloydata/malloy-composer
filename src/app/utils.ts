@@ -79,6 +79,7 @@ export async function highlightPre(
 export type FieldType =
   | "string"
   | "boolean"
+  | "json"
   | "number"
   | "date"
   | "timestamp"
@@ -97,7 +98,7 @@ export function typeOfField(fieldDef: FieldDef): FieldType {
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
-): "string" | "number" | "boolean" | "date" | "timestamp" {
+): "string" | "number" | "boolean" | "date" | "timestamp" | "json" {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"
