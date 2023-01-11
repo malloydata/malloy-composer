@@ -11,9 +11,8 @@
  * GNU General Public License for more details.
  */
 
-import { DuckDBWASMConnection } from "@malloydata/db-duckdb/dist/duckdb_wasm_connection";
+import { DuckDBWASMConnection } from "@malloydata/db-duckdb/wasm";
 import * as malloy from "@malloydata/malloy";
-import { DuckDBDataProtocol } from "@duckdb/duckdb-wasm";
 import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 import { snakeToTitle } from "../utils";
@@ -104,12 +103,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
             tableName = table.name;
             tableUrl = table.url;
           }
-          return connection.database?.registerFileURL(
-            tableName,
-            tableUrl,
-            DuckDBDataProtocol.HTTP,
-            true
-          );
+          return connection.registerRemoteTable(tableName, tableUrl);
         })
       );
       const modelURL = new URL(sample.path, samplesURL);

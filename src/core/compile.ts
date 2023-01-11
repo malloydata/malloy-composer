@@ -85,6 +85,10 @@ class DummyConnection implements Connection {
   canStream(): this is StreamingConnection {
     return false;
   }
+
+  async close() {
+    return;
+  }
 }
 
 export async function _compileModel(
