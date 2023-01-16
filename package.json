@@ -14,7 +14,7 @@
   "private": true,
   "main": "./build/main.js",
   "author": "Malloy",
-  "license": "GPL-2.0",
+  "license": "MIT",
   "scripts": {
     "lint": "tsc && eslint .",
     "start": "npm run server-build && node ./dist/cli.js",
