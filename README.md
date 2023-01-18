@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 1.  Download a Release of [Composer and Sample models](https://github.com/malloydata/malloy-composer/releases)
 2.  Unzip the archive.
-3.  _For MacOS, Linux_: 
+3.  _For MacOS, Linux_:
     - Make sure the binary is executable: `chmod a+x ./composer`
     - Remove the Apple quarantine flag: `xattr -d com.apple.quarantine ./composer`
 4.  In your newly unzipped directory, run `./composer malloy-samples`
@@ -27,7 +27,7 @@ can only use csv and parquet files (via DuckDB).
 ```
 git clone git@github.com:malloydata/malloy-samples.git
 cd malloy-samples
-python -m SimpleHTTPServer 
+python -m SimpleHTTPServer
 ```
 2. Goto http://localhost:8000/wasm in a web browser
 
@@ -37,7 +37,7 @@ python -m SimpleHTTPServer
 1. `npm install` to install package dependencies
 2. `git submodule init` and
 3. `git submodule update` to install git dependencies
-4  `npm run build` 
+4  `npm run build`
 5. `npm run start malloy-samples`
 
 ## Database Connections
@@ -53,7 +53,7 @@ gcloud config set project {my_project_id} --installation
 
 Replace *{my_project_id}* with the **ID** of the BigQuery project you want to use & bill to. If you're not sure what this ID is, open Cloud Console, and click on the dropdown at the top (just to the right of the "Google Cloud Platform" text) to view projects you have access to. If you don't already have a project, create one.
 
-## VSCode 
+## VSCode
 You will likely want to set up the [VS Code Extension](https://github.com/malloydata/malloy-vscode-extension#install-the-visual-studio-code-extension) to view and edit Malloy files.
 
 ## Composer Parameters
@@ -65,7 +65,7 @@ This will start local webserver at [http://localhost:4000]() by default. The `pa
 - A path to a dataset config `.json` file\**
 - A path to an app config `.json` file\**, specifying a `path` for multiple datasets. These dataset-specific paths can be any above path types.
 
-\*Note that if you pass a directory containing a `composer.json` file, it will be used as either a "dataset" config `.json` file\*\* or an "app" config `.json` file\*\* depending on its contents. 
+\*Note that if you pass a directory containing a `composer.json` file, it will be used as either a "dataset" config `.json` file\*\* or an "app" config `.json` file\*\* depending on its contents.
 
 \*\*See below for example config files
 
@@ -74,7 +74,7 @@ If you don't have a particular dataset you want to try out, you can always use t
 ### Troubleshooting Notes
 
 - If your datasets are visible, but clicking on one doesn't work, check in the output of the `npm run start` command for errors. One of your Malloy files or config files may have an error in it.
-- You'll need to define a [source](https://malloydata.github.io/malloy/documentation/language/source.html) for it to be explorable; top-level named queries that are not inside a source are not explorable.
+- You'll need to define a [source](https://malloydata.github.io/documentation/language/source.html) for it to be explorable; top-level named queries that are not inside a source are not explorable.
 
 ### Config File Examples
 
@@ -157,5 +157,3 @@ Finally, add an `index.html` file, like this:
   </body>
 </html>
 ```
-
-
