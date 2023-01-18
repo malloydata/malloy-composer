@@ -43,7 +43,7 @@ import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
 
-const MALLOY_DOCS = "https://malloydata.github.io/malloy/documentation/";
+const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
 
 const KEY_MAP = {
   REMOVE_FIELDS: "command+k",
