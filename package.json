@@ -19,7 +19,7 @@
     "lint": "eslint src scripts",
     "start": "npm run server-build && node ./dist/cli.js",
     "build": "ts-node scripts/build",
-    "clean": "rm -rf ./build && rm -rf ./dist && rm -rf ./pkg",
+    "clean": "rm -rf ./build && rm -rf ./dist && rm -rf ./pkg && rm -rf ./bundle",
     "create-bundles": "ts-node scripts/create-release-bundles",
     "server-build": "ts-node scripts/package-server --skip-package",
     "server-start": "npm run server-build && node ./dist/cli.js ./malloy-samples",
