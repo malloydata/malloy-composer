@@ -1,14 +1,24 @@
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2023 Google LLC
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import {
@@ -35,6 +45,7 @@ import {
   TurtleDef,
   FieldTypeDef,
   NamedQuery,
+  expressionIsCalculation,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../app/utils";
@@ -291,7 +302,7 @@ export class QueryBuilder extends SourceUtils {
       return 3;
     } else if (field.type === "turtle") {
       return 2;
-    } else if (field.aggregate) {
+    } else if (expressionIsCalculation(field.expressionType)) {
       return 1;
     } else {
       return 0;
@@ -821,7 +832,7 @@ ${malloy}
         const property =
           fieldDef.type === "turtle"
             ? "nest"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "aggregate"
             : "group_by";
         return { property, malloy: [maybeQuoteIdentifier(field)] };
@@ -833,7 +844,7 @@ ${malloy}
         const property =
           fieldDef.type === "turtle"
             ? "nest"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "aggregate"
             : "group_by";
         const malloy: Fragment[] = [];
@@ -863,7 +874,9 @@ ${malloy}
         }
         return { property: "nest", malloy };
       } else {
-        const property = field.aggregate ? "aggregate" : "group_by";
+        const property = expressionIsCalculation(field.expressionType)
+          ? "aggregate"
+          : "group_by";
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
@@ -1053,7 +1066,7 @@ ${malloy}
       kind =
         fieldDef.type === "turtle"
           ? "query"
-          : fieldDef.aggregate
+          : expressionIsCalculation(fieldDef.expressionType)
           ? "measure"
           : "dimension";
     } else {
@@ -1066,14 +1079,14 @@ ${malloy}
         kind =
           fieldDef.type === "turtle"
             ? "query"
-            : fieldDef.aggregate
+            : expressionIsCalculation(fieldDef.expressionType)
             ? "measure"
             : "dimension";
       } else {
         kind =
           field.type === "turtle"
             ? "query"
-            : field.aggregate
+            : expressionIsCalculation(field.expressionType)
             ? "measure"
             : "dimension";
       }
@@ -1167,7 +1180,7 @@ ${malloy}
             kind:
               fieldDef.type === "turtle"
                 ? "query"
-                : fieldDef.aggregate
+                : expressionIsCalculation(fieldDef.expressionType)
                 ? "measure"
                 : "dimension",
             name: fieldDef.as || fieldDef.name,
@@ -1211,7 +1224,7 @@ ${malloy}
             kind:
               fieldDef.type === "turtle"
                 ? "query"
-                : fieldDef.aggregate
+                : expressionIsCalculation(fieldDef.expressionType)
                 ? "measure"
                 : "dimension",
             stages,
@@ -1233,7 +1246,9 @@ ${malloy}
             field,
             saveDefinition: source === this.getSource() ? field : undefined,
             source: field.code,
-            kind: field.aggregate ? "measure" : "dimension",
+            kind: expressionIsCalculation(field.expressionType)
+              ? "measure"
+              : "dimension",
             styles: styleItems,
           });
           orderByFields.push({
@@ -1314,7 +1329,7 @@ ${malloy}
       type: def.type,
       name: fan.as || fan.name,
       e: ["ignore"],
-      aggregate: def.aggregate,
+      expressionType: def.expressionType,
       code,
     };
   }

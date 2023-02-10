@@ -1,14 +1,24 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /* eslint-disable no-console */
@@ -17,17 +27,9 @@ import * as pkg from "pkg";
 import * as fs from "fs";
 import * as path from "path";
 import { Command } from "commander";
+import { targetDuckDBMap } from "./utils/fetch_duckdb";
 
-import duckdbPackage from "@malloydata/db-duckdb/package.json";
-const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
-const duckdbPath = "../malloy-third-party/third_party/github.com/duckdb/duckdb";
-
-const duckDbTargetMap = new Map<string, string>([
-  ["darwin-arm64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`],
-  ["darwin-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`],
-  ["linux-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`],
-  ["win32-x64", `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`],
-]);
+const duckdbPath = "../third_party/github.com/duckdb/duckdb";
 
 const nodeTarget = "node16";
 
@@ -46,12 +48,12 @@ async function packageServer(
     console.log(`Signing not yet implemented`);
   }
 
-  if (!duckDbTargetMap.has(target)) {
+  if (!targetDuckDBMap[target]) {
     throw new Error(`No DuckDb defined for target: ${target}`);
   }
 
   fs.copyFileSync(
-    path.resolve(__dirname, `${duckdbPath}/${duckDbTargetMap.get(target)}`),
+    path.resolve(__dirname, `${duckdbPath}/${targetDuckDBMap[target]}`),
     path.resolve(__dirname, "../dist/duckdb-native.node"),
     fs.constants.COPYFILE_FICLONE
   );

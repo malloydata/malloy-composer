@@ -1,3 +1,4 @@
+.vscode
 build
 composer_config.json
 dist
@@ -7,6 +8,8 @@ out
 pkg
 public/js
 bundle/
+third_party/github.com/duckdb/
+third_party/github.com/atom/
 
 # misc
 .DS_Store
