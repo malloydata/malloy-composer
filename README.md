@@ -12,7 +12,7 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 ## Additional Resources:
 
-* [Homepage](http://malloydata.dev)
+* [Homepage](http://www.malloydata.dev)
 * [Docs and Guides](https://malloydata.github.io/documentation/)
 * [Malloy Github repository](https://github.com/malloydata/malloy/)
 * Join our [Slack community](https://join.slack.com/t/malloy-community/shared_invite/zt-1kgfwgi5g-CrsdaRqs81QY67QW0~t_uw)
