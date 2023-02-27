@@ -2,6 +2,7 @@
 build
 composer_config.json
 dist
+!duckdb-wasm/dist
 env
 node_modules
 out
