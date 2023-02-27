@@ -1,0 +1,39 @@
+steps:
+  - id: git-ssh-key
+    name: "gcr.io/cloud-builders/gcloud"
+    secretEnv: ["GITHUB_SSH_KEY"]
+    entrypoint: "bash"
+    args:
+      - -c
+      - |
+        echo "$$GITHUB_SSH_KEY" >> /root/.ssh/id_rsa
+        chmod 400 /root/.ssh/id_rsa
+        cp cloudbuild/known_hosts.github /root/.ssh/known_hosts
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+  - id: nix-quiet-install
+    name: gcr.io/cloud-builders/docker
+    args:
+      - pull
+      - "-q"
+      - nixos/nix
+    waitFor: ["git-ssh-key"]
+  - id: run-script
+    name: "nixos/nix"
+    entrypoint: sh
+    args:
+      - -c
+      - "./cloudbuild/deploy/$TRIGGER_NAME.sh"
+    waitFor: ["nix-quiet-install"]
+    timeout: "1800s"
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+timeout: "1800s"
+options:
+  logging: CLOUD_LOGGING_ONLY
+availableSecrets:
+  secretManager:
+    - versionName: projects/malloy-303216/secrets/github-malloy-docs/versions/latest
+      env: "GITHUB_SSH_KEY"
