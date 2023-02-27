@@ -40,6 +40,9 @@ export async function doBuild(): Promise<void> {
     define: {
       "process.env.NODE_DEBUG": "false",
       "window.IS_DUCKDB_WASM": "true",
+      "window.MALLOY_CONFIG_URL": `"${
+        process.env.MALLOY_CONFIG_URL || "composer.json"
+      }"`,
     },
     entryPoints: {
       main: "./src/index.tsx",

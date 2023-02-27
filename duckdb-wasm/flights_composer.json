@@ -6,7 +6,6 @@
     {
       "id": "flights",
       "path": "./flights.malloy",
-      "tables": ["flights.parquet", "carriers.parquet", "airports.parquet"],
       "sources": [
         {
           "title": "Flights",

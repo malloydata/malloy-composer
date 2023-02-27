@@ -27,6 +27,12 @@ import { HackyDataStylesAccumulator } from "../../common/data_styles";
 import * as explore from "../../types";
 import { snakeToTitle } from "../utils";
 
+declare global {
+  interface Window {
+    MALLOY_CONFIG_URL: string;
+  }
+}
+
 export class DuckDBWasmLookup
   implements malloy.LookupConnection<DuckDBWASMConnection>
 {
@@ -70,12 +76,12 @@ const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
 
 export async function apps(): Promise<explore.ComposerConfig> {
   const base = window.location.href;
-  const samplesURL = new URL("composer.json", base);
-  const response = await URL_READER.readURL(samplesURL);
+  const url = new URL(window.MALLOY_CONFIG_URL, base);
+  const response = await URL_READER.readURL(url);
   const config = JSON.parse(response) as explore.ComposerConfig;
   if ("apps" in config) {
     const readme =
-      config.readme && (await URL_READER.readURL(new URL(config.readme, base)));
+      config.readme && (await URL_READER.readURL(new URL(config.readme, url)));
     return {
       ...config,
       readme,
@@ -93,29 +99,52 @@ export async function apps(): Promise<explore.ComposerConfig> {
 
 export async function datasets(appRoot: string): Promise<explore.AppInfo> {
   const base = window.location.href;
-  const samplesURL = new URL(appRoot, base);
+  const url = new URL(window.MALLOY_CONFIG_URL, base);
+  const samplesURL = new URL(appRoot, url);
   const response = await URL_READER.readURL(samplesURL);
   const app = JSON.parse(response) as explore.AppConfig;
   const title = app.title;
   const readme =
     app.readme && (await URL_READER.readURL(new URL(app.readme, samplesURL)));
+  const registeredTables = {};
+
   const models: explore.ModelInfo[] = await Promise.all(
     app.models.map(async (sample: explore.ModelConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection("duckdb");
-      await Promise.all(
-        sample.tables.map((table) => {
-          let tableName: string;
-          let tableUrl: string;
-          if (typeof table === "string") {
-            tableName = table;
-            tableUrl = new URL(tableName, samplesURL).toString();
-          } else {
-            tableName = table.name;
-            tableUrl = table.url;
-          }
-          return connection.registerRemoteTable(tableName, tableUrl);
-        })
-      );
+
+      // Manually map table names to URLs
+      if (sample.tables) {
+        await Promise.all(
+          sample.tables.map((table) => {
+            let tableName: string;
+            let tableUrl: string;
+            if (typeof table === "string") {
+              tableName = table;
+              tableUrl = new URL(tableName, samplesURL).toString();
+            } else {
+              tableName = table.name;
+              tableUrl = table.url;
+            }
+            registeredTables[tableName] = true;
+            return connection.registerRemoteTable(tableName, tableUrl);
+          })
+        );
+      }
+
+      // Automatically map table names to URLs
+      const remoteTableCallback = async (tableName: string) => {
+        if (registeredTables[tableName]) {
+          return;
+        }
+        connection.registerRemoteTable(
+          tableName,
+          new URL(tableName, samplesURL).toString()
+        );
+        registeredTables[tableName] = true;
+        return undefined;
+      };
+      connection.registerRemoteTableCallback(remoteTableCallback);
+
       const modelURL = new URL(sample.path, samplesURL);
       const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
