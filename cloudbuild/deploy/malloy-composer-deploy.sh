@@ -8,10 +8,9 @@ nix-shell --quiet --pure --command "$(cat <<NIXCMD
   git config --global user.email "malloy-ci-bot@google.com"
   git config --global user.name "Malloy CI Bot"
   npm ci --silent
-  bundle install
-  npm run docs-deploy
+  npm run watch-duckdb-wasm-deploy
   git checkout -b docs-release
-  git add -f duckdb-wasm/idst
+  git add -f duckdb-wasm/dist
   git mv duckdb-wasm docs
   git commit -m "Docs Release"
   git push -f origin docs-release
