@@ -35,5 +35,5 @@ options:
   logging: CLOUD_LOGGING_ONLY
 availableSecrets:
   secretManager:
-    - versionName: projects/malloy-303216/secrets/github-malloy-docs/versions/latest
+    - versionName: projects/malloy-303216/secrets/github-malloy-composer/versions/latest
       env: "GITHUB_SSH_KEY"
