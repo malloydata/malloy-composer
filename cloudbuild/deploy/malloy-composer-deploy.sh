@@ -4,7 +4,7 @@ set -euxo pipefail
 nix-shell --quiet --pure --command "$(cat <<NIXCMD
   set -euxo pipefail
   cd /workspace
-  git remote set-url origin git@github.com:malloydata/malloydata.github.io
+  git remote set-url origin git@github.com:malloydata/malloy-composer
   git config --global user.email "malloy-ci-bot@google.com"
   git config --global user.name "Malloy CI Bot"
   npm ci --silent
