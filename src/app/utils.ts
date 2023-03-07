@@ -98,7 +98,8 @@ export type FieldType =
   | "date"
   | "timestamp"
   | "query"
-  | "source";
+  | "source"
+  | "unsupported";
 
 export type FieldKind = "measure" | "dimension" | "query" | "source";
 
@@ -112,7 +113,14 @@ export function typeOfField(fieldDef: FieldDef): FieldType {
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
-): "string" | "number" | "boolean" | "date" | "timestamp" | "json" {
+):
+  | "string"
+  | "number"
+  | "boolean"
+  | "date"
+  | "timestamp"
+  | "json"
+  | "unsupported" {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"
