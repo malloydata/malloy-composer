@@ -112,8 +112,8 @@ export const Popover: React.FC<PopoverProps> = ({
         <PopoverBox
           width={width}
           ref={setTooltipRef}
-          style={{...styles.popper, position: 'fixed'}}
-          {...attributes.popper}
+          style={{...styles['popper'], position: 'fixed'}}
+          {...attributes['popper']}
           zIndex={zIndex}
         >
           {children}

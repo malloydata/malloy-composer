@@ -44,8 +44,8 @@ program.parse();
 const composerProcess = exec(`node ${path.join(__dirname, 'server.js')}`, {
   env: {
     ...process.env,
-    PORT: `${program.opts().port}`,
-    HOST: `${program.opts().host}`,
+    PORT: `${program.opts()['port']}`,
+    HOST: `${program.opts()['host']}`,
     ROOT: `${program.args[0]}`,
   },
 });

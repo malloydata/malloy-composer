@@ -332,7 +332,14 @@ export function stagePathParent(stagePath: StagePath): {
 export interface OrderByField {
   name: string;
   fieldIndex: number;
-  type: 'string' | 'number' | 'boolean' | 'date' | 'timestamp' | 'json';
+  type:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'date'
+    | 'timestamp'
+    | 'json'
+    | 'unsupported';
 }
 
 export interface NumberEqualToFilter {
