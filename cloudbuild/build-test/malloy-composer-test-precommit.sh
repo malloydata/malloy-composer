@@ -6,7 +6,7 @@ nix-shell --quiet --pure --command "$(cat <<NIXCMD
   cd /workspace
   git submodule init
   git submodule update
-  npm ci
+  npm ci --silent
   npm run lint && npm run build
 NIXCMD
 )"
