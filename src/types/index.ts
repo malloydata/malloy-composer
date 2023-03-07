@@ -21,13 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  FieldDef,
-  ModelDef,
-  QueryFieldDef,
-  StructDef,
-} from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
+import {FieldDef, ModelDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
 
 export interface AppListing {
   path: string;
@@ -95,29 +90,29 @@ export interface AppInfo {
 export interface SchemaFieldMeasure {
   name: string;
   path: string;
-  type: "string" | "number" | "boolean" | "date" | "timestamp";
-  kind: "measure";
+  type: 'string' | 'number' | 'boolean' | 'date' | 'timestamp';
+  kind: 'measure';
 }
 
 export interface SchemaFieldDimension {
   name: string;
   path: string;
-  type: "string" | "number" | "boolean" | "date" | "timestamp";
-  kind: "dimension";
+  type: 'string' | 'number' | 'boolean' | 'date' | 'timestamp';
+  kind: 'dimension';
 }
 
 export interface SchemaFieldQuery {
   name: string;
   path: string;
-  type: "query";
-  kind: "query";
+  type: 'query';
+  kind: 'query';
 }
 
 export interface SchemaFieldSource {
   name: string;
   path: string;
-  type: "source";
-  kind: "source";
+  type: 'source';
+  kind: 'source';
   fields: SchemaField[];
 }
 
@@ -128,30 +123,30 @@ export type SchemaField =
   | SchemaFieldSource;
 
 export type RendererName =
-  | "table"
-  | "dashboard"
-  | "text"
-  | "currency"
-  | "image"
-  | "time"
-  | "json"
-  | "single_value"
-  | "list"
-  | "list_detail"
-  | "cartesian_chart"
-  | "bar_chart"
-  | "scatter_chart"
-  | "line_chart"
-  | "point_map"
-  | "segment_map"
-  | "shape_map"
-  | "number"
-  | "percent"
-  | "boolean"
-  | "spark_line"
-  | "bytes"
-  | "link"
-  | "vega";
+  | 'table'
+  | 'dashboard'
+  | 'text'
+  | 'currency'
+  | 'image'
+  | 'time'
+  | 'json'
+  | 'single_value'
+  | 'list'
+  | 'list_detail'
+  | 'cartesian_chart'
+  | 'bar_chart'
+  | 'scatter_chart'
+  | 'line_chart'
+  | 'point_map'
+  | 'segment_map'
+  | 'shape_map'
+  | 'number'
+  | 'percent'
+  | 'boolean'
+  | 'spark_line'
+  | 'bytes'
+  | 'link'
+  | 'vega';
 
 export interface Schema {
   fields: SchemaField[];
@@ -162,13 +157,13 @@ export type QuerySummaryItemField =
   | QuerySummaryItemFieldQuery;
 
 export interface QuerySummaryItemFieldScalar {
-  type: "field";
+  type: 'field';
   field: FieldDef;
   isRefined: boolean;
   isRenamed: boolean;
   saveDefinition: FieldDef | undefined;
   fieldIndex: number;
-  kind: "dimension" | "measure";
+  kind: 'dimension' | 'measure';
   name: string;
   path: string;
   filters?: QuerySummaryItemFilter[];
@@ -176,13 +171,13 @@ export interface QuerySummaryItemFieldScalar {
 }
 
 export interface QuerySummaryItemFieldQuery {
-  type: "field";
+  type: 'field';
   field: FieldDef;
   isRefined: boolean;
   isRenamed: boolean;
   saveDefinition: FieldDef | undefined;
   fieldIndex: number;
-  kind: "query";
+  kind: 'query';
   name: string;
   path: string;
   filters?: QuerySummaryItemFilter[];
@@ -191,7 +186,7 @@ export interface QuerySummaryItemFieldQuery {
 }
 
 export interface QuerySummaryItemNestedQueryDefinition {
-  type: "nested_query_definition";
+  type: 'nested_query_definition';
   name: string;
   fieldIndex: number;
   stages: StageSummary[];
@@ -200,19 +195,19 @@ export interface QuerySummaryItemNestedQueryDefinition {
 }
 
 export interface QuerySummaryItemFieldDefinition {
-  type: "field_definition";
+  type: 'field_definition';
   name: string;
   field: FieldDef;
   fieldIndex: number;
   source?: string;
   saveDefinition: FieldDef | undefined;
-  kind: "dimension" | "measure";
+  kind: 'dimension' | 'measure';
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
 }
 
 export interface QuerySummaryItemFilter {
-  type: "filter";
+  type: 'filter';
   filterSource: string;
   filterIndex: number;
   parsed?: Filter;
@@ -221,19 +216,19 @@ export interface QuerySummaryItemFilter {
 }
 
 export interface QuerySummaryItemLimit {
-  type: "limit";
+  type: 'limit';
   limit: number;
 }
 
 export interface QuerySummaryItemOrderBy {
-  type: "order_by";
+  type: 'order_by';
   byField: OrderByField;
-  direction?: "asc" | "desc" | undefined;
+  direction?: 'asc' | 'desc' | undefined;
   orderByIndex: number;
 }
 
 export interface QuerySummaryItemDataStyle {
-  type: "data_style";
+  type: 'data_style';
   renderer: RendererName;
   styleKey: string;
   canRemove: boolean;
@@ -241,7 +236,7 @@ export interface QuerySummaryItemDataStyle {
 }
 
 export interface QuerySummaryItemErrorField {
-  type: "error_field";
+  type: 'error_field';
   field: QueryFieldDef;
   name: string;
   error: string;
@@ -270,24 +265,24 @@ export interface QuerySummary {
 
 export interface StagePath {
   stageIndex: number;
-  parts?: { stageIndex: number; fieldIndex: number }[];
+  parts?: {stageIndex: number; fieldIndex: number}[];
 }
 
 export function stagePathPush(
   stagePath: StagePath | undefined,
-  part: { stageIndex: number; fieldIndex?: number }
+  part: {stageIndex: number; fieldIndex?: number}
 ): StagePath {
   if (stagePath === undefined) {
-    return { stageIndex: part.stageIndex };
+    return {stageIndex: part.stageIndex};
   }
   if (part.fieldIndex === undefined) {
-    throw new Error("Invalid push to stage path");
+    throw new Error('Invalid push to stage path');
   }
   return {
     stageIndex: part.stageIndex,
     parts: [
       ...(stagePath.parts || []),
-      { stageIndex: stagePath.stageIndex, fieldIndex: part.fieldIndex },
+      {stageIndex: stagePath.stageIndex, fieldIndex: part.fieldIndex},
     ],
   };
 }
@@ -308,7 +303,7 @@ export function stagePathPop(stagePath: StagePath): {
       },
     };
   }
-  return { stageIndex: stagePath.stageIndex };
+  return {stageIndex: stagePath.stageIndex};
 }
 
 export function stagePathParent(stagePath: StagePath): {
@@ -337,119 +332,119 @@ export function stagePathParent(stagePath: StagePath): {
 export interface OrderByField {
   name: string;
   fieldIndex: number;
-  type: "string" | "number" | "boolean" | "date" | "timestamp" | "json";
+  type: 'string' | 'number' | 'boolean' | 'date' | 'timestamp' | 'json';
 }
 
 export interface NumberEqualToFilter {
-  type: "is_equal_to";
+  type: 'is_equal_to';
   values: number[];
 }
 
 export interface NumberNotEqualToFilter {
-  type: "is_not_equal_to";
+  type: 'is_not_equal_to';
   values: number[];
 }
 
 export interface NumberGreaterThanFilter {
-  type: "is_greater_than";
+  type: 'is_greater_than';
   value: number;
 }
 
 export interface NumberLessThanFilter {
-  type: "is_less_than";
+  type: 'is_less_than';
   value: number;
 }
 
 export interface NumberGreaterThanOrEqualToFilter {
-  type: "is_greater_than_or_equal_to";
+  type: 'is_greater_than_or_equal_to';
   value: number;
 }
 
 export interface NumberLessThanOrEqualToFilter {
-  type: "is_less_than_or_equal_to";
+  type: 'is_less_than_or_equal_to';
   value: number;
 }
 
 export interface NumberBetweenFilter {
-  type: "is_between";
+  type: 'is_between';
   lowerBound: number;
   upperBound: number;
 }
 
 export interface BooleanTrueFilter {
-  type: "is_true";
+  type: 'is_true';
 }
 
 export interface BooleanFalseFilter {
-  type: "is_false";
+  type: 'is_false';
 }
 
 export interface BooleanTrueOrNullFilter {
-  type: "is_true_or_null";
+  type: 'is_true_or_null';
 }
 
 export interface BooleanFalseOrNullFilter {
-  type: "is_false_or_null";
+  type: 'is_false_or_null';
 }
 
 interface AnyIsNullFilter {
-  type: "is_null";
+  type: 'is_null';
 }
 
 interface AnyIsNotNullFilter {
-  type: "is_not_null";
+  type: 'is_not_null';
 }
 
 interface AnyCustomFilter {
-  type: "custom";
+  type: 'custom';
   partial: string;
 }
 
 export interface StringEqualToFilter {
-  type: "is_equal_to";
+  type: 'is_equal_to';
   values: string[];
 }
 
 export interface StringNotEqualToFilter {
-  type: "is_not_equal_to";
+  type: 'is_not_equal_to';
   values: string[];
 }
 
 export interface StringStartsWithFilter {
-  type: "starts_with";
+  type: 'starts_with';
   values: string[];
 }
 
 export interface StringNotStartsWithFilter {
-  type: "does_not_start_with";
+  type: 'does_not_start_with';
   values: string[];
 }
 
 export interface StringContainsFilter {
-  type: "contains";
+  type: 'contains';
   values: string[];
 }
 
 export interface StringNotContainsFilter {
-  type: "does_not_contain";
+  type: 'does_not_contain';
   values: string[];
 }
 
 export interface StringIsBlankFilter {
-  type: "is_blank";
+  type: 'is_blank';
 }
 
 export interface StringIsNotBlankFilter {
-  type: "is_not_blank";
+  type: 'is_not_blank';
 }
 
 export interface StringEndsWithFilter {
-  type: "ends_with";
+  type: 'ends_with';
   values: string[];
 }
 
 export interface StringNotEndsWithFilter {
-  type: "does_not_end_with";
+  type: 'does_not_end_with';
   values: string[];
 }
 
@@ -487,13 +482,13 @@ export type BooleanFilter =
   | BooleanCustomFilter;
 
 export type BooleanFilterType =
-  | "is_true"
-  | "is_false"
-  | "is_null"
-  | "is_not_null"
-  | "is_true_or_null"
-  | "is_false_or_null"
-  | "custom";
+  | 'is_true'
+  | 'is_false'
+  | 'is_null'
+  | 'is_not_null'
+  | 'is_true_or_null'
+  | 'is_false_or_null'
+  | 'custom';
 
 export type StringFilter =
   | StringEqualToFilter
@@ -511,146 +506,146 @@ export type StringFilter =
   | StringCustomFilter;
 
 export type StringFilterType =
-  | "is_equal_to"
-  | "is_not_equal_to"
-  | "starts_with"
-  | "does_not_start_with"
-  | "contains"
-  | "does_not_contain"
-  | "is_blank"
-  | "is_not_blank"
-  | "ends_with"
-  | "does_not_end_with"
-  | "is_null"
-  | "is_not_null"
-  | "custom";
+  | 'is_equal_to'
+  | 'is_not_equal_to'
+  | 'starts_with'
+  | 'does_not_start_with'
+  | 'contains'
+  | 'does_not_contain'
+  | 'is_blank'
+  | 'is_not_blank'
+  | 'ends_with'
+  | 'does_not_end_with'
+  | 'is_null'
+  | 'is_not_null'
+  | 'custom';
 
 export type NumberFilterType =
-  | "is_equal_to"
-  | "is_not_equal_to"
-  | "is_greater_than"
-  | "is_less_than"
-  | "is_greater_than_or_equal_to"
-  | "is_less_than_or_equal_to"
-  | "is_between"
-  | "is_null"
-  | "is_not_null"
-  | "custom";
+  | 'is_equal_to'
+  | 'is_not_equal_to'
+  | 'is_greater_than'
+  | 'is_less_than'
+  | 'is_greater_than_or_equal_to'
+  | 'is_less_than_or_equal_to'
+  | 'is_between'
+  | 'is_null'
+  | 'is_not_null'
+  | 'custom';
 
 export type InThePastUnit =
-  | "years"
-  | "quarters"
-  | "months"
-  | "weeks"
-  | "days"
-  | "hours"
-  | "minutes"
-  | "seconds";
+  | 'years'
+  | 'quarters'
+  | 'months'
+  | 'weeks'
+  | 'days'
+  | 'hours'
+  | 'minutes'
+  | 'seconds';
 
 export interface TimeIsInThePastFilter {
-  type: "is_in_the_past";
+  type: 'is_in_the_past';
   amount: number;
   unit: InThePastUnit;
 }
 
 export type TimeGranularity =
-  | "year"
-  | "quarter"
-  | "month"
-  | "week"
-  | "day"
-  | "hour"
-  | "minute"
-  | "second";
+  | 'year'
+  | 'quarter'
+  | 'month'
+  | 'week'
+  | 'day'
+  | 'hour'
+  | 'minute'
+  | 'second';
 
 export type ThisLastPeriod =
-  | "year"
-  | "quarter"
-  | "month"
-  | "week"
-  | "day"
-  | "hour"
-  | "minute"
-  | "second";
+  | 'year'
+  | 'quarter'
+  | 'month'
+  | 'week'
+  | 'day'
+  | 'hour'
+  | 'minute'
+  | 'second';
 
 export interface TimeIsLastFilter {
-  type: "is_last";
+  type: 'is_last';
   period: ThisLastPeriod;
 }
 
 export interface TimeIsThisFilter {
-  type: "is_this";
+  type: 'is_this';
   period: ThisLastPeriod;
 }
 
 export interface TimeIsOnFilter {
-  type: "is_on";
+  type: 'is_on';
   granularity:
-    | "year"
-    | "quarter"
-    | "month"
-    | "week"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second';
   date: Date;
 }
 
 export interface TimeIsAfterFilter {
-  type: "is_after";
+  type: 'is_after';
   granularity:
-    | "year"
-    | "quarter"
-    | "month"
-    | "week"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second';
   date: Date;
 }
 
 export interface TimeIsBeforeFilter {
-  type: "is_before";
+  type: 'is_before';
   granularity:
-    | "year"
-    | "quarter"
-    | "month"
-    | "week"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second';
   date: Date;
 }
 
 export interface TimeIsBetweenFilter {
-  type: "is_between";
+  type: 'is_between';
   granularity:
-    | "year"
-    | "quarter"
-    | "month"
-    | "week"
-    | "day"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second';
   start: Date;
   end: Date;
 }
 
 export type TimeFilterType =
-  | "is_in_the_past"
-  | "is_last"
-  | "is_this"
-  | "is_on"
-  | "is_after"
-  | "is_before"
-  | "is_between"
-  | "is_null"
-  | "is_not_null"
-  | "custom";
+  | 'is_in_the_past'
+  | 'is_last'
+  | 'is_this'
+  | 'is_on'
+  | 'is_after'
+  | 'is_before'
+  | 'is_between'
+  | 'is_null'
+  | 'is_not_null'
+  | 'custom';
 
 export type TimeIsNullFilter = AnyIsNullFilter;
 export type TimeIsNotNullFilter = AnyIsNotNullFilter;

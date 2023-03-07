@@ -29,13 +29,13 @@ import {
   ModelDef,
   NamedQuery,
   TurtleDef,
-} from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { QueryBuilder } from "../../core/query";
-import { QuerySummary, RendererName, StagePath } from "../../types";
-import { useRunQuery } from "../data/use_run_query";
+} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
+import {useRef, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {QueryBuilder} from '../../core/query';
+import {QuerySummary, RendererName, StagePath} from '../../types';
+import {useRunQuery} from '../data/use_run_query';
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
@@ -79,7 +79,7 @@ export interface QueryModifiers {
   addOrderBy: (
     stagePath: StagePath,
     byFieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ) => void;
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
@@ -134,7 +134,7 @@ export interface QueryModifiers {
   editOrderBy: (
     stagePath: StagePath,
     orderByIndex: number,
-    direction: "asc" | "desc" | undefined
+    direction: 'asc' | 'desc' | undefined
   ) => void;
   removeStage: (stagePath: StagePath) => void;
   clearQuery: (noURLUpdate?: boolean) => void;
@@ -156,7 +156,7 @@ export function useQueryBuilder(
   const [error, setError] = useState<Error | undefined>();
   const [dirty, setDirty] = useState(false);
   const [, setVersion] = useState(0);
-  const history = useRef({ size: 0, position: 0 });
+  const history = useRef({size: 0, position: 0});
   const navigate = useNavigate();
 
   const dataStyles = useRef<DataStyles>({});
@@ -186,7 +186,7 @@ export function useQueryBuilder(
     if (!queryBuilder.current?.hasLimit(topLevel)) {
       // TODO magic number here: we run the query before we set this limit,
       //      and this limit just happens to be the default limit
-      modifyQuery((qb) => qb.addLimit(topLevel, 10), true);
+      modifyQuery(qb => qb.addLimit(topLevel, 10), true);
     }
     const query = queryBuilder.current.getQuery();
     if (queryBuilder.current?.canRun()) {
@@ -206,7 +206,7 @@ export function useQueryBuilder(
     // when the query changes. This used to be done by setting a query
     // string state variable, but that was annoying to keep track of.
     // So instead we have a useless `version` which we update.
-    setVersion((x) => x + 1);
+    setVersion(x => x + 1);
     if (queryBuilder.current?.canRun()) {
       try {
         const queryString = queryBuilder.current.getQueryStringForModel();
@@ -256,24 +256,24 @@ export function useQueryBuilder(
 
   const clearQuery = (noURLUpdate = false) => {
     if (queryBuilder.current.isEmpty()) return;
-    modifyQuery((qb) => {
+    modifyQuery(qb => {
       qb.clearQuery();
       dataStyles.current = {};
     }, noURLUpdate);
     clearResult();
-    updateQueryInURL({ run: false, query: undefined, styles: {} });
+    updateQueryInURL({run: false, query: undefined, styles: {}});
   };
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
-    modifyQuery((qb) => qb.toggleField(stagePath, fieldPath));
+    modifyQuery(qb => qb.toggleField(stagePath, fieldPath));
   };
 
   const removeField = (stagePath: StagePath, fieldIndex: number) => {
-    modifyQuery((qb) => qb.removeField(stagePath, fieldIndex));
+    modifyQuery(qb => qb.removeField(stagePath, fieldIndex));
   };
 
   const addFilter = (stagePath: StagePath, filter: FilterExpression) => {
-    modifyQuery((qb) => qb.addFilter(stagePath, filter));
+    modifyQuery(qb => qb.addFilter(stagePath, filter));
   };
 
   const editFilter = (
@@ -282,7 +282,7 @@ export function useQueryBuilder(
     filterIndex: number,
     filter: FilterExpression
   ) => {
-    modifyQuery((qb) =>
+    modifyQuery(qb =>
       qb.editFilter(stagePath, fieldIndex, filterIndex, filter)
     );
   };
@@ -292,43 +292,43 @@ export function useQueryBuilder(
     filterIndex: number,
     fieldIndex?: number
   ) => {
-    modifyQuery((qb) => qb.removeFilter(stagePath, filterIndex, fieldIndex));
+    modifyQuery(qb => qb.removeFilter(stagePath, filterIndex, fieldIndex));
   };
 
   const addLimit = (stagePath: StagePath, limit: number) => {
-    modifyQuery((qb) => qb.addLimit(stagePath, limit));
+    modifyQuery(qb => qb.addLimit(stagePath, limit));
   };
 
   const addStage = (stagePath: StagePath | undefined, fieldIndex?: number) => {
-    modifyQuery((qb) => qb.addStage(stagePath, fieldIndex));
+    modifyQuery(qb => qb.addStage(stagePath, fieldIndex));
   };
 
   const removeStage = (stagePath: StagePath) => {
-    modifyQuery((qb) => qb.removeStage(stagePath));
+    modifyQuery(qb => qb.removeStage(stagePath));
   };
 
   const addOrderBy = (
     stagePath: StagePath,
     byFieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ) => {
-    modifyQuery((qb) => qb.addOrderBy(stagePath, byFieldIndex, direction));
+    modifyQuery(qb => qb.addOrderBy(stagePath, byFieldIndex, direction));
   };
 
   const editOrderBy = (
     stagePath: StagePath,
     orderByIndex: number,
-    direction: "asc" | "desc" | undefined
+    direction: 'asc' | 'desc' | undefined
   ) => {
-    modifyQuery((qb) => qb.editOrderBy(stagePath, orderByIndex, direction));
+    modifyQuery(qb => qb.editOrderBy(stagePath, orderByIndex, direction));
   };
 
   const removeOrderBy = (stagePath: StagePath, orderByIndex: number) => {
-    modifyQuery((qb) => qb.removeOrderBy(stagePath, orderByIndex));
+    modifyQuery(qb => qb.removeOrderBy(stagePath, orderByIndex));
   };
 
   const removeLimit = (stagePath: StagePath) => {
-    modifyQuery((qb) => qb.removeLimit(stagePath));
+    modifyQuery(qb => qb.removeLimit(stagePath));
   };
 
   const renameField = (
@@ -336,7 +336,7 @@ export function useQueryBuilder(
     fieldIndex: number,
     newName: string
   ) => {
-    modifyQuery((qb) => qb.renameField(stagePath, fieldIndex, newName));
+    modifyQuery(qb => qb.renameField(stagePath, fieldIndex, newName));
   };
 
   const addFilterToField = (
@@ -345,19 +345,19 @@ export function useQueryBuilder(
     filter: FilterExpression,
     as?: string
   ) => {
-    modifyQuery((qb) => qb.addFilterToField(stagePath, fieldIndex, filter, as));
+    modifyQuery(qb => qb.addFilterToField(stagePath, fieldIndex, filter, as));
   };
 
   const addNewNestedQuery = (stagePath: StagePath, name: string) => {
-    modifyQuery((qb) => qb.addNewNestedQuery(stagePath, name));
+    modifyQuery(qb => qb.addNewNestedQuery(stagePath, name));
   };
 
   const addNewDimension = (stagePath: StagePath, dimension: QueryFieldDef) => {
-    modifyQuery((qb) => qb.addNewField(stagePath, dimension));
+    modifyQuery(qb => qb.addNewField(stagePath, dimension));
   };
 
   const setQuery = (query: NamedQuery, noURLUpdate = false) => {
-    modifyQuery((qb) => qb.setQuery(query), noURLUpdate);
+    modifyQuery(qb => qb.setQuery(query), noURLUpdate);
   };
 
   const editDimension = (
@@ -365,9 +365,7 @@ export function useQueryBuilder(
     fieldIndex: number,
     dimension: QueryFieldDef
   ) => {
-    modifyQuery((qb) =>
-      qb.editFieldDefinition(stagePath, fieldIndex, dimension)
-    );
+    modifyQuery(qb => qb.editFieldDefinition(stagePath, fieldIndex, dimension));
   };
 
   const editMeasure = (
@@ -375,32 +373,32 @@ export function useQueryBuilder(
     fieldIndex: number,
     measure: QueryFieldDef
   ) => {
-    modifyQuery((qb) => qb.editFieldDefinition(stagePath, fieldIndex, measure));
+    modifyQuery(qb => qb.editFieldDefinition(stagePath, fieldIndex, measure));
   };
 
   const updateFieldOrder = (stagePath: StagePath, order: number[]) => {
-    modifyQuery((qb) => qb.reorderFields(stagePath, order));
+    modifyQuery(qb => qb.reorderFields(stagePath, order));
   };
 
   const replaceWithDefinition = (stagePath: StagePath, fieldIndex: number) => {
-    modifyQuery((qb) => qb.replaceWithDefinition(stagePath, fieldIndex));
+    modifyQuery(qb => qb.replaceWithDefinition(stagePath, fieldIndex));
   };
 
   const loadQuery = (queryPath: string) => {
-    modifyQuery((qb) => qb.loadQuery(queryPath));
+    modifyQuery(qb => qb.loadQuery(queryPath));
   };
 
   const replaceQuery = (field: TurtleDef) => {
-    modifyQuery((qb) => qb.replaceQuery(field));
+    modifyQuery(qb => qb.replaceQuery(field));
   };
 
   const addNewMeasure = addNewDimension;
 
   const onDrill = (filters: FilterExpression[]) => {
-    modifyQuery((qb) => {
+    modifyQuery(qb => {
       qb.clearQuery();
       for (const filter of filters) {
-        qb.addFilter({ stageIndex: 0 }, filter);
+        qb.addFilter({stageIndex: 0}, filter);
       }
     });
   };
@@ -410,13 +408,13 @@ export function useQueryBuilder(
     renderer: RendererName | undefined,
     noURLUpdate = false
   ) => {
-    const newDataStyles = { ...dataStyles.current };
+    const newDataStyles = {...dataStyles.current};
     if (renderer === undefined) {
       if (name in newDataStyles) {
         delete newDataStyles[name];
       }
     } else {
-      newDataStyles[name] = { renderer };
+      newDataStyles[name] = {renderer};
     }
     modifyQuery(() => {
       dataStyles.current = newDataStyles;
@@ -430,7 +428,7 @@ export function useQueryBuilder(
     }, noURLUpdate);
   };
 
-  const currentDataStyles = { ...modelDataStyles, ...dataStyles.current };
+  const currentDataStyles = {...modelDataStyles, ...dataStyles.current};
   const querySummary = queryBuilder.current.getQuerySummary(currentDataStyles);
 
   return {

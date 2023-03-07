@@ -22,28 +22,28 @@
  */
 
 /* eslint-disable no-console */
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from 'fs';
+import * as path from 'path';
 
-import duckdbPackage from "@malloydata/db-duckdb/package.json";
-import { fetchNode } from "./fetch_node";
+import duckdbPackage from '@malloydata/db-duckdb/package.json';
+import {fetchNode} from './fetch_node';
 
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
 
 export const targetDuckDBMap: Record<string, string> = {
-  "darwin-arm64": `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`,
-  "darwin-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`,
-  "linux-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`,
-  "win32-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`,
+  'darwin-arm64': `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`,
+  'darwin-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`,
+  'linux-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`,
+  'win32-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`,
 };
 
 export const fetchDuckDB = async (target: string): Promise<string> => {
   const file = targetDuckDBMap[target];
   const url = `https://duckdb-node.s3.amazonaws.com/duckdb-v${DUCKDB_VERSION}-node-v93-${target}.tar.gz`;
   const directoryPath = path.resolve(
-    path.join("third_party", "github.com", "duckdb", "duckdb")
+    path.join('third_party', 'github.com', 'duckdb', 'duckdb')
   );
-  fs.mkdirSync(directoryPath, { recursive: true });
+  fs.mkdirSync(directoryPath, {recursive: true});
   const filePath = path.join(directoryPath, file);
 
   await fetchNode(filePath, url);

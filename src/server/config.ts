@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as path from "path";
-import { promises as fs } from "fs";
+import * as path from 'path';
+import {promises as fs} from 'fs';
 
 interface ComposerConfig {
   // The root of all paths used by the server
@@ -33,7 +33,7 @@ interface ComposerConfig {
 }
 
 export async function getConfig(): Promise<ComposerConfig> {
-  const root = path.resolve(process.cwd(), process.env.ROOT || ".");
+  const root = path.resolve(process.cwd(), process.env['ROOT'] || '.');
   const stat = await fs.lstat(root);
   if (stat.isFile()) {
     return {
@@ -43,7 +43,7 @@ export async function getConfig(): Promise<ComposerConfig> {
   } else {
     return {
       workingDirectory: root,
-      root: ".",
+      root: '.',
     };
   }
 }

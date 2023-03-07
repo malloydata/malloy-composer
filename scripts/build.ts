@@ -20,48 +20,49 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 /* eslint-disable no-console */
+/* eslint-disable node/no-unpublished-import */
+/* eslint-disable no-process-exit */
 
-import { build, BuildOptions, Plugin } from "esbuild";
-import svgrPlugin from "esbuild-plugin-svgr";
-import * as path from "path";
-import fs from "fs";
-import { copyDirSync } from "./utils";
+import {build, BuildOptions, Plugin} from 'esbuild';
+import svgrPlugin from 'esbuild-plugin-svgr';
+import * as path from 'path';
+import fs from 'fs';
+import {copyDirSync} from './utils';
 
-import duckdbPackage from "@malloydata/db-duckdb/package.json";
-import { fetchDuckDB } from "./utils/fetch_duckdb";
+import duckdbPackage from '@malloydata/db-duckdb/package.json';
+import {fetchDuckDB} from './utils/fetch_duckdb';
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
 
 export const targetDuckDBMap: Record<string, string> = {
-  "darwin-arm64": `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`,
-  "darwin-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`,
-  "linux-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`,
-  "win32-x64": `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`,
+  'darwin-arm64': `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-arm64.node`,
+  'darwin-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-darwin-x64.node`,
+  'linux-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-linux-x64.node`,
+  'win32-x64': `duckdb-v${DUCKDB_VERSION}-node-v93-win32-x64.node`,
 };
 
-export const buildDirectory = "build/";
-export const appDirectory = "app/";
-export const serverBuildDirectory = "dist/";
+export const buildDirectory = 'build/';
+export const appDirectory = 'app/';
+export const serverBuildDirectory = 'dist/';
 
 export const commonAppConfig = (development = false): BuildOptions => {
   return {
-    entryPoints: ["./src/index.tsx"],
-    outfile: path.join(buildDirectory, appDirectory, "app.js"),
+    entryPoints: ['./src/index.tsx'],
+    outfile: path.join(buildDirectory, appDirectory, 'app.js'),
     minify: !development,
     sourcemap: development,
     bundle: true,
-    platform: "browser",
+    platform: 'browser',
     loader: {
-      ".js": "jsx",
-      ".png": "file",
-      ".ttf": "dataurl",
+      '.js': 'jsx',
+      '.png': 'file',
+      '.ttf': 'dataurl',
     },
-    plugins: [svgrPlugin({ exportType: "named" })],
+    plugins: [svgrPlugin({exportType: 'named'})],
     define: {
-      "process.env.NODE_DEBUG": "false", // TODO this is a hack because some package we include assumed process.env exists :(
+      'process.env.NODE_DEBUG': 'false', // TODO this is a hack because some package we include assumed process.env exists :(
     },
-    inject: ["./react-shim.js"], // This shim elimanites needing to have "require React from 'react'" in every file
+    inject: ['./react-shim.js'], // This shim elimanites needing to have "require React from 'react'" in every file
   };
 };
 
@@ -70,13 +71,13 @@ export const commonServerConfig = (
   target?: string
 ): BuildOptions => {
   return {
-    entryPoints: ["./src/server/cli.ts", "./src/server/server.js"],
+    entryPoints: ['./src/server/cli.ts', './src/server/server.js'],
     outdir: serverBuildDirectory,
     minify: !development,
-    sourcemap: development ? "inline" : false,
+    sourcemap: development ? 'inline' : false,
     bundle: true,
-    platform: "node",
-    external: ["./duckdb-native.node", "vscode-oniguruma"],
+    platform: 'node',
+    external: ['./duckdb-native.node', 'vscode-oniguruma'],
     plugins: [makeDuckdbNoNodePreGypPlugin(target), ignorePgNativePlugin],
   };
 };
@@ -87,22 +88,22 @@ const errorHandler = (e: unknown) => {
 };
 
 function makeDuckdbNoNodePreGypPlugin(target: string | undefined): Plugin {
-  const localPath = require.resolve("duckdb/lib/binding/duckdb.node");
+  const localPath = require.resolve('duckdb/lib/binding/duckdb.node');
   return {
-    name: "duckdbNoNodePreGypPlugin",
+    name: 'duckdbNoNodePreGypPlugin',
     setup(build) {
-      build.onResolve({ filter: /duckdb-binding\.js/ }, (args) => {
+      build.onResolve({filter: /duckdb-binding\.js/}, args => {
         return {
           path: args.path,
-          namespace: "duckdb-no-node-pre-gyp-plugin",
+          namespace: 'duckdb-no-node-pre-gyp-plugin',
         };
       });
       build.onLoad(
         {
           filter: /duckdb-binding\.js/,
-          namespace: "duckdb-no-node-pre-gyp-plugin",
+          namespace: 'duckdb-no-node-pre-gyp-plugin',
         },
-        (_args) => {
+        _args => {
           return {
             contents: `
               var path = require("path");
@@ -110,7 +111,7 @@ function makeDuckdbNoNodePreGypPlugin(target: string | undefined): Plugin {
 
               var binding_path = ${
                 target
-                  ? `require.resolve("./duckdb-native.node")`
+                  ? 'require.resolve("./duckdb-native.node")'
                   : `"${localPath}"`
               };
 
@@ -118,7 +119,7 @@ function makeDuckdbNoNodePreGypPlugin(target: string | undefined): Plugin {
               // on linux where RTLD_LOCAL is the default.
               process.dlopen(module, binding_path, os.constants.dlopen.RTLD_NOW | os.constants.dlopen.RTLD_GLOBAL);
             `,
-            resolveDir: ".",
+            resolveDir: '.',
           };
         }
       );
@@ -127,23 +128,23 @@ function makeDuckdbNoNodePreGypPlugin(target: string | undefined): Plugin {
 }
 
 const ignorePgNativePlugin: Plugin = {
-  name: "ignorePgNativePlugin",
+  name: 'ignorePgNativePlugin',
   setup(build) {
-    build.onResolve({ filter: /pg-native/ }, (args) => {
+    build.onResolve({filter: /pg-native/}, args => {
       return {
         path: args.path,
-        namespace: "ignore-pg-native-plugin",
+        namespace: 'ignore-pg-native-plugin',
       };
     });
     build.onLoad(
       {
         filter: /pg-native/,
-        namespace: "ignore-pg-native-plugin",
+        namespace: 'ignore-pg-native-plugin',
       },
-      (_args) => {
+      _args => {
         return {
-          contents: ``,
-          resolveDir: ".",
+          contents: '',
+          resolveDir: '.',
         };
       }
     );
@@ -151,16 +152,16 @@ const ignorePgNativePlugin: Plugin = {
 };
 
 export async function doBuild(target?: string): Promise<void> {
-  //const development = process.env.NODE_ENV == "development";
-  const development = target == undefined;
+  //const development = process.env['NODE_ENV'] == "development";
+  const development = target === undefined;
 
-  fs.rmSync(buildDirectory, { recursive: true, force: true });
-  fs.mkdirSync(buildDirectory, { recursive: true });
+  fs.rmSync(buildDirectory, {recursive: true, force: true});
+  fs.mkdirSync(buildDirectory, {recursive: true});
 
-  fs.rmSync(serverBuildDirectory, { recursive: true, force: true });
-  fs.mkdirSync(serverBuildDirectory, { recursive: true });
+  fs.rmSync(serverBuildDirectory, {recursive: true, force: true});
+  fs.mkdirSync(serverBuildDirectory, {recursive: true});
 
-  copyDirSync("public", path.join(buildDirectory, appDirectory));
+  copyDirSync('public', path.join(buildDirectory, appDirectory));
 
   await build(commonAppConfig(development)).catch(errorHandler);
   await build(commonServerConfig(development, target)).catch(errorHandler);
@@ -171,12 +172,12 @@ export async function doBuild(target?: string): Promise<void> {
       throw new Error(`No DuckDB binary for ${target} is available`);
     }
     const fileName = await fetchDuckDB(target);
-    fs.copyFileSync(fileName, path.join(buildDirectory, "duckdb-native.node"));
+    fs.copyFileSync(fileName, path.join(buildDirectory, 'duckdb-native.node'));
   }
 }
 
 const args = process.argv.slice(1);
-if (args[0].endsWith("build")) {
+if (args[0].endsWith('build')) {
   const target = args[1];
   doBuild(target);
 }

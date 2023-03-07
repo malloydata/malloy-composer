@@ -21,13 +21,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RESERVED_WORDS } from "./reserved_words";
+import {RESERVED_WORDS} from './reserved_words';
 
 export const unquoteIdentifier = (identifier: string): string =>
   identifier
-    .split(".")
-    .map((part) => part.replace(/(^`|`$)/g, ""))
-    .join(".");
+    .split('.')
+    .map(part => part.replace(/(^`|`$)/g, ''))
+    .join('.');
 
 function shouldQuoteIdentifier(name: string) {
   const containsFunnyCharacters = !name.match(/^[A-Za-z_][A-Za-z_0-9]*$/);
@@ -36,11 +36,11 @@ function shouldQuoteIdentifier(name: string) {
 }
 
 export function maybeQuoteIdentifier(name: string): string {
-  const path = name.split(".");
+  const path = name.split('.');
   for (let i = 0; i < path.length; i++) {
     if (shouldQuoteIdentifier(path[i])) {
       path[i] = `\`${path[i]}\``;
     }
   }
-  return path.join(".");
+  return path.join('.');
 }

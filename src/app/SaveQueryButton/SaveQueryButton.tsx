@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React from "react";
-import { ActionIcon } from "../ActionIcon";
-import { useSaveQueryPopover } from "../SaveQueryPopover";
+import React from 'react';
+import {ActionIcon} from '../ActionIcon';
+import {useSaveQueryPopover} from '../SaveQueryPopover';
 
 interface SaveQueryButtonProps {
   disabled: boolean;
@@ -33,7 +33,7 @@ export const SaveQueryButton: React.FC<SaveQueryButtonProps> = ({
   saveQuery,
   disabled,
 }) => {
-  const { saveQueryPopover, openSaveQueryPopover } = useSaveQueryPopover({
+  const {saveQueryPopover, openSaveQueryPopover} = useSaveQueryPopover({
     saveQuery,
   });
   return (
@@ -41,7 +41,7 @@ export const SaveQueryButton: React.FC<SaveQueryButtonProps> = ({
       <ActionIcon
         action="save"
         onClick={() => !disabled && openSaveQueryPopover()}
-        color={!disabled ? "dimension" : "other"}
+        color={!disabled ? 'dimension' : 'other'}
       />
       {saveQueryPopover}
     </>

@@ -20,10 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import { useEffect, useState } from "react";
-import { COLORS } from "../colors";
-import { FormItem, FormInputLabel } from "../CommonElements";
+import styled from 'styled-components';
+import {useEffect, useState} from 'react';
+import {COLORS} from '../colors';
+import {FormItem, FormInputLabel} from '../CommonElements';
 
 interface NumberInputProps {
   value: number;
@@ -54,7 +54,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         placeholder={placeholder}
         value={tempValue}
         size={1}
-        onChange={(event) => {
+        onChange={event => {
           const raw = event.target.value;
           setTempValue(raw);
           const v = parseFloat(raw);

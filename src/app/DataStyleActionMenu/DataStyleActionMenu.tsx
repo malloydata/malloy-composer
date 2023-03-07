@@ -20,8 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { RendererName } from "../../types";
-import { DataStyleContextBar } from "../DataStyleContextBar";
+import {RendererName} from '../../types';
+import {DataStyleContextBar} from '../DataStyleContextBar';
 
 interface DataStyleActionMenuProps {
   setDataStyle: (rendererName: RendererName) => void;

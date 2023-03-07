@@ -21,18 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Runtime, SearchValueMapResult, StructDef } from "@malloydata/malloy";
-import { getConfig } from "./config";
-import { CONNECTION_MANAGER } from "./connections";
-import { URL_READER } from "./urls";
-import * as path from "path";
+import {Runtime, SearchValueMapResult, StructDef} from '@malloydata/malloy';
+import {getConfig} from './config';
+import {CONNECTION_MANAGER} from './connections';
+import {URL_READER} from './urls';
+import * as path from 'path';
 
 export async function topValues(
   source: StructDef,
   modelPath: string
 ): Promise<SearchValueMapResult[] | undefined> {
-  const { workingDirectory } = await getConfig();
-  const modelURL = new URL("file://" + path.join(workingDirectory, modelPath));
+  const {workingDirectory} = await getConfig();
+  const modelURL = new URL('file://' + path.join(workingDirectory, modelPath));
   const sourceName = source.as || source.name;
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);

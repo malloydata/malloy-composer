@@ -21,10 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ModelDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
-import { useQuery } from "react-query";
-import { isDuckDBWASM } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
+import {ModelDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
+import {useQuery} from 'react-query';
+import {isDuckDBWASM} from '../utils';
+import * as duckDBWASM from './duckdb_wasm';
 
 async function fetchTopValues(
   model?: ModelDef,
@@ -40,10 +40,10 @@ async function fetchTopValues(
   }
 
   const raw = await (
-    await fetch("api/top_values", {
-      method: "POST",
+    await fetch('api/top_values', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         modelPath,
@@ -59,8 +59,8 @@ export function useTopValues(
   modelPath?: string,
   source?: StructDef
 ): SearchValueMapResult[] | undefined {
-  const { data: models } = useQuery(
-    ["top_values", modelPath, source?.name],
+  const {data: models} = useQuery(
+    ['top_values', modelPath, source?.name],
     () => fetchTopValues(model, modelPath, source),
     {
       refetchOnWindowFocus: false,
