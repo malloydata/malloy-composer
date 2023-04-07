@@ -21,23 +21,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { OrderByField, StagePath, QuerySummaryItem } from "../../types";
-import { AggregateContextBar } from "../AggregateContextBar";
-import { GroupByContextBar } from "../GroupByContextBar";
-import { NestContextBar } from "../NestContextBar";
-import { FilterContextBar } from "../FilterContextBar";
-import { AddLimit } from "../AddLimit";
-import { OrderByContextBar } from "../OrderByContextBar";
-import { ActionMenu } from "../ActionMenu";
-import { SearchValueMapResult, StructDef, ModelDef } from "@malloydata/malloy";
-import { DataStyleContextBar } from "../DataStyleContextBar";
+import {OrderByField, StagePath, QuerySummaryItem} from '../../types';
+import {AggregateContextBar} from '../AggregateContextBar';
+import {GroupByContextBar} from '../GroupByContextBar';
+import {NestContextBar} from '../NestContextBar';
+import {FilterContextBar} from '../FilterContextBar';
+import {AddLimit} from '../AddLimit';
+import {OrderByContextBar} from '../OrderByContextBar';
+import {ActionMenu} from '../ActionMenu';
+import {SearchValueMapResult, StructDef, ModelDef} from '@malloydata/malloy';
+import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
   flatFields,
   pathParent,
   termsForField,
-} from "../utils";
-import { QueryModifiers } from "../hooks/use_query_builder";
+} from '../utils';
+import {QueryModifiers} from '../hooks/use_query_builder';
 
 interface TopQueryActionMenuProps {
   source: StructDef;
@@ -68,19 +68,19 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
     <ActionMenu
       topValues={topValues}
       valueSearchSource={source}
-      addFilter={(filter) => queryModifiers.addFilter(stagePath, filter)}
+      addFilter={filter => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
       model={model}
       modelPath={modelPath}
       actions={[
         {
-          kind: "sub_menu",
-          id: "filter",
-          label: "Filter",
-          iconName: "filter",
-          iconColor: "filter",
+          kind: 'sub_menu',
+          id: 'filter',
+          label: 'Filter',
+          iconName: 'filter',
+          iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <FilterContextBar
               modelPath={modelPath}
               model={model}
@@ -95,20 +95,20 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "nest",
-          label: "Nest",
-          iconName: "nest",
-          iconColor: "query",
+          kind: 'sub_menu',
+          id: 'nest',
+          label: 'Nest',
+          iconName: 'nest',
+          iconColor: 'query',
           closeOnComplete: true,
           divider: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <NestContextBar
               source={source}
-              selectField={(fieldPath) =>
+              selectField={fieldPath =>
                 queryModifiers.toggleField(stagePath, fieldPath)
               }
-              selectNewNest={(name) =>
+              selectNewNest={name =>
                 queryModifiers.addNewNestedQuery(stagePath, name)
               }
               onComplete={onComplete}
@@ -116,20 +116,20 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "group_by",
-          label: "Group By",
-          iconName: "group_by",
-          iconColor: "dimension",
+          kind: 'sub_menu',
+          id: 'group_by',
+          label: 'Group By',
+          iconName: 'group_by',
+          iconColor: 'dimension',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <GroupByContextBar
               topValues={topValues}
               source={source}
-              addNewDimension={(dim) =>
+              addNewDimension={dim =>
                 queryModifiers.addNewDimension(stagePath, dim)
               }
-              toggleField={(fieldPath) =>
+              toggleField={fieldPath =>
                 queryModifiers.toggleField(stagePath, fieldPath)
               }
               onComplete={onComplete}
@@ -137,19 +137,19 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "aggregate",
-          label: "Aggregate",
-          iconColor: "measure",
-          iconName: "aggregate",
+          kind: 'sub_menu',
+          id: 'aggregate',
+          label: 'Aggregate',
+          iconColor: 'measure',
+          iconName: 'aggregate',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AggregateContextBar
               source={source}
-              selectField={(fieldPath) =>
+              selectField={fieldPath =>
                 queryModifiers.toggleField(stagePath, fieldPath)
               }
-              addNewMeasure={(def) =>
+              addNewMeasure={def =>
                 queryModifiers.addNewMeasure(stagePath, def)
               }
               onComplete={onComplete}
@@ -157,27 +157,27 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "limit",
-          label: "Limit",
-          iconName: "limit",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'limit',
+          label: 'Limit',
+          iconName: 'limit',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AddLimit
-              addLimit={(limit) => queryModifiers.addLimit(stagePath, limit)}
+              addLimit={limit => queryModifiers.addLimit(stagePath, limit)}
               onComplete={onComplete}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "order_by",
-          label: "Order By",
-          iconName: "order_by",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'order_by',
+          label: 'Order By',
+          iconName: 'order_by',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
                 queryModifiers.addOrderBy(stagePath, byField, direction)
@@ -188,45 +188,45 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "style",
-          label: "Style",
-          iconName: "style",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'style',
+          label: 'Style',
+          iconName: 'style',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <DataStyleContextBar
-              setDataStyle={(renderer) =>
+              setDataStyle={renderer =>
                 queryModifiers.setDataStyle(queryName, renderer)
               }
               onComplete={onComplete}
               allowedRenderers={[
-                "table",
-                "bar_chart",
-                "dashboard",
-                "json",
-                "line_chart",
-                "list",
-                "list_detail",
-                "point_map",
-                "scatter_chart",
-                "segment_map",
-                "shape_map",
-                "spark_line",
+                'table',
+                'bar_chart',
+                'dashboard',
+                'json',
+                'line_chart',
+                'list',
+                'list_detail',
+                'point_map',
+                'scatter_chart',
+                'segment_map',
+                'shape_map',
+                'spark_line',
               ]}
             />
           ),
         },
         {
-          kind: "one_click",
-          id: "add_stage",
-          label: "Add Stage",
-          iconName: "stage",
-          iconColor: "other",
+          kind: 'one_click',
+          id: 'add_stage',
+          label: 'Add Stage',
+          iconName: 'stage',
+          iconColor: 'other',
           onClick: () => queryModifiers.addStage(undefined),
         },
       ]}
-      searchItems={flatFields(source).map(({ field, path }) => ({
+      searchItems={flatFields(source).map(({field, path}) => ({
         item: fieldToSummaryItem(field, path),
         terms: termsForField(field, path),
         detail: pathParent(path),

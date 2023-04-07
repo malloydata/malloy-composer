@@ -20,15 +20,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { SearchValueMapResult } from "@malloydata/malloy";
-import styled from "styled-components";
-import { QuerySummaryItem, QuerySummaryItemField } from "../../types";
-import { EmptyMessage } from "../CommonElements";
-import { FieldButton } from "../FieldButton";
-import { FieldDetailPanel } from "../FieldDetailPanel";
-import { HoverToPopover } from "../HoverToPopover";
-import { TypeIcon } from "../TypeIcon";
-import { typeOfField } from "../utils";
+import {SearchValueMapResult} from '@malloydata/malloy';
+import styled from 'styled-components';
+import {QuerySummaryItem, QuerySummaryItemField} from '../../types';
+import {EmptyMessage} from '../CommonElements';
+import {FieldButton} from '../FieldButton';
+import {FieldDetailPanel} from '../FieldDetailPanel';
+import {HoverToPopover} from '../HoverToPopover';
+import {TypeIcon} from '../TypeIcon';
+import {typeOfField} from '../utils';
 
 export interface SearchItem {
   select: () => void;
@@ -55,16 +55,16 @@ export const useSearchList = ({
   topValues,
 }: SearchListProps): UseSearchListResult => {
   const rankedItems = items
-    .map((item) => {
-      return { item, rank: rank(item.terms, searchTerm) };
+    .map(item => {
+      return {item, rank: rank(item.terms, searchTerm)};
     })
-    .filter(({ rank }) => rank > 0)
-    .sort(({ rank: rankA }, { rank: rankB }) => rankB - rankA);
+    .filter(({rank}) => rank > 0)
+    .sort(({rank: rankA}, {rank: rankB}) => rankB - rankA);
 
   const searchList = (
     <ListDiv>
-      {rankedItems.map(({ item }) => {
-        if (item.item.type === "field") {
+      {rankedItems.map(({item}) => {
+        if (item.item.type === 'field') {
           const field = item.item as QuerySummaryItemField;
           const type = typeOfField(item.item.field);
           return (
@@ -96,11 +96,11 @@ export const useSearchList = ({
     </ListDiv>
   );
 
-  return { searchList, count: rankedItems.length };
+  return {searchList, count: rankedItems.length};
 };
 
-export const SearchList: React.FC<SearchListProps> = (props) => {
-  const { searchList } = useSearchList(props);
+export const SearchList: React.FC<SearchListProps> = props => {
+  const {searchList} = useSearchList(props);
   return searchList;
 };
 
@@ -113,15 +113,15 @@ const ListDiv = styled.div`
 function rank(terms: string[], searchTerm: string) {
   // TODO maybe search better with varying length thingies
   const searchTerms = searchTerm
-    .split(" ")
-    .map((st) => st.trim())
-    .filter((searchTerm) => searchTerm.length > 0);
+    .split(' ')
+    .map(st => st.trim())
+    .filter(searchTerm => searchTerm.length > 0);
   let score = 0;
   for (const searchTerm of searchTerms) {
     for (let termIndex = 0; termIndex < terms.length; termIndex++) {
       const term = terms[termIndex];
       const termWeight = terms.length - termIndex;
-      const termWords = term.split("_");
+      const termWords = term.split('_');
       if (term.toLowerCase().includes(searchTerm.toLowerCase())) {
         score += termWeight;
       }
@@ -132,7 +132,7 @@ function rank(terms: string[], searchTerm: string) {
         score += termWeight * 6;
       }
       if (
-        termWords.some((termWord) =>
+        termWords.some(termWord =>
           termWord.toLowerCase().startsWith(searchTerm.toLowerCase())
         )
       ) {

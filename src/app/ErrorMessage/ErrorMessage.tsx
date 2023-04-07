@@ -21,12 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const SimpleErrorMessage = styled.div`
   padding: 5px;
   background-color: #fbb;
-  font-family: "Google Sans", sans-serif;
+  font-family: 'Google Sans', sans-serif;
   font-size: 12px;
   color: #4b4c50;
   border-radius: 5px;
@@ -34,7 +34,7 @@ const SimpleErrorMessage = styled.div`
 
 const MultiLineErrorMessage = styled(SimpleErrorMessage)`
   white-space: pre-wrap;
-  font-family: "Roboto Mono", monospace;
+  font-family: 'Roboto Mono', monospace;
 `;
 
 export interface ErrorMessageProps {
@@ -45,8 +45,8 @@ export const ErrorMessage = ({
   error,
 }: ErrorMessageProps): React.ReactElement | null => {
   if (error) {
-    const { message } = error;
-    if (message.split("\n").length > 1) {
+    const {message} = error;
+    if (message.split('\n').length > 1) {
       return <MultiLineErrorMessage>{message}</MultiLineErrorMessage>;
     } else {
       return <SimpleErrorMessage>{message}</SimpleErrorMessage>;

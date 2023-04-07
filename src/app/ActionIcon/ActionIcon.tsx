@@ -20,61 +20,61 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ReactComponent as ActionIconGroupBy } from "../assets/img/insert_icons/insert_group_by.svg";
-import { ReactComponent as ActionIconAggregate } from "../assets/img/insert_icons/insert_measure.svg";
-import { ReactComponent as InsertFilter } from "../assets/img/insert_icons/insert_filter.svg";
-import { ReactComponent as InsertLimit } from "../assets/img/insert_icons/insert_limit.svg";
-import { ReactComponent as InsertNest } from "../assets/img/insert_icons/insert_nest.svg";
-import { ReactComponent as ActionIconOrderBy } from "../assets/img/insert_icons/insert_order_by.svg";
-import { ReactComponent as ActionItemRename } from "../assets/img/insert_icons/item_rename.svg";
-import { ReactComponent as ActionIconEdit } from "../assets/img/insert_icons/item_edit.svg";
-import { ReactComponent as ActionItemRemove } from "../assets/img/query_clear_hover.svg";
-import { ReactComponent as ActionItemAdd } from "../assets/img/query_add_hover.svg";
-import { ReactComponent as ActionItemRun } from "../assets/img/query_run_hover.svg";
-import { ReactComponent as ActionItemSave } from "../assets/img/query_save_hover.svg";
-import { ReactComponent as ActionItemContainerClosed } from "../assets/img/chevrons/chevron_right.svg";
-import { ReactComponent as ActionItemContainerOpen } from "../assets/img/chevrons/chevron_down.svg";
-import { ReactComponent as ActionItemDuplicate } from "../assets/img/insert_icons/item_duplicate.svg";
-import { ReactComponent as VisIconScatterChart } from "../assets/img/vis_icons/viz_scatter.svg";
-import { ReactComponent as ActionIconError } from "../assets/img/insert_icons/alert_outline.svg";
-import { ReactComponent as ActionIconPipeline } from "../assets/img/insert_icons/pipeline.svg";
-import { ReactComponent as ActionIconLoad } from "../assets/img/type_icons/type-icon-projection.svg";
-import { ReactComponent as ActionIconMove } from "../assets/img/insert_icons/move_icon_outline.svg";
-import { ReactComponent as ActionIconSearch } from "../assets/img/insert_icons/search.svg";
-import { ReactComponent as ActionIconOpen } from "../assets/img/insert_icons/header_folder.svg";
-import { ReactComponent as AnalysisIcon } from "../assets/img/source.svg";
-import { ReactComponent as RedoIcon } from "../assets/img/query_redo_hover.svg";
-import { ReactComponent as UndoIcon } from "../assets/img/query_undo_hover.svg";
-import { ColorKey, COLORS } from "../colors";
-import styled from "styled-components";
+import {ReactComponent as ActionIconGroupBy} from '../assets/img/insert_icons/insert_group_by.svg';
+import {ReactComponent as ActionIconAggregate} from '../assets/img/insert_icons/insert_measure.svg';
+import {ReactComponent as InsertFilter} from '../assets/img/insert_icons/insert_filter.svg';
+import {ReactComponent as InsertLimit} from '../assets/img/insert_icons/insert_limit.svg';
+import {ReactComponent as InsertNest} from '../assets/img/insert_icons/insert_nest.svg';
+import {ReactComponent as ActionIconOrderBy} from '../assets/img/insert_icons/insert_order_by.svg';
+import {ReactComponent as ActionItemRename} from '../assets/img/insert_icons/item_rename.svg';
+import {ReactComponent as ActionIconEdit} from '../assets/img/insert_icons/item_edit.svg';
+import {ReactComponent as ActionItemRemove} from '../assets/img/query_clear_hover.svg';
+import {ReactComponent as ActionItemAdd} from '../assets/img/query_add_hover.svg';
+import {ReactComponent as ActionItemRun} from '../assets/img/query_run_hover.svg';
+import {ReactComponent as ActionItemSave} from '../assets/img/query_save_hover.svg';
+import {ReactComponent as ActionItemContainerClosed} from '../assets/img/chevrons/chevron_right.svg';
+import {ReactComponent as ActionItemContainerOpen} from '../assets/img/chevrons/chevron_down.svg';
+import {ReactComponent as ActionItemDuplicate} from '../assets/img/insert_icons/item_duplicate.svg';
+import {ReactComponent as VisIconScatterChart} from '../assets/img/vis_icons/viz_scatter.svg';
+import {ReactComponent as ActionIconError} from '../assets/img/insert_icons/alert_outline.svg';
+import {ReactComponent as ActionIconPipeline} from '../assets/img/insert_icons/pipeline.svg';
+import {ReactComponent as ActionIconLoad} from '../assets/img/type_icons/type-icon-projection.svg';
+import {ReactComponent as ActionIconMove} from '../assets/img/insert_icons/move_icon_outline.svg';
+import {ReactComponent as ActionIconSearch} from '../assets/img/insert_icons/search.svg';
+import {ReactComponent as ActionIconOpen} from '../assets/img/insert_icons/header_folder.svg';
+import {ReactComponent as AnalysisIcon} from '../assets/img/source.svg';
+import {ReactComponent as RedoIcon} from '../assets/img/query_redo_hover.svg';
+import {ReactComponent as UndoIcon} from '../assets/img/query_undo_hover.svg';
+import {ColorKey, COLORS} from '../colors';
+import styled from 'styled-components';
 
 export type ActionIconName =
-  | "group_by"
-  | "aggregate"
-  | "filter"
-  | "limit"
-  | "nest"
-  | "order_by"
-  | "remove"
-  | "rename"
-  | "add"
-  | "save"
-  | "container-closed"
-  | "container-open"
-  | "duplicate"
-  | "style"
-  | "stage"
-  | "error"
-  | "load"
-  | "move"
-  | "edit"
-  | "search"
-  | "analysis"
-  | "open-directory"
-  | "run"
-  | "undo"
-  | "redo"
-  | "copy";
+  | 'group_by'
+  | 'aggregate'
+  | 'filter'
+  | 'limit'
+  | 'nest'
+  | 'order_by'
+  | 'remove'
+  | 'rename'
+  | 'add'
+  | 'save'
+  | 'container-closed'
+  | 'container-open'
+  | 'duplicate'
+  | 'style'
+  | 'stage'
+  | 'error'
+  | 'load'
+  | 'move'
+  | 'edit'
+  | 'search'
+  | 'analysis'
+  | 'open-directory'
+  | 'run'
+  | 'undo'
+  | 'redo'
+  | 'copy';
 
 interface ActionIconProps {
   action: ActionIconName;
@@ -87,65 +87,65 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
   onClick,
   color,
 }) => {
-  const sizeProps = { width: "22px", height: "22px" };
+  const sizeProps = {width: '22px', height: '22px'};
   const otherProps = {
     onClick,
-    style: { cursor: onClick ? "pointer" : "unset" },
+    style: {cursor: onClick ? 'pointer' : 'unset'},
   };
-  const props = { ...sizeProps, ...otherProps };
+  const props = {...sizeProps, ...otherProps};
   return (
     <IconWrapper color={color} doHover={onClick !== undefined}>
-      {action === "group_by" ? (
+      {action === 'group_by' ? (
         <ActionIconGroupBy {...props} />
-      ) : action === "aggregate" ? (
+      ) : action === 'aggregate' ? (
         <ActionIconAggregate {...props} />
-      ) : action === "filter" ? (
+      ) : action === 'filter' ? (
         <InsertFilter {...props} />
-      ) : action === "limit" ? (
+      ) : action === 'limit' ? (
         <InsertLimit {...props} />
-      ) : action === "nest" ? (
+      ) : action === 'nest' ? (
         <InsertNest {...props} />
-      ) : action === "order_by" ? (
+      ) : action === 'order_by' ? (
         <ActionIconOrderBy {...props} />
-      ) : action === "remove" ? (
+      ) : action === 'remove' ? (
         <ActionItemRemove {...props} />
-      ) : action === "rename" ? (
+      ) : action === 'rename' ? (
         <ActionItemRename {...props} />
-      ) : action === "add" ? (
+      ) : action === 'add' ? (
         <ActionItemAdd {...props} />
-      ) : action === "save" ? (
+      ) : action === 'save' ? (
         <ActionItemSave {...props} />
-      ) : action === "container-open" ? (
+      ) : action === 'container-open' ? (
         <ActionItemContainerOpen {...props} />
-      ) : action === "container-closed" ? (
+      ) : action === 'container-closed' ? (
         <ActionItemContainerClosed {...props} />
-      ) : action === "duplicate" ? (
+      ) : action === 'duplicate' ? (
         <ActionItemDuplicate {...props} />
-      ) : action === "copy" ? (
+      ) : action === 'copy' ? (
         <ActionItemDuplicate {...props} />
-      ) : action === "style" ? (
+      ) : action === 'style' ? (
         <VisIconScatterChart {...props} />
-      ) : action === "stage" ? (
+      ) : action === 'stage' ? (
         <ActionIconPipeline {...props} />
-      ) : action === "error" ? (
+      ) : action === 'error' ? (
         <ActionIconError {...props} />
-      ) : action === "load" ? (
+      ) : action === 'load' ? (
         <ActionIconLoad {...props} />
-      ) : action === "move" ? (
+      ) : action === 'move' ? (
         <ActionIconMove {...props} />
-      ) : action === "edit" ? (
+      ) : action === 'edit' ? (
         <ActionIconEdit {...props} />
-      ) : action === "search" ? (
+      ) : action === 'search' ? (
         <ActionIconSearch {...props} />
-      ) : action === "open-directory" ? (
+      ) : action === 'open-directory' ? (
         <ActionIconOpen {...props} />
-      ) : action === "run" ? (
+      ) : action === 'run' ? (
         <ActionItemRun {...props} />
-      ) : action === "analysis" ? (
+      ) : action === 'analysis' ? (
         <AnalysisIcon {...props} />
-      ) : action === "undo" ? (
+      ) : action === 'undo' ? (
         <UndoIcon {...props} />
-      ) : action === "redo" ? (
+      ) : action === 'redo' ? (
         <RedoIcon {...props} />
       ) : null}
     </IconWrapper>
@@ -157,8 +157,8 @@ export const IconWrapper = styled.div<{
   doHover: boolean;
 }>`
   display: flex;
-  ${({ color, doHover }) => {
-    if (color === undefined) return "";
+  ${({color, doHover}) => {
+    if (color === undefined) return '';
     return `
       svg .hoverfill {
         fill: transparent;

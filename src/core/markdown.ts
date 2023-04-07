@@ -21,10 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Plugin, Transformer, unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import { commentMarker, Marker, Node } from "mdast-comment-marker";
+import {Plugin, Transformer, unified} from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import {commentMarker, Marker, Node} from 'mdast-comment-marker';
 
 export function parseMarkdown(text: string): Markdown {
   const processor = unified()
@@ -61,78 +61,78 @@ export type Markdown =
   | MalloySourceLink;
 
 export interface Root {
-  type: "root";
+  type: 'root';
   children: Markdown[];
 }
 
 export interface Break {
-  type: "break";
+  type: 'break';
 }
 
 export interface Image {
-  type: "image";
+  type: 'image';
   url: string;
   title: string | null;
   alt: string;
 }
 
 export interface Delete {
-  type: "delete";
+  type: 'delete';
   children: Markdown[];
 }
 
 export interface Blockquote {
-  type: "blockquote";
+  type: 'blockquote';
   children: Markdown[];
 }
 
 export interface Heading {
-  type: "heading";
+  type: 'heading';
   children: Markdown[];
   depth: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 export interface Text {
-  type: "text";
+  type: 'text';
   value: string;
 }
 
 export interface HTML {
-  type: "html";
+  type: 'html';
   value: string;
 }
 
 export interface Code {
-  type: "code";
+  type: 'code';
   lang: string;
   meta: string | null;
   value: string;
 }
 
 export interface Link {
-  type: "link";
+  type: 'link';
   title: string | null;
   url: string;
   children: Markdown[];
 }
 
 export interface Paragraph {
-  type: "paragraph";
+  type: 'paragraph';
   children: Markdown[];
 }
 
 export interface Emphasis {
-  type: "emphasis";
+  type: 'emphasis';
   children: Markdown[];
 }
 
 export interface Strong {
-  type: "strong";
+  type: 'strong';
   children: Markdown[];
 }
 
 export interface List {
-  type: "list";
+  type: 'list';
   ordered: boolean;
   start: number | null;
   spread: boolean;
@@ -140,39 +140,39 @@ export interface List {
 }
 
 export interface ListItem {
-  type: "listItem";
+  type: 'listItem';
   checked: boolean | null;
   spread: boolean;
   children: Markdown[];
 }
 
 export interface Table {
-  type: "table";
-  align: ("left" | "right" | "center" | null)[];
+  type: 'table';
+  align: ('left' | 'right' | 'center' | null)[];
   children: Markdown[];
 }
 
 export interface TableRow {
-  type: "tableRow";
+  type: 'tableRow';
   children: Markdown[];
 }
 
 export interface TableCell {
-  type: "tableCell";
+  type: 'tableCell';
   children: Markdown[];
 }
 
 export interface InlineCode {
-  type: "inlineCode";
+  type: 'inlineCode';
   value: string;
 }
 
 export interface ThematicBreak {
-  type: "thematicBreak";
+  type: 'thematicBreak';
 }
 
 export interface MalloyQueryLink {
-  type: "malloyQueryLink";
+  type: 'malloyQueryLink';
   model: string | undefined;
   query: string | undefined;
   name: string | undefined;
@@ -181,14 +181,14 @@ export interface MalloyQueryLink {
 }
 
 export interface MalloyAppLink {
-  type: "malloyAppLink";
+  type: 'malloyAppLink';
   appId: string | undefined;
   name: string | undefined;
   description: string | undefined;
 }
 
 export interface MalloySourceLink {
-  type: "malloySourceLink";
+  type: 'malloySourceLink';
   model: string | undefined;
   source: string | undefined;
   title: string | undefined;
@@ -205,49 +205,49 @@ const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
   function transformer(tree: Node) {
     function transformNode(node: Node): Markdown {
       const markdownNode = node as Markdown;
-      if (markdownNode.type === "html") {
+      if (markdownNode.type === 'html') {
         const marker = commentMarker(markdownNode);
         if (marker) {
-          if (marker.name === "malloy-set-model") {
-            savedModel = getMarkerParameter(marker, "model");
-          } else if (marker.name === "malloy-query") {
+          if (marker.name === 'malloy-set-model') {
+            savedModel = getMarkerParameter(marker, 'model');
+          } else if (marker.name === 'malloy-query') {
             linkMarker = marker;
-          } else if (marker.name === "malloy-source") {
+          } else if (marker.name === 'malloy-source') {
             return {
-              source: getMarkerParameter(marker, "source"),
-              description: getMarkerParameter(marker, "description"),
-              model: getMarkerParameter(marker, "model"),
-              title: getMarkerParameter(marker, "title"),
-              type: "malloySourceLink",
+              source: getMarkerParameter(marker, 'source'),
+              description: getMarkerParameter(marker, 'description'),
+              model: getMarkerParameter(marker, 'model'),
+              title: getMarkerParameter(marker, 'title'),
+              type: 'malloySourceLink',
             };
-          } else if (marker.name === "malloy-app") {
+          } else if (marker.name === 'malloy-app') {
             return {
-              name: getMarkerParameter(marker, "name"),
-              description: getMarkerParameter(marker, "description"),
-              appId: getMarkerParameter(marker, "app"),
-              type: "malloyAppLink",
+              name: getMarkerParameter(marker, 'name'),
+              description: getMarkerParameter(marker, 'description'),
+              appId: getMarkerParameter(marker, 'app'),
+              type: 'malloyAppLink',
             };
           }
         }
         return markdownNode;
-      } else if ("children" in markdownNode) {
+      } else if ('children' in markdownNode) {
         return {
           ...markdownNode,
-          children: markdownNode.children.map((child) =>
+          children: markdownNode.children.map(child =>
             transformNode(child as Node)
           ),
         };
-      } else if (markdownNode.type === "code") {
+      } else if (markdownNode.type === 'code') {
         const marker = linkMarker;
         if (marker) {
           linkMarker = undefined;
           return {
-            model: getMarkerParameter(marker, "model") || savedModel,
+            model: getMarkerParameter(marker, 'model') || savedModel,
             query: markdownNode.value,
-            name: getMarkerParameter(marker, "name"),
-            description: getMarkerParameter(marker, "description"),
-            renderer: getMarkerParameter(marker, "renderer"),
-            type: "malloyQueryLink",
+            name: getMarkerParameter(marker, 'name'),
+            description: getMarkerParameter(marker, 'description'),
+            renderer: getMarkerParameter(marker, 'renderer'),
+            type: 'malloyQueryLink',
           };
         } else {
           return markdownNode;

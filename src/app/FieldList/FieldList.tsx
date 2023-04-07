@@ -20,16 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FieldDef, SearchValueMapResult, StructDef } from "@malloydata/malloy";
-import { useState } from "react";
-import styled from "styled-components";
-import { ActionIcon } from "../ActionIcon";
-import { FieldButton } from "../FieldButton";
-import { FieldDetailPanel } from "../FieldDetailPanel";
-import { HoverToPopover } from "../HoverToPopover";
-import { ListNest } from "../ListNest";
-import { TypeIcon } from "../TypeIcon";
-import { kindOfField, typeOfField } from "../utils";
+import {FieldDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
+import {useState} from 'react';
+import styled from 'styled-components';
+import {ActionIcon} from '../ActionIcon';
+import {FieldButton} from '../FieldButton';
+import {FieldDetailPanel} from '../FieldDetailPanel';
+import {HoverToPopover} from '../HoverToPopover';
+import {ListNest} from '../ListNest';
+import {TypeIcon} from '../TypeIcon';
+import {kindOfField, typeOfField} from '../utils';
 
 interface FieldListProps {
   path?: string[];
@@ -52,13 +52,13 @@ export const FieldList: React.FC<FieldListProps> = ({
     <ListDiv>
       {fields
         .filter(
-          (field) => filter(field) || (showNested && field.type === "struct")
+          field => filter(field) || (showNested && field.type === 'struct')
         )
-        .map((field) => {
+        .map(field => {
           if (filter(field)) {
             const type = typeOfField(field);
             const kind = kindOfField(field);
-            const fieldPath = [...path, field.as || field.name].join(".");
+            const fieldPath = [...path, field.as || field.name].join('.');
             return (
               <HoverToPopover
                 width={300}
@@ -81,7 +81,7 @@ export const FieldList: React.FC<FieldListProps> = ({
                 }}
               />
             );
-          } else if (field.type === "struct" && sourceHasAny(field, filter)) {
+          } else if (field.type === 'struct' && sourceHasAny(field, filter)) {
             return (
               <CollapsibleSource
                 key={field.as || field.name}
@@ -113,7 +113,7 @@ function sourceHasAny(
   return (
     source.fields.some(filter) ||
     source.fields.some(
-      (field) => field.type === "struct" && sourceHasAny(field, filter)
+      field => field.type === 'struct' && sourceHasAny(field, filter)
     )
   );
 }
@@ -140,7 +140,7 @@ const CollapsibleSource: React.FC<CollapsibleSourceProps> = ({
       <FieldButton
         icon={
           <ActionIcon
-            action={open ? "container-open" : "container-closed"}
+            action={open ? 'container-open' : 'container-closed'}
             color="other"
           />
         }

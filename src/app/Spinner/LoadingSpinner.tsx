@@ -20,16 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React from "react";
-import styled, { keyframes } from "styled-components";
-import { ReactComponent as SpinnerSVG } from "../assets/img/spinner.svg";
-import { ColorKey, COLORS } from "../colors";
+import React from 'react';
+import styled, {keyframes} from 'styled-components';
+import {ReactComponent as SpinnerSVG} from '../assets/img/spinner.svg';
+import {ColorKey, COLORS} from '../colors';
 
 interface LoadingSpinnerProps {
   text: string;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ text }) => {
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({text}) => {
   return (
     <VerticalCenter>
       <HorizontalCenter>
@@ -45,13 +45,13 @@ interface SpinnerProps {
   color?: ColorKey;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ size, color }) => {
+export const Spinner: React.FC<SpinnerProps> = ({size, color}) => {
   return (
     <SpinningSVG
       size={size}
-      color={color || "dimension"}
-      width={size + "px"}
-      height={size + "px"}
+      color={color || 'dimension'}
+      width={size + 'px'}
+      height={size + 'px'}
     />
   );
 };
@@ -65,8 +65,8 @@ const rotation = keyframes`
   }
 `;
 
-const SpinningSVG = styled(SpinnerSVG)<{ size: number; color: ColorKey }>`
-  ${({ size, color }) => `
+const SpinningSVG = styled(SpinnerSVG)<{size: number; color: ColorKey}>`
+  ${({size, color}) => `
     width: ${size}px;
     height: ${size}px;
 

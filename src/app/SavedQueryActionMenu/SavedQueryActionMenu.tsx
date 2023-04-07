@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FilterExpression, StructDef } from "@malloydata/malloy";
-import { RendererName } from "../../types";
-import { ActionMenu } from "../ActionMenu";
-import { DataStyleContextBar } from "../DataStyleContextBar";
-import { RenameField } from "../RenameField";
+import {FilterExpression, StructDef} from '@malloydata/malloy';
+import {RendererName} from '../../types';
+import {ActionMenu} from '../ActionMenu';
+import {DataStyleContextBar} from '../DataStyleContextBar';
+import {RenameField} from '../RenameField';
 
 interface SavedQueryActionMenuProps {
   source: StructDef;
@@ -50,58 +50,58 @@ export const SavedQueryActionMenu: React.FC<SavedQueryActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "sub_menu",
-          id: "rename",
-          iconName: "rename",
-          iconColor: "other",
-          label: "Rename",
+          kind: 'sub_menu',
+          id: 'rename',
+          iconName: 'rename',
+          iconColor: 'other',
+          label: 'Rename',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <RenameField rename={renameField} onComplete={onComplete} />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "style",
-          label: "Style",
-          iconColor: "other",
-          iconName: "style",
+          kind: 'sub_menu',
+          id: 'style',
+          label: 'Style',
+          iconColor: 'other',
+          iconName: 'style',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <DataStyleContextBar
               setDataStyle={setDataStyle}
               onComplete={onComplete}
               allowedRenderers={[
-                "table",
-                "bar_chart",
-                "dashboard",
-                "json",
-                "line_chart",
-                "list",
-                "list_detail",
-                "point_map",
-                "scatter_chart",
-                "segment_map",
-                "shape_map",
-                "spark_line",
+                'table',
+                'bar_chart',
+                'dashboard',
+                'json',
+                'line_chart',
+                'list',
+                'list_detail',
+                'point_map',
+                'scatter_chart',
+                'segment_map',
+                'shape_map',
+                'spark_line',
               ]}
             />
           ),
         },
         {
-          kind: "one_click",
-          id: "expand_definition",
-          label: "Duplicate",
-          iconName: "duplicate",
-          iconColor: "other",
+          kind: 'one_click',
+          id: 'expand_definition',
+          label: 'Duplicate',
+          iconName: 'duplicate',
+          iconColor: 'other',
           onClick: replaceWithDefinition,
         },
         {
-          kind: "one_click",
-          id: "move",
-          iconName: "move",
-          iconColor: "other",
-          label: "Move",
+          kind: 'one_click',
+          id: 'move',
+          iconName: 'move',
+          iconColor: 'other',
+          label: 'Move',
           onClick: beginReorderingField,
         },
       ]}

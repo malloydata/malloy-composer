@@ -20,10 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { SearchValueMapResult } from "@malloydata/malloy";
-import styled from "styled-components";
-import { ContextMenuMain, ScrollMain } from "../CommonElements";
-import { largeNumberLabel } from "../utils";
+import {SearchValueMapResult} from '@malloydata/malloy';
+import styled from 'styled-components';
+import {ContextMenuMain, ScrollMain} from '../CommonElements';
+import {largeNumberLabel} from '../utils';
 
 interface FieldDetailPanelProps {
   fieldPath?: string;
@@ -39,7 +39,7 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
   definition,
 }) => {
   const fieldTopValues = topValues?.find(
-    (entry) => entry.fieldName === fieldPath
+    entry => entry.fieldName === fieldPath
   );
   return (
     <ScrollMain>
@@ -52,7 +52,7 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
                 {fieldPath.length <= 32 ? (
                   fieldPath
                 ) : (
-                  <NestingFieldName path={fieldPath.split(".")} />
+                  <NestingFieldName path={fieldPath.split('.')} />
                 )}
               </FieldPath>
             </InfoSection>
@@ -72,7 +72,7 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
           {fieldTopValues && (
             <InfoSection>
               <div>Top Values</div>
-              {fieldTopValues.values.slice(0, 8).map((value) => (
+              {fieldTopValues.values.slice(0, 8).map(value => (
                 <TopValuesRow key={value.fieldValue}>
                   <TopValuesValue>
                     <TopValuesWeightInner>
@@ -127,13 +127,13 @@ const InfoSection = styled.div`
   flex-direction: column;
 `;
 
-const NestingFieldName: React.FC<{ path: string[]; top?: boolean }> = ({
+const NestingFieldName: React.FC<{path: string[]; top?: boolean}> = ({
   path,
   top = true,
 }) => {
   return (
     <div>
-      {top ? "" : "."}
+      {top ? '' : '.'}
       {path[0]}
       {path.length > 1 && (
         <FieldNameNest>

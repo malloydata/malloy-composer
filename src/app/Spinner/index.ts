@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { LoadingSpinner, Spinner } from "./LoadingSpinner";
+export {LoadingSpinner, Spinner} from './LoadingSpinner';

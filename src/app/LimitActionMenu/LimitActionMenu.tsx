@@ -20,8 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ActionMenu } from "../ActionMenu";
-import { AddLimit } from "../AddLimit";
+import {ActionMenu} from '../ActionMenu';
+import {AddLimit} from '../AddLimit';
 
 interface LimitActionMenuProps {
   limit: number;
@@ -40,13 +40,13 @@ export const LimitActionMenu: React.FC<LimitActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          id: "edit",
-          label: "Change limit",
-          iconName: "limit",
-          iconColor: "other",
-          kind: "sub_menu",
+          id: 'edit',
+          label: 'Change limit',
+          iconName: 'limit',
+          iconColor: 'other',
+          kind: 'sub_menu',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AddLimit
               addLimit={editLimit}
               onComplete={onComplete}

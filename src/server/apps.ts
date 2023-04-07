@@ -21,11 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { getConfig } from "./config";
-import { URL_READER } from "./urls";
-import * as explore from "../types";
-import * as path from "path";
-import * as fs from "fs";
+import {getConfig} from './config';
+import {URL_READER} from './urls';
+import * as explore from '../types';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export async function getApps(): Promise<explore.ComposerConfig> {
   const config = await getConfig();
@@ -42,7 +42,7 @@ export async function getApps(): Promise<explore.ComposerConfig> {
   const isRootDirectory = fs.lstatSync(rootPath).isDirectory();
 
   if (isRootDirectory) {
-    const configFileName = "composer.json";
+    const configFileName = 'composer.json';
     const configPath = path.join(rootPath, configFileName);
     if (fs.existsSync(configPath)) {
       rootPath = path.join(rootPath, configFileName);
@@ -50,17 +50,17 @@ export async function getApps(): Promise<explore.ComposerConfig> {
     }
   }
 
-  const rootIsConfigFile = rootPath.endsWith(".json");
+  const rootIsConfigFile = rootPath.endsWith('.json');
 
   if (rootIsConfigFile) {
-    const response = await URL_READER.readURL(new URL("file://" + rootPath));
+    const response = await URL_READER.readURL(new URL('file://' + rootPath));
     const config = JSON.parse(response) as explore.ComposerConfig;
-    const rootIsDatasetsConfigFile = "apps" in config;
+    const rootIsDatasetsConfigFile = 'apps' in config;
     if (rootIsDatasetsConfigFile) {
       const readme =
         config.readme &&
         (await URL_READER.readURL(
-          new URL("file://" + path.join(workingDirectory, config.readme))
+          new URL('file://' + path.join(workingDirectory, config.readme))
         ));
       return {
         ...config,

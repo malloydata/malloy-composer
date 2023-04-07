@@ -3,20 +3,20 @@ import {
   StructDef,
   Result as MalloyResult,
   ModelDef,
-} from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
-import { useState } from "react";
-import styled from "styled-components";
-import { QuerySummary } from "../../types";
-import { ActionIcon } from "../ActionIcon";
-import { PageContent, PageHeader } from "../CommonElements";
-import { QueryModifiers } from "../hooks/use_query_builder";
-import { Popover } from "../Popover";
-import { QuerySummaryPanel } from "../QuerySummaryPanel";
-import { Result } from "../Result";
-import { TopQueryActionMenu } from "../TopQueryActionMenu";
-import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
-import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
+} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
+import {useState} from 'react';
+import styled from 'styled-components';
+import {QuerySummary} from '../../types';
+import {ActionIcon} from '../ActionIcon';
+import {PageContent, PageHeader} from '../CommonElements';
+import {QueryModifiers} from '../hooks/use_query_builder';
+import {Popover} from '../Popover';
+import {QuerySummaryPanel} from '../QuerySummaryPanel';
+import {Result} from '../Result';
+import {TopQueryActionMenu} from '../TopQueryActionMenu';
+import {ReactComponent as RunIcon} from '../assets/img/query_run_wide.svg';
+import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -82,7 +82,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     modelPath={modelPath}
                     source={source}
                     queryModifiers={queryModifiers}
-                    stagePath={{ stageIndex: 0 }}
+                    stagePath={{stageIndex: 0}}
                     orderByFields={querySummary?.stages[0].orderByFields || []}
                     closeMenu={() => setInsertOpen(false)}
                     queryName={queryName}
@@ -110,24 +110,24 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               <ActionIcon
                 action="undo"
                 onClick={() => undo()}
-                color={canUndo ? "dimension" : "other"}
+                color={canUndo ? 'dimension' : 'other'}
               />
               <ActionIcon
                 action="remove"
                 onClick={() => queryModifiers.clearQuery()}
-                color={isQueryEmpty ? "other" : "dimension"}
+                color={isQueryEmpty ? 'other' : 'dimension'}
               />
               <StyledRunIcon
                 width="80px"
                 onClick={() => runQuery()}
                 className={
                   isRunning
-                    ? "running"
+                    ? 'running'
                     : isQueryEmpty || !canQueryRun
-                    ? "blank"
+                    ? 'blank'
                     : dirty
-                    ? "dirty"
-                    : "clean"
+                    ? 'dirty'
+                    : 'clean'
                 }
               />
             </>

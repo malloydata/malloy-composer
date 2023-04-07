@@ -21,5 +21,5 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { SearchList, useSearchList } from "./SearchList";
-export type { SearchItem } from "./SearchList";
+export {SearchList, useSearchList} from './SearchList';
+export type {SearchItem} from './SearchList';

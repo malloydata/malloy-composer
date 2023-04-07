@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { DownloadMenu } from "./DownloadMenu";
+export {DownloadMenu} from './DownloadMenu';

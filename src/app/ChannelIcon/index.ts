@@ -21,5 +21,5 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { ChannelIcon } from "./ChannelIcon";
-export type { ChannelIconName } from "./ChannelIcon";
+export {ChannelIcon} from './ChannelIcon';
+export type {ChannelIconName} from './ChannelIcon';

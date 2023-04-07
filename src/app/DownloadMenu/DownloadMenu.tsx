@@ -20,12 +20,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React, { useRef, useState } from "react";
-import { Popover } from "../Popover";
-import { DropdownMenu } from "../SelectDropdown/SelectDropdown";
-import { ReactComponent as Icon } from "../assets/img/download_hover.svg";
-import styled from "styled-components";
-import { COLORS } from "../colors";
+import React, {useRef, useState} from 'react';
+import {Popover} from '../Popover';
+import {DropdownMenu} from '../SelectDropdown/SelectDropdown';
+import {ReactComponent as Icon} from '../assets/img/download_hover.svg';
+import styled from 'styled-components';
+import {COLORS} from '../colors';
 
 interface DownloadMenuProps {
   onDownloadHTML: (newTab: boolean) => void;
@@ -69,8 +69,8 @@ export const DownloadMenu: React.FC<DownloadMenuProps> = ({
       >
         <DropdownMenu
           options={[
-            { label: "Download HTML", onSelect: andClose(onDownloadHTML) },
-            { label: "Download JSON", onSelect: andClose(onDownloadJSON) },
+            {label: 'Download HTML', onSelect: andClose(onDownloadHTML)},
+            {label: 'Download JSON', onSelect: andClose(onDownloadJSON)},
           ]}
         />
         <NewTabContainer>
@@ -91,14 +91,14 @@ const DownloadIcon = styled(Icon)<{
     fill: transparent;
   }
 
-  ${({ disabled }) => `
+  ${({disabled}) => `
     .primaryfill {
       fill: ${disabled ? COLORS.other.fillMedium : COLORS.other.fillStrong};
     }
 
     &:hover {
       .hoverfill {
-        fill: ${disabled ? "transparent" : COLORS.dimension.fillLight};
+        fill: ${disabled ? 'transparent' : COLORS.dimension.fillLight};
       }
 
       .primaryfill {

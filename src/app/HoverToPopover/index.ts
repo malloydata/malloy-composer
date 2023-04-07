@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { HoverToPopover } from "./HoverToPopover";
+export {HoverToPopover} from './HoverToPopover';

@@ -22,49 +22,49 @@
  */
 
 export type ColorKey =
-  | "dimension"
-  | "measure"
-  | "filter"
-  | "query"
-  | "source"
-  | "other"
-  | "error";
+  | 'dimension'
+  | 'measure'
+  | 'filter'
+  | 'query'
+  | 'source'
+  | 'other'
+  | 'error';
 
 export const COLORS = {
   dimension: {
-    fillLight: "rgb(240,246,255)",
-    fillMedium: "#c3d7f7",
-    fillStrong: "#4285f4",
+    fillLight: 'rgb(240,246,255)',
+    fillMedium: '#c3d7f7',
+    fillStrong: '#4285f4',
   },
   measure: {
-    fillStrong: "#ea8600",
-    fillMedium: "#f3cfa1",
-    fillLight: "#fff3e8",
+    fillStrong: '#ea8600',
+    fillMedium: '#f3cfa1',
+    fillLight: '#fff3e8',
   },
   filter: {
-    fillStrong: "#8166da",
-    fillMedium: "#d4d6d8",
-    fillLight: "#f8f6ff",
+    fillStrong: '#8166da',
+    fillMedium: '#d4d6d8',
+    fillLight: '#f8f6ff',
   },
   query: {
-    fillStrong: "rgb(56,169,86)",
-    fillMedium: "#bce0c5",
-    fillLight: "#f3fbf5",
+    fillStrong: 'rgb(56,169,86)',
+    fillMedium: '#bce0c5',
+    fillLight: '#f3fbf5',
   },
   source: {
-    fillStrong: "rgb(56,169,86)",
-    fillMedium: "#bce0c5",
-    fillLight: "#f3fbf5",
+    fillStrong: 'rgb(56,169,86)',
+    fillMedium: '#bce0c5',
+    fillLight: '#f3fbf5',
   },
   other: {
-    fillStrong: "#9aa0a6",
-    fillMedium: "#d4d6d8",
-    fillLight: "#f7f8f8",
+    fillStrong: '#9aa0a6',
+    fillMedium: '#d4d6d8',
+    fillLight: '#f7f8f8',
   },
   error: {
-    fillStrong: "#9aa0a6",
-    fillMedium: "#d4d6d8",
-    fillLight: "#f7f8f8",
+    fillStrong: '#9aa0a6',
+    fillMedium: '#d4d6d8',
+    fillLight: '#f7f8f8',
   },
-  mainBackground: "rgb(247, 249, 252)",
+  mainBackground: 'rgb(247, 249, 252)',
 };

@@ -20,14 +20,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import { CodeInput } from "../CodeInput";
+import {useState} from 'react';
+import {CodeInput} from '../CodeInput';
 import {
   Button,
   ContextMenuMain,
   RightButtonRow,
   ContextMenuTitle,
-} from "../CommonElements";
+} from '../CommonElements';
 
 interface AddNewNestProps {
   addNest: (name: string) => void;
@@ -38,7 +38,7 @@ export const AddNewNest: React.FC<AddNewNestProps> = ({
   addNest,
   onComplete,
 }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   return (
     <ContextMenuMain>
       <ContextMenuTitle>New Nested Query</ContextMenuTitle>

@@ -20,10 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { FormInputLabel } from "../CommonElements";
+import styled from 'styled-components';
+import moment from 'moment';
+import {useEffect, useState} from 'react';
+import {FormInputLabel} from '../CommonElements';
 
 interface TimeInputProps {
   value: Date;
@@ -31,7 +31,7 @@ interface TimeInputProps {
   placeholder?: string;
   label?: string;
   autoFocus?: boolean;
-  granularity: "hour" | "minute" | "second";
+  granularity: 'hour' | 'minute' | 'second';
 }
 
 export const TimeInput: React.FC<TimeInputProps> = ({
@@ -43,11 +43,11 @@ export const TimeInput: React.FC<TimeInputProps> = ({
   granularity,
 }) => {
   const format =
-    granularity === "hour"
-      ? "HH:00"
-      : granularity === "minute"
-      ? "HH:mm"
-      : "HH:mm:ss";
+    granularity === 'hour'
+      ? 'HH:00'
+      : granularity === 'minute'
+      ? 'HH:mm'
+      : 'HH:mm:ss';
   const [tempValue, setTempValue] = useState(moment(value).format(format));
 
   useEffect(() => {
@@ -61,13 +61,13 @@ export const TimeInput: React.FC<TimeInputProps> = ({
         type="text"
         placeholder={placeholder || format}
         value={tempValue}
-        onChange={(event) => {
+        onChange={event => {
           const raw = event.target.value;
           setTempValue(raw);
           const regex =
-            granularity === "hour"
+            granularity === 'hour'
               ? /\d\d:00/
-              : granularity === "minute"
+              : granularity === 'minute'
               ? /\d\d:\d\d/
               : /\d\d:\d\d:\d\d/;
           if (raw.match(regex)) {
@@ -90,7 +90,7 @@ export const TimeInput: React.FC<TimeInputProps> = ({
 };
 
 const StyledInput = styled.input`
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;

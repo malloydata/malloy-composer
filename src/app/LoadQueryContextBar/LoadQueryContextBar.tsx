@@ -20,24 +20,24 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { StructDef } from "@malloydata/malloy";
-import { useState } from "react";
+import {StructDef} from '@malloydata/malloy';
+import {useState} from 'react';
 import {
   ContextMenuContent,
   ContextMenuOuter,
   ContextMenuSearchHeader,
   ScrollMain,
-} from "../CommonElements";
-import { FieldList } from "../FieldList";
-import { SearchInput } from "../SearchInput";
-import { SearchList } from "../SearchList";
+} from '../CommonElements';
+import {FieldList} from '../FieldList';
+import {SearchInput} from '../SearchInput';
+import {SearchList} from '../SearchList';
 import {
   fieldToSummaryItem,
   flatFields,
   isQuery,
   pathParent,
   termsForField,
-} from "../utils";
+} from '../utils';
 
 interface LoadQueryContextBarProps {
   source: StructDef;
@@ -50,7 +50,7 @@ export const LoadQueryContextBar: React.FC<LoadQueryContextBarProps> = ({
   selectField,
   onComplete,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   return (
     <ContextMenuOuter>
       <ContextMenuSearchHeader>
@@ -63,28 +63,28 @@ export const LoadQueryContextBar: React.FC<LoadQueryContextBarProps> = ({
       </ContextMenuSearchHeader>
       <ScrollMain>
         <ContextMenuContent>
-          {searchTerm === "" && (
+          {searchTerm === '' && (
             <FieldList
               fields={source.fields}
-              filter={(field) => field.type === "turtle"}
+              filter={field => field.type === 'turtle'}
               showNested={true}
-              selectField={(fieldPath) => {
+              selectField={fieldPath => {
                 selectField(fieldPath);
                 onComplete();
               }}
               topValues={undefined}
             />
           )}
-          {searchTerm !== "" && (
+          {searchTerm !== '' && (
             <>
               <SearchList
                 topValues={undefined}
                 searchTerm={searchTerm}
                 items={flatFields(source)
-                  .filter(({ field }) => isQuery(field))
-                  .map(({ field, path }) => ({
+                  .filter(({field}) => isQuery(field))
+                  .map(({field, path}) => ({
                     item: fieldToSummaryItem(field, path),
-                    terms: [...termsForField(field, path), "query"],
+                    terms: [...termsForField(field, path), 'query'],
                     detail: pathParent(path),
                     key: keyFor(path),
                     select: () => selectField(path),
@@ -99,5 +99,5 @@ export const LoadQueryContextBar: React.FC<LoadQueryContextBarProps> = ({
 };
 
 export function keyFor(path: string): string {
-  return "load/" + path;
+  return 'load/' + path;
 }

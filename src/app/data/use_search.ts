@@ -21,10 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ModelDef, SearchIndexResult, StructDef } from "@malloydata/malloy";
-import { useQuery } from "react-query";
-import { isDuckDBWASM } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
+import {ModelDef, SearchIndexResult, StructDef} from '@malloydata/malloy';
+import {useQuery} from 'react-query';
+import {isDuckDBWASM} from '../utils';
+import * as duckDBWASM from './duckdb_wasm';
 
 async function search(
   model: ModelDef,
@@ -46,12 +46,12 @@ async function search(
   }
 
   const raw = await (
-    await fetch("api/search", {
-      method: "POST",
+    await fetch('api/search', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ modelPath, searchTerm, source, fieldPath }),
+      body: JSON.stringify({modelPath, searchTerm, source, fieldPath}),
     })
   ).json();
   return (raw.result || []) as SearchIndexResult[];
@@ -69,7 +69,7 @@ export function useSearch(
   searchTerm: string,
   fieldPath?: string
 ): UseSearchResult {
-  const { data: searchResults, isLoading } = useQuery(
+  const {data: searchResults, isLoading} = useQuery(
     [source, searchTerm, fieldPath],
     () => search(model, modelPath, source, searchTerm, fieldPath),
     {
@@ -77,5 +77,5 @@ export function useSearch(
     }
   );
 
-  return { searchResults, isLoading };
+  return {searchResults, isLoading};
 }

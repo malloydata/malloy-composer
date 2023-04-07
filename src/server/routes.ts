@@ -21,33 +21,33 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { StructDef } from "@malloydata/malloy";
-import * as express from "express";
-import { AppListing } from "../types";
-import { getApps } from "./apps";
-import { getDatasets } from "./datasets";
-import { wrapErrors } from "./errors";
-import { runQuery } from "./run_query";
-import { searchIndex } from "./search";
-import { topValues } from "./top_values";
+import {StructDef} from '@malloydata/malloy';
+import * as express from 'express';
+import {AppListing} from '../types';
+import {getApps} from './apps';
+import {getDatasets} from './datasets';
+import {wrapErrors} from './errors';
+import {runQuery} from './run_query';
+import {searchIndex} from './search';
+import {topValues} from './top_values';
 
 export function routes(router: express.Router): void {
   router.post(
-    "/datasets",
+    '/datasets',
     async (req: express.Request, res: express.Response) => {
       const app = req.body.app as AppListing;
       res.json(
-        await wrapErrors(async () => ({ datasets: await getDatasets(app) }))
+        await wrapErrors(async () => ({datasets: await getDatasets(app)}))
       );
     }
   );
 
-  router.get("/apps", async (req: express.Request, res: express.Response) => {
+  router.get('/apps', async (req: express.Request, res: express.Response) => {
     res.json(await wrapErrors(async () => await getApps()));
   });
 
   router.post(
-    "/run_query",
+    '/run_query',
     async (req: express.Request, res: express.Response) => {
       const query = req.body.query as string;
       const queryName = req.body.queryName as string;
@@ -55,14 +55,14 @@ export function routes(router: express.Router): void {
       res.json(
         await wrapErrors(async () => {
           const result = await runQuery(query, queryName, modelPath);
-          return { result: result.toJSON() };
+          return {result: result.toJSON()};
         })
       );
     }
   );
 
   router.post(
-    "/search",
+    '/search',
     async (req: express.Request, res: express.Response) => {
       const source = req.body.source as unknown as StructDef;
       const searchTerm = req.body.searchTerm;
@@ -76,21 +76,21 @@ export function routes(router: express.Router): void {
             searchTerm,
             fieldPath
           );
-          return { result: result };
+          return {result: result};
         })
       );
     }
   );
 
   router.post(
-    "/top_values",
+    '/top_values',
     async (req: express.Request, res: express.Response) => {
       const source = req.body.source as unknown as StructDef;
       const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
           const result = await topValues(source, modelPath);
-          return { result: result };
+          return {result: result};
         })
       );
     }

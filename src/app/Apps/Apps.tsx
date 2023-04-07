@@ -21,11 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useNavigate } from "react-router-dom";
-import { ComposerConfig } from "../../types";
-import { useApps } from "../data/use_apps";
-import { MarkdownDocument } from "../MarkdownDocument";
-import { snakeToTitle } from "../utils";
+import {useNavigate} from 'react-router-dom';
+import {ComposerConfig} from '../../types';
+import {useApps} from '../data/use_apps';
+import {MarkdownDocument} from '../MarkdownDocument';
+import {snakeToTitle} from '../utils';
 
 export const Apps: React.FC = () => {
   const config = useApps();
@@ -33,16 +33,16 @@ export const Apps: React.FC = () => {
   return (
     <MarkdownDocument
       content={config?.readme || generateReadme(config)}
-      loadApp={(appId) => navigate(`/${appId}`)}
+      loadApp={appId => navigate(`/${appId}`)}
     />
   );
 };
 
 function generateReadme(config: ComposerConfig): string {
-  let readme = "# Welcome to Malloy Composer\n\n";
-  readme += "Select one of the following datasets to get started!\n\n";
+  let readme = '# Welcome to Malloy Composer\n\n';
+  readme += 'Select one of the following datasets to get started!\n\n';
   for (const dataset of config.apps) {
-    const id = dataset.id || "default";
+    const id = dataset.id || 'default';
     const title = snakeToTitle(dataset.path);
     readme += `
 <!-- malloy-app

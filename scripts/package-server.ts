@@ -20,32 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 /* eslint-disable no-console */
-import { doBuild } from "./build";
-import * as pkg from "pkg";
-import * as fs from "fs";
-import * as path from "path";
-import { Command } from "commander";
-import { targetDuckDBMap } from "./utils/fetch_duckdb";
+/* eslint-disable node/no-unpublished-import */
+/* eslint-disable no-process-exit */
 
-const duckdbPath = "../third_party/github.com/duckdb/duckdb";
+import {doBuild} from './build';
+import * as pkg from 'pkg';
+import * as fs from 'fs';
+import * as path from 'path';
+import {Command} from 'commander';
+import {targetDuckDBMap} from './utils/fetch_duckdb';
 
-const nodeTarget = "node16";
+const duckdbPath = '../third_party/github.com/duckdb/duckdb';
+
+const nodeTarget = 'node16';
 
 async function packageServer(
   platform: string,
   architecture: string,
   sign = true,
   skipPackageStep = false,
-  version = "dev"
+  version = 'dev'
 ) {
   let target = `${platform}-${architecture}`;
 
   await doBuild(target);
 
   if (sign) {
-    console.log(`Signing not yet implemented`);
+    console.log('Signing not yet implemented');
   }
 
   if (!targetDuckDBMap[target]) {
@@ -54,26 +56,26 @@ async function packageServer(
 
   fs.copyFileSync(
     path.resolve(__dirname, `${duckdbPath}/${targetDuckDBMap[target]}`),
-    path.resolve(__dirname, "../dist/duckdb-native.node"),
+    path.resolve(__dirname, '../dist/duckdb-native.node'),
     fs.constants.COPYFILE_FICLONE
   );
 
-  if (platform == "darwin") {
+  if (platform === 'darwin') {
     target = `macos-${architecture}`;
   }
 
   if (skipPackageStep) {
-    console.log("Skipping final packaging step");
+    console.log('Skipping final packaging step');
     return;
   }
 
   await pkg.exec([
-    "-c",
-    "package.json",
-    "dist/cli.js",
-    "--target",
+    '-c',
+    'package.json',
+    'dist/cli.js',
+    '--target',
     `${nodeTarget}-${target}`,
-    "--output",
+    '--output',
     `pkg/malloy-composer-cli-${target}-${version}`,
   ]);
 }
@@ -82,13 +84,13 @@ async function packageServer(
  * @returns Array of version bits. [major, minor, patch]
  */
 function getVersionBits(): Array<number> {
-  return JSON.parse(fs.readFileSync("package.json", "utf-8"))
-    .version.split(".")
+  return JSON.parse(fs.readFileSync('package.json', 'utf-8'))
+    .version.split('.')
     .map(Number);
 }
 
-type Architecture = "x64" | "arm64";
-type Platform = "darwin" | "linux" | "win32";
+type Architecture = 'x64' | 'arm64';
+type Platform = 'darwin' | 'linux' | 'win32';
 
 interface PackageTarget {
   architecture: Architecture;
@@ -98,13 +100,13 @@ interface PackageTarget {
 (async () => {
   const program = new Command();
   program
-    .option("-p, --platform <string>", "Target platform")
-    .option("-a, --arch <string>", "Target architecture")
-    .option("--skip-package", "Skip packaging step")
-    .option("--sign", "Sign the build executable")
+    .option('-p, --platform <string>', 'Target platform')
+    .option('-a, --arch <string>', 'Target architecture')
+    .option('--skip-package', 'Skip packaging step')
+    .option('--sign', 'Sign the build executable')
     .option(
-      "--all-targets",
-      "create all supported platform/binary combinations"
+      '--all-targets',
+      'create all supported platform/binary combinations'
     );
 
   program.parse();
@@ -115,10 +117,10 @@ interface PackageTarget {
   let targets: PackageTarget[];
   if (options.allTargets) {
     targets = [
-      { platform: "darwin", architecture: "x64" },
-      { platform: "darwin", architecture: "arm64" },
-      { platform: "linux", architecture: "x64" },
-      { platform: "win32", architecture: "x64" },
+      {platform: 'darwin', architecture: 'x64'},
+      {platform: 'darwin', architecture: 'arm64'},
+      {platform: 'linux', architecture: 'x64'},
+      {platform: 'win32', architecture: 'x64'},
     ];
   } else {
     if (options.platform) {
@@ -146,8 +148,8 @@ interface PackageTarget {
     ];
   }
 
-  fs.rmSync("pkg/", { recursive: true, force: true });
-  fs.mkdirSync("pkg/", { recursive: true });
+  fs.rmSync('pkg/', {recursive: true, force: true});
+  fs.mkdirSync('pkg/', {recursive: true});
 
   console.log(JSON.stringify(options));
   const versionBits = getVersionBits();
@@ -161,14 +163,14 @@ interface PackageTarget {
       target.architecture,
       options.sign,
       options.skipPackage,
-      versionBits.join(".")
+      versionBits.join('.')
     );
   }
 })()
   .then(() => {
-    console.log("Composer server built successfully");
+    console.log('Composer server built successfully');
   })
-  .catch((error) => {
+  .catch(error => {
     console.log(error);
     process.exit(1);
   });

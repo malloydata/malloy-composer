@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useEffect } from "react";
+import {useEffect} from 'react';
 
 export function useClickOutside<E extends Element>(
   refOrRefs: React.RefObject<E> | React.RefObject<E>[],
@@ -39,7 +39,7 @@ export function useClickOutside<E extends Element>(
     };
 
     const isInElement = (event: Event) => {
-      return refs.some((ref) => isInOneElement(ref, event));
+      return refs.some(ref => isInOneElement(ref, event));
     };
 
     const onMouseUp = (event: Event) => {
@@ -54,12 +54,12 @@ export function useClickOutside<E extends Element>(
       down = true;
     };
 
-    document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousedown', onMouseDown);
 
     return () => {
-      document.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousedown', onMouseDown);
     };
   }, [refOrRefs, handler]);
 }

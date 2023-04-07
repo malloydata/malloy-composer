@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useRef } from "react";
-import styled from "styled-components";
-import { FormItem, FormInputLabel } from "../CommonElements";
+import {useEffect, useRef} from 'react';
+import styled from 'styled-components';
+import {FormItem, FormInputLabel} from '../CommonElements';
 
 export interface CodeInputProps {
   value: string;
@@ -56,7 +56,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
         ref={ref}
         placeholder={placeholder}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={event => setValue(event.target.value)}
         autoFocus={autoFocus}
         type="text"
       />
@@ -65,7 +65,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
 };
 
 const StyledInput = styled.input`
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;
@@ -114,7 +114,7 @@ export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
         ref={ref}
         placeholder={placeholder}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={event => setValue(event.target.value)}
         autoFocus={autoFocus}
         rows={rows}
         cols={cols}
@@ -124,7 +124,7 @@ export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
 };
 
 const StyledTextArea = styled.textarea`
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;

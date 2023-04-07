@@ -29,23 +29,18 @@ import {
   FieldDef,
   flattenQuery,
   NamedModelObject,
-} from "@malloydata/malloy";
-import { useState } from "react";
+} from '@malloydata/malloy';
+import {useState} from 'react';
 import {
   ContextMenuContent,
   ContextMenuOuter,
   ContextMenuSearchHeader,
   ScrollMain,
-} from "../CommonElements";
-import { FieldList } from "../FieldList";
-import { SearchInput } from "../SearchInput";
-import { SearchList } from "../SearchList";
-import {
-  fieldToSummaryItem,
-  isQuery,
-  pathParent,
-  termsForField,
-} from "../utils";
+} from '../CommonElements';
+import {FieldList} from '../FieldList';
+import {SearchInput} from '../SearchInput';
+import {SearchList} from '../SearchList';
+import {fieldToSummaryItem, isQuery, pathParent, termsForField} from '../utils';
 
 interface LoadTopQueryContextBarProps {
   model: ModelDef | undefined;
@@ -60,7 +55,7 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
   selectField,
   onComplete,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const modelQueries =
     model && source ? queriesForSourceInModel(model, source) : [];
   const fields = [...source.fields, ...modelQueries];
@@ -76,10 +71,10 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
       </ContextMenuSearchHeader>
       <ScrollMain>
         <ContextMenuContent>
-          {searchTerm === "" && (
+          {searchTerm === '' && (
             <FieldList
               fields={fields}
-              filter={(field) => field.type === "turtle"}
+              filter={field => field.type === 'turtle'}
               showNested={true}
               selectField={(_, fieldDef) => {
                 selectField(fieldDef);
@@ -88,17 +83,17 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
               topValues={undefined}
             />
           )}
-          {searchTerm !== "" && (
+          {searchTerm !== '' && (
             <>
               <SearchList
                 topValues={undefined}
                 searchTerm={searchTerm}
                 items={fields
-                  .map((field) => ({ field, path: field.as || field.name }))
-                  .filter(({ field }) => isQuery(field))
-                  .map(({ field, path }) => ({
+                  .map(field => ({field, path: field.as || field.name}))
+                  .filter(({field}) => isQuery(field))
+                  .map(({field, path}) => ({
                     item: fieldToSummaryItem(field, path),
-                    terms: [...termsForField(field, path), "query"],
+                    terms: [...termsForField(field, path), 'query'],
                     detail: pathParent(path),
                     key: keyFor(path),
                     select: () => {
@@ -116,11 +111,11 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
 };
 
 export function keyFor(path: string): string {
-  return "load/" + path;
+  return 'load/' + path;
 }
 
 function itemIsQuery(item: NamedModelObject): item is NamedQuery {
-  return item.type === "query";
+  return item.type === 'query';
 }
 
 export function queriesForSourceInModel(
@@ -129,8 +124,8 @@ export function queriesForSourceInModel(
 ): TurtleDef[] {
   return Object.values(modelDef.contents)
     .filter(itemIsQuery)
-    .filter((item) => item.structRef === (source.as || source.name))
-    .flatMap((item) => {
+    .filter(item => item.structRef === (source.as || source.name))
+    .flatMap(item => {
       try {
         const turtleDef = flattenQuery(modelDef, item);
         return [turtleDef];

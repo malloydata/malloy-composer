@@ -21,19 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useQuery } from "react-query";
-import * as explore from "../../types";
-import { isDuckDBWASM } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
+import {useQuery} from 'react-query';
+import * as explore from '../../types';
+import {isDuckDBWASM} from '../utils';
+import * as duckDBWASM from './duckdb_wasm';
 
 export function useApps(): explore.ComposerConfig | undefined {
-  const { data: apps } = useQuery(
-    ["apps"],
+  const {data: apps} = useQuery(
+    ['apps'],
     async () => {
       if (isDuckDBWASM()) {
         return duckDBWASM.apps();
       }
-      const raw = await (await fetch("api/apps")).json();
+      const raw = await (await fetch('api/apps')).json();
       return raw as explore.ComposerConfig;
     },
     {

@@ -21,33 +21,33 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ReactComponent as ProjectIconAirplane } from "../assets/img/project_icons/airplane.svg";
-import { ReactComponent as ProjectIconBallotBox } from "../assets/img/project_icons/ballot-box.svg";
-import { ReactComponent as ProjectIconIdentity } from "../assets/img/project_icons/identity.svg";
-import { ReactComponent as ProjectIconLiquor } from "../assets/img/project_icons/liquor.svg";
-import { ReactComponent as ProjectIconMuseum } from "../assets/img/project_icons/museum.svg";
-import { ReactComponent as ProjectIconNewspaper } from "../assets/img/project_icons/newspaper.svg";
-import { ReactComponent as ProjectIconShopping } from "../assets/img/project_icons/shopping.svg";
-import { ReactComponent as ProjectIconWebBrowser } from "../assets/img/project_icons/web-browser.svg";
+import {ReactComponent as ProjectIconAirplane} from '../assets/img/project_icons/airplane.svg';
+import {ReactComponent as ProjectIconBallotBox} from '../assets/img/project_icons/ballot-box.svg';
+import {ReactComponent as ProjectIconIdentity} from '../assets/img/project_icons/identity.svg';
+import {ReactComponent as ProjectIconLiquor} from '../assets/img/project_icons/liquor.svg';
+import {ReactComponent as ProjectIconMuseum} from '../assets/img/project_icons/museum.svg';
+import {ReactComponent as ProjectIconNewspaper} from '../assets/img/project_icons/newspaper.svg';
+import {ReactComponent as ProjectIconShopping} from '../assets/img/project_icons/shopping.svg';
+import {ReactComponent as ProjectIconWebBrowser} from '../assets/img/project_icons/web-browser.svg';
 
-export const ProjectIcon: React.FC<{ name: string }> = ({ name }) => {
-  const sizeProps = { width: "40px", height: "40px" };
+export const ProjectIcon: React.FC<{name: string}> = ({name}) => {
+  const sizeProps = {width: '40px', height: '40px'};
   switch (name) {
-    case "airplane":
+    case 'airplane':
       return <ProjectIconAirplane {...sizeProps} />;
-    case "ballot-box":
+    case 'ballot-box':
       return <ProjectIconBallotBox {...sizeProps} />;
-    case "identity":
+    case 'identity':
       return <ProjectIconIdentity {...sizeProps} />;
-    case "liquor":
+    case 'liquor':
       return <ProjectIconLiquor {...sizeProps} />;
-    case "museum":
+    case 'museum':
       return <ProjectIconMuseum {...sizeProps} />;
-    case "newspaper":
+    case 'newspaper':
       return <ProjectIconNewspaper {...sizeProps} />;
-    case "shopping":
+    case 'shopping':
       return <ProjectIconShopping {...sizeProps} />;
-    case "web-browser":
+    case 'web-browser':
       return <ProjectIconWebBrowser {...sizeProps} />;
     default:
       return <ProjectIconNewspaper {...sizeProps} />;

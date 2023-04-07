@@ -21,15 +21,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useEffect, useRef } from "react";
+import {useEffect, useRef} from 'react';
 
-export const DOMElement: React.FC<{ element: HTMLElement }> = ({ element }) => {
+export const DOMElement: React.FC<{element: HTMLElement}> = ({element}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const parent = ref.current;
     if (parent) {
-      parent.innerHTML = "";
+      parent.innerHTML = '';
       parent.appendChild(element);
     }
   }, [element]);

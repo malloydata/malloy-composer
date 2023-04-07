@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { URLReader } from "@malloydata/malloy";
-import { promises as fs } from "fs";
-import { fileURLToPath } from "url";
+import {URLReader} from '@malloydata/malloy';
+import {promises as fs} from 'fs';
+import {fileURLToPath} from 'url';
 
 export const URL_READER: URLReader = {
   readURL: (url: URL) => {
     let path = url.toString();
-    if (url.protocol == "file:") {
+    if (url.protocol === 'file:') {
       path = fileURLToPath(url);
     }
-    return fs.readFile(path, "utf8");
+    return fs.readFile(path, 'utf8');
   },
 };

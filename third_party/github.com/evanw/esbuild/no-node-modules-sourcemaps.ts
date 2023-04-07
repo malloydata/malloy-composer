@@ -23,19 +23,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import fs from "fs";
+import fs from 'fs';
 
 // https://github.com/evanw/esbuild/issues/1685#issuecomment-944916409
 export const noNodeModulesSourceMaps = {
-  name: "excludeVendorFromSourceMap",
+  name: 'excludeVendorFromSourceMap',
   setup(build: any): void {
-    build.onLoad({ filter: /node_modules/ }, (args: any) => {
-      if (args.path.endsWith(".js")) {
+    build.onLoad({filter: /node_modules/}, (args: any) => {
+      if (args.path.endsWith('.js')) {
         return {
           contents:
-            fs.readFileSync(args.path, "utf8") +
-            "\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJtYXBwaW5ncyI6IkEifQ==",
-          loader: "default",
+            fs.readFileSync(args.path, 'utf8') +
+            '\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJtYXBwaW5ncyI6IkEifQ==',
+          loader: 'default',
         };
       }
     });

@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { SearchInput } from "./SearchInput";
+export {SearchInput} from './SearchInput';

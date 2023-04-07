@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
+import styled from 'styled-components';
 
-export const ListNest: React.FC = ({ children }) => {
+export const ListNest: React.FC = ({children}) => {
   return (
     <NestDiv>
       <NestBar />

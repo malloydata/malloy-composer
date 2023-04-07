@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { AddFilter } from "./AddFilter";
+export {AddFilter} from './AddFilter';

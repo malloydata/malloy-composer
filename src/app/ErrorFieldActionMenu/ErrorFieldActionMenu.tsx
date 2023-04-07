@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ActionMenu } from "../ActionMenu";
+import {ActionMenu} from '../ActionMenu';
 
 interface ErrorFieldActionMenuProps {
   remove: () => void;
@@ -36,11 +36,11 @@ export const ErrorFieldActionMenu: React.FC<ErrorFieldActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "one_click",
-          id: "remove",
-          iconName: "remove",
-          iconColor: "other",
-          label: "Remove",
+          kind: 'one_click',
+          id: 'remove',
+          iconName: 'remove',
+          iconColor: 'other',
+          label: 'Remove',
           onClick: remove,
         },
       ]}

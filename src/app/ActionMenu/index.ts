@@ -21,5 +21,5 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { ActionMenu } from "./ActionMenu";
-export type { Action as ActionMenuAction } from "./ActionMenu";
+export {ActionMenu} from './ActionMenu';
+export type {Action as ActionMenuAction} from './ActionMenu';

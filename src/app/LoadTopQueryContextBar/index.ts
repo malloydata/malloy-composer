@@ -20,4 +20,4 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-export { LoadTopQueryContextBar } from "./LoadTopQueryContextBar";
+export {LoadTopQueryContextBar} from './LoadTopQueryContextBar';

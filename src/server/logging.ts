@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as express from "express";
+import * as express from 'express';
 
 class logging {
   basicLogging(req: express.Request, res: express.Response, next: () => void) {

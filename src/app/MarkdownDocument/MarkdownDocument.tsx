@@ -21,15 +21,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Markdown, parseMarkdown } from "../../core/markdown";
-import { COLORS } from "../colors";
-import { DOMElement } from "../DOMElement";
-import { highlightPre } from "../utils";
-import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
-import { ReactComponent as QueryIcon } from "../assets/img/source_query.svg";
-import { ReactComponent as ViewIcon } from "../assets/img/dataset_view.svg";
+import {useEffect, useState} from 'react';
+import styled from 'styled-components';
+import {Markdown, parseMarkdown} from '../../core/markdown';
+import {COLORS} from '../colors';
+import {DOMElement} from '../DOMElement';
+import {highlightPre} from '../utils';
+import {ReactComponent as RunIcon} from '../assets/img/query_run_wide.svg';
+import {ReactComponent as QueryIcon} from '../assets/img/source_query.svg';
+import {ReactComponent as ViewIcon} from '../assets/img/dataset_view.svg';
 
 interface MarkdownDocumentProps {
   content: string;
@@ -71,8 +71,8 @@ export const MarkdownNode: React.FC<{
   ) => void;
   loadApp?: (appId: string) => void;
   loadSource?: (model: string, source: string) => void;
-}> = ({ node, loadQueryLink, loadApp, loadSource }) => {
-  const children = (node: { children: Markdown[] }) => (
+}> = ({node, loadQueryLink, loadApp, loadSource}) => {
+  const children = (node: {children: Markdown[]}) => (
     <MarkdownNodes
       nodes={node.children}
       loadQueryLink={loadQueryLink}
@@ -82,7 +82,7 @@ export const MarkdownNode: React.FC<{
   );
 
   switch (node.type) {
-    case "root":
+    case 'root':
       return (
         <MarkdownDocumentRoot>
           <MarkdownDocumentRootInner>
@@ -90,7 +90,7 @@ export const MarkdownNode: React.FC<{
           </MarkdownDocumentRootInner>
         </MarkdownDocumentRoot>
       );
-    case "heading":
+    case 'heading':
       switch (node.depth) {
         case 1:
           return <MarkdownHeading1>{children(node)}</MarkdownHeading1>;
@@ -106,55 +106,55 @@ export const MarkdownNode: React.FC<{
           return <MarkdownHeading6>{children(node)}</MarkdownHeading6>;
       }
       return <div />;
-    case "text":
+    case 'text':
       return <span>{node.value}</span>;
-    case "strong":
+    case 'strong':
       return <b>{children(node)}</b>;
-    case "paragraph":
+    case 'paragraph':
       return <MarkdownParagraph>{children(node)}</MarkdownParagraph>;
-    case "link":
+    case 'link':
       return (
         <MarkdownLink href={node.url}>
           {children(node)}
           {node.title}
         </MarkdownLink>
       );
-    case "emphasis":
+    case 'emphasis':
       return <i>{children(node)}</i>;
-    case "blockquote":
+    case 'blockquote':
       return <blockquote>{children(node)}</blockquote>;
-    case "break":
+    case 'break':
       return <br />;
-    case "code":
+    case 'code':
       return <MarkdownCodeBlock code={node.value} language={node.lang} />;
-    case "delete":
+    case 'delete':
       return <del>{children(node)}</del>;
-    case "html": {
+    case 'html': {
       return <span />;
     }
-    case "image":
+    case 'image':
       return (
         <img src={node.url} alt={node.alt} title={node.title ?? undefined} />
       );
-    case "inlineCode":
+    case 'inlineCode':
       return <code>{node.value}</code>;
-    case "listItem":
+    case 'listItem':
       return <li>{children(node)}</li>;
-    case "list":
+    case 'list':
       return <ul>{children(node)}</ul>;
-    case "table":
+    case 'table':
       return (
         <MarkdownTable align={node.align}>
           <tbody>{children(node)}</tbody>
         </MarkdownTable>
       );
-    case "tableRow":
+    case 'tableRow':
       return <tr>{children(node)}</tr>;
-    case "tableCell":
+    case 'tableCell':
       return <MarkdownTableCell>{children(node)}</MarkdownTableCell>;
-    case "thematicBreak":
+    case 'thematicBreak':
       return <hr />;
-    case "malloyQueryLink":
+    case 'malloyQueryLink':
       return (
         <QueryLink
           onClick={() => {
@@ -168,7 +168,7 @@ export const MarkdownNode: React.FC<{
           <RunIcon width="80" height="22" />
         </QueryLink>
       );
-    case "malloyAppLink":
+    case 'malloyAppLink':
       return (
         <QueryLink
           onClick={() => {
@@ -182,7 +182,7 @@ export const MarkdownNode: React.FC<{
           <ViewIcon width="80" height="22" />
         </QueryLink>
       );
-    case "malloySourceLink":
+    case 'malloySourceLink':
       return (
         <QueryLink
           onClick={() => {
@@ -208,7 +208,7 @@ export const MarkdownNodes: React.FC<{
   ) => void;
   loadApp?: (appId: string) => void;
   loadSource?: (model: string, source: string) => void;
-}> = ({ nodes, loadQueryLink, loadApp, loadSource }) => {
+}> = ({nodes, loadQueryLink, loadApp, loadSource}) => {
   return (
     <>
       {nodes.map((childNode, index) => (
@@ -249,7 +249,7 @@ const MarkdownCodeBlock: React.FC<MarkdownCodeBlockProps> = ({
 };
 
 const MarkdownTable = styled.table<{
-  align: ("left" | "right" | "center" | null)[];
+  align: ('left' | 'right' | 'center' | null)[];
 }>`
   border: 1px solid #eaeaea;
   vertical-align: top;
@@ -261,16 +261,16 @@ const MarkdownTable = styled.table<{
     font-weight: 500;
   }
 
-  ${({ align }) =>
+  ${({align}) =>
     align
       .map((alignment, index) => {
         return `
         tr td:nth-child(${index + 1}) {
-          text-align: ${alignment ?? "left"};
+          text-align: ${alignment ?? 'left'};
         }
       `;
       })
-      .join("\n")}
+      .join('\n')}
 `;
 
 const MarkdownTableCell = styled.td`
