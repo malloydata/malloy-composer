@@ -33,6 +33,8 @@ declare global {
   }
 }
 
+const CONFIG_URL = window.MALLOY_CONFIG_URL || "composer.json";
+
 export class DuckDBWasmLookup
   implements malloy.LookupConnection<DuckDBWASMConnection>
 {
@@ -76,7 +78,7 @@ const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
 
 export async function apps(): Promise<explore.ComposerConfig> {
   const base = window.location.href;
-  const url = new URL(window.MALLOY_CONFIG_URL, base);
+  const url = new URL(CONFIG_URL, base);
   const response = await URL_READER.readURL(url);
   const config = JSON.parse(response) as explore.ComposerConfig;
   if ("apps" in config) {
@@ -99,7 +101,7 @@ export async function apps(): Promise<explore.ComposerConfig> {
 
 export async function datasets(appRoot: string): Promise<explore.AppInfo> {
   const base = window.location.href;
-  const url = new URL(window.MALLOY_CONFIG_URL, base);
+  const url = new URL(CONFIG_URL, base);
   const samplesURL = new URL(appRoot, url);
   const response = await URL_READER.readURL(samplesURL);
   const app = JSON.parse(response) as explore.AppConfig;

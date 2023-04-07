@@ -28,7 +28,7 @@ import { build, BuildOptions, serve } from "esbuild";
 import svgrPlugin from "esbuild-plugin-svgr";
 import { argv } from "process";
 
-const outDir = path.join(__dirname, "..", "duckdb-wasm", "dist");
+const outDir = path.join(__dirname, "..", "docs", "dist");
 fs.mkdirSync(outDir, { recursive: true });
 
 let port: number | undefined;
@@ -40,9 +40,6 @@ export async function doBuild(): Promise<void> {
     define: {
       "process.env.NODE_DEBUG": "false",
       "window.IS_DUCKDB_WASM": "true",
-      "window.MALLOY_CONFIG_URL": `"${
-        process.env.MALLOY_CONFIG_URL || "composer.json"
-      }"`,
     },
     entryPoints: {
       main: "./src/index.tsx",
@@ -71,9 +68,13 @@ export async function doBuild(): Promise<void> {
         : false,
   };
 
+  if (process.env.MALLOY_CONFIG_URL && options.define) {
+    options.define["window.MALLOY_CONFIG_URL"] = process.env.MALLOY_CONFIG_URL;
+  }
+
   if (port) {
     console.log(`Listening on port ${port}`);
-    await serve({ port, servedir: "duckdb-wasm" }, options);
+    await serve({ port, servedir: "docs" }, options);
   } else {
     await build(options);
   }
