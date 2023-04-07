@@ -31,6 +31,8 @@ import { copyDirSync } from "./utils";
 
 import duckdbPackage from "@malloydata/db-duckdb/package.json";
 import { fetchDuckDB } from "./utils/fetch_duckdb";
+import { generateDisclaimer } from "./license_disclaimer";
+
 const DUCKDB_VERSION = duckdbPackage.dependencies.duckdb;
 
 export const targetDuckDBMap: Record<string, string> = {
@@ -150,6 +152,28 @@ const ignorePgNativePlugin: Plugin = {
   },
 };
 
+const generateLicenseFile = (development: boolean) => {
+  const fullLicenseFilePath = path.join(
+    __dirname,
+    "..",
+    buildDirectory,
+    "third_party_notices.txt"
+  );
+
+  if (fs.existsSync(fullLicenseFilePath)) {
+    fs.rmSync(fullLicenseFilePath);
+  }
+  if (!development) {
+    generateDisclaimer(
+      path.join(__dirname, "..", "package.json"),
+      path.join(__dirname, "..", "node_modules"),
+      fullLicenseFilePath
+    );
+  } else {
+    fs.writeFileSync(fullLicenseFilePath, "LICENSES GO HERE\n");
+  }
+};
+
 export async function doBuild(target?: string): Promise<void> {
   //const development = process.env.NODE_ENV == "development";
   const development = target == undefined;
@@ -161,6 +185,8 @@ export async function doBuild(target?: string): Promise<void> {
   fs.mkdirSync(serverBuildDirectory, { recursive: true });
 
   copyDirSync("public", path.join(buildDirectory, appDirectory));
+
+  generateLicenseFile(development);
 
   await build(commonAppConfig(development)).catch(errorHandler);
   await build(commonServerConfig(development, target)).catch(errorHandler);
