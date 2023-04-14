@@ -24,13 +24,15 @@
 import express from "express";
 import { routes } from "./routes";
 import cors from "cors";
+import * as http from "http";
 import * as path from "path";
 import logging from "./logging";
+import { AddressInfo } from "net";
 
 const app = express();
 
 const DEV = process.env.DEV === "1";
-const PORT = (process.env.PORT || 4000) as number;
+const PORT = Number(process.env.PORT || 4000);
 const HOST = process.env.HOST || "localhost";
 
 const allowedOrigins = [];
@@ -59,6 +61,11 @@ app.use("/fonts", express.static(path.join(BUILD_ROOT, "/app/fonts")));
 
 app.use("/", express.static(path.join(BUILD_ROOT, "/app")));
 
+app.get("/shutdown", function (req, res) {
+  res.send("Shutting down");
+  process.exit(0);
+});
+
 if (DEV) {
   app.use(
     "/packages",
@@ -66,7 +73,9 @@ if (DEV) {
   );
 }
 
-app.listen(PORT, HOST, () => {
+const server = http.createServer(app);
+server.listen(PORT, HOST, () => {
+  const address = server.address() as AddressInfo;
   // eslint-disable-next-line no-console
-  console.log(`Server is running at http://${HOST}:${PORT}`);
+  console.log(`Server is running at http://${address.address}:${address.port}`);
 });
