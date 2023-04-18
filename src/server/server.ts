@@ -29,53 +29,59 @@ import * as path from "path";
 import logging from "./logging";
 import { AddressInfo } from "net";
 
-const app = express();
-
-const DEV = process.env.DEV === "1";
-const PORT = Number(process.env.PORT || 4000);
-const HOST = process.env.HOST || "localhost";
-
-const allowedOrigins = [];
-
-if (DEV) {
-  // eslint-disable-next-line no-console
-  console.log("DEV Enabled");
-  allowedOrigins.push(`http://${HOST}:${PORT}`);
+export interface InitServerParams {
+  devMode: boolean;
+  port: number;
+  host: string;
 }
 
-app.use(logging.basicLogging);
-app.use(cors({ origin: allowedOrigins }));
-app.use(express.json());
+export function initServer({ devMode, port, host }: InitServerParams): void {
+  const app = express();
 
-const router = express.Router();
+  const allowedOrigins = [];
 
-routes(router);
+  if (devMode) {
+    // eslint-disable-next-line no-console
+    console.log("DEV Enabled");
+    allowedOrigins.push(`http://${host}:${port}`);
+  }
 
-app.use("/api", router);
+  app.use(logging.basicLogging);
+  app.use(cors({ origin: allowedOrigins }));
+  app.use(express.json());
 
-const BUILD_ROOT = path.join(__dirname, "../build");
+  const router = express.Router();
 
-app.use("/static", express.static(path.join(BUILD_ROOT, "/app")));
+  routes(router);
 
-app.use("/fonts", express.static(path.join(BUILD_ROOT, "/app/fonts")));
+  app.use("/api", router);
 
-app.use("/", express.static(path.join(BUILD_ROOT, "/app")));
+  const BUILD_ROOT = path.join(__dirname, "../build");
 
-app.get("/shutdown", function (req, res) {
-  res.send("Shutting down");
-  process.exit(0);
-});
+  app.use("/static", express.static(path.join(BUILD_ROOT, "/app")));
 
-if (DEV) {
-  app.use(
-    "/packages",
-    express.static(path.join(BUILD_ROOT, "../../../packages"))
-  );
+  app.use("/fonts", express.static(path.join(BUILD_ROOT, "/app/fonts")));
+
+  app.use("/", express.static(path.join(BUILD_ROOT, "/app")));
+
+  app.get("/shutdown", function (req, res) {
+    res.send("Shutting down");
+    process.exit(0);
+  });
+
+  if (devMode) {
+    app.use(
+      "/packages",
+      express.static(path.join(BUILD_ROOT, "../../../packages"))
+    );
+  }
+
+  const server = http.createServer(app);
+  server.listen(port, host, () => {
+    const address = server.address() as AddressInfo;
+    // eslint-disable-next-line no-console
+    console.log(
+      `Server is running at http://${address.address}:${address.port}`
+    );
+  });
 }
-
-const server = http.createServer(app);
-server.listen(PORT, HOST, () => {
-  const address = server.address() as AddressInfo;
-  // eslint-disable-next-line no-console
-  console.log(`Server is running at http://${address.address}:${address.port}`);
-});

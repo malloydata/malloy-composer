@@ -1,6 +1,5 @@
-import { exec } from "child_process";
 import { Command } from "commander";
-import * as path from "path";
+import { initServer } from "./server";
 
 const program = new Command();
 
@@ -18,14 +17,9 @@ program
 
 program.parse();
 
-const composerProcess = exec(`node ${path.join(__dirname, "server.js")}`, {
-  env: {
-    ...process.env,
-    PORT: `${program.opts().port}`,
-    HOST: `${program.opts().host}`,
-    ROOT: `${program.args[0]}`,
-  },
-});
+const { host, port } = program.opts();
 
-composerProcess.stdout?.pipe(process.stdout);
-composerProcess.stderr?.pipe(process.stderr);
+const devMode = process.env.DEV === "1";
+
+process.env.ROOT = program.args[0];
+initServer({ devMode, port, host });

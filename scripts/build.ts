@@ -72,7 +72,7 @@ export const commonServerConfig = (
   target?: string
 ): BuildOptions => {
   return {
-    entryPoints: ["./src/server/cli.ts", "./src/server/server.js"],
+    entryPoints: ["./src/server/cli.ts"],
     outdir: serverBuildDirectory,
     minify: !development,
     sourcemap: development ? "inline" : false,
