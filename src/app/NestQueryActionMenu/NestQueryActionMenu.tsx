@@ -237,7 +237,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
                 "scatter_chart",
                 "segment_map",
                 "shape_map",
-                "spark_line",
+                "sparkline",
               ]}
             />
           ),

@@ -212,7 +212,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
                 "scatter_chart",
                 "segment_map",
                 "shape_map",
-                "spark_line",
+                "sparkline",
               ]}
             />
           ),

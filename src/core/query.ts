@@ -1122,7 +1122,7 @@ ${malloy}
                 "scatter_chart",
                 "segment_map",
                 "shape_map",
-                "spark_line",
+                "sparkline",
               ]
             : [
                 "number",

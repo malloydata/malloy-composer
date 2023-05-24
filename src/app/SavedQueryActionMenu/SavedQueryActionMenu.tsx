@@ -83,7 +83,7 @@ export const SavedQueryActionMenu: React.FC<SavedQueryActionMenuProps> = ({
                 "scatter_chart",
                 "segment_map",
                 "shape_map",
-                "spark_line",
+                "sparkline",
               ]}
             />
           ),
