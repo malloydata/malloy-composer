@@ -225,7 +225,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
                 "scatter_chart",
                 "segment_map",
                 "shape_map",
-                "spark_line",
+                "sparkline",
               ]}
             />
           ),

@@ -18,15 +18,15 @@
     "renderer": "line_chart"
   },
   "delay_by_hour_of_day": {
-    "renderer" : "scatter_chart"
+    "renderer": "scatter_chart"
   },
   "seats_by_distance": {
     "renderer": "scatter_chart"
   },
-  "carriers_by_month" : {
+  "carriers_by_month": {
     "renderer": "line_chart"
   },
   "by_month_line_chart": {
-    "renderer": "spark_line"
+    "renderer": "sparkline"
   }
 }

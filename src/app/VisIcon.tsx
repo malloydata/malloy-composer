@@ -84,7 +84,7 @@ export const VisIcon: React.FC<VisIconProps> = ({ renderer }) => {
     <VisIconPercent {...props} />
   ) : renderer === "boolean" ? (
     <VisIconBoolean {...props} />
-  ) : renderer === "spark_line" ? (
+  ) : renderer === "sparkline" ? (
     <VisIconSparkLine {...props} />
   ) : renderer === "link" ? (
     <VisIconLink {...props} />

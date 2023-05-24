@@ -148,7 +148,7 @@ export type RendererName =
   | "number"
   | "percent"
   | "boolean"
-  | "spark_line"
+  | "sparkline"
   | "bytes"
   | "link"
   | "vega";
