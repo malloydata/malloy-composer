@@ -44,7 +44,7 @@ python -m SimpleHTTPServer
 1. `npm install` to install package dependencies
 2. `git submodule init` and
 3. `git submodule update` to install git dependencies
-4  `npm run build`
+4. `npm run build`
 5. `npm run start malloy-samples`
 
 ## Database Connections
