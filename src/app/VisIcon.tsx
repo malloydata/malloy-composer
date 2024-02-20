@@ -86,7 +86,7 @@ export const VisIcon: React.FC<VisIconProps> = ({ renderer }) => {
     <VisIconBoolean {...props} />
   ) : renderer === "sparkline" ? (
     <VisIconSparkLine {...props} />
-  ) : renderer === "link" ? (
+  ) : renderer === "url" ? (
     <VisIconLink {...props} />
   ) : null;
 };

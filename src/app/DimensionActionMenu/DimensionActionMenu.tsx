@@ -159,7 +159,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
                 "boolean",
                 "currency",
                 "image",
-                "link",
+                "url",
                 "percent",
                 "text",
                 "time",

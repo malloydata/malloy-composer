@@ -149,6 +149,8 @@ export const Explore: React.FC = () => {
     isQueryEmpty,
     canQueryRun,
   } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
+  // eslint-disable-next-line no-console
+  console.log(querySummary);
 
   let section = urlParams.get("page") || "datasets";
   if (onlyDefaultDataset && section === "datasets") {

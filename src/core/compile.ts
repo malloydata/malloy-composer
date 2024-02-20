@@ -25,7 +25,6 @@ import {
   FieldDef,
   FilterExpression,
   FixedConnectionMap,
-  isFilteredAliasedName,
   Malloy,
   MalloyQueryData,
   Model,
@@ -39,6 +38,7 @@ import {
   NamedQuery,
   PreparedQuery,
   QueryFieldDef,
+  QueryRunStats,
 } from "@malloydata/malloy";
 import { maybeQuoteIdentifier } from "./utils";
 
@@ -50,6 +50,12 @@ class DummyFiles implements URLReader {
 
 class DummyConnection implements Connection {
   name = "dummy";
+
+  dialectName = "duckdb";
+
+  estimateQueryCost(_sqlCommand: string): Promise<QueryRunStats> {
+    throw new Error("Dummy connection cannot estimate query cost");
+  }
 
   runSQL(): Promise<MalloyQueryData> {
     throw new Error("Dummy connection cannot run SQL.");
@@ -170,7 +176,11 @@ export async function compileGroupBy(
   if (theQuery.type !== "query") {
     throw new Error("Expected the_query to be a query");
   }
-  const fieldList = theQuery.pipeline[0].fields;
+  const segment = theQuery.pipeline[0];
+  if (segment.type !== "reduce") {
+    throw new Error("Expected the query to be a reduce query");
+  }
+  const fieldList = segment.queryFields;
   if (fieldList === undefined) {
     throw new Error("Expected a field list");
   }
@@ -191,11 +201,15 @@ export async function compileDimension(
   if (theQuery.type !== "query") {
     throw new Error("Expected the_query to be a query");
   }
-  const field = theQuery.pipeline[0].fields[0];
+  const segment = theQuery.pipeline[0];
+  if (segment.type !== "reduce") {
+    throw new Error("Expected query to be a reduce query");
+  }
+  const field = segment.queryFields[0];
   if (typeof field === "string") {
     throw new Error("Expected field definition, not reference");
-  } else if (isFilteredAliasedName(field)) {
-    throw new Error("Expected field definition, not filtered aliased name");
+  } else if (field.type === "fieldref") {
+    throw new Error("Expected field definition, not field reference");
   }
   return field;
 }
@@ -214,11 +228,15 @@ export async function compileMeasure(
   if (theQuery.type !== "query") {
     throw new Error("Expected the_query to be a query");
   }
-  const field = theQuery.pipeline[0].fields[0];
+  const segment = theQuery.pipeline[0];
+  if (segment.type !== "reduce") {
+    throw new Error("Expected query to be a reduce query");
+  }
+  const field = segment.queryFields[0];
   if (typeof field === "string") {
     throw new Error("Expected field definiton, not reference");
-  } else if (isFilteredAliasedName(field)) {
-    throw new Error("Expected field definition, not filtered aliased name");
+  } else if (field.type === "fieldref") {
+    throw new Error("Expected field definition, not field reference");
   }
   return field;
 }
@@ -231,12 +249,9 @@ async function _compileQuery(
   const model = await _compileModel(modelDef, query);
   const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
   const match = query.match(regex);
-  let preparedQuery = match
+  const preparedQuery = match
     ? model.getPreparedQueryByName(match[1])
     : model.preparedQuery;
-  if (preparedQuery._query.pipeHead) {
-    preparedQuery = preparedQuery.getFlattenedQuery(DEFAULT_NAME);
-  }
   return preparedQuery;
 }
 

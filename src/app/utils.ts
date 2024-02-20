@@ -27,7 +27,6 @@ import {
   expressionIsCalculation,
 } from "@malloydata/malloy";
 import * as shiki from "shiki";
-import { ILanguageRegistration } from "shiki";
 import { QuerySummaryItem } from "../types";
 import { MALLOY_GRAMMAR } from "./malloyGrammar";
 
@@ -36,8 +35,6 @@ declare global {
     IS_DUCKDB_WASM: boolean;
   }
 }
-
-shiki.setCDN("https://unpkg.com/shiki/");
 
 export function snakeToTitle(snake: string): string {
   return snake
@@ -56,7 +53,7 @@ function getHighlighter() {
     return HIGHLIGHTER;
   }
   HIGHLIGHTER = shiki.getHighlighter({
-    theme: "light-plus",
+    themes: ["light-plus", "dark-plus"],
     langs: [
       "sql",
       "json",
@@ -66,7 +63,7 @@ function getHighlighter() {
         scopeName: "source.malloy",
         embeddedLangs: ["sql"],
         grammar: MALLOY_GRAMMAR,
-      } as unknown as ILanguageRegistration,
+      } as unknown as shiki.LanguageRegistration,
     ],
   });
   return HIGHLIGHTER;
@@ -74,10 +71,16 @@ function getHighlighter() {
 
 export async function highlight(code: string, lang: string): Promise<string> {
   const highlighter = await getHighlighter();
-  if (!highlighter.getLoadedLanguages().includes(lang as shiki.Lang)) {
+  if (!highlighter.getLoadedLanguages().includes(lang)) {
     lang = "txt";
   }
-  return highlighter.codeToHtml(code, { lang });
+  return highlighter.codeToHtml(code, {
+    lang,
+    themes: {
+      light: "light-plus",
+      dark: "dark-plus",
+    },
+  });
 }
 
 export async function highlightPre(
@@ -108,6 +111,8 @@ export function typeOfField(fieldDef: FieldDef): FieldType {
     ? "source"
     : fieldDef.type === "turtle"
     ? "query"
+    : fieldDef.type === "error"
+    ? "number" // HACK
     : fieldDef.type;
 }
 
@@ -125,6 +130,8 @@ export function scalarTypeOfField(
     ? "string"
     : fieldDef.type === "turtle"
     ? "string"
+    : fieldDef.type === "error"
+    ? "number" // HACK
     : fieldDef.type;
 }
 

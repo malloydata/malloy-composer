@@ -150,8 +150,8 @@ export type RendererName =
   | "boolean"
   | "sparkline"
   | "bytes"
-  | "link"
-  | "vega";
+  | "vega"
+  | "url";
 
 export interface Schema {
   fields: SchemaField[];

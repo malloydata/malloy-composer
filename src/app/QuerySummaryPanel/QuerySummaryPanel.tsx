@@ -398,8 +398,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               );
             } else if (item.kind === "measure") {
               const isRenamed =
-                item.type === "field_definition" ||
-                (item.kind === "measure" && item.isRenamed);
+                item.type === "field_definition" || item.isRenamed;
               return (
                 <AggregateActionMenu
                   model={model}
