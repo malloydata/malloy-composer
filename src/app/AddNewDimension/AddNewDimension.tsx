@@ -86,8 +86,10 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
               event.preventDefault();
               compileDimension(source, newName, dimension)
                 .then((dimension) => {
-                  addDimension(dimension);
-                  onComplete();
+                  if (dimension.type !== "struct") {
+                    addDimension(dimension);
+                    onComplete();
+                  }
                 })
                 .catch(setError);
             }}

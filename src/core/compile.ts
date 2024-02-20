@@ -51,9 +51,7 @@ class DummyFiles implements URLReader {
 class DummyConnection implements Connection {
   name = "dummy";
 
-  get dialectName(): string {
-    return "duckdb";
-  }
+  dialectName = "duckdb";
 
   estimateQueryCost(_sqlCommand: string): Promise<QueryRunStats> {
     throw new Error("Dummy connection cannot estimate query cost");

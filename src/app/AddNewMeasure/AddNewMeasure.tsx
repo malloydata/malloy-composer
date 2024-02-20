@@ -257,8 +257,10 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               }
               compileMeasure(source, newName, measure)
                 .then((measure) => {
-                  addMeasure(measure);
-                  onComplete();
+                  if (measure.type !== "struct") {
+                    addMeasure(measure);
+                    onComplete();
+                  }
                 })
                 .catch((error) => {
                   setError(error);

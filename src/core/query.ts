@@ -151,6 +151,7 @@ export class QueryBuilder extends SourceUtils {
 
   public getQuerySummary(dataStyles: DataStyles): QuerySummary | undefined {
     if (this._source === undefined) return undefined;
+    // eslint-disable-next-line no-console
     console.log(this.query);
     const writer = this.getWriter();
     return writer.getQuerySummary(dataStyles);
@@ -1281,7 +1282,7 @@ ${malloy}
                 "boolean",
                 "currency",
                 "image",
-                "link",
+                "url",
                 "percent",
                 "text",
                 "time",

@@ -150,7 +150,6 @@ export type RendererName =
   | "boolean"
   | "sparkline"
   | "bytes"
-  | "link"
   | "vega"
   | "url";
 

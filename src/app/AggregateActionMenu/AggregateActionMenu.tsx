@@ -150,7 +150,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
                 "boolean",
                 "currency",
                 "image",
-                "link",
+                "url",
                 "percent",
                 "text",
                 "time",

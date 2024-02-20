@@ -27,7 +27,6 @@ import {
   NamedQuery,
   TurtleDef,
   FieldDef,
-  flattenQuery,
   NamedModelObject,
 } from "@malloydata/malloy";
 import { useState } from "react";
@@ -130,14 +129,11 @@ export function queriesForSourceInModel(
   return Object.values(modelDef.contents)
     .filter(itemIsQuery)
     .filter((item) => item.structRef === (source.as || source.name))
-    .flatMap((item) => {
-      try {
-        const turtleDef = flattenQuery(modelDef, item);
-        return [turtleDef];
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(error);
-        return [];
-      }
+    .map((item) => {
+      const turtle: TurtleDef = {
+        ...item,
+        type: "turtle",
+      };
+      return turtle;
     });
 }
