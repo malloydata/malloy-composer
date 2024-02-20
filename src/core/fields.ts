@@ -59,7 +59,7 @@ export function generateMeasure(
   const quotedFieldName = maybeQuoteIdentifier(fieldName);
   switch (measureType) {
     case "count_distinct":
-      return `count(distinct ${quotedFieldName})`;
+      return `count(${quotedFieldName})`;
     case "avg":
     case "sum":
       return `${quotedFieldName}.${measureType}()`;

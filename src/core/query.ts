@@ -44,6 +44,7 @@ import {
   FieldTypeDef,
   NamedQuery,
   expressionIsCalculation,
+  ExpressionType,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../app/utils";
@@ -150,6 +151,7 @@ export class QueryBuilder extends SourceUtils {
 
   public getQuerySummary(dataStyles: DataStyles): QuerySummary | undefined {
     if (this._source === undefined) return undefined;
+    console.log(this.query);
     const writer = this.getWriter();
     return writer.getQuerySummary(dataStyles);
   }
@@ -537,11 +539,7 @@ export class QueryBuilder extends SourceUtils {
       if (field.type === "turtle") {
         throw new Error("Cannot edit filter on turtle.");
       }
-      if (
-        field.e.length !== 0 ||
-        typeof field.e[0] === "string" ||
-        field.e[0].type !== "filterExpression"
-      ) {
+      if (!isFilteredField(field)) {
         throw new Error("Cannot edit filter on non-filtered field.");
       }
       if (field.e[0].filterList === undefined) {
@@ -572,11 +570,7 @@ export class QueryBuilder extends SourceUtils {
       if (field.type === "turtle") {
         throw new Error("Cannot edit filter on turtle.");
       }
-      if (
-        field.e.length !== 0 ||
-        typeof field.e[0] === "string" ||
-        field.e[0].type !== "filterExpression"
-      ) {
+      if (!isFilteredField(field)) {
         throw new Error("Cannot edit filter on non-filtered field.");
       }
       if (field.e[0].filterList === undefined) {
@@ -765,7 +759,14 @@ export class QueryBuilder extends SourceUtils {
     if (field.type === "fieldref") {
       const source = this.sourceForStageAtPath(stagePath);
       const lookup = this.getField(source, dottify(field.path));
-      if (lookup.type === "struct" || lookup.type === "turtle") {
+      if (lookup.type === "turtle") {
+        stage.queryFields[fieldIndex] = {
+          ...lookup,
+          name: as,
+        };
+        return;
+      }
+      if (lookup.type === "struct") {
         throw new Error("Invalid field");
       }
       const newField: QueryFieldDef = {
@@ -777,6 +778,7 @@ export class QueryBuilder extends SourceUtils {
             path: field.path,
           },
         ],
+        expressionType: lookup.expressionType,
       };
       stage.queryFields[fieldIndex] = newField;
     } else {
@@ -821,9 +823,28 @@ export class QueryBuilder extends SourceUtils {
             ],
           },
         ],
+        as,
+        expressionType: def.expressionType,
       };
     } else if (isFilteredField(field)) {
       field.e[0].filterList = [...(field.e[0].filterList || []), filter];
+    } else if (isRenamedField(field)) {
+      if (field.type === "turtle") {
+        throw new Error("Invalid field");
+      }
+      stage.queryFields[fieldIndex] = {
+        type: field.type,
+        name: as || this.nameOf(field),
+        e: [
+          {
+            type: "filterExpression",
+            filterList: [filter],
+            e: field.e,
+          },
+        ],
+        as,
+        expressionType: field.expressionType,
+      };
     }
   }
 
@@ -865,11 +886,11 @@ export class QueryBuilder extends SourceUtils {
       throw new Error("Stage must be reduce");
     }
     const field = stage.queryFields[fieldIndex];
-    if (typeof field !== "string") {
+    if (field.type !== "fieldref") {
       throw new Error("Don't deal with this yet");
     }
     const definition = structDef.fields.find(
-      (def) => (def.as || def.name) === field
+      (def) => (def.as || def.name) === dottify(field.path)
     );
     // TODO handle case where definition is too complex...
     if (definition === undefined) {
@@ -958,8 +979,18 @@ ${malloy}
           property,
           malloy: [maybeQuoteIdentifier(dottify(field.path))],
         };
+      } else if (isRenamedField(field)) {
+        const property = expressionIsCalculation(field.expressionType)
+          ? "aggregate"
+          : "group_by";
+        const malloy: Fragment[] = [
+          `${maybeQuoteIdentifier(field.as || field.name)} is ${dottify(
+            field.e[0].path
+          )}`,
+        ];
+        return { property, malloy };
       } else if (isFilteredField(field)) {
-        const fieldDef = this.getField(source, field.name);
+        const fieldDef = this.getField(source, dottify(field.e[0].e[0].path));
         if (fieldDef.type === "struct") {
           throw new Error("Don't know how to deal with this");
         }
@@ -970,11 +1001,12 @@ ${malloy}
             ? "aggregate"
             : "group_by";
         const malloy: Fragment[] = [];
-        const newNameIs =
-          field.as === undefined ? "" : `${maybeQuoteIdentifier(field.as)} is `;
-        malloy.push(`${newNameIs}${maybeQuoteIdentifier(field.name)}`);
+        const newNameIs = `${maybeQuoteIdentifier(field.name)} is `;
+        malloy.push(
+          `${newNameIs}${maybeQuoteIdentifier(dottify(field.e[0].e[0].path))}`
+        );
         if (field.e[0].filterList && field.e[0].filterList.length > 0) {
-          malloy.push(" {", INDENT, "where:");
+          malloy.push(" {", NEWLINE, INDENT, "where:");
           malloy.push(...this.getFiltersString(field.e[0].filterList || []));
           malloy.push(OUTDENT, "}");
         }
@@ -1320,6 +1352,35 @@ ${malloy}
               type: fieldDef.type,
             });
           }
+        } else if (isRenamedField(field)) {
+          if (fieldDef.type === "struct") {
+            throw new Error("Don't know how to deal with this");
+          }
+          if (fieldDef.type !== "turtle" && fieldDef.type !== "error") {
+            orderByFields.push({
+              name: this.nameOf(field),
+              fieldIndex,
+              type: fieldDef.type,
+            });
+          }
+          items.push({
+            type: "field",
+            field: fieldDef,
+            saveDefinition: undefined, // TODO
+            fieldIndex,
+            styles: styleItems.filter((s) => s.canRemove),
+            isRefined: true,
+            path: field.name,
+            isRenamed: true,
+            name: field.as || field.name,
+            kind:
+              fieldDef.type === "turtle"
+                ? "query"
+                : expressionIsCalculation(fieldDef.expressionType)
+                ? "measure"
+                : "dimension",
+            stages,
+          });
         } else if (isFilteredField(field)) {
           if (fieldDef.type === "struct") {
             throw new Error("Don't know how to deal with this");
@@ -1514,11 +1575,32 @@ function isFilteredField(field: QueryFieldDef): field is FilteredField {
     return false;
   }
   return (
-    field.e.length === 0 &&
+    field.e.length === 1 &&
     typeof field.e[0] !== "string" &&
     field.e[0].type === "filterExpression" &&
     field.e[0].e.length === 1 &&
     typeof field.e[0].e[0] !== "string" &&
     field.e[0].e[0].type === "field"
+  );
+}
+
+type RenamedField = QueryFieldDef & {
+  e: [
+    {
+      type: "field";
+      path: string[];
+    }
+  ];
+  expressionType?: ExpressionType;
+};
+
+function isRenamedField(field: QueryFieldDef): field is RenamedField {
+  if (field.type === "fieldref" || field.type === "turtle") {
+    return false;
+  }
+  return (
+    field.e.length === 1 &&
+    typeof field.e[0] !== "string" &&
+    field.e[0].type === "field"
   );
 }

@@ -90,6 +90,8 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           id: "filter",
           iconName: "filter",
           iconColor: "filter",
+          // Cannot filter a custom measure for now...
+          isEnabled: definition === undefined,
           label: "Filter",
           closeOnComplete: true,
           Component: ({ onComplete }) => (
