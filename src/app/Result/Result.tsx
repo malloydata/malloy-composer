@@ -146,7 +146,7 @@ export const Result: React.FC<ResultProps> = ({
       // eslint-disable-next-line no-console
       console.log(result.sql);
       const currentResultId = ++resultId.current;
-      const rendered = await new render.HTMLView(document).render(result.data, {
+      const rendered = await new render.HTMLView(document).render(result, {
         dataStyles,
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
