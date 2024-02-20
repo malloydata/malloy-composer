@@ -37,6 +37,7 @@ class ConnectionManager {
     new Map();
   private readonly bigqueryConnection = new BigQueryConnection("bigquery");
   private readonly postgresConnection = new PostgresConnection("postgres");
+  private readonly motherDuckConnection = new DuckDBConnection("md", "md:");
 
   public getConnectionLookup(url: URL): LookupConnection<Connection> {
     const workingDirectory = path.dirname(fileURLToPath(url));
@@ -50,6 +51,7 @@ class ConnectionManager {
             "duckdb",
             new DuckDBConnection("duckdb", ":memory:", workingDirectory),
           ],
+          ["md", this.motherDuckConnection],
         ]),
         "bigquery"
       );
