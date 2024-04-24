@@ -42,6 +42,8 @@ import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
+import { QueryBuilder } from "../../core/query";
+import { ListNest } from "../ListNest";
 
 const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
 
@@ -341,21 +343,24 @@ export const Explore: React.FC = () => {
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-          {appInfo && (
             <span>
-              {appInfo.title || "Malloy"}
-              {sourceName && section === "query" && (
+              {appInfo?.title || "Malloy"}
+              {appId && section !== "datasets" && (
                 <span>
-                  {" ›"} {snakeToTitle(sourceName)}
-                  {(urlParams.get("name") || queryName) && section === "query" && (
+                  {" > "} {snakeToTitle(appId)}
+                  {sourceName && section !== "about" && (
                     <span>
-                      {" ›"} {urlParams.get("name") || snakeToTitle(queryName)}
+                      {" > "} {snakeToTitle(sourceName)}
+                      {(urlParams.get("name") || queryName) && (
+                        <span>
+                          {" > "} {urlParams.get("name") || snakeToTitle(queryName)}
+                        </span>
+                      )}
                     </span>
                   )}
                 </span>
               )}
             </span>
-          )}
         </HeaderLeft>
       </Header>
       <Body>
@@ -550,13 +555,9 @@ const BottomChannel = styled.div`
 
 function generateReadme(appInfo: AppInfo) {
   let readme = "";
-  const title = appInfo.title || "Malloy";
-  readme += `# ${title}\n\n`;
-  readme += appInfo.title
-    ? `Welcome to the Malloy Composer for the ${appInfo.title} dataset!\n\n`
-    : `Welcome to the Malloy Composer. See below for a list of available sources.\n\n`;
-  readme += "## Sources\n\n";
   for (const modelInfo of appInfo.models) {
+    readme += `# Model > ${modelInfo.path}\n\n`;
+
     for (const source of modelInfo.sources) {
       readme += `
 <!-- malloy-source
@@ -565,7 +566,21 @@ description="${source.description}"
 source="${source.sourceName}"
 model="${modelInfo.path}"
 -->
-      `;
+`;
+
+      for (const view of source.views) {
+        readme += `
+<!-- malloy-query
+model="${modelInfo.path}"
+name="${view.name}"
+description="${view.description}"
+renderer="${view.renderer}"
+-->
+\`\`\`malloy
+${view.query}
+\`\`\`
+`;
+      }
     }
   }
 

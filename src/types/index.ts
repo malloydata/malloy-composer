@@ -53,17 +53,28 @@ export interface SourceConfig {
   title: string;
   sourceName: string;
   description: string;
+  views: QueryConfig[];
+}
+
+export interface QueryConfig {
+  query: string;
+  name: string;
+  description: string;
+  renderer: string;
 }
 
 export interface RemoteTable {
   name: string;
   url: string;
 }
+
+// TODO(kjnesbit): Why ModelConfig and ModelInfo?
 export interface ModelConfig {
   id: string;
   path: string;
   tables: Array<string | RemoteTable>;
   sources?: SourceConfig[];
+  queries?: QueryConfig[];
 }
 
 export interface AppConfig {
@@ -78,11 +89,8 @@ export interface ModelInfo {
   model: ModelDef;
   path: string;
   styles: DataStyles;
-  sources: {
-    title: string;
-    sourceName: string;
-    description: string;
-  }[];
+  sources: SourceConfig[];
+  queries: QueryConfig[];
 }
 
 export interface AppInfo {
