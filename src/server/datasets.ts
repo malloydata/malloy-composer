@@ -97,7 +97,7 @@ export async function getDatasets(
           .map((sourceObj) => ({
             title: snakeToTitle(sourceObj.as || sourceObj.name),
             sourceName: sourceObj.as || sourceObj.name,
-            description: (sourceObj as StructDef).annotation?.blockNotes?.map(note => note.text).join(' ') || "...",
+            description: (sourceObj as StructDef).annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
             views: (sourceObj as StructDef).fields
               .filter((turtleObj) => turtleObj.type === "turtle")
               .filter((turtleObj) =>
@@ -106,7 +106,7 @@ export async function getDatasets(
               .map((turtleObj) => ({
                 query: getQueryString(sourceObj as StructDef, turtleObj.as || turtleObj.name),
                 name: snakeToTitle(turtleObj.as || turtleObj.name),
-                description: turtleObj?.annotation?.blockNotes?.map(note => note.text).join(' ') || "...",
+                description: turtleObj?.annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
               })
               ),
           }));

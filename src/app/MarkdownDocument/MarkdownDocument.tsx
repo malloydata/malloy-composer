@@ -353,7 +353,7 @@ const MarkdownPreWrapper = styled.div`
 `;
 
 const MalloyLink = styled.div`
-  border: 1px solid #8c8c8c;
+  border: 1px solid #d7d7d7;
   border-radius: 7px;
   padding: 15px;
   background-color: ${COLORS.mainBackground};
@@ -361,7 +361,7 @@ const MalloyLink = styled.div`
   flex-direction: row;
   gap: 2px;
   margin-top: 20px;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   align-items: center;
   cursor: pointer;
   font-size: 15px;
@@ -382,8 +382,8 @@ const MalloyQueryLink = styled.div`
   flex-direction: row;
   gap: 2px;
   margin-bottom: 4px;
-  margin-left: 100px;
-  margin-right: 20px;
+  margin-left: 80px;
+  margin-right: 80px;
   align-items: center;
   cursor: pointer;
   font-size: 12px;
