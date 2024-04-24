@@ -356,7 +356,7 @@ const MalloyLink = styled.div`
   border: 1px solid #8c8c8c;
   border-radius: 7px;
   padding: 15px;
-  background-color: #f2f2f2;
+  background-color: ${COLORS.mainBackground};
   display: flex;
   flex-direction: row;
   gap: 2px;
