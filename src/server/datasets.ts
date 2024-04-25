@@ -22,15 +22,16 @@
  */
 
 import * as explore from "../types";
-import { Runtime, StructDef, TurtleDef, NamedQuery } from "@malloydata/malloy";
+import { Runtime, StructDef, TurtleDef, NamedQuery, Model } from "@malloydata/malloy";
 import { CONNECTION_MANAGER } from "./connections";
 import { URL_READER } from "./urls";
 import { promises as fs } from "fs";
-import { HackyDataStylesAccumulator } from "../common/data_styles";
+import { HackyDataStylesAccumulator,  } from "../common/data_styles";
 import * as path from "path";
 import { getConfig } from "./config";
 import { snakeToTitle } from "../app/utils";
 import { QueryBuilder } from "../core/query";
+import {MalloySQLParser, MalloySQLStatementType} from '@malloydata/malloy-sql';
 
 export async function getDatasets(
   _app: explore.AppListing
@@ -58,6 +59,7 @@ export async function getDatasets(
 
   // Fetch model configs.
   let modelConfigs = app.models;
+  let notebooks;
   if (_app.path.endsWith(".malloy")) {
     modelConfigs = [
       {
@@ -77,51 +79,30 @@ export async function getDatasets(
           tables: [],
         };
       });
+    
+    notebooks = items
+      .filter((item) => item.endsWith(".malloynb"))
+      .map((notebookPath) => {
+        return {
+          id: notebookPath,
+          path: notebookPath,
+        };
+      });
   }
 
   // Fetch model info using model configs.
   const models: explore.ModelInfo[] = await Promise.all(
     modelConfigs.map(async (sample: explore.ModelConfig) => {
-      const modelPath = path.resolve(rootDirectory, sample.path);
-      const modelURL = new URL("file://" + modelPath);
-      const urlReader = new HackyDataStylesAccumulator(URL_READER);
-      const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
-      const runtime = new Runtime(urlReader, connections);
-      const model = await runtime.getModel(modelURL);
-      const dataStyles = urlReader.getHackyAccumulatedDataStyles();
-
-      const sources =
-        sample.sources ||
-        Object.values(model._modelDef.contents)
-          .filter((obj) => obj.type === "struct")
-          .map((sourceObj) => ({
-            title: snakeToTitle(sourceObj.as || sourceObj.name),
-            sourceName: sourceObj.as || sourceObj.name,
-            description: (sourceObj as StructDef).annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
-            views: (sourceObj as StructDef).fields
-              .filter((turtleObj) => turtleObj.type === "turtle")
-              .filter((turtleObj) =>
-                // Filter out non-reduce views, i.e., indexes.
-                (turtleObj as TurtleDef).pipeline.map(stage => stage.type).every(type => type == "reduce"))
-              .map((turtleObj) => ({
-                query: getQueryString(sourceObj as StructDef, turtleObj.as || turtleObj.name),
-                name: snakeToTitle(turtleObj.as || turtleObj.name),
-                description: turtleObj?.annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
-              })
-              ),
-          }));
-
-      // TODO(kjnesbit): Add queries to data set.
-      const queries = [];
-        
+      const {model, dataStyles} = await getModelPromiseAndDataStyles(rootDirectory, sample.path);
       return {
         id: sample.id,
         model: model._modelDef,
         path: sample.path,
         readme,
         styles: dataStyles,
-        sources,
-        queries
+        sources: sample.sources || getSources(model),
+        // TODO(kjnesbit): Add queries to data set.
+        queries: []
       };
     })
   );
@@ -131,7 +112,41 @@ export async function getDatasets(
     linkedReadmes: app.linkedReadmes,
     title,
     models,
+    notebooks,
   };
+}
+
+async function getModelPromiseAndDataStyles(rootDirectory: string, relativePath: string) {
+  const modelPath = path.resolve(rootDirectory, relativePath);
+  const modelURL = new URL("file://" + modelPath);
+  const urlReader = new HackyDataStylesAccumulator(URL_READER);
+  const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
+  const runtime = new Runtime(urlReader, connections);
+  return {
+      model: await runtime.getModel(modelURL),
+      dataStyles: urlReader.getHackyAccumulatedDataStyles()
+    };
+  }
+
+function getSources(model: Model) {
+  return Object.values(model._modelDef.contents)
+    .filter((obj) => obj.type === "struct")
+    .map((sourceObj) => ({
+      title: snakeToTitle(sourceObj.as || sourceObj.name),
+      sourceName: sourceObj.as || sourceObj.name,
+      description: (sourceObj as StructDef).annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
+      views: (sourceObj as StructDef).fields
+        .filter((turtleObj) => turtleObj.type === "turtle")
+        .filter((turtleObj) =>
+          // Filter out non-reduce views, i.e., indexes.
+          (turtleObj as TurtleDef).pipeline.map(stage => stage.type).every(type => type == "reduce"))
+        .map((turtleObj) => ({
+          query: getQueryString(sourceObj as StructDef, turtleObj.as || turtleObj.name),
+          name: snakeToTitle(turtleObj.as || turtleObj.name),
+          description: turtleObj?.annotation?.blockNotes?.map(note => note.text).join(' ') || ".",
+        })
+        ),
+    }));
 }
 
 function getQueryString(source: StructDef, queryPath: string) {
@@ -139,3 +154,20 @@ function getQueryString(source: StructDef, queryPath: string) {
   queryBuilder.loadQuery(queryPath);
   return queryBuilder.getQueryStringForModel();
 }
+
+/*
+  Code to compile notebook
+  if (modelPath.endsWith(".malloynb")) {
+    const importBaseURL = new URL("file://" + rootDirectory);
+    let modelText = "";
+    const parse = MalloySQLParser.parse(await fs.readFile(modelPath, "utf8"), modelPath);
+    for (const stmt of parse.statements) {
+      modelText += (stmt.type === MalloySQLStatementType.MALLOY) ? stmt.text + "\n" : "";
+    }
+    console.log(modelText);
+    return {
+      model: await runtime.getModel(modelText, {importBaseURL}),
+      dataStyles: urlReader.getHackyAccumulatedDataStyles()
+    };
+  }
+*/

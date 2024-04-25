@@ -555,8 +555,20 @@ const BottomChannel = styled.div`
 
 function generateReadme(appInfo: AppInfo) {
   let readme = "";
+  let readme_notebook = "";
+  let notebook_list = "";
+
+  for (const notebookInfo of appInfo.notebooks) {
+    if (notebookInfo.path === "README.malloynb") {
+      readme_notebook = "# TODO(kjnesbit): RENDER README HERE\n\n";
+    }
+    notebook_list += `# Notebook > ${notebookInfo.id}\n\n`;
+  }
+  readme += readme_notebook
+  readme += notebook_list
+
   for (const modelInfo of appInfo.models) {
-    readme += `# Model > ${modelInfo.path}\n\n`;
+    readme += `# Model > ${modelInfo.id}\n\n`;
 
     for (const source of modelInfo.sources) {
       readme += `
@@ -574,7 +586,6 @@ model="${modelInfo.path}"
 model="${modelInfo.path}"
 name="${view.name}"
 description="${view.description}"
-renderer="${view.renderer}"
 -->
 \`\`\`malloy
 ${view.query}

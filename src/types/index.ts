@@ -60,7 +60,6 @@ export interface QueryConfig {
   query: string;
   name: string;
   description: string;
-  renderer: string;
 }
 
 export interface RemoteTable {
@@ -93,11 +92,17 @@ export interface ModelInfo {
   queries: QueryConfig[];
 }
 
+export interface NotebookInfo {
+  id: string;
+  path: string;
+}
+
 export interface AppInfo {
   readme: string;
   linkedReadmes: string[];
   title?: string;
   models: ModelInfo[];
+  notebooks: NotebookInfo[];
 }
 
 export interface SchemaFieldMeasure {
