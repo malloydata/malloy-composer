@@ -22,7 +22,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { AppInfo, ModelInfo, RendererName } from "../../types";
+import { AppInfo, ModelInfo, RendererName, NotebookInfo } from "../../types";
 import { useDatasets } from "../data/use_datasets";
 import { EmptyMessage, PageContent } from "../CommonElements";
 import { ChannelButton } from "../ChannelButton";
@@ -67,6 +67,7 @@ export const Explore: React.FC = () => {
     (modelInfo) => modelInfo.id === urlParams.get("model")
   );
   const sourceName = urlParams.get("source");
+  const notebookInfo: NotebookInfo = JSON.parse(urlParams.get("notebook"));
   const params = useRef("");
   const [loading, setLoading] = useState(0);
 
@@ -167,6 +168,7 @@ export const Explore: React.FC = () => {
     urlParams.set("page", section);
     if (section !== "query") {
       urlParams.delete("query");
+      urlParams.delete("notebook");
       urlParams.delete("run");
       urlParams.delete("name");
       urlParams.delete("styles");
@@ -188,12 +190,23 @@ export const Explore: React.FC = () => {
       urlParams.set("model", modelInfo.id);
       urlParams.set("page", "query");
       urlParams.delete("query");
+      urlParams.delete("notebook");
       urlParams.delete("run");
       urlParams.delete("name");
       urlParams.delete("styles");
       clearQuery(true);
       setParams(urlParams);
     }
+  };
+
+  const setNotebook = (notebookInfo: NotebookInfo) => {
+    urlParams.set("notebook", JSON.stringify(notebookInfo));
+    urlParams.delete("query");
+    urlParams.delete("run");
+    urlParams.delete("name");
+    urlParams.delete("styles");
+    clearQuery(true);
+    setParams(urlParams);
   };
 
   useEffect(() => {
@@ -232,6 +245,7 @@ export const Explore: React.FC = () => {
             }
           } else {
             urlParams.delete("query");
+            urlParams.delete("notebook");
             urlParams.delete("run");
             urlParams.delete("name");
             urlParams.delete("styles");
@@ -325,6 +339,21 @@ export const Explore: React.FC = () => {
     }
   };
 
+  const loadNotebookLink = async (notebookInfo: NotebookInfo) => {
+    try {
+      setLoading((loading) => ++loading);
+      setNotebook(notebookInfo);
+      urlParams.set("page", "notebook");
+      setParams(urlParams, { replace: true });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      setError(error);
+    } finally {
+      setLoading((loading) => --loading);
+    }
+  };
+
   const runQueryAction = () => {
     runQuery();
     urlParams.set("run", "true");
@@ -389,8 +418,15 @@ export const Explore: React.FC = () => {
               <ChannelButton
                 onClick={() => setSection("about")}
                 text="Dataset"
-                icon="about"
+                icon="source"
                 selected={section === "about"}
+                disabled={appInfo === undefined}
+              ></ChannelButton>
+              <ChannelButton
+                onClick={() => setSection("notebook")}
+                text="Notebook"
+                icon="about"
+                selected={section === "notebook"}
                 disabled={appInfo === undefined}
               ></ChannelButton>
               <ChannelButton
@@ -446,6 +482,7 @@ export const Explore: React.FC = () => {
                       appInfo={appInfo}
                       loadQueryLink={loadQueryLink}
                       loadSourceLink={loadSourceLink}
+                      loadNotebookLink={loadNotebookLink}
                     />
                   )}
                 </PageContent>
@@ -453,6 +490,11 @@ export const Explore: React.FC = () => {
               {section === "datasets" && config && (
                 <PageContent>
                   <Apps />
+                </PageContent>
+              )}
+              {section === "notebook" && notebookInfo && (
+                <PageContent>
+                   <Notebook app={app} notebookInfo={notebookInfo} />
                 </PageContent>
               )}
               <ErrorMessage error={error} />

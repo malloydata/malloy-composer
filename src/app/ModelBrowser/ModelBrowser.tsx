@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { AppInfo } from "../../types";
+import { AppInfo, NotebookInfo } from "../../types";
 import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
 import { ReactComponent as QueryIcon } from "../assets/img/source_query.svg";
 import styled from "styled-components";
@@ -37,12 +37,14 @@ interface ModelBrowserProps {
     renderer?: string
   ) => void;
   loadSourceLink?: (model: string, source: string) => void;
+  loadNotebookLink?: (notebookInfo: NotebookInfo) => void;
 }
 
 export const ModelBrowser: React.FC<ModelBrowserProps> = ({
   appInfo,
   loadQueryLink,
   loadSourceLink,
+  loadNotebookLink,
 }) => {
   return (
     <>
@@ -52,7 +54,11 @@ export const ModelBrowser: React.FC<ModelBrowserProps> = ({
       <>
         {appInfo.notebooks.map((notebookInfo) => (
           <ModelContainer>
-            <NotebookLink>
+            <NotebookLink
+              onClick={() => {
+                loadNotebookLink(notebookInfo);
+              }}
+            >
               <ModelTitleRow>{"Notebook > " + notebookInfo.id}</ModelTitleRow>
               <RunIcon width="80" height="22" />
             </NotebookLink>
