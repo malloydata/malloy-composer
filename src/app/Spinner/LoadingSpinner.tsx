@@ -88,8 +88,6 @@ const VerticalCenter = styled.div`
   flex-direction: column;
   justify-content: center;
   flex: 1 0 auto;
-  width: 100%;
-  height: 100%;
 `;
 
 const HorizontalCenter = styled.div`
@@ -97,4 +95,5 @@ const HorizontalCenter = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  width: 90%;
 `;

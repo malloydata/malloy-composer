@@ -42,8 +42,7 @@ import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
-import { QueryBuilder } from "../../core/query";
-import { ListNest } from "../ListNest";
+import { Notebook } from "../Notebook";
 
 const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
 
@@ -150,7 +149,13 @@ export const Explore: React.FC = () => {
     resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
+  } = useQueryBuilder(
+    app,
+    model,
+    modelInfo?.path,
+    updateQueryInURL,
+    modelInfo?.styles
+  );
   // eslint-disable-next-line no-console
   console.log(querySummary);
 
@@ -338,29 +343,34 @@ export const Explore: React.FC = () => {
     section = "loading";
   }
 
+  const readmeNotebookInfo = appInfo?.notebooks.find(
+    (notebookInfo) => notebookInfo.id === "README.malloynb"
+  );
+
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
       <Header>
         <HeaderLeft>
           <MalloyLogo />
-            <span>
-              {appInfo?.title || "Malloy"}
-              {appId && section !== "datasets" && (
-                <span>
-                  {" > "} {snakeToTitle(appId)}
-                  {sourceName && section !== "about" && (
-                    <span>
-                      {" > "} {snakeToTitle(sourceName)}
-                      {(urlParams.get("name") || queryName) && (
-                        <span>
-                          {" > "} {urlParams.get("name") || snakeToTitle(queryName)}
-                        </span>
-                      )}
-                    </span>
-                  )}
-                </span>
-              )}
-            </span>
+          <span>
+            {appInfo?.title || "Malloy"}
+            {appId && section !== "datasets" && (
+              <span>
+                {" > "} {snakeToTitle(appId)}
+                {sourceName && section !== "about" && (
+                  <span>
+                    {" > "} {snakeToTitle(sourceName)}
+                    {(urlParams.get("name") || queryName) && (
+                      <span>
+                        {" > "}{" "}
+                        {urlParams.get("name") || snakeToTitle(queryName)}
+                      </span>
+                    )}
+                  </span>
+                )}
+              </span>
+            )}
+          </span>
         </HeaderLeft>
       </Header>
       <Body>
@@ -432,6 +442,10 @@ export const Explore: React.FC = () => {
                       loadQueryLink={loadQueryLink}
                       loadSource={loadSourceLink}
                     />
+                  )}
+                  <hr />
+                  {readmeNotebookInfo && (
+                    <Notebook app={app} notebookInfo={readmeNotebookInfo} />
                   )}
                 </PageContent>
               )}
@@ -555,17 +569,10 @@ const BottomChannel = styled.div`
 
 function generateReadme(appInfo: AppInfo) {
   let readme = "";
-  let readme_notebook = "";
-  let notebook_list = "";
 
   for (const notebookInfo of appInfo.notebooks) {
-    if (notebookInfo.path === "README.malloynb") {
-      readme_notebook = "# TODO(kjnesbit): RENDER README HERE\n\n";
-    }
-    notebook_list += `# Notebook > ${notebookInfo.id}\n\n`;
+    readme += `# Notebook > ${notebookInfo.id}\n\n`;
   }
-  readme += readme_notebook
-  readme += notebook_list
 
   for (const modelInfo of appInfo.models) {
     readme += `# Model > ${modelInfo.id}\n\n`;
@@ -584,7 +591,7 @@ model="${modelInfo.path}"
         readme += `
 <!-- malloy-query
 model="${modelInfo.path}"
-name="${view.name}"
+name="${snakeToTitle(view.name)}"
 description="${view.description}"
 -->
 \`\`\`malloy

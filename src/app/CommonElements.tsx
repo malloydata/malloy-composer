@@ -284,12 +284,12 @@ export const PageHeader = styled.div`
 `;
 
 export const PageContent = styled.div`
-  overflow: hidden;
+  overflow: scroll;
   background-color: white;
   border-radius: 5px;
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: row;
-  overflow: hidden;
+  flex-direction: column;
+  overflow: scroll;
 `;

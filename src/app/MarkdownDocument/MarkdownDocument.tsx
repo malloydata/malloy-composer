@@ -83,13 +83,7 @@ export const MarkdownNode: React.FC<{
 
   switch (node.type) {
     case "root":
-      return (
-        <MarkdownDocumentRoot>
-          <MarkdownDocumentRootInner>
-            {children(node)}
-          </MarkdownDocumentRootInner>
-        </MarkdownDocumentRoot>
-      );
+      return <MarkdownDocumentRoot>{children(node)}</MarkdownDocumentRoot>;
     case "heading":
       switch (node.depth) {
         case 1:
@@ -162,7 +156,10 @@ export const MarkdownNode: React.FC<{
           }}
         >
           <MalloyLinkInfo>
-            <MalloyLinkTitleRow>{"View > "}{node.name}</MalloyLinkTitleRow>
+            <MalloyLinkTitleRow>
+              {"View > "}
+              {node.name}
+            </MalloyLinkTitleRow>
             <MalloyLinkDescription>{node.description}</MalloyLinkDescription>
           </MalloyLinkInfo>
           <RunIcon width="64" height="18" />
@@ -190,7 +187,10 @@ export const MarkdownNode: React.FC<{
           }}
         >
           <MalloyLinkInfo>
-            <MalloyLinkTitleRow>{"Source > "}{node.title}</MalloyLinkTitleRow>
+            <MalloyLinkTitleRow>
+              {"Source > "}
+              {node.title}
+            </MalloyLinkTitleRow>
             <MalloyLinkDescription>{node.description}</MalloyLinkDescription>
           </MalloyLinkInfo>
           <QueryIcon width="80" height="22" />
@@ -322,14 +322,10 @@ const MarkdownHeading6 = styled.h6`
 `;
 
 const MarkdownDocumentRoot = styled.div`
-  padding: 10px 30px 30px 30px;
-  width: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: 90%;
   font-family: Google Sans;
-  overflow-y: auto;
-`;
-
-const MarkdownDocumentRootInner = styled.div`
-  max-width: 900px;
 `;
 
 const MarkdownLink = styled.a`

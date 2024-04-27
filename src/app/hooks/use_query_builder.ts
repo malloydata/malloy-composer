@@ -36,6 +36,7 @@ import { useNavigate } from "react-router-dom";
 import { QueryBuilder } from "../../core/query";
 import { QuerySummary, RendererName, StagePath } from "../../types";
 import { useRunQuery } from "../data/use_run_query";
+import * as explore from "../../types";
 
 interface UseQueryBuilderResult {
   queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
@@ -143,6 +144,7 @@ export interface QueryModifiers {
 }
 
 export function useQueryBuilder(
+  app: explore.AppListing,
   model?: ModelDef,
   modelPath?: string,
   updateQueryInURL?: (params: {
@@ -172,7 +174,7 @@ export function useQueryBuilder(
     runQuery: runQueryRaw,
     isRunning,
     clearResult,
-  } = useRunQuery(setError, model, modelPath);
+  } = useRunQuery(app, setError, model, modelPath);
 
   const runQuery = () => {
     const summary = queryBuilder.current.getQuerySummary({

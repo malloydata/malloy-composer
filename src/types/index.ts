@@ -28,6 +28,7 @@ import {
   StructDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
+// import { MalloySQLParseResults } from "@malloydata/malloy-sql";
 
 export interface AppListing {
   path: string;
@@ -95,6 +96,8 @@ export interface ModelInfo {
 export interface NotebookInfo {
   id: string;
   path: string;
+  // parse: MalloySQLParseResults;
+  fileContents: string;
 }
 
 export interface AppInfo {

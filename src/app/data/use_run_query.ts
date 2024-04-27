@@ -25,8 +25,10 @@ import { useMutation } from "react-query";
 import * as malloy from "@malloydata/malloy";
 import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
+import * as explore from "../../types";
 
 async function runQuery(
+  app: explore.AppListing,
   query: string,
   model: malloy.ModelDef,
   modelPath: string,
@@ -47,6 +49,7 @@ async function runQuery(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        app,
         query,
         modelPath,
         queryName,
@@ -64,13 +67,14 @@ interface UseRunQueryResult {
 }
 
 export function useRunQuery(
+  app: explore.AppListing,
   onError: (error: Error) => void,
   model: malloy.ModelDef,
   modelPath: string
 ): UseRunQueryResult {
   const { data, mutateAsync, isLoading, reset } = useMutation(
     ({ query, queryName }: { query: string; queryName: string }) =>
-      runQuery(query, model, modelPath, queryName),
+      runQuery(app, query, model, modelPath, queryName),
     { onError }
   );
 
