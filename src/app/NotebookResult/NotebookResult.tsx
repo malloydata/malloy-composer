@@ -110,7 +110,11 @@ async function runQuery(
 }
 
 const ResultWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  margin-right: 20px;
   width: 90%
-  font-size: 14px;
+  font-size: 12px;
   font-family: "Roboto Mono";
 `;

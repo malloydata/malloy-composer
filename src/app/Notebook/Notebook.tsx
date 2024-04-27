@@ -65,7 +65,6 @@ export const Notebook: React.FC<NotebookProps> = ({ app, notebookInfo }) => {
               </>
             ))
       )}
-      ;
     </>
   );
 };

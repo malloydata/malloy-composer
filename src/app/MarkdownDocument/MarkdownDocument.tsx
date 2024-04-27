@@ -150,51 +150,51 @@ export const MarkdownNode: React.FC<{
       return <hr />;
     case "malloyQueryLink":
       return (
-        <MalloyQueryLink
+        <QueryLink
           onClick={() => {
             loadQueryLink(node.model, node.query, node.name, node.renderer);
           }}
         >
-          <MalloyLinkInfo>
-            <MalloyLinkTitleRow>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>
               {"View > "}
               {node.name}
-            </MalloyLinkTitleRow>
-            <MalloyLinkDescription>{node.description}</MalloyLinkDescription>
-          </MalloyLinkInfo>
-          <RunIcon width="64" height="18" />
-        </MalloyQueryLink>
+            </QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
+          <RunIcon width="80" height="22" />
+        </QueryLink>
       );
     case "malloyAppLink":
       return (
-        <MalloyLink
+        <QueryLink
           onClick={() => {
             loadApp(node.appId);
           }}
         >
-          <MalloyLinkInfo>
-            <MalloyLinkTitleRow>{node.name}</MalloyLinkTitleRow>
-            <MalloyLinkDescription>{node.description}</MalloyLinkDescription>
-          </MalloyLinkInfo>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>{node.name}</QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
           <ViewIcon width="80" height="22" />
-        </MalloyLink>
+        </QueryLink>
       );
     case "malloySourceLink":
       return (
-        <MalloyLink
+        <QueryLink
           onClick={() => {
             loadSource(node.model, node.source);
           }}
         >
-          <MalloyLinkInfo>
-            <MalloyLinkTitleRow>
+          <QueryLinkInfo>
+            <QueryLinkTitleRow>
               {"Source > "}
               {node.title}
-            </MalloyLinkTitleRow>
-            <MalloyLinkDescription>{node.description}</MalloyLinkDescription>
-          </MalloyLinkInfo>
+            </QueryLinkTitleRow>
+            <QueryLinkDescription>{node.description}</QueryLinkDescription>
+          </QueryLinkInfo>
           <QueryIcon width="80" height="22" />
-        </MalloyLink>
+        </QueryLink>
       );
   }
 };
@@ -348,7 +348,7 @@ const MarkdownPreWrapper = styled.div`
   }
 `;
 
-const MalloyLink = styled.div`
+const QueryLink = styled.div`
   border: 1px solid #d7d7d7;
   border-radius: 7px;
   padding: 15px;
@@ -369,36 +369,14 @@ const MalloyLink = styled.div`
   }
 `;
 
-const MalloyQueryLink = styled.div`
-  border: 1px solid #d7d7d7;
-  border-radius: 7px;
-  padding: 5px;
-  background-color: white;
-  display: flex;
-  flex-direction: row;
-  gap: 2px;
-  margin-bottom: 4px;
-  margin-left: 80px;
-  margin-right: 80px;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  color: #595959;
-
-  &:hover {
-    background-color: #f0f6ff;
-    border-color: #4285f4;
-  }
-`;
-
-const MalloyLinkInfo = styled.div`
+const QueryLinkInfo = styled.div`
   width: 100%;
   gap: 5px;
   display: flex;
   flex-direction: column;
 `;
 
-const MalloyLinkTitleRow = styled.div`
+const QueryLinkTitleRow = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
@@ -406,7 +384,7 @@ const MalloyLinkTitleRow = styled.div`
   font-weight: bold;
 `;
 
-const MalloyLinkDescription = styled.div`
+const QueryLinkDescription = styled.div`
   color: #8c8c8c;
   font-size: 12px;
   gap: 1px;

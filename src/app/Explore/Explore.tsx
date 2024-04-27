@@ -34,7 +34,6 @@ import { ExploreQueryEditor } from "../ExploreQueryEditor";
 import { compileQuery, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
-import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
 import { useSearchParams, useParams } from "react-router-dom";
 import { DataStyles } from "@malloydata/render";
@@ -43,6 +42,7 @@ import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
 import { Notebook } from "../Notebook";
+import { ModelBrowser } from "../ModelBrowser";
 
 const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
 
@@ -436,16 +436,17 @@ export const Explore: React.FC = () => {
               )}
               {section === "about" && (
                 <PageContent>
-                  {appInfo && (
-                    <MarkdownDocument
-                      content={appInfo.readme || generateReadme(appInfo)}
-                      loadQueryLink={loadQueryLink}
-                      loadSource={loadSourceLink}
-                    />
-                  )}
-                  <hr />
                   {readmeNotebookInfo && (
-                    <Notebook app={app} notebookInfo={readmeNotebookInfo} />
+                    <>
+                      <Notebook app={app} notebookInfo={readmeNotebookInfo} />
+                    </>
+                  )}
+                  {appInfo && (
+                    <ModelBrowser
+                      appInfo={appInfo}
+                      loadQueryLink={loadQueryLink}
+                      loadSourceLink={loadSourceLink}
+                    />
                   )}
                 </PageContent>
               )}
@@ -566,41 +567,3 @@ const BottomChannel = styled.div`
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
 `;
-
-function generateReadme(appInfo: AppInfo) {
-  let readme = "";
-
-  for (const notebookInfo of appInfo.notebooks) {
-    readme += `# Notebook > ${notebookInfo.id}\n\n`;
-  }
-
-  for (const modelInfo of appInfo.models) {
-    readme += `# Model > ${modelInfo.id}\n\n`;
-
-    for (const source of modelInfo.sources) {
-      readme += `
-<!-- malloy-source
-title="${snakeToTitle(source.sourceName)}"
-description="${source.description}"
-source="${source.sourceName}"
-model="${modelInfo.path}"
--->
-`;
-
-      for (const view of source.views) {
-        readme += `
-<!-- malloy-query
-model="${modelInfo.path}"
-name="${snakeToTitle(view.name)}"
-description="${view.description}"
--->
-\`\`\`malloy
-${view.query}
-\`\`\`
-`;
-      }
-    }
-  }
-
-  return readme;
-}

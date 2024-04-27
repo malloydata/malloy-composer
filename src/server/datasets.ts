@@ -141,7 +141,7 @@ function getSources(model: Model) {
       description:
         (sourceObj as StructDef).annotation?.blockNotes
           ?.map((note) => note.text)
-          .join(" ") || ".",
+          .join(" ") || "",
       views: (sourceObj as StructDef).fields
         .filter((turtleObj) => turtleObj.type === "turtle")
         .filter((turtleObj) =>
@@ -159,7 +159,7 @@ function getSources(model: Model) {
           description:
             turtleObj?.annotation?.blockNotes
               ?.map((note) => note.text)
-              .join(" ") || ".",
+              .join(" ") || "",
         })),
     }));
 }

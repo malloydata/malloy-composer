@@ -45,8 +45,6 @@ export async function runQuery(
   const modelURL = new URL("file://" + path.join(rootDirectory, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
-  console.log("MODEL PATH " + modelPath);
-  console.log("MODEL PATH " + query);
   let runnable;
   if (modelPath.endsWith(".malloy")) {
     const baseModel = await runtime.getModel(modelURL);
