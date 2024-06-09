@@ -42,7 +42,7 @@ interface UseQueryBuilderResult {
   queryMalloy: {
     model: string;
     source: string;
-    notebook: string; // force rebuild
+    notebook: string;
     markdown: string;
     isRunnable: boolean;
   };

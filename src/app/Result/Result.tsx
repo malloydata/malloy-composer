@@ -88,7 +88,7 @@ export const Result: React.FC<ResultProps> = ({
       .then(setHighlightedMarkdownMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
-    highlightPre(indentCode(malloy.source), 'malloy')
+    highlightPre(indentCode(malloy.notebook), 'malloy')
       .then(setHighlightedSourceMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
