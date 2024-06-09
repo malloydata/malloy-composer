@@ -26,6 +26,7 @@ interface ExploreQueryEditorProps {
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   queryMalloy: {
+    notebook: string;
     model: string;
     source: string;
     markdown: string;
