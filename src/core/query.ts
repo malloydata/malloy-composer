@@ -183,12 +183,14 @@ export class QueryBuilder extends SourceUtils {
     modelPath: string
   ): {
     model: string;
+    notebook: string;
     markdown: string;
     source: string;
     isRunnable: boolean;
   } {
     const writer = this.getWriter();
     return {
+      notebook: writer.getQueryStringForNotebook(),
       model: writer.getQueryStringForModel(),
       source: writer.getQueryStringForSource(this.query.name),
       markdown: writer.getQueryStringForMarkdown(renderer, modelPath),
@@ -914,7 +916,7 @@ export class QueryWriter extends SourceUtils {
     renderer: string | undefined,
     modelPath: string
   ): string {
-    const malloy = this.getMalloyString(false, this.query.name);
+    const malloy = this.getMalloyString("run", this.query.name);
     return `<!-- malloy-query
   name="${snakeToTitle(this.query.name)}"
   description="Add a description here." ${
@@ -931,11 +933,15 @@ ${malloy}
   }
 
   getQueryStringForSource(name: string): string {
-    return this.getMalloyString(true, name);
+    return this.getMalloyString("view", name);
   }
 
   getQueryStringForModel(): string {
-    return this.getMalloyString(false, this.query.name);
+    return this.getMalloyString("query", this.query.name);
+  }
+
+  getQueryStringForNotebook(): string {
+    return this.getMalloyString("run");
   }
 
   private getFiltersString(filterList: FilterExpression[]): Fragment[] {
@@ -1131,18 +1137,18 @@ ${malloy}
     return malloy;
   }
 
-  private getMalloyString(forSource: boolean, name?: string): string {
+  private getMalloyString(
+    forUse: "view" | "query" | "run",
+    name?: string
+  ): string {
     if (this.getSource() === undefined) return "";
     const initParts = [];
-    if (forSource) {
-      initParts.push("view:");
-    } else {
-      initParts.push("query:");
-    }
-    if (name !== undefined) {
+    initParts.push(`${forUse}:`);
+
+    if (forUse !== "run" && name !== undefined) {
       initParts.push(`${maybeQuoteIdentifier(name)} is`);
     }
-    if (!forSource) {
+    if (forUse !== "view") {
       initParts.push(
         maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
@@ -1155,7 +1161,7 @@ ${malloy}
       stageIndex++
     ) {
       const stage = this.query.pipeline[stageIndex];
-      if (!forSource || stageIndex > 0) {
+      if (forUse !== "view" || stageIndex > 0) {
         malloy.push(" ->");
       }
       malloy.push(...this.getMalloyStringForStage(stage, stageSource));
