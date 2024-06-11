@@ -67,6 +67,8 @@ export const Result: React.FC<ResultProps> = ({
   isRunning,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
+  const [highlightedNotebookMalloy, setHighlightedNotebookMalloy] =
+    useState<HTMLElement>();
   const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
     useState<HTMLElement>();
   const [highlightedModelMalloy, setHighlightedModelMalloy] =
@@ -88,8 +90,12 @@ export const Result: React.FC<ResultProps> = ({
       .then(setHighlightedMarkdownMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
-    highlightPre(indentCode(malloy.notebook), 'malloy')
+    highlightPre(indentCode(malloy.source), 'malloy')
       .then(setHighlightedSourceMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(indentCode(malloy.notebook), 'malloy')
+      .then(setHighlightedNotebookMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
     highlightPre(malloy.model, 'malloy')
@@ -244,8 +250,8 @@ export const Result: React.FC<ResultProps> = ({
           <PreWrapper
             style={{marginLeft: malloyType === 'source' ? '-2ch' : ''}}
           >
-            {malloyType === 'notebook' && highlightedSourceMalloy && (
-              <DOMElement element={highlightedSourceMalloy} />
+            {malloyType === 'notebook' && highlightedNotebookMalloy && (
+              <DOMElement element={highlightedNotebookMalloy} />
             )}
             {malloyType === 'source' && highlightedSourceMalloy && (
               <DOMElement element={highlightedSourceMalloy} />
