@@ -4,42 +4,42 @@ import "./airports.malloy"
 // Name: Show all Data
 // The Equivqalent of a SELECT * in SQL.
 
-query: airports -> {
-  project: *
+run: airports -> {
+  select: *
 }
 
 // --
 // Name: Filtering Data
 //  New York City District Airports
 
-query: airports -> {
+run: airports -> {
   where: faa_dist = 'NYC'
-  project: *
+  select: *
 }
 
 // --
 // Name: Named query
 // Runs the query declared in the model below
 
-query: airports->by_state
+run: airports->by_state
 
 // --
 // Name: Named query with a filter applied to the source
 // Filters query to major airports
 
-query: airports {where: major='Y'}->by_state
+run: airports extend {where: major='Y'}->by_state
 
 // --
 // Name: Aggregates: Simple Query with Aggregates
 
 // Calculations can be written into the query
 
-query: airports->{
+run: airports->{
   group_by: state
   aggregate:
-    airport_count is count(*)
+    airport_count is count()
     avg_elevation is elevation.avg()
-    percentage_of_all_airports_in_usa is count(*)/all(count(*))*100
+    percentage_of_all_airports_in_usa is count()/all(count())*100
   order_by: avg_elevation desc
 }
 
@@ -49,7 +49,7 @@ query: airports->{
 // Calculations can come from the model.  In this case all the
 //  calculations are from the model below.
 
-query: airports->{
+run: airports->{
   group_by: state
   aggregate:
     airport_count
@@ -60,14 +60,14 @@ query: airports->{
 
 // --
 // Name: Filtered aggregate expressions
-query: airports->{
+run: airports->{
   group_by:
     state
   aggregate:
     airport_count
     gliderport_count is airport_count {where: fac_type = 'GLIDERPORT'}
     avg_heliport_elevation is elevation.avg() {where: fac_type = 'HELIPORT'}
-    percent_major is airport_count {? major = 'Y'}/airport_count * 100
+    percent_major is airport_count {where: major = 'Y'}/airport_count * 100
 }
 
 // --
@@ -75,7 +75,7 @@ query: airports->{
 // Queries can be nested in one another.  The outer query essentially
 //  becomes the filter for the nested query.
 
-query: airports->{
+run: airports->{
   group_by: faa_region
   aggregate:
     airport_count
@@ -100,7 +100,7 @@ query: airports->{
 // Modeled queries can be changed and expanded.  In this case
 //  we expand the reult limit to 50 and add a couple of measures
 
-query: airports->by_state + {
+run: airports->by_state + {
   limit: 50
   aggregate:
     avg_elevation
@@ -111,22 +111,22 @@ query: airports->by_state + {
 // Name: Named nested queries and refinements
 // We can simply nest one query in another by refining it.
 
-query: airports-> by_state + {
+run: airports-> by_state + {
   nest: by_facility_type
 }
 
 // --
 // Name: Rendering results
 // Changing the name of a query can change how it is rendered.
-query: airports-> by_state + {
+run: airports-> by_state + {
   nest: fac_type_bar_chart is by_facility_type
 }
 
 // --
 // Name: Filtering nested Queries
 // You can apply filters to nested queries
-query: airports-> by_state + {
-  nest: fac_type_bar_chart is by_facility_type + {? fac_type = 'AIRPORT' | 'HELIPORT'}
+run: airports-> by_state + {
+  nest: fac_type_bar_chart is by_facility_type + {where: fac_type = 'AIRPORT' | 'HELIPORT'}
 }
 
 // --
@@ -134,7 +134,7 @@ query: airports-> by_state + {
 // You can nest things by name.  The name of the column
 //  determines how it is rendered (in this case, shape_map)
 
-query: airports -> {
+run: airports -> {
   group_by: faa_region
   aggregate: airport_count
   nest:
@@ -146,7 +146,7 @@ query: airports -> {
 // Name: Mapping Data - Strings
 // We often want Map values to other value.  Malloy's 'pick' statement
 //  is powerful and readable.  You only have to mention the source once
-query: airports -> {
+run: airports -> {
   group_by: faa_region_name is faa_region ?
     pick 'Southwest' when 'ASW'
     pick 'Northwest Mountain' when 'ANM'
@@ -165,7 +165,7 @@ query: airports -> {
 // --
 // Name: Mapping Data - Multiple Values
 //  We can map multiple values to a single value
-query: airports -> {
+run: airports -> {
   group_by: east_west is faa_region ?
     pick 'West' when 'ASW' | 'ANM' | 'AWP' | 'AAL'
     pick 'Central' when 'AGL' | 'ACE' | 'ANM'
@@ -178,7 +178,7 @@ query: airports -> {
 // --
 // Name: Mapping Data - numbers
 // We can map numeric ranges to strings.
-query: airports -> {
+run: airports -> {
   group_by: elevation_string is elevation ?
     pick 'low' when < 300
     pick 'medium' when < 900
@@ -193,7 +193,7 @@ query: airports -> {
 //  function.  A takes an aggregate calculation (modelled or expplicit)
 //  and runs without dimensional grouping.
 
-query: airports-> {
+run: airports-> {
   group_by:
     fac_type
     state
@@ -210,7 +210,7 @@ query: airports-> {
 // --
 // Name: Pipelines Step 1
 // Let's start with this query
-query: airports-> {
+run: airports-> {
   group_by: state
   nest: by_county is {
     group_by: county
@@ -223,7 +223,7 @@ query: airports-> {
 // Name: Pipelines Step 2
 // Find the top two counties in each state.
 //  See the previous query to run the first part
-query: airports-> {
+run: airports-> {
   group_by: state
   nest: by_county is {
     group_by: county
@@ -232,7 +232,7 @@ query: airports-> {
   }
 }
 -> {
-  project: state, by_county.county, by_county.airport_count
+  select: state, by_county.county, by_county.airport_count
   order_by: state, county
 }
 
@@ -242,10 +242,10 @@ query: airports-> {
 //  add a filter so the source only contain major airports
 //  the '+' means add parameters
 //
-source: major_airports is airports + {
+source: major_airports is airports extend {
   where: major = 'Y'
   measure:
-    count_with_control_tower is airport_count {? cntl_twr = 'Y'}
+    count_with_control_tower is airport_count {where: cntl_twr = 'Y'}
   dimension: faa_region_name is faa_region ?
     pick 'Southwest' when 'ASW'
     pick 'Northwest Mountain' when 'ANM'
@@ -259,7 +259,7 @@ source: major_airports is airports + {
 }
 
 // Look at major airports by district and state
-query: major_airports-> {
+run: major_airports-> {
   group_by: faa_region_name
   aggregate: airport_count, count_with_control_tower
   nest: by_state is {
