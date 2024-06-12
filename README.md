@@ -26,19 +26,6 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
     - Remove the Apple quarantine flag: `xattr -d com.apple.quarantine ./composer`
 4.  In your newly unzipped directory, run `./composer malloy-samples`
 
-## Downloading and Running WASM Composer
-Composer can run from a web server and is included in the samples. WASM Composer
-can only use csv and parquet files (via DuckDB).
-
-1.  Run the following commands
-```
-git clone git@github.com:malloydata/malloy-samples.git
-cd malloy-samples
-python -m SimpleHTTPServer
-```
-2. Goto http://localhost:8000/wasm in a web browser
-
-
 ## Running Composer from Source
 
 1. `npm install` to install package dependencies
