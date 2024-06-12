@@ -2,47 +2,47 @@ import "./flights.malloy"
 
 // --
 // Name: Carrier Table
-query: carriers -> {
-  project: *
+run: carriers -> {
+  select: *
 }
 
 // --
 // Name: Flights Table
-query: flights -> {
-  project: *
+run: flights -> {
+  select: *
 }
 
 // --
 // Name: Named query
-query: flights -> by_carrier
+run: flights -> by_carrier
 
 // --
 // Name: Named query with filter: SFO carriers
-query: flights {
+query: sfo_carriers is flights extend {
   where: orig.code = 'SFO'
 } -> by_carrier
 
 // --
-// Name: Named Query: By Origin
-query: flights -> by_origin
+// Name: Named run: By Origin
+run: flights -> by_origin
 
 // --
-// Name: Named Query: By Origin with Top 3 Carrier Nested
-query: flights-> by_origin + {
+// Name: Named run: By Origin with Top 3 Carrier Nested
+run: flights-> by_origin + {
   nest: by_carrier +  {limit: 3}
   limit: 30
 }
 
 // --
-// Name: Named Query: By Carrier with Top 3 Origins Nested
-query: flights-> by_carrier + {
+// Name: Named run: By Carrier with Top 3 Origins Nested
+run: flights-> by_carrier + {
   nest: by_origin +  {limit: 3}
   limit: 30
 }
 
 // --
 // Name: Simple Barchart: Carriers by Flights
-query: flights->  {
+run: flights->  {
   nest: by_carrier_bar_chart is {
     group_by: carriers.nickname
     aggregate: flight_count
@@ -51,7 +51,7 @@ query: flights->  {
 
 // --
 // Name: Barchart with two measures: Carriers by Flights
-query: flights->  {
+run: flights->  {
   group_by: orig.faa_region
   aggregate: flight_count
   nest: by_carrier_bar_chart is {
@@ -64,7 +64,7 @@ query: flights->  {
 
 // --
 // Name: Barchart with two dimensions: Carriers by Flights and Distance
-query: flights->  {
+run: flights->  {
   nest: by_carrier_bar_chart is {
     group_by: carriers.nickname
     aggregate: flight_count
@@ -74,7 +74,7 @@ query: flights->  {
 
 // --
 // Name: Line Chart Simple: flights by month
-query: flights->  {
+run: flights->  {
   group_by: carriers.nickname
   nest: by_month_line_chart is {
     group_by: dep_qtr is dep_time.quarter
@@ -84,7 +84,7 @@ query: flights->  {
 
 // --
 // Name: Line Chart with two dimension: Flights by Month and Length
-query: flights->  {
+run: flights->  {
   group_by: carriers.nickname
   nest: by_month_line_chart is {
     group_by: dep_qtr is dep_time.quarter
@@ -95,7 +95,7 @@ query: flights->  {
 
 // --
 // Name: Line Chart with two dimension: Flights by Month and Length
-query: flights->  {
+run: flights->  {
   group_by: carriers.nickname
   nest: by_month_line_chart is {
     group_by: dep_qtr is dep_time.quarter
@@ -106,7 +106,7 @@ query: flights->  {
 
 // --
 // Name: Lists: Origins and the list of carriers
-query: flights->  {
+run: flights->  {
   group_by: orig.code, orig.city
   nest: carrier_list is {
     group_by: carriers.nickname
@@ -118,7 +118,7 @@ query: flights->  {
 // --
 // Name: List Detail: Origins and the list of carriers
 // shows the count for each member of the list
-query: flights->  {
+run: flights->  {
   group_by: orig.code, orig.city
   nest: carrier_list_detail is {
     group_by: carriers.nickname
@@ -130,7 +130,7 @@ query: flights->  {
 
 // --
 // Name: Shape Map: Carriers Origin by State
-query: flights->  {
+run: flights->  {
   group_by: carriers.nickname
   aggregate: flight_count
   nest: by_state_shape_map is {
@@ -148,8 +148,8 @@ query: flights->  {
 //  we can run two queries simultaneously and
 //  join the results.
 
-source: my_flights is flights + {
-  query: top_carrier_line_chart is {
+source: my_flights is flights extend {
+  view: top_carrier_line_chart is {
       nest: c is {
         group_by: qtr is dep_time.quarter
         aggregate: flight_count
@@ -162,29 +162,32 @@ source: my_flights is flights + {
       }
   }
   -> {
-    project: c.*
+    select: c.*
     where: c.nickname = top_carriers.nickname
   }
 
-  query: origin_top_carriers is {
+  view: origin_top_carriers is {
     group_by: origin, orig.city
     aggregate: flight_count
     nest: top_carrier_line_chart
   }
 }
-query: my_flights->origin_top_carriers
+run: my_flights->origin_top_carriers
 
 
 // --
 // Name: Using one query as a filter for another
 // Filter by carriers that fly to SFO.
-query: sfo_carriers is flights-> {
+query: sfo_carriers2 is flights-> {
   where: orig.code = 'SFO'
   group_by: carrier
 }
 
-query: flights -> {
-  join_one: sfo is from(->sfo_carriers) on carrier = sfo.carrier
+run: flights -> {
+  extend: {
+    join_one: sfo is sfo_carriers2 on carrier = sfo.carrier
+  }
+
   where: sfo.carrier != null
   group_by: carriers.name
   aggregate: flight_count, origin_count is orig.airport_count

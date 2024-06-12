@@ -1,14 +1,14 @@
 --! styles flights.styles.json
 
-source: carriers is table('duckdb:carriers.parquet'){
+source: carriers is duckdb.table('carriers.parquet') extend {
   measure: carrier_count is count()
 }
 
-source: airports is table('duckdb:airports.parquet'){
+source: airports is duckdb.table('airports.parquet') extend {
   measure: airport_count is count()
 }
 
-source: flights is table('duckdb:flights.parquet') {
+source: flights is duckdb.table('flights.parquet') extend {
   join_one: carriers on carrier=carriers.code
   join_one: dest is airports on destination=dest.code
   join_one: orig is airports on origin=orig.code
@@ -16,23 +16,23 @@ source: flights is table('duckdb:flights.parquet') {
   measure:
     flight_count is count()
     total_distance is distance.sum()
-    aircraft_count is count(distinct tail_num)
+    aircraft_count is count(tail_num)
     dest_count is dest.airport_count
-    carrier_count is count(distinct carrier)
+    carrier_count is count(carrier)
 
-  dimension: flight_length is  distance:
+  dimension: flight_length is  distance ?
       pick 'short' when <  200
       pick 'medium' when < 800
       pick 'regional' when < 1500
       else 'long'
 
-  query: by_carrier is {
+  view: by_carrier is {
     group_by: carriers.nickname
     aggregate:
       flight_count
   }
 
-  query: by_origin is {
+  view: by_origin is {
     group_by: orig.code, orig.city
     aggregate:
       flight_count
