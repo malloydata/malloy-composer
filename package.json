@@ -32,6 +32,7 @@
     "@malloydata/db-duckdb": "0.0.181",
     "@malloydata/db-postgres": "0.0.181",
     "@malloydata/malloy": "0.0.181",
+    "@skokenes/query-editor": "file:packages/malloy-query-editor",
     "@malloydata/render": "0.0.181",
     "@popperjs/core": "^2.11.4",
     "cors": "^2.8.5",

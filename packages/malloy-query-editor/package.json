@@ -1,0 +1,32 @@
+{
+  "name": "@skokenes/query-editor",
+  "version": "0.0.3",
+  "description": "A query editor component for Malloy",
+  "main": "dist/cjs/index.cjs",
+  "type": "module",
+  "Xtypes": "dist/esm/index.d.ts",
+  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "Xtypes": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "Xtypes": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build --outDir 'dist' --config vite.config.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.4"
+  }
+}
