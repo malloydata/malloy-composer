@@ -3,21 +3,20 @@ import {
   StructDef,
   Result as MalloyResult,
   ModelDef,
-} from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
-import {useState} from 'react';
-import styled from 'styled-components';
-import {QuerySummary} from '../../types';
-import {ActionIcon} from '../ActionIcon';
-import {PageContent, PageHeader} from '../CommonElements';
-import {QueryModifiers} from '../hooks/use_query_builder';
-import {Popover} from '../Popover';
-import {QuerySummaryPanel} from '../QuerySummaryPanel';
-import {Result} from '../Result';
-import {TopQueryActionMenu} from '../TopQueryActionMenu';
-import {ReactComponent as RunIcon} from '../assets/img/query_run_wide.svg';
-import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
-import {TestComponent} from '@skokenes/query-editor';
+} from "@malloydata/malloy";
+import { DataStyles } from "@malloydata/render";
+import { useState } from "react";
+import styled from "styled-components";
+import { QuerySummary } from "../../types";
+import { ActionIcon } from "../ActionIcon";
+import { PageContent, PageHeader } from "../CommonElements";
+import { QueryModifiers } from "../hooks/use_query_builder";
+import { Popover } from "../Popover";
+import { QuerySummaryPanel } from "../QuerySummaryPanel";
+import { Result } from "../Result";
+import { TopQueryActionMenu } from "../TopQueryActionMenu";
+import { ReactComponent as RunIcon } from "../assets/img/query_run_wide.svg";
+import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -136,7 +135,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         </SidebarHeader>
         <QueryBar>
           <QueryBarInner>
-            <TestComponent />
             {querySummary && (
               <QuerySummaryPanel
                 model={model}
