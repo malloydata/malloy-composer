@@ -17,7 +17,6 @@ import { Result } from "../Result";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
 import RunIcon from "../assets/img/query_run_wide.svg?react";
 import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
-import TestComponent  from "../TestComponent";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -137,7 +136,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         </SidebarHeader>
         <QueryBar>
           <QueryBarInner>
-            <TestComponent />
             {querySummary && (
               <QuerySummaryPanel
                 model={model}
