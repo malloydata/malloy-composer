@@ -18,7 +18,8 @@
   "scripts": {
     "lint": "tsc && eslint .",
     "start": "npm run server-build && node ./dist/cli.js",
-    "build": "ts-node scripts/build",
+    "build": "npm run build-query-composer && ts-node scripts/build",
+    "build-query-composer": "cd packages/query-composer && npm i && npm run build",
     "clean": "rm -rf ./build && rm -rf ./dist && rm -rf ./pkg && rm -rf ./bundle",
     "create-bundles": "ts-node scripts/create-release-bundles",
     "server-build": "ts-node scripts/package-server --skip-package",
