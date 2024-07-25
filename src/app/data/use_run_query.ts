@@ -26,7 +26,7 @@ import * as malloy from "@malloydata/malloy";
 import { isDuckDBWASM } from "../utils";
 import * as duckDBWASM from "./duckdb_wasm";
 
-async function runQuery(
+export async function runQuery(
   query: string,
   model: malloy.ModelDef,
   modelPath: string,

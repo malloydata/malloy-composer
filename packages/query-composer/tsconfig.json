@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "esModuleInterop": true,
+      "jsx": "react-jsx",
+      "noEmit": false,
+      "outDir": "dist/types",
+      "resolveJsonModule": true,
+      "rootDir": "src",
+      "skipLibCheck": true,
+    },
+    "include": ["src"],
+  }
+  

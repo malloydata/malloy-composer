@@ -29,19 +29,22 @@ import { ChannelButton } from "../ChannelButton";
 import { ErrorMessage } from "../ErrorMessage";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
-import { useQueryBuilder } from "../hooks";
-import { ExploreQueryEditor } from "../ExploreQueryEditor";
+import { ExploreQueryEditor, useQueryBuilder } from "@malloydata/query-composer";
 import { compileQuery, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
 import { StructDef } from "@malloydata/malloy";
 import { useSearchParams, useParams } from "react-router-dom";
-import { DataStyles } from "@malloydata/render";
+// TODO: this is causing the custom elements to get registered twice (since the bundled ExploreQueryEditor also has that)
+// import { DataStyles } from "@malloydata/render";
 import { snakeToTitle } from "../utils";
 import { useApps } from "../data/use_apps";
 import { Apps } from "../Apps";
 import { LoadingSpinner } from "../Spinner";
+import { runQuery as runQueryExternal } from "../data/use_run_query";
+
+type DataStyles = any;
 
 const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
 
@@ -127,6 +130,7 @@ export const Explore: React.FC = () => {
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 
+
   const {
     queryMalloy,
     queryName,
@@ -148,9 +152,8 @@ export const Explore: React.FC = () => {
     resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles);
+  } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles, runQueryExternal);
   // eslint-disable-next-line no-console
-  console.log(querySummary);
 
   let section = urlParams.get("page") || "datasets";
   if (onlyDefaultDataset && section === "datasets") {
@@ -331,10 +334,19 @@ export const Explore: React.FC = () => {
     REDO: redo,
   };
 
-  const topValues = useTopValues(model, modelPath, source);
+  // const topValues = useTopValues(model, modelPath, source);
+  const topValues = [];
   if (loading || (appId && !appInfo)) {
     section = "loading";
   }
+
+  console.log({
+    model,
+    modelPath,
+    dataStyles,
+    source
+  })
+  
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
