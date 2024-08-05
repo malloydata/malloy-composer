@@ -27,7 +27,7 @@ import {
   SearchValueMapResult,
   StructDef,
 } from "@malloydata/malloy";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AddFilter } from "../AddFilter";
 import {
   ContextMenuContent,
@@ -50,6 +50,7 @@ import { FieldButton } from "../FieldButton";
 import { ActionIcon } from "../ActionIcon";
 import { compileFilter } from "../core/compile";
 import { stringFilterToString } from "../core/filters";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface FilterContextBarProps {
   source: StructDef;
@@ -70,6 +71,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   needsRename,
   topValues,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
   const { searchResults, isLoading } = useSearch(
@@ -173,7 +175,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
-                                compileFilter(
+                                dummyCompiler.compileFilter(
                                   source,
                                   stringFilterToString(searchResult.fieldName, {
                                     type: "is_equal_to",

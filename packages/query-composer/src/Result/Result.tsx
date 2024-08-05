@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import * as malloy from "@malloydata/malloy";
 import * as render from "@malloydata/render";
 import styled from "styled-components";
@@ -41,6 +41,7 @@ import { DOMElement } from "../DOMElement";
 import { PageContent, PageHeader } from "../CommonElements";
 import { SelectDropdown } from "../SelectDropdown";
 import { ActionIcon } from "../ActionIcon";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface ResultProps {
   model: malloy.ModelDef;
@@ -66,6 +67,7 @@ export const Result: React.FC<ResultProps> = ({
   onDrill,
   isRunning,
 }) => {
+  const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
     useState<HTMLElement>();
@@ -112,7 +114,7 @@ export const Result: React.FC<ResultProps> = ({
           return;
         }
         try {
-          sql = await compileQueryToSQL(model, malloy.model);
+          sql = await dummyCompiler.compileQueryToSQL(model, malloy.model);
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(error);
@@ -153,7 +155,7 @@ export const Result: React.FC<ResultProps> = ({
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(
             drillFilters.map((filter) =>
-              compileFilter(source, filter).catch((error) => {
+              dummyCompiler.compileFilter(source, filter).catch((error) => {
                 // eslint-disable-next-line no-console
                 console.log(error);
                 return undefined;

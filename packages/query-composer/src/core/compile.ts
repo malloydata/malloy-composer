@@ -190,13 +190,16 @@ export async function compileGroupBy(
 export async function compileDimension(
   source: StructDef,
   name: string,
-  dimension: string
+  dimension: string,
+  compile?: (modelDef: ModelDef, malloy: string) => Promise<ModelDef>
 ): Promise<FieldDef> {
   const malloy = `query: the_query is ${
     source.as || source.name
   } -> { group_by: ${name} is ${dimension} }`;
   const modelDef = modelDefForSource(source);
-  const model = await compileModel(modelDef, malloy);
+  const model = compile
+    ? await compile(modelDef, malloy)
+    : await compileModel(modelDef, malloy);
   const theQuery = model.contents["the_query"];
   if (theQuery.type !== "query") {
     throw new Error("Expected the_query to be a query");

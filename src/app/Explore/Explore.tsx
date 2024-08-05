@@ -30,7 +30,7 @@ import { ErrorMessage } from "../ErrorMessage";
 import { HotKeys } from "react-hotkeys";
 import { useTopValues } from "../data/use_top_values";
 import { ExploreQueryEditor, useQueryBuilder } from "@malloydata/query-composer";
-import { compileQuery, getSourceNameForQuery } from "../../core/compile";
+import { _compileModel, compileQuery, getSourceNameForQuery } from "../../core/compile";
 import { COLORS } from "../colors";
 import { MalloyLogo } from "../MalloyLogo";
 import { MarkdownDocument } from "../MarkdownDocument";
@@ -429,6 +429,7 @@ export const Explore: React.FC = () => {
                   undo={undo}
                   isQueryEmpty={isQueryEmpty}
                   canQueryRun={canQueryRun}
+                  dummyCompile={_compileModel}
                 />
               )}
               {section === "about" && (

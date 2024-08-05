@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 // TODO: extract api
 import { compileMeasure } from "../core/compile";
 import { CodeInput, CodeTextArea } from "../CodeInput";
@@ -51,6 +51,7 @@ import {
   pathParent,
   typeOfField,
 } from "../utils";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface AddMeasureProps {
   source: StructDef;
@@ -104,6 +105,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialCode,
   initialName,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   let initialMode = Mode.FIELD;
   let initialField: FlatField;
   let initialType: MeasureType;
@@ -256,7 +258,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                   return setError(new Error("Select a field"));
                 }
               }
-              compileMeasure(source, newName, measure)
+              dummyCompiler.compileMeasure(source, newName, measure)
                 .then((measure) => {
                   if (measure.type !== "struct") {
                     addMeasure(measure);
