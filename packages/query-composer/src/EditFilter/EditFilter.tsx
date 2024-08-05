@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { FilterExpression, StructDef } from "@malloydata/malloy";
-import { useState } from "react";
+import { useContext, useState } from "react";
 // TODO: extract api
 import { compileFilter } from "../core/compile";
 import { CodeTextArea } from "../CodeInput";
@@ -31,6 +31,7 @@ import {
   ContextMenuMain,
   ContextMenuTitle,
 } from "../CommonElements";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface EditFilterProps {
   source: StructDef;
@@ -45,6 +46,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
   source,
   onComplete,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   const [filter, setFilter] = useState(existing);
   return (
     <ContextMenuMain>
@@ -63,7 +65,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
           </Button>
           <Button
             onClick={() => {
-              compileFilter(source, filter).then((filterExpression) => {
+              dummyCompiler.compileFilter(source, filter).then((filterExpression) => {
                 editFilter(filterExpression);
                 onComplete();
               });

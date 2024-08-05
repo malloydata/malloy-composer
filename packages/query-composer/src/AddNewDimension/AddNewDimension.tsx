@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
+import { useContext, useState } from "react";
 // TODO: extract api
 import { compileDimension } from "../core/compile";
 import { CodeInput } from "../CodeInput";
@@ -33,6 +33,7 @@ import {
   FormFieldList,
 } from "../CommonElements";
 import { QueryFieldDef, StructDef } from "@malloydata/malloy";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface AddFilterProps {
   source: StructDef;
@@ -49,6 +50,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
   initialCode,
   initialName,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   const [dimension, setDimension] = useState(initialCode || "");
   const [newName, setNewName] = useState(initialName || "");
   const [error, setError] = useState<Error>();
@@ -85,7 +87,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             onClick={(event) => {
               event.stopPropagation();
               event.preventDefault();
-              compileDimension(source, newName, dimension)
+              dummyCompiler.compileDimension(source, newName, dimension)
                 .then((dimension) => {
                   if (dimension.type !== "struct") {
                     addDimension(dimension);

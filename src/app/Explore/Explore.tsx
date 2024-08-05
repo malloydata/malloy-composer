@@ -20,29 +20,33 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { AppInfo, ModelInfo, RendererName } from "../../types";
-import { useDatasets } from "../data/use_datasets";
-import { EmptyMessage, PageContent } from "../CommonElements";
-import { ChannelButton } from "../ChannelButton";
-import { ErrorMessage } from "../ErrorMessage";
-import { HotKeys } from "react-hotkeys";
-import { useTopValues } from "../data/use_top_values";
-import { ExploreQueryEditor, useQueryBuilder } from "@malloydata/query-composer";
-import { compileQuery, getSourceNameForQuery } from "../../core/compile";
-import { COLORS } from "../colors";
-import { MalloyLogo } from "../MalloyLogo";
-import { MarkdownDocument } from "../MarkdownDocument";
-import { StructDef } from "@malloydata/malloy";
-import { useSearchParams, useParams } from "react-router-dom";
+import {useEffect, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {AppInfo, ModelInfo, RendererName} from '../../types';
+import {useDatasets} from '../data/use_datasets';
+import {EmptyMessage, PageContent} from '../CommonElements';
+import {ChannelButton} from '../ChannelButton';
+import {ErrorMessage} from '../ErrorMessage';
+import {HotKeys} from 'react-hotkeys';
+import {useTopValues} from '../data/use_top_values';
+import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
+import {
+  _compileModel,
+  compileQuery,
+  getSourceNameForQuery,
+} from '../../core/compile';
+import {COLORS} from '../colors';
+import {MalloyLogo} from '../MalloyLogo';
+import {MarkdownDocument} from '../MarkdownDocument';
+import {StructDef} from '@malloydata/malloy';
+import {useSearchParams, useParams} from 'react-router-dom';
 // TODO: this is causing the custom elements to get registered twice (since the bundled ExploreQueryEditor also has that)
 // import { DataStyles } from "@malloydata/render";
-import { snakeToTitle } from "../utils";
-import { useApps } from "../data/use_apps";
-import { Apps } from "../Apps";
-import { LoadingSpinner } from "../Spinner";
-import { runQuery as runQueryExternal } from "../data/use_run_query";
+import {snakeToTitle} from '../utils';
+import {useApps} from '../data/use_apps';
+import {Apps} from '../Apps';
+import {LoadingSpinner} from '../Spinner';
+import {runQuery as runQueryExternal} from '../data/use_run_query';
 
 type DataStyles = any;
 
@@ -130,7 +134,6 @@ export const Explore: React.FC = () => {
   const source =
     model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
 
-
   const {
     queryMalloy,
     queryName,
@@ -152,7 +155,13 @@ export const Explore: React.FC = () => {
     resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, modelInfo?.styles, runQueryExternal);
+  } = useQueryBuilder(
+    model,
+    modelPath,
+    updateQueryInURL,
+    modelInfo?.styles,
+    runQueryExternal
+  );
   // eslint-disable-next-line no-console
 
   let section = urlParams.get('page') || 'datasets';
@@ -344,9 +353,8 @@ export const Explore: React.FC = () => {
     model,
     modelPath,
     dataStyles,
-    source
-  })
-  
+    source,
+  });
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -431,6 +439,7 @@ export const Explore: React.FC = () => {
                   undo={undo}
                   isQueryEmpty={isQueryEmpty}
                   canQueryRun={canQueryRun}
+                  dummyCompile={_compileModel}
                 />
               )}
               {section === 'about' && (

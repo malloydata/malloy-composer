@@ -5,7 +5,7 @@ import {
   ModelDef,
 } from "@malloydata/malloy";
 import { DataStyles } from "@malloydata/render";
-import { useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import styled from "styled-components";
 import { QuerySummary } from "../types";
 import { ActionIcon } from "../ActionIcon";
@@ -17,6 +17,7 @@ import { Result } from "../Result";
 import { TopQueryActionMenu } from "../TopQueryActionMenu";
 import RunIcon from "../assets/img/query_run_wide.svg?react";
 import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
+import { CompileHandler, DummyCompile } from "../core/dummy-compile";
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -41,7 +42,10 @@ interface ExploreQueryEditorProps {
   canUndo: boolean;
   isQueryEmpty: boolean;
   canQueryRun: boolean;
+  dummyCompile?: CompileHandler;
 }
+
+export const ComposerOptionsContext = createContext<{dummyCompiler: DummyCompile}>(null);
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   dirty,
@@ -61,11 +65,15 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   canUndo,
   isQueryEmpty,
   canQueryRun,
+  dummyCompile
 }) => {
-
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
+  const composerOptions = useMemo(() => ({
+    dummyCompiler: new DummyCompile({ compile: dummyCompile })
+  }), [dummyCompile]);
   return (
+    <ComposerOptionsContext.Provider value={composerOptions}>
     <Outer>
       <SidebarOuter>
         <SidebarHeader>
@@ -161,6 +169,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         isRunning={isRunning}
       />
     </Outer>
+    </ComposerOptionsContext.Provider>
   );
 };
 

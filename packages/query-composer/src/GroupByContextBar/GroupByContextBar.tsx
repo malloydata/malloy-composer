@@ -27,7 +27,7 @@ import {
   SearchValueMapResult,
   StructDef,
 } from "@malloydata/malloy";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { ActionIcon } from "../ActionIcon";
 import { AddNewDimension } from "../AddNewDimension";
 import { SelectTimeGranularity } from "../SelectTimeGranularity";
@@ -50,6 +50,7 @@ import {
   pathParent,
   termsForField,
 } from "../utils";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface GroupByContextBarProps {
   source: StructDef;
@@ -66,6 +67,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
   onComplete,
   topValues,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   const [isAddingNewField, setIsAddingNewField] = useState(false);
   const [isSelectingGranularity, setSelectingGranularity] = useState<{
     field: FieldDef;
@@ -155,7 +157,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
           path={isSelectingGranularity.path}
           source={source}
           addGroupBy={async (name, expression) => {
-            const field = await compileGroupBy(source, name, expression);
+            const field = await dummyCompiler.compileGroupBy(source, name, expression);
             addNewDimension(field);
           }}
           onComplete={onComplete}

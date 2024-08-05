@@ -26,7 +26,7 @@ import {
   ModelDef,
   StructDef,
 } from "@malloydata/malloy";
-import { useState } from "react";
+import { useContext, useState } from "react";
 // TODO: extract api
 import { compileFilter } from "../core/compile";
 import { CodeInput } from "../CodeInput";
@@ -60,6 +60,7 @@ import { NumberFilterBuilder } from "./NumberFilterBuilder";
 import { TimeFilterBuilder } from "./TimeFilterBuilder";
 import { BooleanFilterBuilder } from "./BooleanFilterBuilder";
 import { kindOfField, typeOfField } from "../utils";
+import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
 
 interface AddFilterProps {
   model: ModelDef;
@@ -84,6 +85,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   fieldPath,
   initial,
 }) => {
+  const {dummyCompiler}=useContext(ComposerOptionsContext);
   const type = typeOfField(field);
   const kind = kindOfField(field);
   const [stringFilter, setStringFilter] = useState<StringFilter>(
@@ -196,7 +198,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
           </Button>
           <Button
             onClick={(event) => {
-              compileFilter(source, filter)
+              dummyCompiler.compileFilter(source, filter)
                 .then((filterExpression) => {
                   addFilter(filterExpression, newName || undefined);
                   onComplete();
