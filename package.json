@@ -2,15 +2,6 @@
   "name": "malloy-composer-demo",
   "description": "Run/Explore/Build Malloy Data Models",
   "version": "0.0.0",
-  "config": {
-    "malloy_packages": [
-      "@malloydata/malloy",
-      "@malloydata/db-bigquery",
-      "@malloydata/db-duckdb",
-      "@malloydata/db-postgres",
-      "@malloydata/render"
-    ]
-  },
   "private": true,
   "main": "./build/main.js",
   "author": "Malloy",
@@ -27,10 +18,13 @@
     "build-duckdb-wasm": "ts-node scripts/build-duckdb-wasm",
     "start-duckdb-wasm": "NODE_ENV=development npm run build-duckdb-wasm 9999",
     "watch-duckdb-wasm": "NODE_ENV=development npm run build-duckdb-wasm",
-    "malloy-update-next": "npm install --no-fund --no-audit --save-exact $(echo $npm_package_config_malloy_packages | sed -E 's/(@malloydata\\/[-a-z]+)/\\1@next/g')",
-    "malloy-update": "npm install --no-fund --no-audit --save-exact $(echo $npm_package_config_malloy_packages | sed -E 's/(@malloydata\\/[-a-z]+)/\\1@latest/g')",
-    "malloy-link": "npm --no-fund --no-audit link $npm_package_config_malloy_packages",
-    "malloy-unlink": "npm --no-fund --no-save --no-audit unlink $npm_package_config_malloy_packages && npm --no-fund --no-audit install --force"
+    "malloy-update-next": "npm install  --no-fund --no-audit --save-exact $(./scripts/malloy-packages.js next)",
+    "malloy-update": "npm install  --no-fund --no-audit --save-exact $(./scripts/malloy-packages.js latest)",
+    "malloy-link": "npm --no-fund --no-audit link $(./scripts/malloy-packages.js)",
+    "malloy-unlink": "npm --no-fund --no-save --no-audit unlink $(./scripts/malloy-packages.js) && npm --no-fund --no-audit install --force"
+  },
+  "bin": {
+    "malloy-packages": "./scripts/malloy-packages.js"
   },
   "dependencies": {
     "@malloydata/db-bigquery": "0.0.125",
