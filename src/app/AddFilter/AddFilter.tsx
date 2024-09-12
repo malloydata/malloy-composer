@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   StructDef,
 } from "@malloydata/malloy";
@@ -65,7 +65,7 @@ interface AddFilterProps {
   source: StructDef;
   field: FieldDef;
   fieldPath: string;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   needsRename: boolean;
   onComplete: () => void;
   modelPath: string | undefined;

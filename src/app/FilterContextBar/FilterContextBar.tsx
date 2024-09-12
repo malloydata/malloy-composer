@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   SearchValueMapResult,
   StructDef,
@@ -53,7 +53,7 @@ import { stringFilterToString } from "../../core/filters";
 
 interface FilterContextBarProps {
   source: StructDef;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;

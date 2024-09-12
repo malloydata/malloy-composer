@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FilterExpression, StructDef } from "@malloydata/malloy";
+import { FilterCondition, StructDef } from "@malloydata/malloy";
 import { useState } from "react";
 import { compileFilter } from "../../core/compile";
 import { CodeTextArea } from "../CodeInput";
@@ -34,7 +34,7 @@ import {
 interface EditFilterProps {
   source: StructDef;
   existing: string;
-  editFilter: (filter: FilterExpression) => void;
+  editFilter: (filter: FilterCondition) => void;
   onComplete: () => void;
 }
 

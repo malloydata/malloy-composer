@@ -52,7 +52,7 @@ interface ResultProps {
     markdown: string;
     isRunnable: boolean;
   };
-  onDrill: (filters: malloy.FilterExpression[]) => void;
+  onDrill: (filters: malloy.FilterCondition[]) => void;
   isRunning: boolean;
 }
 

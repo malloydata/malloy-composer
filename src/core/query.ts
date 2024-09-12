@@ -35,7 +35,7 @@ import {
 } from "../types";
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   PipeSegment,
   QueryFieldDef,
   Segment as QuerySegment,
@@ -512,7 +512,7 @@ export class QueryBuilder extends SourceUtils {
     return this.query;
   }
 
-  addFilter(stagePath: StagePath, filter: FilterExpression): void {
+  addFilter(stagePath: StagePath, filter: FilterCondition): void {
     const stage = this.autoExpandStageAtPath(stagePath);
     stage.filterList = [...(stage.filterList || []), filter];
   }
@@ -521,7 +521,7 @@ export class QueryBuilder extends SourceUtils {
     stagePath: StagePath,
     fieldIndex: number | undefined,
     filterIndex: number,
-    filter: FilterExpression
+    filter: FilterCondition
   ): void {
     const stage = this.stageAtPath(stagePath);
     if (stage.type !== "reduce") {
@@ -790,7 +790,7 @@ export class QueryBuilder extends SourceUtils {
   addFilterToField(
     stagePath: StagePath,
     fieldIndex: number,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ): void {
     if (as !== undefined) {
@@ -938,7 +938,7 @@ ${malloy}
     return this.getMalloyString(false, this.query.name);
   }
 
-  private getFiltersString(filterList: FilterExpression[]): Fragment[] {
+  private getFiltersString(filterList: FilterCondition[]): Fragment[] {
     const fragments = [];
     if (filterList.length === 1) {
       fragments.push(" ");
@@ -1166,7 +1166,7 @@ ${malloy}
 
   private getSummaryItemsForFilterList(
     source: StructDef,
-    filterList: FilterExpression[]
+    filterList: FilterCondition[]
   ): QuerySummaryItemFilter[] {
     const items: QuerySummaryItemFilter[] = [];
     for (
@@ -1560,7 +1560,7 @@ type FilteredField = QueryFieldDef & {
   e: [
     {
       type: "filterExpression";
-      filterList: FilterExpression[];
+      filterList: FilterCondition[];
       e: [
         {
           type: "field";

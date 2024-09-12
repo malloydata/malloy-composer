@@ -21,9 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {
-  Connection,
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   FixedConnectionMap,
   Malloy,
   MalloyQueryData,
@@ -41,6 +40,7 @@ import {
   QueryRunStats,
 } from "@malloydata/malloy";
 import { maybeQuoteIdentifier } from "./utils";
+import { BaseConnection } from "@malloydata/malloy/connection";
 
 class DummyFiles implements URLReader {
   async readURL(): Promise<string> {
@@ -48,7 +48,7 @@ class DummyFiles implements URLReader {
   }
 }
 
-class DummyConnection implements Connection {
+class DummyConnection extends BaseConnection {
   name = "dummy";
 
   dialectName = "duckdb";
@@ -143,7 +143,7 @@ function modelDefForSource(source: StructDef): ModelDef {
 export async function compileFilter(
   source: StructDef,
   filter: string
-): Promise<FilterExpression> {
+): Promise<FilterCondition> {
   const malloy = `query: the_query is ${
     source.as || source.name
   } -> { group_by: one is 1; where: ${filter}}`;
