@@ -35,7 +35,7 @@ import {
 } from "../types";
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   PipeSegment,
   QueryFieldDef,
   Segment as QuerySegment,
@@ -512,7 +512,7 @@ export class QueryBuilder extends SourceUtils {
     return this.query;
   }
 
-  addFilter(stagePath: StagePath, filter: FilterExpression): void {
+  addFilter(stagePath: StagePath, filter: FilterCondition): void {
     const stage = this.autoExpandStageAtPath(stagePath);
     stage.filterList = [...(stage.filterList || []), filter];
   }
@@ -521,7 +521,7 @@ export class QueryBuilder extends SourceUtils {
     stagePath: StagePath,
     fieldIndex: number | undefined,
     filterIndex: number,
-    filter: FilterExpression
+    filter: FilterCondition
   ): void {
     const stage = this.stageAtPath(stagePath);
     if (stage.type !== "reduce") {
@@ -773,12 +773,10 @@ export class QueryBuilder extends SourceUtils {
       const newField: QueryFieldDef = {
         type: lookup.type,
         name: as,
-        e: [
-          {
-            type: "field",
-            path: field.path,
-          },
-        ],
+        e: {
+          node: "field",
+          path: field.path,
+        },
         expressionType: lookup.expressionType,
       };
       stage.queryFields[fieldIndex] = newField;
@@ -790,7 +788,7 @@ export class QueryBuilder extends SourceUtils {
   addFilterToField(
     stagePath: StagePath,
     fieldIndex: number,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ): void {
     if (as !== undefined) {
@@ -812,18 +810,17 @@ export class QueryBuilder extends SourceUtils {
       stage.queryFields[fieldIndex] = {
         type: def.type,
         name: as || this.nameOf(field),
-        e: [
-          {
-            type: "filterExpression",
+        e: {
+          node: "filteredExpr",
+          kids: {
             filterList: [filter],
-            e: [
-              {
-                type: "field",
-                path: field.path,
-              },
-            ],
+            e: {
+              node: "field",
+              path: field.path,
+            },
           },
-        ],
+        },
+
         as,
         expressionType: def.expressionType,
       };
@@ -836,13 +833,13 @@ export class QueryBuilder extends SourceUtils {
       stage.queryFields[fieldIndex] = {
         type: field.type,
         name: as || this.nameOf(field),
-        e: [
-          {
-            type: "filterExpression",
+        e: {
+          node: "filteredExpr",
+          kids: {
             filterList: [filter],
             e: field.e,
           },
-        ],
+        },
         as,
         expressionType: field.expressionType,
       };
@@ -938,7 +935,7 @@ ${malloy}
     return this.getMalloyString(false, this.query.name);
   }
 
-  private getFiltersString(filterList: FilterExpression[]): Fragment[] {
+  private getFiltersString(filterList: FilterCondition[]): Fragment[] {
     const fragments = [];
     if (filterList.length === 1) {
       fragments.push(" ");
@@ -1166,7 +1163,7 @@ ${malloy}
 
   private getSummaryItemsForFilterList(
     source: StructDef,
-    filterList: FilterExpression[]
+    filterList: FilterCondition[]
   ): QuerySummaryItemFilter[] {
     const items: QuerySummaryItemFilter[] = [];
     for (
@@ -1518,7 +1515,6 @@ ${malloy}
     return {
       type: def.type,
       name: this.nameOf(fan),
-      e: ["ignore"],
       expressionType: def.expressionType,
       code,
     };
@@ -1560,7 +1556,7 @@ type FilteredField = QueryFieldDef & {
   e: [
     {
       type: "filterExpression";
-      filterList: FilterExpression[];
+      filterList: FilterCondition[];
       e: [
         {
           type: "field";
@@ -1575,23 +1571,14 @@ function isFilteredField(field: QueryFieldDef): field is FilteredField {
   if (field.type === "fieldref" || field.type === "turtle") {
     return false;
   }
-  return (
-    field.e.length === 1 &&
-    typeof field.e[0] !== "string" &&
-    field.e[0].type === "filterExpression" &&
-    field.e[0].e.length === 1 &&
-    typeof field.e[0].e[0] !== "string" &&
-    field.e[0].e[0].type === "field"
-  );
+  return field.e.node === "filteredExpr" && field.e.kids.e.node === "field";
 }
 
 type RenamedField = QueryFieldDef & {
-  e: [
-    {
-      type: "field";
-      path: string[];
-    }
-  ];
+  e: {
+    node: "field";
+    path: string[];
+  };
   expressionType?: ExpressionType;
 };
 
@@ -1599,9 +1586,5 @@ function isRenamedField(field: QueryFieldDef): field is RenamedField {
   if (field.type === "fieldref" || field.type === "turtle") {
     return false;
   }
-  return (
-    field.e.length === 1 &&
-    typeof field.e[0] !== "string" &&
-    field.e[0].type === "field"
-  );
+  return field.e.node === "field";
 }

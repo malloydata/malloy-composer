@@ -344,7 +344,7 @@ export interface OrderByField {
     | "date"
     | "timestamp"
     | "json"
-    | "unsupported";
+    | "sql native";
 }
 
 export interface NumberEqualToFilter {

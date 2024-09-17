@@ -4,7 +4,7 @@
   "description": "A query composer component for Malloy",
   "main": "dist/cjs/index.cjs",
   "type": "module",
-  "Xtypes": "dist/esm/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
@@ -20,7 +20,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --outDir 'dist' --config vite.config.ts",
-    "build-types": "tsc --build --declaration --emitDeclarationOnly"
+    "build-types": "tsc --declaration --emitDeclarationOnly"
   },
   "author": "",
   "license": "ISC",

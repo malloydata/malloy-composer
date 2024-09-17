@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {
-  FilterExpression,
+  FilterCondition,
   SearchValueMapResult,
   StructDef,
   ModelDef,
@@ -73,7 +73,7 @@ interface ActionMenuProps {
   actions: Action[];
   closeMenu: () => void;
   searchItems?: SearchItem[];
-  addFilter?: (filter: FilterExpression) => void;
+  addFilter?: (filter: FilterCondition) => void;
   topValues?: SearchValueMapResult[] | undefined;
   model?: ModelDef | undefined;
   modelPath?: string;

@@ -54,7 +54,7 @@ interface ResultProps {
     markdown: string;
     isRunnable: boolean;
   };
-  onDrill: (filters: malloy.FilterExpression[]) => void;
+  onDrill: (filters: malloy.FilterCondition[]) => void;
   isRunning: boolean;
 }
 
@@ -67,7 +67,7 @@ export const Result: React.FC<ResultProps> = ({
   onDrill,
   isRunning,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const { dummyCompiler } = useContext(ComposerOptionsContext);
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
     useState<HTMLElement>();

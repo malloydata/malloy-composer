@@ -1,6 +1,6 @@
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   Model,
   ModelDef,
   NamedQuery,
@@ -43,7 +43,7 @@ export class DummyCompile {
   async compileFilter(
     source: StructDef,
     filter: string
-  ): Promise<FilterExpression> {
+  ): Promise<FilterCondition> {
     const malloy = `query: the_query is ${
       source.as || source.name
     } -> { group_by: one is 1; where: ${filter}}`;

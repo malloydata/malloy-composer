@@ -112,7 +112,7 @@ export type FieldType =
   | "timestamp"
   | "query"
   | "source"
-  | "unsupported";
+  | "sql native";
 
 export type FieldKind = "measure" | "dimension" | "query" | "source";
 
@@ -135,7 +135,7 @@ export function scalarTypeOfField(
   | "date"
   | "timestamp"
   | "json"
-  | "unsupported" {
+  | "sql native" {
   return fieldDef.type === "struct"
     ? "string"
     : fieldDef.type === "turtle"

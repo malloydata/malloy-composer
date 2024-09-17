@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   StructDef,
 } from "@malloydata/malloy";
@@ -37,7 +37,7 @@ interface FilterActionMenuProps {
   source: StructDef;
   filterSource: string;
   removeFilter: () => void;
-  editFilter: (filter: FilterExpression) => void;
+  editFilter: (filter: FilterCondition) => void;
   closeMenu: () => void;
   filterField: FieldDef | undefined;
   parsedFilter: Filter | undefined;

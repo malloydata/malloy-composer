@@ -22,7 +22,7 @@
  */
 
 import {
-  FilterExpression,
+  FilterCondition,
   QueryFieldDef,
   StructDef,
   Result as MalloyResult,
@@ -70,7 +70,7 @@ interface UseQueryBuilderResult {
 export interface QueryModifiers {
   addFilter: (
     stagePath: StagePath,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ) => void;
   toggleField: (stagePath: StagePath, fieldPath: string) => void;
@@ -109,7 +109,7 @@ export interface QueryModifiers {
   addFilterToField: (
     stagePath: StagePath,
     fieldIndex: number,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ) => void;
   editLimit: (stagePath: StagePath, limit: number) => void;
@@ -117,7 +117,7 @@ export interface QueryModifiers {
     stagePath: StagePath,
     fieldIndex: number | undefined,
     filterIndex: number,
-    filter: FilterExpression
+    filter: FilterCondition
   ) => void;
   replaceWithDefinition: (stagePath: StagePath, fieldIndex: number) => void;
   editDimension: (
@@ -137,7 +137,7 @@ export interface QueryModifiers {
   ) => void;
   removeStage: (stagePath: StagePath) => void;
   clearQuery: (noURLUpdate?: boolean) => void;
-  onDrill: (filters: FilterExpression[]) => void;
+  onDrill: (filters: FilterCondition[]) => void;
   setQuery: (query: NamedQuery, noURLUpdate?: boolean) => void;
 }
 
@@ -273,7 +273,7 @@ export function useQueryBuilder(
     modifyQuery((qb) => qb.removeField(stagePath, fieldIndex));
   };
 
-  const addFilter = (stagePath: StagePath, filter: FilterExpression) => {
+  const addFilter = (stagePath: StagePath, filter: FilterCondition) => {
     modifyQuery((qb) => qb.addFilter(stagePath, filter));
   };
 
@@ -281,7 +281,7 @@ export function useQueryBuilder(
     stagePath: StagePath,
     fieldIndex: number | undefined,
     filterIndex: number,
-    filter: FilterExpression
+    filter: FilterCondition
   ) => {
     modifyQuery((qb) =>
       qb.editFilter(stagePath, fieldIndex, filterIndex, filter)
@@ -343,7 +343,7 @@ export function useQueryBuilder(
   const addFilterToField = (
     stagePath: StagePath,
     fieldIndex: number,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ) => {
     modifyQuery((qb) => qb.addFilterToField(stagePath, fieldIndex, filter, as));
@@ -397,7 +397,7 @@ export function useQueryBuilder(
 
   const addNewMeasure = addNewDimension;
 
-  const onDrill = (filters: FilterExpression[]) => {
+  const onDrill = (filters: FilterCondition[]) => {
     modifyQuery((qb) => {
       qb.clearQuery();
       for (const filter of filters) {

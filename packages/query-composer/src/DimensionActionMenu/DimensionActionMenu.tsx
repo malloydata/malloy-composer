@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   QueryFieldDef,
   StructDef,
   ModelDef,
@@ -58,7 +58,7 @@ interface DimensionActionMenuProps {
   source: StructDef;
   filterField?: FieldDef;
   filterFieldPath?: string;
-  addFilter: (stagePath: StagePath, filterExpression: FilterExpression) => void;
+  addFilter: (stagePath: StagePath, filterExpression: FilterCondition) => void;
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,

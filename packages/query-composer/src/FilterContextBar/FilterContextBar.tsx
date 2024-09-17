@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   SearchValueMapResult,
   StructDef,
@@ -54,7 +54,7 @@ import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor
 
 interface FilterContextBarProps {
   source: StructDef;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;
@@ -71,7 +71,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   needsRename,
   topValues,
 }) => {
-  const {dummyCompiler}=useContext(ComposerOptionsContext);
+  const { dummyCompiler } = useContext(ComposerOptionsContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [field, setField] = useState<{ path: string; def: FieldDef }>();
   const { searchResults, isLoading } = useSearch(
@@ -175,16 +175,21 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
-                                dummyCompiler.compileFilter(
-                                  source,
-                                  stringFilterToString(searchResult.fieldName, {
-                                    type: "is_equal_to",
-                                    values: [searchResult.fieldValue],
-                                  })
-                                ).then((expression) => {
-                                  addFilter && addFilter(expression);
-                                  onComplete();
-                                });
+                                dummyCompiler
+                                  .compileFilter(
+                                    source,
+                                    stringFilterToString(
+                                      searchResult.fieldName,
+                                      {
+                                        type: "is_equal_to",
+                                        values: [searchResult.fieldValue],
+                                      }
+                                    )
+                                  )
+                                  .then((expression) => {
+                                    addFilter && addFilter(expression);
+                                    onComplete();
+                                  });
                               }}
                             />
                           );

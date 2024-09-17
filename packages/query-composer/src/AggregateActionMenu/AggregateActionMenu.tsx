@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   QueryFieldDef,
   SearchValueMapResult,
@@ -38,7 +38,7 @@ import { EditOrderBy } from "../EditOrderBy";
 interface AggregateActionMenuProps {
   source: StructDef;
   removeField: () => void;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   rename: (newName: string) => void;
   closeMenu: () => void;
   setDataStyle: (renderer: RendererName) => void;

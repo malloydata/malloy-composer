@@ -34,7 +34,7 @@ import { AddLimit } from "../AddLimit";
 import { OrderByContextBar } from "../OrderByContextBar";
 import { ActionMenu } from "../ActionMenu";
 import {
-  FilterExpression,
+  FilterCondition,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
@@ -53,7 +53,7 @@ interface StageActionMenuProps {
   toggleField: (stagePath: StagePath, fieldPath: string) => void;
   addFilter: (
     stagePath: StagePath,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ) => void;
   addLimit: (stagePath: StagePath, limit: number) => void;

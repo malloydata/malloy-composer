@@ -22,7 +22,7 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   StructDef,
 } from "@malloydata/malloy";
@@ -67,7 +67,7 @@ interface AddFilterProps {
   source: StructDef;
   field: FieldDef;
   fieldPath: string;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   needsRename: boolean;
   onComplete: () => void;
   modelPath: string | undefined;
@@ -85,7 +85,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   fieldPath,
   initial,
 }) => {
-  const {dummyCompiler}=useContext(ComposerOptionsContext);
+  const { dummyCompiler } = useContext(ComposerOptionsContext);
   const type = typeOfField(field);
   const kind = kindOfField(field);
   const [stringFilter, setStringFilter] = useState<StringFilter>(
@@ -198,7 +198,8 @@ export const AddFilter: React.FC<AddFilterProps> = ({
           </Button>
           <Button
             onClick={(event) => {
-              dummyCompiler.compileFilter(source, filter)
+              dummyCompiler
+                .compileFilter(source, filter)
                 .then((filterExpression) => {
                   addFilter(filterExpression, newName || undefined);
                   onComplete();
