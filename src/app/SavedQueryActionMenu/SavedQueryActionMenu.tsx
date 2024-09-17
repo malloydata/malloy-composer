@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FilterExpression, StructDef } from "@malloydata/malloy";
+import { FilterCondition, StructDef } from "@malloydata/malloy";
 import { RendererName } from "../../types";
 import { ActionMenu } from "../ActionMenu";
 import { DataStyleContextBar } from "../DataStyleContextBar";
@@ -29,7 +29,7 @@ import { RenameField } from "../RenameField";
 interface SavedQueryActionMenuProps {
   source: StructDef;
   removeField: () => void;
-  addFilter: (filter: FilterExpression) => void;
+  addFilter: (filter: FilterCondition) => void;
   addLimit: () => void;
   renameField: (newName: string) => void;
   replaceWithDefinition: () => void;

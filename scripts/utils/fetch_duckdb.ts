@@ -39,7 +39,7 @@ export const targetDuckDBMap: Record<string, string> = {
 
 export const fetchDuckDB = async (target: string): Promise<string> => {
   const file = targetDuckDBMap[target];
-  const url = `https://duckdb-node.s3.amazonaws.com/duckdb-v${DUCKDB_VERSION}-node-v93-${target}.tar.gz`;
+  const url = `https://npm.duckdb.org/duckdb/duckdb-v${DUCKDB_VERSION}-node-v108-${target}.tar.gz`;
   const directoryPath = path.resolve(
     path.join("third_party", "github.com", "duckdb", "duckdb")
   );
