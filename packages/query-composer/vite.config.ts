@@ -16,15 +16,13 @@ export default defineConfig({
       name: "index",
     },
     rollupOptions: {
+      external: ["react", "react/jsx-runtime"],
       // TODO: should malloydata/render be external? or bundled in? when bundled, potential for the webcomponent already defined problem
-      external: [
-        "react",
-        "react/jsx-runtime",
-        "@mallydata/malloy",
-        "@malloydata/render",
-      ],
+      // "@mallydata/malloy",
+      //   "@malloydata/render",
+      // ],
       output: {
-        manualChunks: (id) => {
+        manualChunks: (_id) => {
           return "index";
         },
       },
