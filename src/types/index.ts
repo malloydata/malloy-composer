@@ -45,7 +45,7 @@ export type ComposerConfig =
         {
           path: string;
           id: undefined;
-        }
+        },
       ];
     };
 

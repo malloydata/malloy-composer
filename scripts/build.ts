@@ -51,7 +51,7 @@ export const commonAppConfig = (development = false): BuildOptions => {
     entryPoints: ["./src/index.tsx"],
     outfile: path.join(buildDirectory, appDirectory, "app.js"),
     minify: !development,
-    sourcemap: development,
+    sourcemap: development ? "linked" : false,
     bundle: true,
     platform: "browser",
     loader: {
@@ -75,7 +75,7 @@ export const commonServerConfig = (
     entryPoints: ["./src/server/cli.ts", "./src/server/server.js"],
     outdir: serverBuildDirectory,
     minify: !development,
-    sourcemap: development ? "inline" : false,
+    sourcemap: development ? "linked" : false,
     bundle: true,
     platform: "node",
     external: ["./duckdb-native.node", "vscode-oniguruma"],
@@ -175,8 +175,8 @@ const generateLicenseFile = (development: boolean) => {
 };
 
 export async function doBuild(target?: string): Promise<void> {
-  //const development = process.env.NODE_ENV == "development";
-  const development = target == undefined;
+  const development =
+    process.env.NODE_ENV == "development" || target == undefined;
 
   fs.rmSync(buildDirectory, { recursive: true, force: true });
   fs.mkdirSync(buildDirectory, { recursive: true });
