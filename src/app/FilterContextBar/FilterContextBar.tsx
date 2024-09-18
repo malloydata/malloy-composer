@@ -22,38 +22,38 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   SearchValueMapResult,
   StructDef,
-} from "@malloydata/malloy";
-import { useState } from "react";
-import { AddFilter } from "../AddFilter";
+} from '@malloydata/malloy';
+import {useState} from 'react';
+import {AddFilter} from '../AddFilter';
 import {
   ContextMenuContent,
   ContextMenuSearchHeader,
   EmptyMessage,
   ScrollMain,
-} from "../CommonElements";
-import { useSearch } from "../data";
-import { FieldList } from "../FieldList";
-import { SearchInput } from "../SearchInput";
-import { useSearchList } from "../SearchList";
-import { LoadingSpinner } from "../Spinner";
+} from '../CommonElements';
+import {useSearch} from '../data';
+import {FieldList} from '../FieldList';
+import {SearchInput} from '../SearchInput';
+import {useSearchList} from '../SearchList';
+import {LoadingSpinner} from '../Spinner';
 import {
   fieldToSummaryItem,
   flatFields,
   isDimension,
   termsForField,
-} from "../utils";
-import { FieldButton } from "../FieldButton";
-import { ActionIcon } from "../ActionIcon";
-import { compileFilter } from "../../core/compile";
-import { stringFilterToString } from "../../core/filters";
+} from '../utils';
+import {FieldButton} from '../FieldButton';
+import {ActionIcon} from '../ActionIcon';
+import {compileFilter} from '../../core/compile';
+import {stringFilterToString} from '../../core/filters';
 
 interface FilterContextBarProps {
   source: StructDef;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;
   topValues: SearchValueMapResult[] | undefined;
@@ -70,9 +70,9 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   needsRename,
   topValues,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [field, setField] = useState<{ path: string; def: FieldDef }>();
-  const { searchResults, isLoading } = useSearch(
+  const [searchTerm, setSearchTerm] = useState('');
+  const [field, setField] = useState<{path: string; def: FieldDef}>();
+  const {searchResults, isLoading} = useSearch(
     model,
     modelPath,
     source,
@@ -80,18 +80,18 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   );
   const stringSearchResults =
     searchResults &&
-    searchResults.filter((r) => r.fieldType === "string").slice(0, 100);
+    searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
 
   const searchItems = flatFields(source)
-    .filter(({ field }) => isDimension(field))
-    .map(({ field, path }) => ({
+    .filter(({field}) => isDimension(field))
+    .map(({field, path}) => ({
       item: fieldToSummaryItem(field, path),
       terms: termsForField(field, path),
       key: keyFor(path),
-      select: () => setField({ path, def: field }),
+      select: () => setField({path, def: field}),
     }));
 
-  const { searchList, count: resultCount } = useSearchList({
+  const {searchList, count: resultCount} = useSearchList({
     searchTerm,
     items: searchItems || [],
     topValues,
@@ -129,26 +129,26 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
         )}
         {!field && (
           <>
-            {searchTerm === "" && (
+            {searchTerm === '' && (
               <ScrollMain>
                 <ContextMenuContent>
                   <FieldList
                     fields={source.fields}
                     filter={isDimension}
                     showNested={true}
-                    selectField={(path, def) => setField({ path, def })}
+                    selectField={(path, def) => setField({path, def})}
                     topValues={topValues}
                   />
                 </ContextMenuContent>
               </ScrollMain>
             )}
-            {searchTerm !== "" && (
+            {searchTerm !== '' && (
               <>
                 {showFieldResults && (
                   <ScrollMain
                     style={{
-                      borderBottom: showFieldResults ? "1px solid #efefef" : "",
-                      maxHeight: showValueResults ? "200px" : "300px",
+                      borderBottom: showFieldResults ? '1px solid #efefef' : '',
+                      maxHeight: showValueResults ? '200px' : '300px',
                     }}
                   >
                     <ContextMenuContent>{searchList}</ContextMenuContent>
@@ -157,8 +157,8 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                 {showValueResults && source && (
                   <ScrollMain
                     style={{
-                      borderBottom: "1px solid #efefef",
-                      maxHeight: showFieldResults ? "200px" : "300px",
+                      borderBottom: '1px solid #efefef',
+                      maxHeight: showFieldResults ? '200px' : '300px',
                     }}
                   >
                     <ContextMenuContent>
@@ -176,10 +176,10 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                                 compileFilter(
                                   source,
                                   stringFilterToString(searchResult.fieldName, {
-                                    type: "is_equal_to",
+                                    type: 'is_equal_to',
                                     values: [searchResult.fieldValue],
                                   })
-                                ).then((expression) => {
+                                ).then(expression => {
                                   addFilter && addFilter(expression);
                                   onComplete();
                                 });
@@ -212,5 +212,5 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
 };
 
 export function keyFor(path: string): string {
-  return "field/" + path;
+  return 'field/' + path;
 }

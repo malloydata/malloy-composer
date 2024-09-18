@@ -22,23 +22,23 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   QueryFieldDef,
   StructDef,
   ModelDef,
-} from "@malloydata/malloy";
+} from '@malloydata/malloy';
 import {
   RendererName,
   StagePath,
   QuerySummaryItem,
   OrderByField,
-} from "../../types";
-import { ActionMenu } from "../ActionMenu";
-import { AddFilter } from "../AddFilter";
-import { AddNewDimension } from "../AddNewDimension";
-import { DataStyleContextBar } from "../DataStyleContextBar";
-import { EditOrderBy } from "../EditOrderBy";
-import { RenameField } from "../RenameField";
+} from '../../types';
+import {ActionMenu} from '../ActionMenu';
+import {AddFilter} from '../AddFilter';
+import {AddNewDimension} from '../AddNewDimension';
+import {DataStyleContextBar} from '../DataStyleContextBar';
+import {EditOrderBy} from '../EditOrderBy';
+import {RenameField} from '../RenameField';
 
 interface DimensionActionMenuProps {
   model: ModelDef;
@@ -58,11 +58,11 @@ interface DimensionActionMenuProps {
   source: StructDef;
   filterField?: FieldDef;
   filterFieldPath?: string;
-  addFilter: (stagePath: StagePath, filterExpression: FilterExpression) => void;
+  addFilter: (stagePath: StagePath, filterExpression: FilterCondition) => void;
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ) => void;
   orderByField: OrderByField;
   modelPath: string | undefined;
@@ -93,24 +93,24 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "sub_menu",
-          id: "rename",
-          iconName: "rename",
-          label: "Rename",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'rename',
+          iconName: 'rename',
+          label: 'Rename',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "filter_on",
-          iconName: "filter",
-          label: "Filter By",
-          iconColor: "filter",
+          kind: 'sub_menu',
+          id: 'filter_on',
+          iconName: 'filter',
+          label: 'Filter By',
+          iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({ onComplete }) =>
+          Component: ({onComplete}) =>
             filterField && filterFieldPath ? (
               <AddFilter
                 model={model}
@@ -120,20 +120,20 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
                 field={filterField}
                 fieldPath={filterFieldPath}
                 needsRename={false}
-                addFilter={(filter) => addFilter(stagePath, filter)}
+                addFilter={filter => addFilter(stagePath, filter)}
               />
             ) : (
               <div />
             ),
         },
         {
-          kind: "sub_menu",
-          id: "order_by",
-          iconName: "order_by",
-          label: "Order By",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'order_by',
+          iconName: 'order_by',
+          label: 'Order By',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
@@ -144,25 +144,25 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "style",
-          label: "Style",
-          iconName: "style",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'style',
+          label: 'Style',
+          iconName: 'style',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <DataStyleContextBar
               setDataStyle={setDataStyle}
               onComplete={onComplete}
               allowedRenderers={[
-                "number",
-                "boolean",
-                "currency",
-                "image",
-                "url",
-                "percent",
-                "text",
-                "time",
+                'number',
+                'boolean',
+                'currency',
+                'image',
+                'url',
+                'percent',
+                'text',
+                'time',
               ]}
             />
           ),
@@ -182,17 +182,17 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
         //   />
         // },
         {
-          kind: "sub_menu",
-          id: "edit_definition",
-          label: "Edit Definition",
-          iconName: "edit",
+          kind: 'sub_menu',
+          id: 'edit_definition',
+          label: 'Edit Definition',
+          iconName: 'edit',
           isEnabled: isEditable,
-          iconColor: "other",
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AddNewDimension
               source={source}
-              addDimension={(code) => editDimension(fieldIndex, code)}
+              addDimension={code => editDimension(fieldIndex, code)}
               onComplete={onComplete}
               initialCode={definition}
               initialName={name}
@@ -200,11 +200,11 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           ),
         },
         {
-          kind: "one_click",
-          id: "move",
-          iconName: "move",
-          iconColor: "other",
-          label: "Move",
+          kind: 'one_click',
+          id: 'move',
+          iconName: 'move',
+          iconColor: 'other',
+          label: 'Move',
           onClick: beginReorderingField,
         },
       ]}

@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { KeyboardEvent } from "react";
-import styled from "styled-components";
-import { ActionIcon } from "../ActionIcon";
+import {KeyboardEvent} from 'react';
+import styled from 'styled-components';
+import {ActionIcon} from '../ActionIcon';
 
 interface SearchInputProps {
   value: string;
@@ -40,7 +40,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onTab,
 }) => {
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Tab") {
+    if (event.key === 'Tab') {
       onTab && onTab();
       event.stopPropagation();
       event.preventDefault();
@@ -56,7 +56,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         type="text"
         placeholder={placeholder}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={event => setValue(event.target.value)}
         autoFocus={autoFocus}
         tabIndex={1}
         onKeyDown={onKeyDown}
@@ -80,7 +80,7 @@ const SearchIcon = styled.div`
 `;
 
 const StyledInput = styled.input`
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   font-size: 14px;
   border-radius: 5px;
   border: none;

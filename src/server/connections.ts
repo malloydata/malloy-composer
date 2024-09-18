@@ -25,19 +25,19 @@ import {
   Connection,
   FixedConnectionMap,
   LookupConnection,
-} from "@malloydata/malloy";
-import { BigQueryConnection } from "@malloydata/db-bigquery";
-import { DuckDBConnection } from "@malloydata/db-duckdb";
-import { PostgresConnection } from "@malloydata/db-postgres";
-import * as path from "path";
-import { fileURLToPath } from "url";
+} from '@malloydata/malloy';
+import {BigQueryConnection} from '@malloydata/db-bigquery';
+import {DuckDBConnection} from '@malloydata/db-duckdb';
+import {PostgresConnection} from '@malloydata/db-postgres';
+import * as path from 'path';
+import {fileURLToPath} from 'url';
 
 class ConnectionManager {
   private connectionLookups: Map<string, LookupConnection<Connection>> =
     new Map();
-  private readonly bigqueryConnection = new BigQueryConnection("bigquery");
-  private readonly postgresConnection = new PostgresConnection("postgres");
-  private readonly motherDuckConnection = new DuckDBConnection("md", "md:");
+  private readonly bigqueryConnection = new BigQueryConnection('bigquery');
+  private readonly postgresConnection = new PostgresConnection('postgres');
+  private readonly motherDuckConnection = new DuckDBConnection('md', 'md:');
 
   public getConnectionLookup(url: URL): LookupConnection<Connection> {
     const workingDirectory = path.dirname(fileURLToPath(url));
@@ -45,15 +45,15 @@ class ConnectionManager {
     if (connectionLookup === undefined) {
       connectionLookup = new FixedConnectionMap(
         new Map<string, Connection>([
-          ["bigquery", this.bigqueryConnection],
-          ["postgres", this.postgresConnection],
+          ['bigquery', this.bigqueryConnection],
+          ['postgres', this.postgresConnection],
           [
-            "duckdb",
-            new DuckDBConnection("duckdb", ":memory:", workingDirectory),
+            'duckdb',
+            new DuckDBConnection('duckdb', ':memory:', workingDirectory),
           ],
-          ["md", this.motherDuckConnection],
+          ['md', this.motherDuckConnection],
         ]),
-        "bigquery"
+        'bigquery'
       );
       this.connectionLookups.set(workingDirectory, connectionLookup);
     }

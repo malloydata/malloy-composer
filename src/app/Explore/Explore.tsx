@@ -20,58 +20,58 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { AppInfo, ModelInfo, RendererName } from "../../types";
-import { useDatasets } from "../data/use_datasets";
-import { EmptyMessage, PageContent } from "../CommonElements";
-import { ChannelButton } from "../ChannelButton";
-import { ErrorMessage } from "../ErrorMessage";
-import { HotKeys } from "react-hotkeys";
-import { useTopValues } from "../data/use_top_values";
-import { useQueryBuilder } from "../hooks";
-import { ExploreQueryEditor } from "../ExploreQueryEditor";
-import { compileQuery, getSourceNameForQuery } from "../../core/compile";
-import { COLORS } from "../colors";
-import { MalloyLogo } from "../MalloyLogo";
-import { MarkdownDocument } from "../MarkdownDocument";
-import { StructDef } from "@malloydata/malloy";
-import { useSearchParams, useParams } from "react-router-dom";
-import { DataStyles } from "@malloydata/render";
-import { snakeToTitle } from "../utils";
-import { useApps } from "../data/use_apps";
-import { Apps } from "../Apps";
-import { LoadingSpinner } from "../Spinner";
+import {useEffect, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {AppInfo, ModelInfo, RendererName} from '../../types';
+import {useDatasets} from '../data/use_datasets';
+import {EmptyMessage, PageContent} from '../CommonElements';
+import {ChannelButton} from '../ChannelButton';
+import {ErrorMessage} from '../ErrorMessage';
+import {HotKeys} from 'react-hotkeys';
+import {useTopValues} from '../data/use_top_values';
+import {useQueryBuilder} from '../hooks';
+import {ExploreQueryEditor} from '../ExploreQueryEditor';
+import {compileQuery, getSourceNameForQuery} from '../../core/compile';
+import {COLORS} from '../colors';
+import {MalloyLogo} from '../MalloyLogo';
+import {MarkdownDocument} from '../MarkdownDocument';
+import {StructDef} from '@malloydata/malloy';
+import {useSearchParams, useParams} from 'react-router-dom';
+import {DataStyles} from '@malloydata/render';
+import {snakeToTitle} from '../utils';
+import {useApps} from '../data/use_apps';
+import {Apps} from '../Apps';
+import {LoadingSpinner} from '../Spinner';
 
-const MALLOY_DOCS = "https://malloydata.github.io/documentation/";
+const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 
 const KEY_MAP = {
-  REMOVE_FIELDS: "command+k",
-  RUN_QUERY: "command+enter",
-  UNDO: "command+z",
-  REDO: "shift+command+z",
+  REMOVE_FIELDS: 'command+k',
+  RUN_QUERY: 'command+enter',
+  UNDO: 'command+z',
+  REDO: 'shift+command+z',
 };
 
 export const Explore: React.FC = () => {
   const config = useApps();
-  const { appId } = useParams();
+  const {appId} = useParams();
   const onlyDefaultDataset =
     config && config.apps && config.apps[0]?.id === undefined;
   const app = onlyDefaultDataset
     ? config.apps[0]
-    : config?.apps?.find((app) => app.id === appId);
+    : config?.apps?.find(app => app.id === appId);
   const appInfo = useDatasets(app);
   const [urlParams, _setParams] = useSearchParams();
   const modelInfo = appInfo?.models.find(
-    (modelInfo) => modelInfo.id === urlParams.get("model")
+    modelInfo => modelInfo.id === urlParams.get('model')
   );
-  const sourceName = urlParams.get("source");
-  const params = useRef("");
+  const sourceName = urlParams.get('source');
+  const params = useRef('');
   const [loading, setLoading] = useState(0);
 
   const setParams = (
     newUrlParams: URLSearchParams,
-    options?: { replace: boolean }
+    options?: {replace: boolean}
   ) => {
     params.current = newUrlParams.toString();
     _setParams(newUrlParams, options);
@@ -79,7 +79,7 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     if (appInfo) {
-      document.title = appInfo.title || "Malloy Composer";
+      document.title = appInfo.title || 'Malloy Composer';
     }
   }, [appInfo]);
 
@@ -92,28 +92,28 @@ export const Explore: React.FC = () => {
     query: string | undefined;
     styles: DataStyles;
   }) => {
-    const oldQuery = urlParams.get("query") || undefined;
+    const oldQuery = urlParams.get('query') || undefined;
     let newStyles = JSON.stringify(newStylesJSON);
-    if (newStyles === "{}") newStyles = undefined;
-    const oldStyles = urlParams.get("styles") || undefined;
+    if (newStyles === '{}') newStyles = undefined;
+    const oldStyles = urlParams.get('styles') || undefined;
     if (oldQuery === newQuery && oldStyles === newStyles) {
       return;
     }
     if (newQuery === undefined) {
-      urlParams.delete("query");
+      urlParams.delete('query');
     } else {
-      urlParams.set("query", newQuery);
-      urlParams.delete("name");
+      urlParams.set('query', newQuery);
+      urlParams.delete('name');
     }
     if (run) {
-      urlParams.set("run", "true");
+      urlParams.set('run', 'true');
     } else {
-      urlParams.delete("run");
+      urlParams.delete('run');
     }
     if (newStyles === undefined) {
-      urlParams.delete("styles");
+      urlParams.delete('styles');
     } else {
-      urlParams.set("styles", newStyles);
+      urlParams.set('styles', newStyles);
     }
     setParams(urlParams);
   };
@@ -152,17 +152,17 @@ export const Explore: React.FC = () => {
   // eslint-disable-next-line no-console
   console.log(querySummary);
 
-  let section = urlParams.get("page") || "datasets";
-  if (onlyDefaultDataset && section === "datasets") {
-    section = "about";
+  let section = urlParams.get('page') || 'datasets';
+  if (onlyDefaultDataset && section === 'datasets') {
+    section = 'about';
   }
   const setSection = (section: string) => {
-    urlParams.set("page", section);
-    if (section !== "query") {
-      urlParams.delete("query");
-      urlParams.delete("run");
-      urlParams.delete("name");
-      urlParams.delete("styles");
+    urlParams.set('page', section);
+    if (section !== 'query') {
+      urlParams.delete('query');
+      urlParams.delete('run');
+      urlParams.delete('name');
+      urlParams.delete('styles');
       clearQuery(true);
       resetUndoHistory();
       setError(undefined);
@@ -177,13 +177,13 @@ export const Explore: React.FC = () => {
   ) => {
     registerNewSource(modelInfo.model.contents[sourceName] as StructDef);
     if (!fromURL) {
-      urlParams.set("source", sourceName);
-      urlParams.set("model", modelInfo.id);
-      urlParams.set("page", "query");
-      urlParams.delete("query");
-      urlParams.delete("run");
-      urlParams.delete("name");
-      urlParams.delete("styles");
+      urlParams.set('source', sourceName);
+      urlParams.set('model', modelInfo.id);
+      urlParams.set('page', 'query');
+      urlParams.delete('query');
+      urlParams.delete('run');
+      urlParams.delete('name');
+      urlParams.delete('styles');
       clearQuery(true);
       setParams(urlParams);
     }
@@ -191,28 +191,28 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     const loadDataset = async () => {
-      const model = urlParams.get("model");
-      const query = urlParams.get("query")?.replace(/->\s*{\n}/g, "");
-      const source = urlParams.get("source");
-      const styles = urlParams.get("styles");
-      const page = urlParams.get("page");
+      const model = urlParams.get('model');
+      const query = urlParams.get('query')?.replace(/->\s*{\n}/g, '');
+      const source = urlParams.get('source');
+      const styles = urlParams.get('styles');
+      const page = urlParams.get('page');
       if (model && (query || source) && appInfo) {
         if (urlParams.toString() === params.current) return;
         const newModelInfo = appInfo.models.find(
-          (modelInfo) => modelInfo.id === model
+          modelInfo => modelInfo.id === model
         );
         if (newModelInfo === undefined) {
-          throw new Error("Bad model");
+          throw new Error('Bad model');
         }
         try {
-          setLoading((loading) => ++loading);
+          setLoading(loading => ++loading);
           const sourceName =
             source || (await getSourceNameForQuery(newModelInfo.model, query));
           registerNewSource(
             newModelInfo.model.contents[sourceName] as StructDef
           );
           if (query) {
-            if (page !== "query") return;
+            if (page !== 'query') return;
             clearResult();
             const compiledQuery = await compileQuery(newModelInfo.model, query);
             queryModifiers.setDataStyles(
@@ -220,14 +220,14 @@ export const Explore: React.FC = () => {
               true
             );
             queryModifiers.setQuery(compiledQuery, true);
-            if (urlParams.has("run") && urlParams.get("page") === "query") {
+            if (urlParams.has('run') && urlParams.get('page') === 'query') {
               runQuery();
             }
           } else {
-            urlParams.delete("query");
-            urlParams.delete("run");
-            urlParams.delete("name");
-            urlParams.delete("styles");
+            urlParams.delete('query');
+            urlParams.delete('run');
+            urlParams.delete('name');
+            urlParams.delete('styles');
             clearQuery(true);
           }
           params.current = urlParams.toString();
@@ -236,11 +236,11 @@ export const Explore: React.FC = () => {
           console.error(error);
           setError(error);
         } finally {
-          setLoading((loading) => --loading);
+          setLoading(loading => --loading);
         }
       } else if (appInfo && !modelInfo && !page) {
-        urlParams.set("page", "about");
-        setParams(urlParams, { replace: true });
+        urlParams.set('page', 'about');
+        setParams(urlParams, {replace: true});
       }
     };
     loadDataset();
@@ -250,14 +250,14 @@ export const Explore: React.FC = () => {
     const urlBase = window.location.href;
     const targetHref = new URL(model, new URL(app.path, urlBase)).href;
     const modelInfo = appInfo?.models.find(
-      (modelInfo) =>
+      modelInfo =>
         new URL(modelInfo.path, new URL(app.path, urlBase)).href === targetHref
     );
     if (modelInfo === undefined) {
       throw new Error(
         `Bad model '${model}' referenced in Markdown link. Options are: ${appInfo.models
-          .map((modelInfo) => `'${modelInfo.path}'`)
-          .join(", ")}.`
+          .map(modelInfo => `'${modelInfo.path}'`)
+          .join(', ')}.`
       );
     }
     return modelInfo;
@@ -265,17 +265,17 @@ export const Explore: React.FC = () => {
 
   const loadSourceLink = async (model: string, source: string) => {
     try {
-      setLoading((loading) => ++loading);
+      setLoading(loading => ++loading);
       const modelInfo = findModelByMarkdownId(model);
       setDatasetSource(modelInfo, source);
-      urlParams.set("page", "query");
-      setParams(urlParams, { replace: true });
+      urlParams.set('page', 'query');
+      setParams(urlParams, {replace: true});
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
       setError(error);
     } finally {
-      setLoading((loading) => --loading);
+      setLoading(loading => --loading);
     }
   };
 
@@ -286,15 +286,15 @@ export const Explore: React.FC = () => {
     renderer?: string
   ) => {
     try {
-      setLoading((loading) => ++loading);
+      setLoading(loading => ++loading);
       const newModelInfo = findModelByMarkdownId(model);
       const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
-      urlParams.set("model", newModelInfo.id);
-      urlParams.set("source", sourceName);
-      urlParams.set("query", query);
-      urlParams.set("page", "query");
-      urlParams.set("run", "true");
-      urlParams.set("name", name);
+      urlParams.set('model', newModelInfo.id);
+      urlParams.set('source', sourceName);
+      urlParams.set('query', query);
+      urlParams.set('page', 'query');
+      urlParams.set('run', 'true');
+      urlParams.set('name', name);
       registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
       const compiledQuery = await compileQuery(newModelInfo.model, query);
       queryModifiers.setQuery(compiledQuery, true);
@@ -304,8 +304,8 @@ export const Explore: React.FC = () => {
           renderer as RendererName,
           true
         );
-        urlParams.delete("renderer");
-        urlParams.set("styles", JSON.stringify(styles));
+        urlParams.delete('renderer');
+        urlParams.set('styles', JSON.stringify(styles));
       }
       runQuery();
       setParams(urlParams);
@@ -314,14 +314,14 @@ export const Explore: React.FC = () => {
       console.error(error);
       setError(error);
     } finally {
-      setLoading((loading) => --loading);
+      setLoading(loading => --loading);
     }
   };
 
   const runQueryAction = () => {
     runQuery();
-    urlParams.set("run", "true");
-    setParams(urlParams, { replace: true });
+    urlParams.set('run', 'true');
+    setParams(urlParams, {replace: true});
   };
 
   const handlers = {
@@ -333,7 +333,7 @@ export const Explore: React.FC = () => {
 
   const topValues = useTopValues(model, modelPath, source);
   if (loading || (appId && !appInfo)) {
-    section = "loading";
+    section = 'loading';
   }
 
   return (
@@ -343,15 +343,17 @@ export const Explore: React.FC = () => {
           <MalloyLogo />
           {appInfo && (
             <span>
-              {appInfo.title || "Malloy"}
-              {sourceName && section === "query" && (
+              {appInfo.title || 'Malloy'}
+              {sourceName && section === 'query' && (
                 <span>
-                  {" ›"} {snakeToTitle(sourceName)}
-                  {(urlParams.get("name") || queryName) && section === "query" && (
-                    <span>
-                      {" ›"} {urlParams.get("name") || snakeToTitle(queryName)}
-                    </span>
-                  )}
+                  {' ›'} {snakeToTitle(sourceName)}
+                  {(urlParams.get('name') || queryName) &&
+                    section === 'query' && (
+                      <span>
+                        {' ›'}{' '}
+                        {urlParams.get('name') || snakeToTitle(queryName)}
+                      </span>
+                    )}
                 </span>
               )}
             </span>
@@ -364,31 +366,31 @@ export const Explore: React.FC = () => {
             <ChannelTop>
               {!onlyDefaultDataset && (
                 <ChannelButton
-                  onClick={() => setSection("datasets")}
+                  onClick={() => setSection('datasets')}
                   text="Home"
                   icon="home"
-                  selected={section === "datasets"}
+                  selected={section === 'datasets'}
                   disabled={config === undefined}
                 ></ChannelButton>
               )}
               <ChannelButton
-                onClick={() => setSection("about")}
+                onClick={() => setSection('about')}
                 text="Dataset"
                 icon="about"
-                selected={section === "about"}
+                selected={section === 'about'}
                 disabled={appInfo === undefined}
               ></ChannelButton>
               <ChannelButton
-                onClick={() => setSection("query")}
+                onClick={() => setSection('query')}
                 text="Query"
                 icon="query"
-                selected={section === "query"}
+                selected={section === 'query'}
                 disabled={source === undefined}
               ></ChannelButton>
             </ChannelTop>
             <ChannelBottom>
               <ChannelButton
-                onClick={() => window.open(MALLOY_DOCS, "_blank")}
+                onClick={() => window.open(MALLOY_DOCS, '_blank')}
                 text="Docs"
                 icon="help"
                 selected={false}
@@ -398,7 +400,7 @@ export const Explore: React.FC = () => {
           </Channel>
           <Page>
             <PageContainer>
-              {section === "query" && (
+              {section === 'query' && (
                 <ExploreQueryEditor
                   dirty={dirty}
                   model={model}
@@ -419,7 +421,7 @@ export const Explore: React.FC = () => {
                   canQueryRun={canQueryRun}
                 />
               )}
-              {section === "about" && (
+              {section === 'about' && (
                 <PageContent>
                   {appInfo && (
                     <MarkdownDocument
@@ -430,13 +432,13 @@ export const Explore: React.FC = () => {
                   )}
                 </PageContent>
               )}
-              {section === "datasets" && config && (
+              {section === 'datasets' && config && (
                 <PageContent>
                   <Apps />
                 </PageContent>
               )}
               <ErrorMessage error={error} />
-              {section === "loading" && (
+              {section === 'loading' && (
                 <EmptyMessage>
                   <LoadingSpinner text="Loading Data..." />
                 </EmptyMessage>
@@ -549,13 +551,13 @@ const BottomChannel = styled.div`
 `;
 
 function generateReadme(appInfo: AppInfo) {
-  let readme = "";
-  const title = appInfo.title || "Malloy";
+  let readme = '';
+  const title = appInfo.title || 'Malloy';
   readme += `# ${title}\n\n`;
   readme += appInfo.title
     ? `Welcome to the Malloy Composer for the ${appInfo.title} dataset!\n\n`
     : `Welcome to the Malloy Composer. See below for a list of available sources.\n\n`;
-  readme += "## Sources\n\n";
+  readme += '## Sources\n\n';
   for (const modelInfo of appInfo.models) {
     for (const source of modelInfo.sources) {
       readme += `

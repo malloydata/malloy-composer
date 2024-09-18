@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Link } from "react-router-dom";
-import logoSrc from "../assets/img/logo.png";
+import {Link} from 'react-router-dom';
+import logoSrc from '../assets/img/logo.png';
 
 export const MalloyLogo: React.FC = () => {
   return (
@@ -30,7 +30,7 @@ export const MalloyLogo: React.FC = () => {
       <img
         src={logoSrc}
         alt="Malloy"
-        style={{ height: "30px", marginRight: "12px" }}
+        style={{height: '30px', marginRight: '12px'}}
       />
     </Link>
   );

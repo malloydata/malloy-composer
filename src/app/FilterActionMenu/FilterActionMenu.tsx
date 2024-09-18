@@ -22,14 +22,14 @@
  */
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   StructDef,
-} from "@malloydata/malloy";
-import { Filter } from "../../types";
-import { ActionMenu } from "../ActionMenu";
-import { AddFilter } from "../AddFilter";
-import { EditFilter } from "../EditFilter";
+} from '@malloydata/malloy';
+import {Filter} from '../../types';
+import {ActionMenu} from '../ActionMenu';
+import {AddFilter} from '../AddFilter';
+import {EditFilter} from '../EditFilter';
 
 interface FilterActionMenuProps {
   model: ModelDef | undefined;
@@ -37,7 +37,7 @@ interface FilterActionMenuProps {
   source: StructDef;
   filterSource: string;
   removeFilter: () => void;
-  editFilter: (filter: FilterExpression) => void;
+  editFilter: (filter: FilterCondition) => void;
   closeMenu: () => void;
   filterField: FieldDef | undefined;
   parsedFilter: Filter | undefined;
@@ -60,13 +60,13 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          id: "edit",
-          label: "Change filter",
-          iconName: "filter",
-          iconColor: "filter",
-          kind: "sub_menu",
+          id: 'edit',
+          label: 'Change filter',
+          iconName: 'filter',
+          iconColor: 'filter',
+          kind: 'sub_menu',
           closeOnComplete: true,
-          Component: ({ onComplete }) =>
+          Component: ({onComplete}) =>
             filterField && parsedFilter ? (
               <AddFilter
                 model={model}

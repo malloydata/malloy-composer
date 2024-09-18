@@ -21,24 +21,24 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {
-  FilterExpression,
+  FilterCondition,
   ModelDef,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
-} from "@malloydata/malloy";
-import { OrderByField, RendererName, StagePath } from "../../types";
-import { FilterContextBar } from "../FilterContextBar";
-import { RenameField } from "../RenameField";
-import { ActionMenu } from "../ActionMenu";
-import { DataStyleContextBar } from "../DataStyleContextBar";
-import { AddNewMeasure } from "../AddNewMeasure";
-import { EditOrderBy } from "../EditOrderBy";
+} from '@malloydata/malloy';
+import {OrderByField, RendererName, StagePath} from '../../types';
+import {FilterContextBar} from '../FilterContextBar';
+import {RenameField} from '../RenameField';
+import {ActionMenu} from '../ActionMenu';
+import {DataStyleContextBar} from '../DataStyleContextBar';
+import {AddNewMeasure} from '../AddNewMeasure';
+import {EditOrderBy} from '../EditOrderBy';
 
 interface AggregateActionMenuProps {
   source: StructDef;
   removeField: () => void;
-  addFilter: (filter: FilterExpression, as?: string) => void;
+  addFilter: (filter: FilterCondition, as?: string) => void;
   rename: (newName: string) => void;
   closeMenu: () => void;
   setDataStyle: (renderer: RendererName) => void;
@@ -53,7 +53,7 @@ interface AggregateActionMenuProps {
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ) => void;
   orderByField: OrderByField;
   stagePath: StagePath;
@@ -86,15 +86,15 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "sub_menu",
-          id: "filter",
-          iconName: "filter",
-          iconColor: "filter",
+          kind: 'sub_menu',
+          id: 'filter',
+          iconName: 'filter',
+          iconColor: 'filter',
           // Cannot filter a custom measure for now...
           isEnabled: definition === undefined,
-          label: "Filter",
+          label: 'Filter',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <FilterContextBar
               model={model}
               modelPath={modelPath}
@@ -107,24 +107,24 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "rename",
-          iconName: "rename",
-          iconColor: "other",
-          label: "Rename",
+          kind: 'sub_menu',
+          id: 'rename',
+          iconName: 'rename',
+          iconColor: 'other',
+          label: 'Rename',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "order_by",
-          iconName: "order_by",
-          label: "Order By",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'order_by',
+          iconName: 'order_by',
+          label: 'Order By',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
@@ -135,41 +135,41 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "style",
-          label: "Style",
-          iconName: "style",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'style',
+          label: 'Style',
+          iconName: 'style',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <DataStyleContextBar
               setDataStyle={setDataStyle}
               onComplete={onComplete}
               allowedRenderers={[
-                "number",
-                "boolean",
-                "currency",
-                "image",
-                "url",
-                "percent",
-                "text",
-                "time",
+                'number',
+                'boolean',
+                'currency',
+                'image',
+                'url',
+                'percent',
+                'text',
+                'time',
               ]}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "edit_definition",
-          label: "Edit Definition",
-          iconName: "edit",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'edit_definition',
+          label: 'Edit Definition',
+          iconName: 'edit',
+          iconColor: 'other',
           isEnabled: isEditable,
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AddNewMeasure
               source={source}
-              addMeasure={(code) => editMeasure(fieldIndex, code)}
+              addMeasure={code => editMeasure(fieldIndex, code)}
               onComplete={onComplete}
               initialCode={definition}
               initialName={name}
@@ -177,11 +177,11 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           ),
         },
         {
-          kind: "one_click",
-          id: "move",
-          iconName: "move",
-          iconColor: "other",
-          label: "Move",
+          kind: 'one_click',
+          id: 'move',
+          iconName: 'move',
+          iconColor: 'other',
+          label: 'Move',
           onClick: beginReorderingField,
         },
       ]}

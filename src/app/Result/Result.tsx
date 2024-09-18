@@ -20,12 +20,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useRef, useState } from "react";
-import * as malloy from "@malloydata/malloy";
-import * as render from "@malloydata/render";
-import styled from "styled-components";
-import { LoadingSpinner } from "../Spinner";
-import { usePrevious } from "../hooks";
+import {useEffect, useRef, useState} from 'react';
+import * as malloy from '@malloydata/malloy';
+import * as render from '@malloydata/render';
+import styled from 'styled-components';
+import {LoadingSpinner} from '../Spinner';
+import {usePrevious} from '../hooks';
 import {
   copyToClipboard,
   downloadFile,
@@ -33,13 +33,13 @@ import {
   indentCode,
   notUndefined,
   wrapHtml,
-} from "../utils";
-import { compileFilter, compileQueryToSQL } from "../../core/compile";
-import { DownloadMenu } from "../DownloadMenu";
-import { DOMElement } from "../DOMElement";
-import { PageContent, PageHeader } from "../CommonElements";
-import { SelectDropdown } from "../SelectDropdown";
-import { ActionIcon } from "../ActionIcon";
+} from '../utils';
+import {compileFilter, compileQueryToSQL} from '../../core/compile';
+import {DownloadMenu} from '../DownloadMenu';
+import {DOMElement} from '../DOMElement';
+import {PageContent, PageHeader} from '../CommonElements';
+import {SelectDropdown} from '../SelectDropdown';
+import {ActionIcon} from '../ActionIcon';
 
 interface ResultProps {
   model: malloy.ModelDef;
@@ -52,7 +52,7 @@ interface ResultProps {
     markdown: string;
     isRunnable: boolean;
   };
-  onDrill: (filters: malloy.FilterExpression[]) => void;
+  onDrill: (filters: malloy.FilterCondition[]) => void;
   isRunning: boolean;
 }
 
@@ -73,25 +73,25 @@ export const Result: React.FC<ResultProps> = ({
   const [highlightedMarkdownMalloy, setHighlightedMarkdownMalloy] =
     useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
-  const [view, setView] = useState<"sql" | "malloy" | "html">("html");
+  const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
-  const [malloyType, setMalloyType] = useState("source");
+  const [malloyType, setMalloyType] = useState('source');
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
   const previousDataStyles = usePrevious(dataStyles);
 
   useEffect(() => {
-    highlightPre(malloy.markdown, "md")
+    highlightPre(malloy.markdown, 'md')
       .then(setHighlightedMarkdownMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
-    highlightPre(indentCode(malloy.source), "malloy")
+    highlightPre(indentCode(malloy.source), 'malloy')
       .then(setHighlightedSourceMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
-    highlightPre(malloy.model, "malloy")
+    highlightPre(malloy.model, 'malloy')
       .then(setHighlightedModelMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
@@ -105,7 +105,7 @@ export const Result: React.FC<ResultProps> = ({
         if (
           model === undefined ||
           malloy.model === undefined ||
-          malloy.model === "" ||
+          malloy.model === '' ||
           !malloy.isRunnable
         ) {
           return;
@@ -118,7 +118,7 @@ export const Result: React.FC<ResultProps> = ({
         }
       }
       if (sql === undefined) return;
-      const highlighted = await highlightPre(sql, "sql");
+      const highlighted = await highlightPre(sql, 'sql');
       if (canceled) return;
       setSQL(highlighted);
     };
@@ -151,14 +151,14 @@ export const Result: React.FC<ResultProps> = ({
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(
-            drillFilters.map((filter) =>
-              compileFilter(source, filter).catch((error) => {
+            drillFilters.map(filter =>
+              compileFilter(source, filter).catch(error => {
                 // eslint-disable-next-line no-console
                 console.log(error);
                 return undefined;
               })
             )
-          ).then((filters) => {
+          ).then(filters => {
             const validFilters = filters.filter(notUndefined);
             if (validFilters.length > 0) {
               onDrill(validFilters);
@@ -187,15 +187,15 @@ export const Result: React.FC<ResultProps> = ({
       <ResultHeader>
         <ResultHeaderSection>
           <ViewTab
-            onClick={() => setView("malloy")}
-            selected={view === "malloy"}
+            onClick={() => setView('malloy')}
+            selected={view === 'malloy'}
           >
             Malloy
           </ViewTab>
-          <ViewTab onClick={() => setView("sql")} selected={view === "sql"}>
+          <ViewTab onClick={() => setView('sql')} selected={view === 'sql'}>
             SQL
           </ViewTab>
-          <ViewTab onClick={() => setView("html")} selected={view === "html"}>
+          <ViewTab onClick={() => setView('html')} selected={view === 'html'}>
             Results
           </ViewTab>
         </ResultHeaderSection>
@@ -204,17 +204,17 @@ export const Result: React.FC<ResultProps> = ({
             disabled={!result || html === undefined || rendering}
             onDownloadHTML={(newTab: boolean) =>
               downloadFile(
-                html ? wrapHtml(html.outerHTML, "Malloy Download") : "",
-                "text/html",
-                "result.html",
+                html ? wrapHtml(html.outerHTML, 'Malloy Download') : '',
+                'text/html',
+                'result.html',
                 newTab
               )
             }
             onDownloadJSON={(newTab: boolean) =>
               downloadFile(
                 JSON.stringify(result?.data.toObject() || {}, null, 2),
-                "application/json",
-                "result.json",
+                'application/json',
+                'result.json',
                 newTab
               )
             }
@@ -222,8 +222,8 @@ export const Result: React.FC<ResultProps> = ({
         </ResultHeaderSection>
       </ResultHeader>
       <ContentDiv>
-        {isRunning && view !== "malloy" && <LoadingSpinner text="Running" />}
-        {view === "html" && (
+        {isRunning && view !== 'malloy' && <LoadingSpinner text="Running" />}
+        {view === 'html' && (
           <>
             {result !== undefined && rendering && (
               <LoadingSpinner text="Rendering" />
@@ -236,20 +236,20 @@ export const Result: React.FC<ResultProps> = ({
             )}
           </>
         )}
-        {sql !== undefined && view === "sql" && (
+        {sql !== undefined && view === 'sql' && (
           <PreWrapper>{sql && <DOMElement element={sql} />}</PreWrapper>
         )}
-        {view === "malloy" && (
+        {view === 'malloy' && (
           <PreWrapper
-            style={{ marginLeft: malloyType === "source" ? "-2ch" : "" }}
+            style={{marginLeft: malloyType === 'source' ? '-2ch' : ''}}
           >
-            {malloyType === "source" && highlightedSourceMalloy && (
+            {malloyType === 'source' && highlightedSourceMalloy && (
               <DOMElement element={highlightedSourceMalloy} />
             )}
-            {malloyType === "model" && highlightedModelMalloy && (
+            {malloyType === 'model' && highlightedModelMalloy && (
               <DOMElement element={highlightedModelMalloy} />
             )}
-            {malloyType === "markdown" && highlightedMarkdownMalloy && (
+            {malloyType === 'markdown' && highlightedMarkdownMalloy && (
               <DOMElement element={highlightedMarkdownMalloy} />
             )}
             <MalloyTypeSwitcher>
@@ -257,24 +257,24 @@ export const Result: React.FC<ResultProps> = ({
                 action="copy"
                 onClick={() => {
                   let code = malloy[malloyType];
-                  if (malloyType === "source") {
+                  if (malloyType === 'source') {
                     code = indentCode(code);
                   }
                   copyToClipboard(code);
                   setCopiedMalloy(true);
                 }}
-                color={copiedMalloy ? "other" : "dimension"}
+                color={copiedMalloy ? 'other' : 'dimension'}
               />
               <SelectDropdown
                 value={malloyType}
-                onChange={(type) => {
+                onChange={type => {
                   setMalloyType(type);
                   setCopiedMalloy(false);
                 }}
                 options={[
-                  { value: "source", label: "Source" },
-                  { value: "model", label: "Model" },
-                  { value: "markdown", label: "Markdown" },
+                  {value: 'source', label: 'Source'},
+                  {value: 'model', label: 'Model'},
+                  {value: 'markdown', label: 'Markdown'},
                 ]}
               />
             </MalloyTypeSwitcher>
@@ -301,7 +301,7 @@ const MalloyTypeSwitcher = styled.div`
 
 const ResultWrapper = styled.div`
   font-size: 14px;
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
 `;
 
 const OuterDiv = styled.div`
@@ -332,16 +332,16 @@ const ViewTab = styled.div<{
   cursor: pointer;
   text-transform: uppercase;
   color: #939393;
-  font-family: "Google Sans";
+  font-family: 'Google Sans';
   border-top: 1px solid transparent;
   font-size: 11pt;
-  ${({ selected }) =>
-    `border-bottom: 1px solid ${selected ? "#4285F4" : "transparent"}`}
+  ${({selected}) =>
+    `border-bottom: 1px solid ${selected ? '#4285F4' : 'transparent'}`}
 `;
 
 const PreWrapper = styled.div`
   padding: 0 15px;
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   font-size: 14px;
   position: relative;
   width: 100%;

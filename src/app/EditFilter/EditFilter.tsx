@@ -20,21 +20,21 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FilterExpression, StructDef } from "@malloydata/malloy";
-import { useState } from "react";
-import { compileFilter } from "../../core/compile";
-import { CodeTextArea } from "../CodeInput";
+import {FilterCondition, StructDef} from '@malloydata/malloy';
+import {useState} from 'react';
+import {compileFilter} from '../../core/compile';
+import {CodeTextArea} from '../CodeInput';
 import {
   Button,
   RightButtonRow,
   ContextMenuMain,
   ContextMenuTitle,
-} from "../CommonElements";
+} from '../CommonElements';
 
 interface EditFilterProps {
   source: StructDef;
   existing: string;
-  editFilter: (filter: FilterExpression) => void;
+  editFilter: (filter: FilterCondition) => void;
   onComplete: () => void;
 }
 
@@ -62,7 +62,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
           </Button>
           <Button
             onClick={() => {
-              compileFilter(source, filter).then((filterExpression) => {
+              compileFilter(source, filter).then(filterExpression => {
                 editFilter(filterExpression);
                 onComplete();
               });

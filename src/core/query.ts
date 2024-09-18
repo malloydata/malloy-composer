@@ -32,10 +32,10 @@ import {
   QuerySummaryItemDataStyle,
   QuerySummaryItemFilter,
   stagePathParent,
-} from "../types";
+} from '../types';
 import {
   FieldDef,
-  FilterExpression,
+  FilterCondition,
   PipeSegment,
   QueryFieldDef,
   Segment as QuerySegment,
@@ -45,21 +45,21 @@ import {
   NamedQuery,
   expressionIsCalculation,
   ExpressionType,
-} from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
-import { snakeToTitle } from "../app/utils";
-import { hackyTerribleStringToFilter } from "./filters";
-import { maybeQuoteIdentifier } from "./utils";
+} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
+import {snakeToTitle} from '../app/utils';
+import {hackyTerribleStringToFilter} from './filters';
+import {maybeQuoteIdentifier} from './utils';
 
 // TODO this is a hack to turn `string[]` paths (the new way dotted)
 // paths are stored in the struct def back to the old way (just a
 // dotted string), so that I can do less work right now.
 function dottify(path: string[]) {
-  return path.join(".");
+  return path.join('.');
 }
 
 function undottify(path: string) {
-  return path.split(".");
+  return path.split('.');
 }
 
 class SourceUtils {
@@ -74,7 +74,7 @@ class SourceUtils {
   }
 
   protected fieldDefForQueryFieldDef(field: QueryFieldDef, source: StructDef) {
-    if (field.type === "fieldref") {
+    if (field.type === 'fieldref') {
       return this.getField(source, dottify(field.path));
     } else {
       return field;
@@ -82,18 +82,18 @@ class SourceUtils {
   }
 
   protected getField(source: StructDef, fieldName: string): FieldDef {
-    let parts = fieldName.split(".");
+    let parts = fieldName.split('.');
     let currentSource = source;
     while (parts.length > 1) {
       const part = parts[0];
-      const found = currentSource.fields.find((f) => (f.as || f.name) === part);
+      const found = currentSource.fields.find(f => (f.as || f.name) === part);
       if (found === undefined) {
         throw new Error(`Could not find (inner) ${part}`);
       }
-      if (found.type === "struct") {
+      if (found.type === 'struct') {
         currentSource = found;
         parts = parts.slice(1);
-      } else if (found.type === "turtle") {
+      } else if (found.type === 'turtle') {
         let turtleSource = this.getSource();
         for (const stage of found.pipeline) {
           turtleSource = this.modifySourceForStage(stage, turtleSource);
@@ -101,12 +101,10 @@ class SourceUtils {
         currentSource = turtleSource;
         parts = parts.slice(1);
       } else {
-        throw new Error("Inner segment in path is not a source");
+        throw new Error('Inner segment in path is not a source');
       }
     }
-    const found = currentSource.fields.find(
-      (f) => (f.as || f.name) === parts[0]
-    );
+    const found = currentSource.fields.find(f => (f.as || f.name) === parts[0]);
     if (found === undefined) {
       throw new Error(`Could not find ${parts[0]}`);
     }
@@ -124,16 +122,19 @@ class SourceUtils {
 const BLANK_QUERY: TurtleDef = {
   pipeline: [
     {
-      type: "reduce",
+      type: 'reduce',
       queryFields: [],
     },
   ],
-  name: "new_query",
-  type: "turtle",
+  name: 'new_query',
+  type: 'turtle',
 };
 
 class NotAStageError extends Error {
-  constructor(message: string, public readonly field: QueryFieldDef) {
+  constructor(
+    message: string,
+    public readonly field: QueryFieldDef
+  ) {
     super(message);
   }
 }
@@ -212,7 +213,7 @@ export class QueryBuilder extends SourceUtils {
     this.query = {
       pipeline: query.pipeline,
       name: query.as || query.name,
-      type: "turtle",
+      type: 'turtle',
     };
   }
 
@@ -221,12 +222,12 @@ export class QueryBuilder extends SourceUtils {
       return this.stageAtPath(stagePath);
     } catch (error) {
       if (error instanceof NotAStageError) {
-        const { stagePath: newStagePath, fieldIndex } = stagePathPop(stagePath);
+        const {stagePath: newStagePath, fieldIndex} = stagePathPop(stagePath);
         const fieldDef = this.fieldDefForQueryFieldDef(
           error.field,
           this.sourceForStageAtPath(newStagePath)
         );
-        if (fieldDef.type === "turtle") {
+        if (fieldDef.type === 'turtle') {
           this.replaceWithDefinition(newStagePath, fieldIndex);
           return this.stageAtPath(stagePath);
         }
@@ -246,19 +247,19 @@ export class QueryBuilder extends SourceUtils {
       } = stagePathPop(stagePath);
       if (fieldIndex !== undefined) {
         const stage = current[stageIndex];
-        if (stage.type !== "reduce") {
-          throw new Error("Stage is not a reduce stage");
+        if (stage.type !== 'reduce') {
+          throw new Error('Stage is not a reduce stage');
         }
         const newField = stage.queryFields[fieldIndex];
-        if (newField.type === "fieldref" || newField.type !== "turtle") {
+        if (newField.type === 'fieldref' || newField.type !== 'turtle') {
           throw new NotAStageError(
-            "Path does not refer to a stage correctly",
+            'Path does not refer to a stage correctly',
             newField
           );
         }
         current = newField.pipeline;
         if (newStagePath === undefined) {
-          throw new Error("Invalid stage path");
+          throw new Error('Invalid stage path');
         }
         stagePath = newStagePath;
       } else {
@@ -289,16 +290,16 @@ export class QueryBuilder extends SourceUtils {
       }
       if (fieldIndex !== undefined) {
         const stage = currentPipeline[stageIndex];
-        if (stage.type !== "reduce") {
-          throw new Error("Stage must be a reduce stage");
+        if (stage.type !== 'reduce') {
+          throw new Error('Stage must be a reduce stage');
         }
         const newField = stage.queryFields[fieldIndex];
-        if (newField.type === "fieldref" || newField.type !== "turtle") {
-          throw new Error("Path does not refer to a stage correctly");
+        if (newField.type === 'fieldref' || newField.type !== 'turtle') {
+          throw new Error('Path does not refer to a stage correctly');
         }
         currentPipeline = newField.pipeline;
         if (newStagePath === undefined) {
-          throw new Error("Invalid stage path");
+          throw new Error('Invalid stage path');
         }
         stagePath = newStagePath;
       } else {
@@ -308,9 +309,9 @@ export class QueryBuilder extends SourceUtils {
   }
 
   private sortOrder(field: FieldDef) {
-    if (field.type === "struct") {
+    if (field.type === 'struct') {
       return 3;
-    } else if (field.type === "turtle") {
+    } else if (field.type === 'turtle') {
       return 2;
     } else if (expressionIsCalculation(field.expressionType)) {
       return 1;
@@ -327,8 +328,8 @@ export class QueryBuilder extends SourceUtils {
     const stageSource = this.sourceForStageAtPath(stagePath);
     const fieldDef = this.fieldDefForQueryFieldDef(queryFieldDef, stageSource);
     const sortOrder = this.sortOrder(fieldDef);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     for (
       let fieldIndex = 0;
@@ -355,8 +356,8 @@ export class QueryBuilder extends SourceUtils {
 
   private insertField(stagePath: StagePath, field: QueryFieldDef) {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     const insertIndex = this.getIndexToInsertNewField(stagePath, field);
     stage.queryFields.splice(insertIndex, 0, field);
@@ -364,33 +365,33 @@ export class QueryBuilder extends SourceUtils {
 
   addField(stagePath: StagePath, fieldPath: string): void {
     this.insertField(stagePath, {
-      type: "fieldref",
+      type: 'fieldref',
       path: undottify(fieldPath),
     });
   }
 
   loadQuery(queryPath: string): void {
     const definition = this.getField(this.getSource(), queryPath);
-    if (definition.type !== "turtle") {
-      throw new Error("Path does not refer to query.");
+    if (definition.type !== 'turtle') {
+      throw new Error('Path does not refer to query.');
     }
     definition.pipeline.forEach((stage, stageIndex) => {
       if (this.query.pipeline[stageIndex] === undefined) {
         this.query.pipeline[stageIndex] = JSON.parse(JSON.stringify(stage));
       } else {
         const existingStage = this.query.pipeline[stageIndex];
-        if (existingStage.type !== "reduce" || stage.type !== "reduce") {
-          throw new Error("Cannot load query with non-reduce stages");
+        if (existingStage.type !== 'reduce' || stage.type !== 'reduce') {
+          throw new Error('Cannot load query with non-reduce stages');
         }
         if (stage.by) {
-          existingStage.by = { ...stage.by };
+          existingStage.by = {...stage.by};
           existingStage.orderBy = undefined;
         }
         if (stage.filterList) {
           existingStage.filterList = (existingStage.filterList || []).concat(
-            ...stage.filterList.filter((filter) => {
+            ...stage.filterList.filter(filter => {
               return !existingStage.filterList?.find(
-                (existingFilter) => existingFilter.code === filter.code
+                existingFilter => existingFilter.code === filter.code
               );
             })
           );
@@ -403,11 +404,11 @@ export class QueryBuilder extends SourceUtils {
           existingStage.by = undefined;
         }
         existingStage.queryFields = stage.queryFields
-          .map((field) => JSON.parse(JSON.stringify(field)))
+          .map(field => JSON.parse(JSON.stringify(field)))
           .concat(
-            existingStage.queryFields.filter((field) => {
+            existingStage.queryFields.filter(field => {
               return !stage.queryFields.find(
-                (otherField) => this.nameOf(otherField) === this.nameOf(field)
+                otherField => this.nameOf(otherField) === this.nameOf(field)
               );
             })
           );
@@ -418,8 +419,8 @@ export class QueryBuilder extends SourceUtils {
 
   public replaceQuery(field: TurtleDef): void {
     const stage = this.query.pipeline[0];
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     const filters =
       this.query.pipeline.length === 1 && stage.queryFields.length === 0
@@ -430,12 +431,12 @@ export class QueryBuilder extends SourceUtils {
     this.query = {
       pipeline,
       name: field.as || field.name,
-      type: "turtle",
+      type: 'turtle',
     };
   }
 
   private nameOf(field: QueryFieldDef) {
-    if (field.type === "fieldref") {
+    if (field.type === 'fieldref') {
       return field.path[field.path.length - 1];
     } else {
       return field.as || field.name;
@@ -448,22 +449,22 @@ export class QueryBuilder extends SourceUtils {
     name: string
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     stage.queryFields.splice(fieldIndex, 1, {
-      type: "fieldref",
+      type: 'fieldref',
       path: undottify(name),
     });
   }
 
   removeField(stagePath: StagePath, fieldIndex: number): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
-    if (stage.type === "reduce" && stage.orderBy) {
-      const orderIndex = stage.orderBy.findIndex((order) => {
+    if (stage.type === 'reduce' && stage.orderBy) {
+      const orderIndex = stage.orderBy.findIndex(order => {
         const field = stage.queryFields[fieldIndex];
         return order.field === this.nameOf(field);
       });
@@ -476,11 +477,11 @@ export class QueryBuilder extends SourceUtils {
 
   getFieldIndex(stagePath: StagePath, fieldPath: string): number | undefined {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     const index = stage.queryFields.findIndex(
-      (f) => f.type === "fieldref" && dottify(f.path) === fieldPath
+      f => f.type === 'fieldref' && dottify(f.path) === fieldPath
     );
     return index === -1 ? undefined : index;
   }
@@ -491,10 +492,10 @@ export class QueryBuilder extends SourceUtils {
 
   reorderFields(stagePath: StagePath, order: number[]): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
-    const newFields = order.map((index) => stage.queryFields[index]);
+    const newFields = order.map(index => stage.queryFields[index]);
     stage.queryFields = newFields;
   }
 
@@ -512,7 +513,7 @@ export class QueryBuilder extends SourceUtils {
     return this.query;
   }
 
-  addFilter(stagePath: StagePath, filter: FilterExpression): void {
+  addFilter(stagePath: StagePath, filter: FilterCondition): void {
     const stage = this.autoExpandStageAtPath(stagePath);
     stage.filterList = [...(stage.filterList || []), filter];
   }
@@ -521,30 +522,30 @@ export class QueryBuilder extends SourceUtils {
     stagePath: StagePath,
     fieldIndex: number | undefined,
     filterIndex: number,
-    filter: FilterExpression
+    filter: FilterCondition
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     if (fieldIndex === undefined) {
       if (stage.filterList === undefined) {
-        throw new Error("Stage has no filters.");
+        throw new Error('Stage has no filters.');
       }
       stage.filterList[filterIndex] = filter;
     } else {
       const field = stage.queryFields[fieldIndex];
-      if (field.type === "fieldref") {
-        throw new Error("Cannot edit filter on field ref.");
+      if (field.type === 'fieldref') {
+        throw new Error('Cannot edit filter on field ref.');
       }
-      if (field.type === "turtle") {
-        throw new Error("Cannot edit filter on turtle.");
+      if (field.type === 'turtle') {
+        throw new Error('Cannot edit filter on turtle.');
       }
       if (!isFilteredField(field)) {
-        throw new Error("Cannot edit filter on non-filtered field.");
+        throw new Error('Cannot edit filter on non-filtered field.');
       }
       if (field.e[0].filterList === undefined) {
-        throw new Error("Field has no filters");
+        throw new Error('Field has no filters');
       }
       field.e[0].filterList[filterIndex] = filter;
     }
@@ -556,8 +557,8 @@ export class QueryBuilder extends SourceUtils {
     fieldIndex?: number
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     if (fieldIndex === undefined) {
       if (stage.filterList) {
@@ -565,17 +566,17 @@ export class QueryBuilder extends SourceUtils {
       }
     } else {
       const field = stage.queryFields[fieldIndex];
-      if (field.type === "fieldref") {
-        throw new Error("Cannot edit filter on field ref.");
+      if (field.type === 'fieldref') {
+        throw new Error('Cannot edit filter on field ref.');
       }
-      if (field.type === "turtle") {
-        throw new Error("Cannot edit filter on turtle.");
+      if (field.type === 'turtle') {
+        throw new Error('Cannot edit filter on turtle.');
       }
       if (!isFilteredField(field)) {
-        throw new Error("Cannot edit filter on non-filtered field.");
+        throw new Error('Cannot edit filter on non-filtered field.');
       }
       if (field.e[0].filterList === undefined) {
-        throw new Error("Field has no filters");
+        throw new Error('Field has no filters');
       }
       // TODO just changed this to "filterIndex" rather than "fieldIndex"...
       // seems like it must have been broken before? Unless somewhere I passed the
@@ -586,7 +587,7 @@ export class QueryBuilder extends SourceUtils {
 
   hasLimit(stagePath: StagePath): boolean {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     return stage.limit !== undefined;
@@ -596,10 +597,10 @@ export class QueryBuilder extends SourceUtils {
     stagePath: StagePath,
     limit: number,
     byField?: SchemaField,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ): void {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     stage.limit = limit;
@@ -616,10 +617,10 @@ export class QueryBuilder extends SourceUtils {
   addOrderBy(
     stagePath: StagePath,
     byFieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ): void {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     stage.orderBy = stage.orderBy || [];
@@ -634,10 +635,10 @@ export class QueryBuilder extends SourceUtils {
   editOrderBy(
     stagePath: StagePath,
     orderByIndex: number,
-    direction: "asc" | "desc" | undefined
+    direction: 'asc' | 'desc' | undefined
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     stage.orderBy = stage.orderBy || [];
@@ -649,8 +650,8 @@ export class QueryBuilder extends SourceUtils {
 
   removeLimit(stagePath: StagePath): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     stage.limit = undefined;
   }
@@ -660,31 +661,31 @@ export class QueryBuilder extends SourceUtils {
     if (stagePath !== undefined) {
       const parentStage = this.stageAtPath(stagePath);
       if (fieldIndex === undefined) {
-        throw new Error("fieldIndex must be provided if stagePath is");
+        throw new Error('fieldIndex must be provided if stagePath is');
       }
-      if (parentStage.type !== "reduce") {
-        throw new Error("Stage must be reduce");
+      if (parentStage.type !== 'reduce') {
+        throw new Error('Stage must be reduce');
       }
       const field = parentStage.queryFields[fieldIndex];
       const fieldDef = this.fieldDefForQueryFieldDef(
         field,
         this.sourceForStageAtPath(stagePath)
       );
-      if (fieldDef.type === "turtle") {
-        if (field.type === "fieldref") {
+      if (fieldDef.type === 'turtle') {
+        if (field.type === 'fieldref') {
           this.replaceWithDefinition(stagePath, fieldIndex);
           query = parentStage.queryFields[fieldIndex];
         } else {
           query = field;
         }
       } else {
-        throw new Error("Invalid field to add stage to.");
+        throw new Error('Invalid field to add stage to.');
       }
     } else {
       query = this.query;
     }
     query.pipeline.push({
-      type: "reduce",
+      type: 'reduce',
       queryFields: [],
     });
   }
@@ -699,16 +700,16 @@ export class QueryBuilder extends SourceUtils {
     if (parentStagePath !== undefined) {
       const parentStage = this.stageAtPath(parentStagePath);
       if (fieldIndex === undefined) {
-        throw new Error("Invalid stage path");
+        throw new Error('Invalid stage path');
       }
-      if (parentStage.type !== "reduce") {
-        throw new Error("Stage must be reduce");
+      if (parentStage.type !== 'reduce') {
+        throw new Error('Stage must be reduce');
       }
       const field = parentStage.queryFields[fieldIndex];
-      if (typeof field !== "string" && field.type === "turtle") {
+      if (typeof field !== 'string' && field.type === 'turtle') {
         query = field;
       } else {
-        throw new Error("Invalid field to add stage to.");
+        throw new Error('Invalid field to add stage to.');
       }
     } else {
       query = this.query;
@@ -716,7 +717,7 @@ export class QueryBuilder extends SourceUtils {
     query.pipeline.splice(stageIndex, 1);
     if (query.pipeline.length === 0) {
       query.pipeline.push({
-        type: "reduce",
+        type: 'reduce',
         fields: [],
       });
     }
@@ -724,7 +725,7 @@ export class QueryBuilder extends SourceUtils {
 
   removeOrderBy(stagePath: StagePath, orderingIndex: number): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     if (stage.orderBy) {
@@ -735,50 +736,48 @@ export class QueryBuilder extends SourceUtils {
   canRun(): boolean {
     // TODO check that all nested stages can run, too
     const stage = this.query.pipeline[0];
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     return stage.queryFields.length > 0;
   }
 
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     const field = stage.queryFields[fieldIndex];
     const fieldName = this.nameOf(field);
     // Rename references in order bys
     if (stage.orderBy) {
-      stage.orderBy.forEach((order) => {
+      stage.orderBy.forEach(order => {
         if (order.field === fieldName) {
           order.field = as;
         }
       });
     }
 
-    if (field.type === "fieldref") {
+    if (field.type === 'fieldref') {
       const source = this.sourceForStageAtPath(stagePath);
       const lookup = this.getField(source, dottify(field.path));
-      if (lookup.type === "turtle") {
+      if (lookup.type === 'turtle') {
         stage.queryFields[fieldIndex] = {
           ...lookup,
           name: as,
         };
         return;
       }
-      if (lookup.type === "struct") {
-        throw new Error("Invalid field");
+      if (lookup.type === 'struct') {
+        throw new Error('Invalid field');
       }
       const newField: QueryFieldDef = {
         type: lookup.type,
         name: as,
-        e: [
-          {
-            type: "field",
-            path: field.path,
-          },
-        ],
+        e: {
+          node: 'field',
+          path: field.path,
+        },
         expressionType: lookup.expressionType,
       };
       stage.queryFields[fieldIndex] = newField;
@@ -790,59 +789,58 @@ export class QueryBuilder extends SourceUtils {
   addFilterToField(
     stagePath: StagePath,
     fieldIndex: number,
-    filter: FilterExpression,
+    filter: FilterCondition,
     as?: string
   ): void {
     if (as !== undefined) {
       this.renameField(stagePath, fieldIndex, as);
     }
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
+    if (stage.type !== 'reduce') {
       throw new Error("Don't know how to handle this yet");
     }
     const field = stage.queryFields[fieldIndex];
-    if (field.type === "fieldref") {
+    if (field.type === 'fieldref') {
       const def = this.getField(
         this.sourceForStageAtPath(stagePath),
         dottify(field.path)
       );
-      if (def.type === "turtle" || def.type === "struct") {
-        throw new Error("Invalid field");
+      if (def.type === 'turtle' || def.type === 'struct') {
+        throw new Error('Invalid field');
       }
       stage.queryFields[fieldIndex] = {
         type: def.type,
         name: as || this.nameOf(field),
-        e: [
-          {
-            type: "filterExpression",
+        e: {
+          node: 'filteredExpr',
+          kids: {
             filterList: [filter],
-            e: [
-              {
-                type: "field",
-                path: field.path,
-              },
-            ],
+            e: {
+              node: 'field',
+              path: field.path,
+            },
           },
-        ],
+        },
+
         as,
         expressionType: def.expressionType,
       };
     } else if (isFilteredField(field)) {
       field.e[0].filterList = [...(field.e[0].filterList || []), filter];
     } else if (isRenamedField(field)) {
-      if (field.type === "turtle") {
-        throw new Error("Invalid field");
+      if (field.type === 'turtle') {
+        throw new Error('Invalid field');
       }
       stage.queryFields[fieldIndex] = {
         type: field.type,
         name: as || this.nameOf(field),
-        e: [
-          {
-            type: "filterExpression",
+        e: {
+          node: 'filteredExpr',
+          kids: {
             filterList: [filter],
             e: field.e,
           },
-        ],
+        },
         as,
         expressionType: field.expressionType,
       };
@@ -852,8 +850,8 @@ export class QueryBuilder extends SourceUtils {
   addNewNestedQuery(stagePath: StagePath, name: string): void {
     const newNestedQuery: QueryFieldDef = {
       name,
-      type: "turtle",
-      pipeline: [{ type: "reduce", queryFields: [] }],
+      type: 'turtle',
+      pipeline: [{type: 'reduce', queryFields: []}],
     };
     this.insertField(stagePath, newNestedQuery);
   }
@@ -868,8 +866,8 @@ export class QueryBuilder extends SourceUtils {
     definition: QueryFieldDef
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     stage.queryFields[fieldIndex] = definition;
   }
@@ -883,19 +881,19 @@ export class QueryBuilder extends SourceUtils {
       structDef = this._source;
     }
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     const field = stage.queryFields[fieldIndex];
-    if (field.type !== "fieldref") {
+    if (field.type !== 'fieldref') {
       throw new Error("Don't deal with this yet");
     }
     const definition = structDef.fields.find(
-      (def) => (def.as || def.name) === dottify(field.path)
+      def => (def.as || def.name) === dottify(field.path)
     );
     // TODO handle case where definition is too complex...
     if (definition === undefined) {
-      throw new Error("Field is not defined..");
+      throw new Error('Field is not defined..');
     }
     stage.queryFields[fieldIndex] = JSON.parse(JSON.stringify(definition));
   }
@@ -906,7 +904,10 @@ export class QueryBuilder extends SourceUtils {
 }
 
 export class QueryWriter extends SourceUtils {
-  constructor(private readonly query: TurtleDef, source: StructDef) {
+  constructor(
+    private readonly query: TurtleDef,
+    source: StructDef
+  ) {
     super(source);
   }
 
@@ -921,7 +922,7 @@ export class QueryWriter extends SourceUtils {
     renderer
       ? `
   renderer="${renderer}"`
-      : ""
+      : ''
   }
   model="${modelPath}"
 -->
@@ -938,10 +939,10 @@ ${malloy}
     return this.getMalloyString(false, this.query.name);
   }
 
-  private getFiltersString(filterList: FilterExpression[]): Fragment[] {
+  private getFiltersString(filterList: FilterCondition[]): Fragment[] {
     const fragments = [];
     if (filterList.length === 1) {
-      fragments.push(" ");
+      fragments.push(' ');
     } else {
       fragments.push(NEWLINE, INDENT);
     }
@@ -949,7 +950,7 @@ ${malloy}
       const filter = filterList[index];
       fragments.push(filter.code);
       if (index !== filterList.length - 1) {
-        fragments.push(",");
+        fragments.push(',');
       }
       fragments.push(NEWLINE);
     }
@@ -963,79 +964,79 @@ ${malloy}
     field: QueryFieldDef,
     source: StructDef,
     indent: string
-  ): { property: string; malloy: Fragment[] } | undefined {
+  ): {property: string; malloy: Fragment[]} | undefined {
     try {
-      if (field.type === "fieldref") {
+      if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
-        if (fieldDef.type === "struct") {
+        if (fieldDef.type === 'struct') {
           throw new Error("Don't know how to deal with this");
         }
         const property =
-          fieldDef.type === "turtle"
-            ? "nest"
+          fieldDef.type === 'turtle'
+            ? 'nest'
             : expressionIsCalculation(fieldDef.expressionType)
-            ? "aggregate"
-            : "group_by";
+            ? 'aggregate'
+            : 'group_by';
         return {
           property,
           malloy: [maybeQuoteIdentifier(dottify(field.path))],
         };
       } else if (isRenamedField(field)) {
         const property = expressionIsCalculation(field.expressionType)
-          ? "aggregate"
-          : "group_by";
+          ? 'aggregate'
+          : 'group_by';
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${dottify(
             field.e[0].path
           )}`,
         ];
-        return { property, malloy };
+        return {property, malloy};
       } else if (isFilteredField(field)) {
         const fieldDef = this.getField(source, dottify(field.e[0].e[0].path));
-        if (fieldDef.type === "struct") {
+        if (fieldDef.type === 'struct') {
           throw new Error("Don't know how to deal with this");
         }
         const property =
-          fieldDef.type === "turtle"
-            ? "nest"
+          fieldDef.type === 'turtle'
+            ? 'nest'
             : expressionIsCalculation(fieldDef.expressionType)
-            ? "aggregate"
-            : "group_by";
+            ? 'aggregate'
+            : 'group_by';
         const malloy: Fragment[] = [];
         const newNameIs = `${maybeQuoteIdentifier(field.name)} is `;
         malloy.push(
           `${newNameIs}${maybeQuoteIdentifier(dottify(field.e[0].e[0].path))}`
         );
         if (field.e[0].filterList && field.e[0].filterList.length > 0) {
-          malloy.push(" {", NEWLINE, INDENT, "where:");
+          malloy.push(' {', NEWLINE, INDENT, 'where:');
           malloy.push(...this.getFiltersString(field.e[0].filterList || []));
-          malloy.push(OUTDENT, "}");
+          malloy.push(OUTDENT, '}');
         }
-        return { property, malloy };
-      } else if (field.type === "turtle") {
+        return {property, malloy};
+      } else if (field.type === 'turtle') {
         const malloy: Fragment[] = [];
         malloy.push(`${maybeQuoteIdentifier(field.as || field.name)} is`);
         let stageSource = source;
         let head = true;
         for (const stage of field.pipeline) {
           if (!head) {
-            malloy.push("->");
+            malloy.push('->');
           }
           malloy.push(
-            ...this.getMalloyStringForStage(stage, stageSource, indent + "  ")
+            ...this.getMalloyStringForStage(stage, stageSource, indent + '  ')
           );
           stageSource = this.modifySourceForStage(stage, stageSource);
           head = false;
         }
-        return { property: "nest", malloy };
+        return {property: 'nest', malloy};
       } else {
         const property = expressionIsCalculation(field.expressionType)
-          ? "aggregate"
-          : "group_by";
+          ? 'aggregate'
+          : 'group_by';
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
-        return { property, malloy };
+        return {property, malloy};
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -1050,16 +1051,14 @@ ${malloy}
     if (malloys.length === 0) {
       return [];
     } else if (malloys.length === 1) {
-      return [property, ": ", ...malloys[0], NEWLINE];
+      return [property, ': ', ...malloys[0], NEWLINE];
     } else {
       return [
         property,
-        ": ",
+        ': ',
         NEWLINE,
         INDENT,
-        ...malloys.flatMap(
-          (fragments) => [...fragments, NEWLINE] as Fragment[]
-        ),
+        ...malloys.flatMap(fragments => [...fragments, NEWLINE] as Fragment[]),
         OUTDENT,
       ];
     }
@@ -1068,15 +1067,15 @@ ${malloy}
   private getMalloyStringForStage(
     stage: PipeSegment,
     source: StructDef,
-    indent = ""
+    indent = ''
   ): Fragment[] {
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     const malloy: Fragment[] = [];
-    malloy.push(" {", NEWLINE, INDENT);
+    malloy.push(' {', NEWLINE, INDENT);
     if (stage.filterList && stage.filterList.length > 0) {
-      malloy.push("where:", ...this.getFiltersString(stage.filterList));
+      malloy.push('where:', ...this.getFiltersString(stage.filterList));
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
@@ -1107,37 +1106,37 @@ ${malloy}
     if (stage.limit) {
       malloy.push(`limit: ${stage.limit}`, NEWLINE);
     }
-    if (stage.type === "reduce" && stage.orderBy && stage.orderBy.length > 0) {
-      malloy.push("order_by: ");
+    if (stage.type === 'reduce' && stage.orderBy && stage.orderBy.length > 0) {
+      malloy.push('order_by: ');
       malloy.push(
         stage.orderBy
-          .map((order) => {
+          .map(order => {
             let name: string | number;
-            if (typeof order.field === "string") {
-              const names = order.field.split(".");
+            if (typeof order.field === 'string') {
+              const names = order.field.split('.');
               name = names[names.length - 1];
             } else {
               name = order.field;
             }
             return `${
-              typeof name === "string" ? maybeQuoteIdentifier(name) : name
-            }${order.dir ? " " + order.dir : ""}`;
+              typeof name === 'string' ? maybeQuoteIdentifier(name) : name
+            }${order.dir ? ' ' + order.dir : ''}`;
           })
-          .join(", "),
+          .join(', '),
         NEWLINE
       );
     }
-    malloy.push(OUTDENT, "}");
+    malloy.push(OUTDENT, '}');
     return malloy;
   }
 
   private getMalloyString(forSource: boolean, name?: string): string {
-    if (this.getSource() === undefined) return "";
+    if (this.getSource() === undefined) return '';
     const initParts = [];
     if (forSource) {
-      initParts.push("view:");
+      initParts.push('view:');
     } else {
-      initParts.push("query:");
+      initParts.push('query:');
     }
     if (name !== undefined) {
       initParts.push(`${maybeQuoteIdentifier(name)} is`);
@@ -1147,7 +1146,7 @@ ${malloy}
         maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
     }
-    const malloy: Fragment[] = [initParts.join(" ")];
+    const malloy: Fragment[] = [initParts.join(' ')];
     let stageSource = this.getSource();
     for (
       let stageIndex = 0;
@@ -1156,7 +1155,7 @@ ${malloy}
     ) {
       const stage = this.query.pipeline[stageIndex];
       if (!forSource || stageIndex > 0) {
-        malloy.push(" ->");
+        malloy.push(' ->');
       }
       malloy.push(...this.getMalloyStringForStage(stage, stageSource));
       stageSource = this.modifySourceForStage(stage, stageSource);
@@ -1166,7 +1165,7 @@ ${malloy}
 
   private getSummaryItemsForFilterList(
     source: StructDef,
-    filterList: FilterExpression[]
+    filterList: FilterCondition[]
   ): QuerySummaryItemFilter[] {
     const items: QuerySummaryItemFilter[] = [];
     for (
@@ -1177,7 +1176,7 @@ ${malloy}
       const filter = filterList[filterIndex];
       const parsed = hackyTerribleStringToFilter(filter.code);
       items.push({
-        type: "filter",
+        type: 'filter',
         filterSource: filter.code,
         filterIndex,
         fieldPath: parsed && parsed.field,
@@ -1197,7 +1196,7 @@ ${malloy}
       if (index === this.query.pipeline.length - 1) {
         const styleItem = this.getStyleItemForName(
           queryName,
-          "query",
+          'query',
           dataStyles
         );
         if (styleItem) {
@@ -1206,11 +1205,11 @@ ${malloy}
       }
       return summary;
     });
-    return { stages };
+    return {stages};
   }
 
   private nameOf(field: QueryFieldDef) {
-    if (field.type === "fieldref") {
+    if (field.type === 'fieldref') {
       return field.path[field.path.length - 1];
     } else {
       return field.as || field.name;
@@ -1223,26 +1222,26 @@ ${malloy}
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
     let name: string;
-    let kind: "dimension" | "measure" | "query" | "source";
-    if (field.type === "fieldref") {
+    let kind: 'dimension' | 'measure' | 'query' | 'source';
+    if (field.type === 'fieldref') {
       name = dottify(field.path);
       const fieldDef = this.getField(source, name);
-      if (fieldDef.type === "struct") {
+      if (fieldDef.type === 'struct') {
         throw new Error("Don't know how to deal with this");
       }
       kind =
-        fieldDef.type === "turtle"
-          ? "query"
+        fieldDef.type === 'turtle'
+          ? 'query'
           : expressionIsCalculation(fieldDef.expressionType)
-          ? "measure"
-          : "dimension";
+          ? 'measure'
+          : 'dimension';
     } else {
       kind =
-        field.type === "turtle"
-          ? "query"
+        field.type === 'turtle'
+          ? 'query'
           : expressionIsCalculation(field.expressionType)
-          ? "measure"
-          : "dimension";
+          ? 'measure'
+          : 'dimension';
     }
     return this.getStyleItemForName(name, kind, dataStyles);
   }
@@ -1257,35 +1256,35 @@ ${malloy}
       return undefined;
     } else {
       return {
-        type: "data_style",
+        type: 'data_style',
         renderer: dataStyle.renderer,
         styleKey: name,
         canRemove: name in dataStyles,
         allowedRenderers:
-          kind === "query" || kind === "source"
+          kind === 'query' || kind === 'source'
             ? [
-                "table",
-                "bar_chart",
-                "dashboard",
-                "json",
-                "line_chart",
-                "list",
-                "list_detail",
-                "point_map",
-                "scatter_chart",
-                "segment_map",
-                "shape_map",
-                "sparkline",
+                'table',
+                'bar_chart',
+                'dashboard',
+                'json',
+                'line_chart',
+                'list',
+                'list_detail',
+                'point_map',
+                'scatter_chart',
+                'segment_map',
+                'shape_map',
+                'sparkline',
               ]
             : [
-                "number",
-                "boolean",
-                "currency",
-                "image",
-                "url",
-                "percent",
-                "text",
-                "time",
+                'number',
+                'boolean',
+                'currency',
+                'image',
+                'url',
+                'percent',
+                'text',
+                'time',
               ],
       };
     }
@@ -1303,8 +1302,8 @@ ${malloy}
         ...this.getSummaryItemsForFilterList(source, stage.filterList)
       );
     }
-    if (stage.type !== "reduce") {
-      throw new Error("Stage must be reduce");
+    if (stage.type !== 'reduce') {
+      throw new Error('Stage must be reduce');
     }
     for (
       let fieldIndex = 0;
@@ -1315,7 +1314,7 @@ ${malloy}
       try {
         const stages = [];
         const fieldDef = this.fieldDefForQueryFieldDef(field, source);
-        if (fieldDef.type === "turtle") {
+        if (fieldDef.type === 'turtle') {
           let stageSource = source;
           for (const stage of fieldDef.pipeline) {
             stages.push(this.getStageSummary(stage, stageSource, dataStyles));
@@ -1324,29 +1323,29 @@ ${malloy}
         }
         const styleItem = this.getStyleItem(field, source, dataStyles);
         const styleItems = styleItem ? [styleItem] : [];
-        if (field.type === "fieldref") {
-          if (fieldDef.type === "struct") {
+        if (field.type === 'fieldref') {
+          if (fieldDef.type === 'struct') {
             throw new Error("Don't know how to deal with this");
           }
           items.push({
-            type: "field",
+            type: 'field',
             field: fieldDef,
             saveDefinition: undefined,
             fieldIndex,
             isRefined: false,
-            styles: styleItems.filter((s) => s.canRemove),
+            styles: styleItems.filter(s => s.canRemove),
             isRenamed: false,
             path: dottify(field.path),
             kind:
-              fieldDef.type === "turtle"
-                ? "query"
+              fieldDef.type === 'turtle'
+                ? 'query'
                 : expressionIsCalculation(fieldDef.expressionType)
-                ? "measure"
-                : "dimension",
+                ? 'measure'
+                : 'dimension',
             name: fieldDef.as || fieldDef.name,
             stages,
           });
-          if (fieldDef.type !== "turtle" && fieldDef.type !== "error") {
+          if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
             orderByFields.push({
               name: dottify(field.path),
               fieldIndex,
@@ -1354,10 +1353,10 @@ ${malloy}
             });
           }
         } else if (isRenamedField(field)) {
-          if (fieldDef.type === "struct") {
+          if (fieldDef.type === 'struct') {
             throw new Error("Don't know how to deal with this");
           }
-          if (fieldDef.type !== "turtle" && fieldDef.type !== "error") {
+          if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
             orderByFields.push({
               name: this.nameOf(field),
               fieldIndex,
@@ -1365,28 +1364,28 @@ ${malloy}
             });
           }
           items.push({
-            type: "field",
+            type: 'field',
             field: fieldDef,
             saveDefinition: undefined, // TODO
             fieldIndex,
-            styles: styleItems.filter((s) => s.canRemove),
+            styles: styleItems.filter(s => s.canRemove),
             isRefined: true,
             path: field.name,
             isRenamed: true,
             name: field.as || field.name,
             kind:
-              fieldDef.type === "turtle"
-                ? "query"
+              fieldDef.type === 'turtle'
+                ? 'query'
                 : expressionIsCalculation(fieldDef.expressionType)
-                ? "measure"
-                : "dimension",
+                ? 'measure'
+                : 'dimension',
             stages,
           });
         } else if (isFilteredField(field)) {
-          if (fieldDef.type === "struct") {
+          if (fieldDef.type === 'struct') {
             throw new Error("Don't know how to deal with this");
           }
-          if (fieldDef.type !== "turtle" && fieldDef.type !== "error") {
+          if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
             orderByFields.push({
               name: this.nameOf(field),
               fieldIndex,
@@ -1394,10 +1393,10 @@ ${malloy}
             });
           }
           items.push({
-            type: "field",
+            type: 'field',
             field: fieldDef,
             saveDefinition:
-              source === this.getSource() && fieldDef.type !== "turtle"
+              source === this.getSource() && fieldDef.type !== 'turtle'
                 ? this.fanToDef(field, fieldDef)
                 : undefined,
             fieldIndex,
@@ -1405,22 +1404,22 @@ ${malloy}
               source,
               field.e[0].filterList || []
             ),
-            styles: styleItems.filter((s) => s.canRemove),
+            styles: styleItems.filter(s => s.canRemove),
             isRefined: true,
             path: field.name,
             isRenamed: field.as !== undefined,
             name: field.as || field.name,
             kind:
-              fieldDef.type === "turtle"
-                ? "query"
+              fieldDef.type === 'turtle'
+                ? 'query'
                 : expressionIsCalculation(fieldDef.expressionType)
-                ? "measure"
-                : "dimension",
+                ? 'measure'
+                : 'dimension',
             stages,
           });
-        } else if (field.type === "turtle") {
+        } else if (field.type === 'turtle') {
           items.push({
-            type: "nested_query_definition",
+            type: 'nested_query_definition',
             name: field.as || field.name,
             fieldIndex,
             saveDefinition: source === this.getSource() ? field : undefined,
@@ -1429,18 +1428,18 @@ ${malloy}
           });
         } else {
           items.push({
-            type: "field_definition",
+            type: 'field_definition',
             name: field.as || field.name,
             fieldIndex,
             field,
             saveDefinition: source === this.getSource() ? field : undefined,
             source: field.code,
             kind: expressionIsCalculation(field.expressionType)
-              ? "measure"
-              : "dimension",
+              ? 'measure'
+              : 'dimension',
             styles: styleItems,
           });
-          if (field.type !== "error") {
+          if (field.type !== 'error') {
             orderByFields.push({
               name: field.as || field.name,
               fieldIndex,
@@ -1450,7 +1449,7 @@ ${malloy}
         }
       } catch (error) {
         items.push({
-          type: "error_field",
+          type: 'error_field',
           field,
           name: this.nameOf(field),
           error: error.message,
@@ -1459,9 +1458,9 @@ ${malloy}
       }
     }
     if (stage.limit) {
-      items.push({ type: "limit", limit: stage.limit });
+      items.push({type: 'limit', limit: stage.limit});
     }
-    if (stage.type === "reduce" && stage.orderBy) {
+    if (stage.type === 'reduce' && stage.orderBy) {
       for (
         let orderByIndex = 0;
         orderByIndex < stage.orderBy.length;
@@ -1469,9 +1468,9 @@ ${malloy}
       ) {
         const order = stage.orderBy[orderByIndex];
         let byFieldIndex;
-        if (typeof order.field === "string") {
+        if (typeof order.field === 'string') {
           byFieldIndex = stage.queryFields.findIndex(
-            (f) => this.nameOf(f) === order.field
+            f => this.nameOf(f) === order.field
           );
         } else {
           byFieldIndex = order.field - 1;
@@ -1479,18 +1478,18 @@ ${malloy}
         const byFieldQueryDef = stage.queryFields[byFieldIndex];
         if (byFieldQueryDef !== undefined) {
           let theField;
-          if (typeof byFieldQueryDef === "string") {
+          if (typeof byFieldQueryDef === 'string') {
             theField = this.getField(source, byFieldQueryDef);
           } else if (isFilteredField(byFieldQueryDef)) {
             theField = this.getField(source, this.nameOf(byFieldQueryDef));
           } else {
             theField = byFieldQueryDef;
           }
-          if (theField.type === "struct" || theField.type === "turtle") {
+          if (theField.type === 'struct' || theField.type === 'turtle') {
             continue;
           }
           items.push({
-            type: "order_by",
+            type: 'order_by',
             byField: {
               type: theField.type,
               fieldIndex: byFieldIndex,
@@ -1502,15 +1501,15 @@ ${malloy}
         }
       }
     }
-    return { items, orderByFields, inputSource: source };
+    return {items, orderByFields, inputSource: source};
   }
 
   fanToDef(fan: FilteredField, def: FieldTypeDef): FieldDef {
     const malloy: Fragment[] = [dottify(fan.e[0].e[0].path)];
     if (fan.e[0].filterList && fan.e[0].filterList.length > 0) {
-      malloy.push(" {", INDENT, "where:");
+      malloy.push(' {', INDENT, 'where:');
       malloy.push(...this.getFiltersString(fan.e[0].filterList || []));
-      malloy.push(OUTDENT, "}");
+      malloy.push(OUTDENT, '}');
     }
     const code = codeFromFragments(malloy);
 
@@ -1518,28 +1517,27 @@ ${malloy}
     return {
       type: def.type,
       name: this.nameOf(fan),
-      e: ["ignore"],
       expressionType: def.expressionType,
       code,
     };
   }
 }
 
-const INDENT = Symbol("indent");
-const NEWLINE = Symbol("newline");
-const OUTDENT = Symbol("outdent");
+const INDENT = Symbol('indent');
+const NEWLINE = Symbol('newline');
+const OUTDENT = Symbol('outdent');
 
 type Fragment = string | typeof INDENT | typeof OUTDENT | typeof NEWLINE;
 
 const TAB_WIDTH = 2;
 
 function codeFromFragments(fragments: Fragment[]) {
-  let code = "";
+  let code = '';
   let indent = 0;
   let isStartOfLine = true;
   for (const fragment of fragments) {
     if (fragment === NEWLINE) {
-      code += "\n";
+      code += '\n';
       isStartOfLine = true;
     } else if (fragment === OUTDENT) {
       indent--;
@@ -1547,7 +1545,7 @@ function codeFromFragments(fragments: Fragment[]) {
       indent++;
     } else {
       if (isStartOfLine) {
-        code += " ".repeat(indent * TAB_WIDTH);
+        code += ' '.repeat(indent * TAB_WIDTH);
         isStartOfLine = false;
       }
       code += fragment;
@@ -1559,49 +1557,36 @@ function codeFromFragments(fragments: Fragment[]) {
 type FilteredField = QueryFieldDef & {
   e: [
     {
-      type: "filterExpression";
-      filterList: FilterExpression[];
+      type: 'filterExpression';
+      filterList: FilterCondition[];
       e: [
         {
-          type: "field";
+          type: 'field';
           path: string[];
-        }
+        },
       ];
-    }
+    },
   ];
 };
 
 function isFilteredField(field: QueryFieldDef): field is FilteredField {
-  if (field.type === "fieldref" || field.type === "turtle") {
+  if (field.type === 'fieldref' || field.type === 'turtle') {
     return false;
   }
-  return (
-    field.e.length === 1 &&
-    typeof field.e[0] !== "string" &&
-    field.e[0].type === "filterExpression" &&
-    field.e[0].e.length === 1 &&
-    typeof field.e[0].e[0] !== "string" &&
-    field.e[0].e[0].type === "field"
-  );
+  return field.e.node === 'filteredExpr' && field.e.kids.e.node === 'field';
 }
 
 type RenamedField = QueryFieldDef & {
-  e: [
-    {
-      type: "field";
-      path: string[];
-    }
-  ];
+  e: {
+    node: 'field';
+    path: string[];
+  };
   expressionType?: ExpressionType;
 };
 
 function isRenamedField(field: QueryFieldDef): field is RenamedField {
-  if (field.type === "fieldref" || field.type === "turtle") {
+  if (field.type === 'fieldref' || field.type === 'turtle') {
     return false;
   }
-  return (
-    field.e.length === 1 &&
-    typeof field.e[0] !== "string" &&
-    field.e[0].type === "field"
-  );
+  return field.e.node === 'field';
 }

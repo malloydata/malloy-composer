@@ -20,20 +20,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState, useRef } from "react";
-import styled from "styled-components";
-import { useClickOutside } from "../hooks";
-import { Popover } from "../Popover";
-import { ReactComponent as ChevronDown } from "../assets/img/chevrons/chevron_down.svg";
-import { ReactComponent as Checkmark } from "../assets/img/checkmark.svg";
-import { COLORS } from "../colors";
+import {useState, useRef} from 'react';
+import styled from 'styled-components';
+import {useClickOutside} from '../hooks';
+import {Popover} from '../Popover';
+import {ReactComponent as ChevronDown} from '../assets/img/chevrons/chevron_down.svg';
+import {ReactComponent as Checkmark} from '../assets/img/checkmark.svg';
+import {COLORS} from '../colors';
 
 interface SelectDropdownProps<T> {
   autoFocus?: boolean;
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
-  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
+  options: {label: string | JSX.Element; value: T; divider?: boolean}[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
   width?: number;
@@ -107,7 +107,7 @@ export const SelectDropdown = <T,>({
   value,
   onChange,
   options,
-  placeholder = "Select",
+  placeholder = 'Select',
   disabled = false,
   valueEqual = (a: T, b: T) => a === b,
   width = 200,
@@ -116,7 +116,7 @@ export const SelectDropdown = <T,>({
   const wrapperElement = useRef<HTMLDivElement>(null);
   const label =
     (value !== undefined &&
-      options.find((option) => valueEqual(option.value, value))?.label) ||
+      options.find(option => valueEqual(option.value, value))?.label) ||
     placeholder;
 
   const select = (value: T) => {
@@ -133,7 +133,7 @@ export const SelectDropdown = <T,>({
       <InputBox
         type="button"
         autoFocus={autoFocus}
-        onClick={(event) => {
+        onClick={event => {
           event.preventDefault();
           event.stopPropagation();
           if (!disabled) setOpen(true);
@@ -162,7 +162,7 @@ export const SelectDropdown = <T,>({
 
 interface SelectListProps<T> {
   value: T | undefined;
-  options: { label: string | JSX.Element; value: T; divider?: boolean }[];
+  options: {label: string | JSX.Element; value: T; divider?: boolean}[];
   valueEqual?: (a: T, b: T) => boolean;
   onChange: (value: T) => void;
 }
@@ -179,16 +179,16 @@ export function SelectList<T>({
         const isSelected =
           value !== undefined && valueEqual(value, option.value);
         if (option.divider) {
-          result.push(<OptionDivider key={"divider" + index} />);
+          result.push(<OptionDivider key={'divider' + index} />);
         }
         result.push(
           <OptionDiv
             key={index}
             onClick={() => onChange(option.value)}
-            className={isSelected ? "selected" : ""}
+            className={isSelected ? 'selected' : ''}
           >
             <OptionRadio type="radio" defaultChecked={isSelected} />
-            <CheckIcon className={isSelected ? "selected" : ""} />
+            <CheckIcon className={isSelected ? 'selected' : ''} />
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
         );
@@ -206,15 +206,15 @@ interface DropdownMenuProps {
   }[];
 }
 
-export function DropdownMenu({ options }: DropdownMenuProps): JSX.Element {
+export function DropdownMenu({options}: DropdownMenuProps): JSX.Element {
   return (
     <SelectListDiv>
       {options.reduce<JSX.Element[]>((result, option, index) => {
         if (option.divider) {
-          result.push(<OptionDivider key={"divider" + index} />);
+          result.push(<OptionDivider key={'divider' + index} />);
         }
         result.push(
-          <OptionDiv key={index} onClick={(event) => option.onSelect(event)}>
+          <OptionDiv key={index} onClick={event => option.onSelect(event)}>
             <OptionSpan>{option.label}</OptionSpan>
           </OptionDiv>
         );

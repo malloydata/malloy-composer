@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { ReorderFieldsContextBar } from "./ReorderFieldsContextBar";
+export {ReorderFieldsContextBar} from './ReorderFieldsContextBar';

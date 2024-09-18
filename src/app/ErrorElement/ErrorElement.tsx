@@ -21,9 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import styled from "styled-components";
-import { useRouteError } from "react-router-dom";
-import { Wipeout } from "../Wipeout";
+import styled from 'styled-components';
+import {useRouteError} from 'react-router-dom';
+import {Wipeout} from '../Wipeout';
 
 export const ErrorElement = (): JSX.Element => {
   const error = useRouteError() as Error;

@@ -21,10 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as fs from "fs";
-import * as zlib from "zlib";
-import fetch from "node-fetch";
-import tar from "tar-stream";
+import * as fs from 'fs';
+import * as zlib from 'zlib';
+import fetch from 'node-fetch';
+import tar from 'tar-stream';
 
 /* eslint-disable no-console */
 export const fetchNode = async (
@@ -41,15 +41,15 @@ export const fetchNode = async (
     }
 
     try {
-      extract.on("entry", async (header, stream, _next) => {
-        const outFile = fs.openSync(filePath, "w", header.mode);
+      extract.on('entry', async (header, stream, _next) => {
+        const outFile = fs.openSync(filePath, 'w', header.mode);
         for await (const chunk of stream) {
           fs.writeFileSync(outFile, chunk);
         }
         fs.closeSync(outFile);
         resolve(null);
       });
-      extract.on("error", function (error) {
+      extract.on('error', function (error) {
         console.error(error);
         reject(error);
       });
@@ -67,5 +67,5 @@ export const fetchNode = async (
       console.error(`Failed to fetch ${url}: ${response.statusText}`);
     }
   });
-  console.log("done");
+  console.log('done');
 };
