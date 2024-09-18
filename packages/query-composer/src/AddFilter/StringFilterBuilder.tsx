@@ -20,10 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ModelDef, StructDef } from "@malloydata/malloy";
-import { useState } from "react";
-import styled from "styled-components";
-import { stringFilterChangeType } from "../core/filters";
+import {ModelDef, StructDef} from '@malloydata/malloy';
+import {useState} from 'react';
+import styled from 'styled-components';
+import {stringFilterChangeType} from '../core/filters';
 import {
   StringContainsFilter,
   StringCustomFilter,
@@ -36,21 +36,17 @@ import {
   StringNotEqualToFilter,
   StringNotStartsWithFilter,
   StringStartsWithFilter,
-} from "../types";
-import { ActionIcon } from "../ActionIcon";
-import { CodeInput } from "../CodeInput";
-import {
-  ContextMenuContent,
-  EmptyMessage,
-  ScrollMain,
-} from "../CommonElements";
+} from '../types';
+import {ActionIcon} from '../ActionIcon';
+import {CodeInput} from '../CodeInput';
+import {ContextMenuContent, EmptyMessage, ScrollMain} from '../CommonElements';
 // TODO: extract api
-import { useSearch } from "../data";
-import { FieldButton } from "../FieldButton";
-import { PillInput } from "../PillInput/PillInput";
-import { SelectDropdown } from "../SelectDropdown";
-import { LoadingSpinner } from "../Spinner";
-import { largeNumberLabel } from "../utils";
+import {useSearch} from '../data';
+import {FieldButton} from '../FieldButton';
+import {PillInput} from '../PillInput/PillInput';
+import {SelectDropdown} from '../SelectDropdown';
+import {LoadingSpinner} from '../Spinner';
+import {largeNumberLabel} from '../utils';
 
 interface StringFilterBuilderProps {
   model: ModelDef;
@@ -108,20 +104,20 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
           onChange={changeType}
           options={
             [
-              { value: "is_equal_to", label: "Is" },
-              { value: "starts_with", label: "Starts with" },
-              { value: "ends_with", label: "Ends with" },
-              { value: "contains", label: "Contains" },
-              { value: "is_blank", label: "Blank" },
-              { value: "is_null", label: "Null" },
-              { value: "is_not_equal_to", label: "Is not" },
-              { value: "does_not_start_with", label: "Does not start with" },
-              { value: "does_not_end_with", label: "Does not end with" },
-              { value: "does_not_contain", label: "Does not contain" },
-              { value: "is_not_blank", label: "Not blank" },
-              { value: "is_not_null", label: "Not null" },
-              { value: "custom", label: "Custom" },
-            ] as { value: StringFilterType; label: string }[]
+              {value: 'is_equal_to', label: 'Is'},
+              {value: 'starts_with', label: 'Starts with'},
+              {value: 'ends_with', label: 'Ends with'},
+              {value: 'contains', label: 'Contains'},
+              {value: 'is_blank', label: 'Blank'},
+              {value: 'is_null', label: 'Null'},
+              {value: 'is_not_equal_to', label: 'Is not'},
+              {value: 'does_not_start_with', label: 'Does not start with'},
+              {value: 'does_not_end_with', label: 'Does not end with'},
+              {value: 'does_not_contain', label: 'Does not contain'},
+              {value: 'is_not_blank', label: 'Not blank'},
+              {value: 'is_not_null', label: 'Not null'},
+              {value: 'custom', label: 'Custom'},
+            ] as {value: StringFilterType; label: string}[]
           }
         />
         {equalTo.builder}
@@ -170,22 +166,22 @@ function useStringEqualToOrNotBuilder(
   setFilter: (filter: StringEqualToFilter | StringNotEqualToFilter) => void,
   fieldPath: string
 ) {
-  const [searchValue, setSearchValue] = useState("");
-  const { searchResults, isLoading } = useSearch(
+  const [searchValue, setSearchValue] = useState('');
+  const {searchResults, isLoading} = useSearch(
     model,
     modelPath,
     source,
     searchValue,
     fieldPath
   );
-  if (filter.type !== "is_equal_to" && filter.type !== "is_not_equal_to") {
-    return { builder: null, util: null };
+  if (filter.type !== 'is_equal_to' && filter.type !== 'is_not_equal_to') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
       value={searchValue}
       setValue={setSearchValue}
@@ -209,7 +205,7 @@ function useStringEqualToOrNotBuilder(
                     ...filter,
                     values: [...filter.values, searchResult.fieldValue],
                   });
-                  setSearchValue("");
+                  setSearchValue('');
                 }}
                 fullDetail={true}
               />
@@ -226,140 +222,140 @@ function useStringEqualToOrNotBuilder(
       </ContextMenuContent>
     </ScrollMain>
   );
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringContainsBuilder(
   filter: StringFilter,
   setFilter: (filter: StringContainsFilter) => void
 ) {
-  if (filter.type !== "contains") {
-    return { builder: null, util: null };
+  if (filter.type !== 'contains') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringNotContainsBuilder(
   filter: StringFilter,
   setFilter: (filter: StringNotContainsFilter) => void
 ) {
-  if (filter.type !== "does_not_contain") {
-    return { builder: null, util: null };
+  if (filter.type !== 'does_not_contain') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringStartsWithBuilder(
   filter: StringFilter,
   setFilter: (filter: StringStartsWithFilter) => void
 ) {
-  if (filter.type !== "starts_with") {
-    return { builder: null, util: null };
+  if (filter.type !== 'starts_with') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringNotStartsWithBuilder(
   filter: StringFilter,
   setFilter: (filter: StringNotStartsWithFilter) => void
 ) {
-  if (filter.type !== "does_not_start_with") {
-    return { builder: null, util: null };
+  if (filter.type !== 'does_not_start_with') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringEndsWithBuilder(
   filter: StringFilter,
   setFilter: (filter: StringEndsWithFilter) => void
 ) {
-  if (filter.type !== "ends_with") {
-    return { builder: null, util: null };
+  if (filter.type !== 'ends_with') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringNotEndsWithBuilder(
   filter: StringFilter,
   setFilter: (filter: StringNotEndsWithFilter) => void
 ) {
-  if (filter.type !== "does_not_end_with") {
-    return { builder: null, util: null };
+  if (filter.type !== 'does_not_end_with') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <PillInput
       values={filter.values}
-      setValues={(values) => setFilter({ ...filter, values })}
+      setValues={values => setFilter({...filter, values})}
       placeholder="Values..."
     />
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useStringCustomBuilder(
   filter: StringFilter,
   setFilter: (filter: StringCustomFilter) => void
 ) {
-  if (filter.type !== "custom") {
-    return { builder: null, util: null };
+  if (filter.type !== 'custom') {
+    return {builder: null, util: null};
   }
 
   const builder = (
     <CodeInput
       value={filter.partial}
-      setValue={(partial) => setFilter({ type: "custom", partial })}
+      setValue={partial => setFilter({type: 'custom', partial})}
       placeholder="!= null"
     />
   );
 
   const util = null;
 
-  return { builder, util };
+  return {builder, util};
 }

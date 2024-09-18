@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { RefObject, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { ColorKey, COLORS } from "../colors";
-import CloseIcon from "../assets/img/query_clear_hover.svg?react";
-import { useClickOutside } from "../hooks";
+import {RefObject, useEffect, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {ColorKey, COLORS} from '../colors';
+import CloseIcon from '../assets/img/query_clear_hover.svg?react';
+import {useClickOutside} from '../hooks';
 
 interface PillInputProps {
   // TODO it should be required that if value is set, setValue is also set...
@@ -43,12 +43,12 @@ export const PillInput: React.FC<PillInputProps> = ({
   setValues,
   autoFocus,
   placeholder,
-  type = "text",
+  type = 'text',
   value: controlledValue,
   setValue: setControlledValue,
   focusElement,
 }) => {
-  const [uncontrolledValue, setUncontrolledValue] = useState("");
+  const [uncontrolledValue, setUncontrolledValue] = useState('');
   const [focused, setFocused] = useState(false);
   const inp = useRef<HTMLInputElement>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -61,7 +61,7 @@ export const PillInput: React.FC<PillInputProps> = ({
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (event.key === "Backspace") {
+      if (event.key === 'Backspace') {
         if (selectedPill !== undefined) {
           const newValues = [...values];
           newValues.splice(selectedPill, 1);
@@ -77,14 +77,14 @@ export const PillInput: React.FC<PillInputProps> = ({
             setSelectedPill(selectedPill - 1);
           }
         }
-      } else if (event.key === "ArrowRight") {
+      } else if (event.key === 'ArrowRight') {
         if (selectedPill === values.length - 1) {
           setSelectedPill(undefined);
           inp.current?.focus();
         } else if (selectedPill !== undefined) {
           setSelectedPill(selectedPill + 1);
         }
-      } else if (event.key === "ArrowLeft") {
+      } else if (event.key === 'ArrowLeft') {
         if (selectedPill !== undefined && selectedPill > 0) {
           setSelectedPill(selectedPill - 1);
         }
@@ -92,14 +92,14 @@ export const PillInput: React.FC<PillInputProps> = ({
         inp.current?.focus();
       }
     };
-    window.addEventListener("keyup", handler);
-    return () => window.removeEventListener("keyup", handler);
+    window.addEventListener('keyup', handler);
+    return () => window.removeEventListener('keyup', handler);
   });
 
   const commitValue = () => {
     if (value.length > 0) {
       setValues([...values, value]);
-      setValue("");
+      setValue('');
     }
   };
 
@@ -118,7 +118,7 @@ export const PillInput: React.FC<PillInputProps> = ({
         <Pill
           key={index}
           isSelected={selectedPill === index}
-          onClick={(event) => {
+          onClick={event => {
             setSelectedPill(index);
             event.stopPropagation();
           }}
@@ -129,29 +129,29 @@ export const PillInput: React.FC<PillInputProps> = ({
       <StyledInput
         ref={inp}
         type={type}
-        placeholder={values.length === 0 ? placeholder : ""}
+        placeholder={values.length === 0 ? placeholder : ''}
         value={value}
         size={1}
-        onChange={(event) => {
+        onChange={event => {
           setValue(event.target.value);
         }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            if (value !== "") {
+        onKeyDown={event => {
+          if (event.key === 'Enter') {
+            if (value !== '') {
               commitValue();
               event.stopPropagation();
               event.preventDefault();
             }
           }
         }}
-        onKeyUp={(event) => {
-          if (event.key === "Backspace") {
-            if (value === "" && values.length > 0) {
+        onKeyUp={event => {
+          if (event.key === 'Backspace') {
+            if (value === '' && values.length > 0) {
               commitValue();
               inp.current?.blur();
               setSelectedPill(values.length - 1);
             }
-          } else if (event.key === "ArrowLeft") {
+          } else if (event.key === 'ArrowLeft') {
             if (
               inp.current?.selectionStart === 0 ||
               inp.current?.selectionStart === null
@@ -189,13 +189,13 @@ const OuterInput = styled.div<{
   gap: 3px;
   flex-wrap: wrap;
 
-  ${({ isFocused }) => (isFocused ? `border-color: #4285F4;` : "")}
+  ${({isFocused}) => (isFocused ? `border-color: #4285F4;` : '')}
 `;
 
 const Pill = styled.div<{
   isSelected: boolean;
 }>`
-  ${({ isSelected }) => `
+  ${({isSelected}) => `
     border: 1px solid ${
       isSelected ? COLORS.dimension.fillStrong : COLORS.dimension.fillMedium
     };
@@ -229,7 +229,7 @@ export const CloseIconStyled = styled(CloseIcon)<{
   color: ColorKey;
 }>`
   cursor: pointer;
-  ${({ color }) => {
+  ${({color}) => {
     return `
       .cross {
         fill: ${COLORS[color].fillStrong};

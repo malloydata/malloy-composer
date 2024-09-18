@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ReactElement } from "react";
-import styled from "styled-components";
-import CloseIcon from "../assets/img/query_clear_hover.svg?react";
-import { ColorKey, COLORS } from "../colors";
-import { FieldName, FieldIcon } from "../CommonElements";
+import {ReactElement} from 'react';
+import styled from 'styled-components';
+import CloseIcon from '../assets/img/query_clear_hover.svg?react';
+import {ColorKey, COLORS} from '../colors';
+import {FieldName, FieldIcon} from '../CommonElements';
 
 interface FieldButtonProps {
   icon: ReactElement;
@@ -63,7 +63,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
       <FrontPart>
         <FieldIcon color={color}>{icon}</FieldIcon>
         <FieldName>{name}</FieldName>
-        {unsaved ? <UnsavedIndicator color={color} /> : ""}
+        {unsaved ? <UnsavedIndicator color={color} /> : ''}
       </FrontPart>
       {canRemove && (
         <BackPart className="back">
@@ -78,7 +78,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
       )}
       {!canRemove && detail !== undefined && (
         <DetailPart
-          style={{ color: COLORS[color].fillStrong, opacity: 0.8 }}
+          style={{color: COLORS[color].fillStrong, opacity: 0.8}}
           noShrink={fullDetail}
         >
           {detail}
@@ -98,7 +98,7 @@ export const UnsavedIndicator = styled.div<{
   min-height: 8px;
   border-radius: 100px;
 
-  ${({ color }) => {
+  ${({color}) => {
     return `
     background-color: ${COLORS[color].fillStrong};
     `;
@@ -129,7 +129,7 @@ export const DetailPart = styled.div<{
   justify-content: flex-end;
   align-items: center;
   overflow: hidden;
-  ${({ noShrink }) => `flex-shrink: ${noShrink ? 0 : 4};`}
+  ${({noShrink}) => `flex-shrink: ${noShrink ? 0 : 4};`}
   font-size: 12px;
   font-weight: normal;
   text-transform: none;
@@ -157,9 +157,9 @@ export const FieldButtonRaw = styled.div<{
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
 
-  ${({ active, color }) => {
+  ${({active, color}) => {
     if (active) {
       return `
         background-color: ${COLORS[color].fillLight};
@@ -168,7 +168,7 @@ export const FieldButtonRaw = styled.div<{
         }
       `;
     } else {
-      return "";
+      return '';
     }
   }}
 
@@ -182,7 +182,7 @@ export const FieldButtonRaw = styled.div<{
     display: none;
   }
 
-  ${({ color, disableHover }) => {
+  ${({color, disableHover}) => {
     if (!disableHover) {
       return `
         &:hover {
@@ -190,6 +190,7 @@ export const FieldButtonRaw = styled.div<{
         }
       `;
     }
+    return null;
   }}
 `;
 
@@ -197,7 +198,7 @@ export const CloseIconStyled = styled(CloseIcon)<{
   color: ColorKey;
 }>`
   cursor: pointer;
-  ${({ color }) => {
+  ${({color}) => {
     return `
       .cross {
         fill: ${COLORS[color].fillMedium};

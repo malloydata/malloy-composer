@@ -25,29 +25,29 @@ import {
   QuerySummaryItem,
   RendererName,
   StagePath,
-} from "../types";
-import { AggregateContextBar } from "../AggregateContextBar";
-import { GroupByContextBar } from "../GroupByContextBar";
-import { NestContextBar } from "../NestContextBar";
-import { FilterContextBar } from "../FilterContextBar";
-import { AddLimit } from "../AddLimit";
-import { OrderByContextBar } from "../OrderByContextBar";
-import { ActionMenu } from "../ActionMenu";
+} from '../types';
+import {AggregateContextBar} from '../AggregateContextBar';
+import {GroupByContextBar} from '../GroupByContextBar';
+import {NestContextBar} from '../NestContextBar';
+import {FilterContextBar} from '../FilterContextBar';
+import {AddLimit} from '../AddLimit';
+import {OrderByContextBar} from '../OrderByContextBar';
+import {ActionMenu} from '../ActionMenu';
 import {
   FilterCondition,
   QueryFieldDef,
   SearchValueMapResult,
   StructDef,
   ModelDef,
-} from "@malloydata/malloy";
-import { DataStyleContextBar } from "../DataStyleContextBar";
+} from '@malloydata/malloy';
+import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
   flatFields,
   pathParent,
   termsForField,
-} from "../utils";
-import { RenameField } from "../RenameField";
+} from '../utils';
+import {RenameField} from '../RenameField';
 
 interface NestQueryActionMenuProps {
   source: StructDef;
@@ -61,7 +61,7 @@ interface NestQueryActionMenuProps {
   addOrderBy: (
     stagePath: StagePath,
     byFieldIndex: number,
-    direction?: "asc" | "desc"
+    direction?: 'asc' | 'desc'
   ) => void;
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   stagePath: StagePath;
@@ -111,17 +111,17 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
       model={model}
       modelPath={modelPath}
       valueSearchSource={source}
-      addFilter={(filter) => addFilter(stagePath, filter)}
+      addFilter={filter => addFilter(stagePath, filter)}
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "sub_menu",
-          id: "filter",
-          label: "Filter",
-          iconName: "filter",
-          iconColor: "filter",
+          kind: 'sub_menu',
+          id: 'filter',
+          label: 'Filter',
+          iconName: 'filter',
+          iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <FilterContextBar
               modelPath={modelPath}
               model={model}
@@ -134,77 +134,77 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "nest",
-          label: "Nest",
-          iconName: "nest",
-          iconColor: "query",
+          kind: 'sub_menu',
+          id: 'nest',
+          label: 'Nest',
+          iconName: 'nest',
+          iconColor: 'query',
           closeOnComplete: true,
           divider: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <NestContextBar
               source={source}
-              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
-              selectNewNest={(name) => addNewNestedQuery(stagePath, name)}
+              selectField={fieldPath => toggleField(stagePath, fieldPath)}
+              selectNewNest={name => addNewNestedQuery(stagePath, name)}
               onComplete={onComplete}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "group_by",
-          label: "Group By",
-          iconColor: "dimension",
-          iconName: "group_by",
+          kind: 'sub_menu',
+          id: 'group_by',
+          label: 'Group By',
+          iconColor: 'dimension',
+          iconName: 'group_by',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <GroupByContextBar
               source={source}
-              toggleField={(fieldPath) => toggleField(stagePath, fieldPath)}
-              addNewDimension={(def) => addNewDimension(stagePath, def)}
+              toggleField={fieldPath => toggleField(stagePath, fieldPath)}
+              addNewDimension={def => addNewDimension(stagePath, def)}
               onComplete={onComplete}
               topValues={topValues}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "aggregate",
-          label: "Aggregate",
-          iconName: "aggregate",
-          iconColor: "measure",
+          kind: 'sub_menu',
+          id: 'aggregate',
+          label: 'Aggregate',
+          iconName: 'aggregate',
+          iconColor: 'measure',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AggregateContextBar
               source={source}
-              selectField={(fieldPath) => toggleField(stagePath, fieldPath)}
-              addNewMeasure={(def) => addNewMeasure(stagePath, def)}
+              selectField={fieldPath => toggleField(stagePath, fieldPath)}
+              addNewMeasure={def => addNewMeasure(stagePath, def)}
               onComplete={onComplete}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "limit",
-          label: "Limit",
-          iconName: "limit",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'limit',
+          label: 'Limit',
+          iconName: 'limit',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <AddLimit
-              addLimit={(limit) => addLimit(stagePath, limit)}
+              addLimit={limit => addLimit(stagePath, limit)}
               onComplete={onComplete}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "order_by",
-          label: "Order By",
-          iconName: "order_by",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'order_by',
+          label: 'Order By',
+          iconName: 'order_by',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
                 addOrderBy(stagePath, byField, direction)
@@ -215,71 +215,71 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           ),
         },
         {
-          kind: "sub_menu",
-          id: "style",
-          label: "Style",
-          iconName: "style",
-          iconColor: "other",
+          kind: 'sub_menu',
+          id: 'style',
+          label: 'Style',
+          iconName: 'style',
+          iconColor: 'other',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <DataStyleContextBar
               setDataStyle={setDataStyle}
               onComplete={onComplete}
               allowedRenderers={[
-                "table",
-                "bar_chart",
-                "dashboard",
-                "json",
-                "line_chart",
-                "list",
-                "list_detail",
-                "point_map",
-                "scatter_chart",
-                "segment_map",
-                "shape_map",
-                "sparkline",
+                'table',
+                'bar_chart',
+                'dashboard',
+                'json',
+                'line_chart',
+                'list',
+                'list_detail',
+                'point_map',
+                'scatter_chart',
+                'segment_map',
+                'shape_map',
+                'sparkline',
               ]}
             />
           ),
         },
         {
-          kind: "sub_menu",
-          id: "rename",
-          iconName: "rename",
-          iconColor: "other",
-          label: "Rename",
+          kind: 'sub_menu',
+          id: 'rename',
+          iconName: 'rename',
+          iconColor: 'other',
+          label: 'Rename',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },
         {
-          kind: "one_click",
-          id: "add_stage",
-          label: "Add stage",
-          iconName: "stage",
-          iconColor: "other",
+          kind: 'one_click',
+          id: 'add_stage',
+          label: 'Add stage',
+          iconName: 'stage',
+          iconColor: 'other',
           onClick: addStage,
         },
         {
-          kind: "one_click",
-          id: "expand_definition",
-          label: "Duplicate",
-          iconName: "duplicate",
-          iconColor: "other",
+          kind: 'one_click',
+          id: 'expand_definition',
+          label: 'Duplicate',
+          iconName: 'duplicate',
+          iconColor: 'other',
           isEnabled: !isExpanded,
           onClick: replaceWithDefinition,
         },
         {
-          kind: "one_click",
-          id: "move",
-          iconName: "move",
-          iconColor: "other",
-          label: "Move",
+          kind: 'one_click',
+          id: 'move',
+          iconName: 'move',
+          iconColor: 'other',
+          label: 'Move',
           onClick: beginReorderingField,
         },
       ]}
-      searchItems={flatFields(source).map(({ field, path }) => ({
+      searchItems={flatFields(source).map(({field, path}) => ({
         item: fieldToSummaryItem(field, path),
         terms: termsForField(field, path),
         detail: pathParent(path),

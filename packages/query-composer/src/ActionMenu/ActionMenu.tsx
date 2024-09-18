@@ -25,26 +25,26 @@ import {
   SearchValueMapResult,
   StructDef,
   ModelDef,
-} from "@malloydata/malloy";
-import { ReactElement, useState } from "react";
-import styled from "styled-components";
+} from '@malloydata/malloy';
+import {ReactElement, useState} from 'react';
+import styled from 'styled-components';
 // TODO: extract api
-import { compileFilter } from "../core/compile";
-import { stringFilterToString } from "../core/filters";
-import { ActionIcon, ActionIconName } from "../ActionIcon";
-import { ColorKey, COLORS } from "../colors";
+import {compileFilter} from '../core/compile';
+import {stringFilterToString} from '../core/filters';
+import {ActionIcon, ActionIconName} from '../ActionIcon';
+import {ColorKey, COLORS} from '../colors';
 import {
   ContextMenuContent,
   ContextMenuSearchHeader,
   EmptyMessage,
   ScrollMain,
-} from "../CommonElements";
+} from '../CommonElements';
 // TODO: extract api
-import { useSearch } from "../data";
-import { FieldButton } from "../FieldButton";
-import { SearchInput } from "../SearchInput";
-import { SearchItem, useSearchList } from "../SearchList";
-import { LoadingSpinner } from "../Spinner";
+import {useSearch} from '../data';
+import {FieldButton} from '../FieldButton';
+import {SearchInput} from '../SearchInput';
+import {SearchItem, useSearchList} from '../SearchList';
+import {LoadingSpinner} from '../Spinner';
 
 interface ActionBase {
   id: string;
@@ -56,14 +56,14 @@ interface ActionBase {
 }
 
 interface OneClickAction extends ActionBase {
-  kind: "one_click";
+  kind: 'one_click';
   onClick: () => void;
 }
 
 interface SubMenuAction extends ActionBase {
-  kind: "sub_menu";
+  kind: 'sub_menu';
   closeOnComplete: boolean;
-  Component: (props: { onComplete: () => void }) => ReactElement;
+  Component: (props: {onComplete: () => void}) => ReactElement;
 }
 
 export type Action = OneClickAction | SubMenuAction;
@@ -90,12 +90,12 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   addFilter,
 }) => {
   const [activeAction, setActiveAction] = useState<SubMenuAction | undefined>(
-    actions.length === 1 && actions[0].kind === "sub_menu"
+    actions.length === 1 && actions[0].kind === 'sub_menu'
       ? actions[0]
       : undefined
   );
-  const [searchTerm, setSearchTerm] = useState("");
-  const { searchResults, isLoading } = useSearch(
+  const [searchTerm, setSearchTerm] = useState('');
+  const {searchResults, isLoading} = useSearch(
     model,
     modelPath,
     valueSearchSource,
@@ -103,10 +103,10 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   );
   const stringSearchResults =
     searchResults &&
-    searchResults.filter((r) => r.fieldType === "string").slice(0, 100);
+    searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
   const isSearchEnabled = searchItems !== undefined;
 
-  const { searchList, count: resultCount } = useSearchList({
+  const {searchList, count: resultCount} = useSearchList({
     searchTerm,
     items: searchItems || [],
     topValues,
@@ -132,18 +132,18 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
             </ContextMenuSearchHeader>
           )}
           <Scroll>
-            {searchTerm === "" && (
+            {searchTerm === '' && (
               <ContextMenuContent>
                 <ActionButtons>
                   {actions
-                    .filter((action) => action.isEnabled !== false)
-                    .flatMap((action) => {
+                    .filter(action => action.isEnabled !== false)
+                    .flatMap(action => {
                       const components = [
                         <ActionButton
                           key={action.id}
                           color={action.iconColor}
                           onClick={() => {
-                            if (action.kind === "one_click") {
+                            if (action.kind === 'one_click') {
                               action.onClick();
                               closeMenu();
                             } else {
@@ -160,7 +160,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                       ];
                       if (action.divider) {
                         components.push(
-                          <Divider key={action.id + "/divider"} />
+                          <Divider key={action.id + '/divider'} />
                         );
                       }
                       return components;
@@ -168,13 +168,13 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                 </ActionButtons>
               </ContextMenuContent>
             )}
-            {searchTerm !== "" && (
+            {searchTerm !== '' && (
               <>
                 {showFieldResults && (
                   <ScrollMain
                     style={{
-                      borderBottom: showFieldResults ? "1px solid #efefef" : "",
-                      maxHeight: showValueResults ? "200px" : "300px",
+                      borderBottom: showFieldResults ? '1px solid #efefef' : '',
+                      maxHeight: showValueResults ? '200px' : '300px',
                     }}
                   >
                     <ContextMenuContent>{searchList}</ContextMenuContent>
@@ -183,8 +183,8 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                 {showValueResults && valueSearchSource && (
                   <ScrollMain
                     style={{
-                      borderBottom: "1px solid #efefef",
-                      maxHeight: showFieldResults ? "200px" : "300px",
+                      borderBottom: '1px solid #efefef',
+                      maxHeight: showFieldResults ? '200px' : '300px',
                     }}
                   >
                     <ContextMenuContent>
@@ -202,10 +202,10 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                                 compileFilter(
                                   valueSearchSource,
                                   stringFilterToString(searchResult.fieldName, {
-                                    type: "is_equal_to",
+                                    type: 'is_equal_to',
                                     values: [searchResult.fieldValue],
                                   })
-                                ).then((expression) => {
+                                ).then(expression => {
                                   addFilter && addFilter(expression);
                                   closeMenu();
                                 });
@@ -275,10 +275,10 @@ const ActionButton = styled.button<{
   justify-content: flex-start;
   gap: 10px;
   align-items: center;
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   color: #353535;
 
-  ${({ color }) => `
+  ${({color}) => `
     &:hover {
       background-color: ${COLORS[color].fillLight};
     }

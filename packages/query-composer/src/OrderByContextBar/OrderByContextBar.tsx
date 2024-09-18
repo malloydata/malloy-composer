@@ -20,22 +20,22 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import styled from "styled-components";
-import { OrderByField } from "../types";
+import {useState} from 'react';
+import styled from 'styled-components';
+import {OrderByField} from '../types';
 import {
   ContextMenuContent,
   ContextMenuMain,
   ContextMenuOuter,
   ContextMenuTitle,
   EmptyMessage,
-} from "../CommonElements";
-import { EditOrderBy } from "../EditOrderBy";
-import { FieldButton } from "../FieldButton";
-import { TypeIcon } from "../TypeIcon";
+} from '../CommonElements';
+import {EditOrderBy} from '../EditOrderBy';
+import {FieldButton} from '../FieldButton';
+import {TypeIcon} from '../TypeIcon';
 
 interface OrderByContextBarProps {
-  addOrderBy: (byFieldIndex: number, direction?: "desc" | "asc") => void;
+  addOrderBy: (byFieldIndex: number, direction?: 'desc' | 'asc') => void;
   orderByFields: OrderByField[];
   onComplete: () => void;
 }
@@ -62,7 +62,7 @@ export const OrderByContextBar: React.FC<OrderByContextBarProps> = ({
         <ContextMenuOuter>
           <ContextMenuContent>
             <ListDiv>
-              {orderByFields.map((field) => (
+              {orderByFields.map(field => (
                 <FieldButton
                   icon={<TypeIcon type={field.type} kind="dimension" />}
                   key={field.name}

@@ -1,11 +1,11 @@
-import { ModelDef, StructDef } from "@malloydata/malloy";
+import {ModelDef, StructDef} from '@malloydata/malloy';
 
 export function useSearch(
-  model: ModelDef,
-  modelPath: string,
-  source: StructDef | undefined,
-  searchTerm: string,
-  fieldPath?: string
+  _model: ModelDef,
+  _modelPath: string,
+  _source: StructDef | undefined,
+  _searchTerm: string,
+  _fieldPath?: string
 ) {
   return {
     searchResults: undefined,

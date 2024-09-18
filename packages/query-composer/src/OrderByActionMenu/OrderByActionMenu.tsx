@@ -20,16 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { OrderByField } from "../types";
-import { ActionMenu } from "../ActionMenu";
-import { EditOrderBy } from "../EditOrderBy";
+import {OrderByField} from '../types';
+import {ActionMenu} from '../ActionMenu';
+import {EditOrderBy} from '../EditOrderBy';
 
 interface OrderByActionMenuProps {
   removeOrderBy: () => void;
-  editOrderBy: (direction: "asc" | "desc" | undefined) => void;
+  editOrderBy: (direction: 'asc' | 'desc' | undefined) => void;
   closeMenu: () => void;
   orderByField: OrderByField;
-  existingDirection: "asc" | "desc" | undefined;
+  existingDirection: 'asc' | 'desc' | undefined;
   orderByIndex: number;
 }
 
@@ -44,13 +44,13 @@ export const OrderByActionMenu: React.FC<OrderByActionMenuProps> = ({
       closeMenu={closeMenu}
       actions={[
         {
-          kind: "sub_menu",
-          id: "edit",
-          iconName: "order_by",
-          iconColor: "other",
-          label: "Edit Order By",
+          kind: 'sub_menu',
+          id: 'edit',
+          iconName: 'order_by',
+          iconColor: 'other',
+          label: 'Edit Order By',
           closeOnComplete: true,
-          Component: ({ onComplete }) => (
+          Component: ({onComplete}) => (
             <EditOrderBy
               addOrderBy={(byField, direction) => editOrderBy(direction)}
               onComplete={onComplete}

@@ -20,18 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FilterCondition, StructDef } from "@malloydata/malloy";
-import { useContext, useState } from "react";
-// TODO: extract api
-import { compileFilter } from "../core/compile";
-import { CodeTextArea } from "../CodeInput";
+import {FilterCondition, StructDef} from '@malloydata/malloy';
+import {useContext, useState} from 'react';
+import {CodeTextArea} from '../CodeInput';
 import {
   Button,
   RightButtonRow,
   ContextMenuMain,
   ContextMenuTitle,
-} from "../CommonElements";
-import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
+} from '../CommonElements';
+import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface EditFilterProps {
   source: StructDef;
@@ -46,7 +44,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
   source,
   onComplete,
 }) => {
-  const { dummyCompiler } = useContext(ComposerOptionsContext);
+  const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [filter, setFilter] = useState(existing);
   return (
     <ContextMenuMain>
@@ -67,7 +65,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
             onClick={() => {
               dummyCompiler
                 .compileFilter(source, filter)
-                .then((filterExpression) => {
+                .then(filterExpression => {
                   editFilter(filterExpression);
                   onComplete();
                 });

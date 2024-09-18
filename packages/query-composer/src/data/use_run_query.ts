@@ -20,8 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import * as malloy from "@malloydata/malloy";
-import { useState } from "react";
+import * as malloy from '@malloydata/malloy';
+import {useState} from 'react';
 
 export type RunQuery = (
   query: string,
@@ -55,7 +55,7 @@ export function useRunQuery(
     reset();
     setIsLoading(true);
     runQuery(query, model, modelPath, queryName)
-      .then((result) => {
+      .then(result => {
         setData(result);
       })
       .catch(onError)

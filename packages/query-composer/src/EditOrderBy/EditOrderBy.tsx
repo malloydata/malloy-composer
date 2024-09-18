@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import styled from "styled-components";
-import { OrderByField } from "../types";
+import {useState} from 'react';
+import styled from 'styled-components';
+import {OrderByField} from '../types';
 import {
   Button,
   ContextMenuMain,
@@ -32,22 +32,22 @@ import {
   FormFieldList,
   RightButtonRow,
   SmallFieldName,
-} from "../CommonElements";
-import { SelectList } from "../SelectDropdown/SelectDropdown";
-import { TypeIcon } from "../TypeIcon";
-import { kindOfField, typeOfField } from "../utils";
+} from '../CommonElements';
+import {SelectList} from '../SelectDropdown/SelectDropdown';
+import {TypeIcon} from '../TypeIcon';
+import {kindOfField, typeOfField} from '../utils';
 
 interface EditOrderByProps {
   byField: OrderByField;
   addOrderBy: (
     fieldIndex: number,
-    direction: "asc" | "desc" | undefined
+    direction: 'asc' | 'desc' | undefined
   ) => void;
   onComplete: () => void;
-  initialDirection?: "asc" | "desc";
+  initialDirection?: 'asc' | 'desc';
 }
 
-type Direction = "asc" | "desc";
+type Direction = 'asc' | 'desc';
 
 export const EditOrderBy: React.FC<EditOrderByProps> = ({
   byField,
@@ -56,7 +56,7 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
   initialDirection,
 }) => {
   const [direction, setDirection] = useState<Direction | undefined>(
-    initialDirection || "asc"
+    initialDirection || 'asc'
   );
   return (
     <ContextMenuMain>
@@ -77,8 +77,8 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
           <OptionsRow>
             <SelectList
               options={[
-                { value: "asc" as Direction, label: "Ascending" },
-                { value: "desc" as Direction, label: "Descending" },
+                {value: 'asc' as Direction, label: 'Ascending'},
+                {value: 'desc' as Direction, label: 'Descending'},
               ]}
               value={direction}
               onChange={setDirection}

@@ -7,19 +7,19 @@ import {
   PreparedQuery,
   QueryFieldDef,
   StructDef,
-} from "@malloydata/malloy";
-import { maybeQuoteIdentifier } from "./utils";
+} from '@malloydata/malloy';
+import {maybeQuoteIdentifier} from './utils';
 
 export type CompileHandler = (
   modelDef: ModelDef,
   malloy: string
 ) => Promise<Model>;
 
-const DEFAULT_NAME = "new_query";
+const DEFAULT_NAME = 'new_query';
 
 export class DummyCompile {
   compile: CompileHandler;
-  constructor({ compile }: { compile: CompileHandler }) {
+  constructor({compile}: {compile: CompileHandler}) {
     this.compile = compile;
   }
   async _compileModel(modelDef: ModelDef, malloy: string): Promise<Model> {
@@ -34,9 +34,9 @@ export class DummyCompile {
 
   modelDefForSource(source: StructDef): ModelDef {
     return {
-      name: "model",
+      name: 'model',
       exports: [],
-      contents: { [source.as || source.name]: source },
+      contents: {[source.as || source.name]: source},
     };
   }
 
@@ -49,13 +49,13 @@ export class DummyCompile {
     } -> { group_by: one is 1; where: ${filter}}`;
     const modelDef = this.modelDefForSource(source);
     const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents["the_query"];
-    if (theQuery.type !== "query") {
-      throw new Error("Expected the_query to be a query");
+    const theQuery = model.contents['the_query'];
+    if (theQuery.type !== 'query') {
+      throw new Error('Expected the_query to be a query');
     }
     const filterList = theQuery.pipeline[0].filterList;
     if (filterList === undefined) {
-      throw new Error("Expected a filter list");
+      throw new Error('Expected a filter list');
     }
     return filterList[0];
   }
@@ -72,17 +72,17 @@ export class DummyCompile {
     )} -> { group_by: ${groupBy} }`;
     const modelDef = this.modelDefForSource(source);
     const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents["the_query"];
-    if (theQuery.type !== "query") {
-      throw new Error("Expected the_query to be a query");
+    const theQuery = model.contents['the_query'];
+    if (theQuery.type !== 'query') {
+      throw new Error('Expected the_query to be a query');
     }
     const segment = theQuery.pipeline[0];
-    if (segment.type !== "reduce") {
-      throw new Error("Expected the query to be a reduce query");
+    if (segment.type !== 'reduce') {
+      throw new Error('Expected the query to be a reduce query');
     }
     const fieldList = segment.queryFields;
     if (fieldList === undefined) {
-      throw new Error("Expected a field list");
+      throw new Error('Expected a field list');
     }
     return fieldList[0];
   }
@@ -97,19 +97,19 @@ export class DummyCompile {
     } -> { group_by: ${name} is ${dimension} }`;
     const modelDef = this.modelDefForSource(source);
     const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents["the_query"];
-    if (theQuery.type !== "query") {
-      throw new Error("Expected the_query to be a query");
+    const theQuery = model.contents['the_query'];
+    if (theQuery.type !== 'query') {
+      throw new Error('Expected the_query to be a query');
     }
     const segment = theQuery.pipeline[0];
-    if (segment.type !== "reduce") {
-      throw new Error("Expected query to be a reduce query");
+    if (segment.type !== 'reduce') {
+      throw new Error('Expected query to be a reduce query');
     }
     const field = segment.queryFields[0];
-    if (typeof field === "string") {
-      throw new Error("Expected field definition, not reference");
-    } else if (field.type === "fieldref") {
-      throw new Error("Expected field definition, not field reference");
+    if (typeof field === 'string') {
+      throw new Error('Expected field definition, not reference');
+    } else if (field.type === 'fieldref') {
+      throw new Error('Expected field definition, not field reference');
     }
     return field;
   }
@@ -124,19 +124,19 @@ export class DummyCompile {
     } -> { aggregate: ${name} is ${measure} }`;
     const modelDef = this.modelDefForSource(source);
     const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents["the_query"];
-    if (theQuery.type !== "query") {
-      throw new Error("Expected the_query to be a query");
+    const theQuery = model.contents['the_query'];
+    if (theQuery.type !== 'query') {
+      throw new Error('Expected the_query to be a query');
     }
     const segment = theQuery.pipeline[0];
-    if (segment.type !== "reduce") {
-      throw new Error("Expected query to be a reduce query");
+    if (segment.type !== 'reduce') {
+      throw new Error('Expected query to be a reduce query');
     }
     const field = segment.queryFields[0];
-    if (typeof field === "string") {
-      throw new Error("Expected field definiton, not reference");
-    } else if (field.type === "fieldref") {
-      throw new Error("Expected field definition, not field reference");
+    if (typeof field === 'string') {
+      throw new Error('Expected field definiton, not reference');
+    } else if (field.type === 'fieldref') {
+      throw new Error('Expected field definition, not field reference');
     }
     return field;
   }
@@ -162,12 +162,12 @@ export class DummyCompile {
   async compileQuery(modelDef: ModelDef, query: string): Promise<NamedQuery> {
     const preparedQuery = await this._compileQuery(modelDef, query);
     const name =
-      "as" in preparedQuery._query
+      'as' in preparedQuery._query
         ? preparedQuery._query.as || preparedQuery._query.name
         : DEFAULT_NAME;
     return {
       ...preparedQuery._query,
-      type: "query",
+      type: 'query',
       name,
     };
   }

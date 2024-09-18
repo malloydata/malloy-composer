@@ -20,15 +20,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import { RendererName } from "../types";
+import styled from 'styled-components';
+import {RendererName} from '../types';
 import {
   ContextMenuContent,
   ContextMenuOuter,
   ScrollMain,
-} from "../CommonElements";
-import { FieldButton } from "../FieldButton";
-import { VisIcon } from "../VisIcon";
+} from '../CommonElements';
+import {FieldButton} from '../FieldButton';
+import {VisIcon} from '../VisIcon';
 
 interface DataStyleContextBarProps {
   setDataStyle: (rendererName: RendererName) => void;
@@ -45,7 +45,7 @@ export const DataStyleContextBar: React.FC<DataStyleContextBarProps> = ({
     <ScrollMain>
       <ContextMenuContent>
         <ListDiv>
-          {allowedRenderers.map((renderer) => {
+          {allowedRenderers.map(renderer => {
             return (
               <FieldButton
                 icon={<VisIcon renderer={renderer} />}

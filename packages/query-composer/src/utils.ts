@@ -21,23 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  FieldDef,
-  StructDef,
-  expressionIsCalculation,
-} from "@malloydata/malloy";
-import type { Highlighter, LanguageRegistration } from "shiki";
+import {FieldDef, StructDef, expressionIsCalculation} from '@malloydata/malloy';
+import {Highlighter, LanguageRegistration} from 'shiki';
 // `shiki/core` entry does not include any themes or languages or the wasm binary.
-import { getHighlighterCore } from "shiki/core";
+import {getHighlighterCore} from 'shiki/core';
 // `shiki/wasm` contains the wasm binary inlined as base64 string.
-import getWasm from "shiki/wasm";
-import lightPlus from "shiki/themes/light-plus.mjs";
-import darkPlus from "shiki/themes/dark-plus.mjs";
-import sql from "shiki/langs/sql.mjs";
-import json from "shiki/langs/json.mjs";
-import md from "shiki/langs/md.mjs";
-import { QuerySummaryItem } from "./types";
-import { MALLOY_GRAMMAR } from "./malloyGrammar";
+import getWasm from 'shiki/wasm';
+import lightPlus from 'shiki/themes/light-plus.mjs';
+import darkPlus from 'shiki/themes/dark-plus.mjs';
+import sql from 'shiki/langs/sql.mjs';
+import json from 'shiki/langs/json.mjs';
+import md from 'shiki/langs/md.mjs';
+import {QuerySummaryItem} from './types';
+import {MALLOY_GRAMMAR} from './malloyGrammar';
 
 declare global {
   interface Window {
@@ -47,9 +43,9 @@ declare global {
 
 export function snakeToTitle(snake: string): string {
   return snake
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 export function isDuckDBWASM(): boolean {
@@ -68,9 +64,9 @@ function getHighlighter() {
       json,
       md,
       {
-        id: "malloy",
-        scopeName: "source.malloy",
-        embeddedLangs: ["sql"],
+        id: 'malloy',
+        scopeName: 'source.malloy',
+        embeddedLangs: ['sql'],
         grammar: MALLOY_GRAMMAR,
       } as unknown as LanguageRegistration,
     ],
@@ -82,13 +78,13 @@ function getHighlighter() {
 export async function highlight(code: string, lang: string): Promise<string> {
   const highlighter = await getHighlighter();
   if (!highlighter.getLoadedLanguages().includes(lang)) {
-    lang = "txt";
+    lang = 'txt';
   }
   return highlighter.codeToHtml(code, {
     lang,
     themes: {
-      light: "light-plus",
-      dark: "dark-plus",
+      light: 'light-plus',
+      dark: 'dark-plus',
     },
   });
 }
@@ -98,61 +94,61 @@ export async function highlightPre(
   lang: string
 ): Promise<HTMLDivElement> {
   const highlighted = await highlight(code, lang);
-  const elem = document.createElement("div");
+  const elem = document.createElement('div');
   elem.innerHTML = highlighted;
   return elem;
 }
 
 export type FieldType =
-  | "string"
-  | "boolean"
-  | "json"
-  | "number"
-  | "date"
-  | "timestamp"
-  | "query"
-  | "source"
-  | "sql native";
+  | 'string'
+  | 'boolean'
+  | 'json'
+  | 'number'
+  | 'date'
+  | 'timestamp'
+  | 'query'
+  | 'source'
+  | 'sql native';
 
-export type FieldKind = "measure" | "dimension" | "query" | "source";
+export type FieldKind = 'measure' | 'dimension' | 'query' | 'source';
 
 export function typeOfField(fieldDef: FieldDef): FieldType {
-  return fieldDef.type === "struct"
-    ? "source"
-    : fieldDef.type === "turtle"
-    ? "query"
-    : fieldDef.type === "error"
-    ? "number" // HACK
+  return fieldDef.type === 'struct'
+    ? 'source'
+    : fieldDef.type === 'turtle'
+    ? 'query'
+    : fieldDef.type === 'error'
+    ? 'number' // HACK
     : fieldDef.type;
 }
 
 export function scalarTypeOfField(
   fieldDef: FieldDef
 ):
-  | "string"
-  | "number"
-  | "boolean"
-  | "date"
-  | "timestamp"
-  | "json"
-  | "sql native" {
-  return fieldDef.type === "struct"
-    ? "string"
-    : fieldDef.type === "turtle"
-    ? "string"
-    : fieldDef.type === "error"
-    ? "number" // HACK
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'date'
+  | 'timestamp'
+  | 'json'
+  | 'sql native' {
+  return fieldDef.type === 'struct'
+    ? 'string'
+    : fieldDef.type === 'turtle'
+    ? 'string'
+    : fieldDef.type === 'error'
+    ? 'number' // HACK
     : fieldDef.type;
 }
 
 export function kindOfField(fieldDef: FieldDef): FieldKind {
-  return fieldDef.type === "struct"
-    ? "source"
-    : fieldDef.type === "turtle"
-    ? "query"
+  return fieldDef.type === 'struct'
+    ? 'source'
+    : fieldDef.type === 'turtle'
+    ? 'query'
     : expressionIsCalculation(fieldDef.expressionType)
-    ? "measure"
-    : "dimension";
+    ? 'measure'
+    : 'dimension';
 }
 
 export function notUndefined<T>(item: T | undefined): item is T {
@@ -164,11 +160,11 @@ export function fieldToSummaryItem(
   path: string
 ): QuerySummaryItem {
   const kind = kindOfField(field);
-  if (field.type === "struct" || kind === "source") {
-    throw new Error("Cannot make a summary item from a struct.");
+  if (field.type === 'struct' || kind === 'source') {
+    throw new Error('Cannot make a summary item from a struct.');
   } else {
     return {
-      type: "field",
+      type: 'field',
       field,
       path,
       saveDefinition: undefined,
@@ -183,40 +179,40 @@ export function fieldToSummaryItem(
 
 export function isAggregate(field: FieldDef): boolean {
   return (
-    field.type !== "struct" &&
-    field.type !== "turtle" &&
+    field.type !== 'struct' &&
+    field.type !== 'turtle' &&
     expressionIsCalculation(field.expressionType)
   );
 }
 
 export function isDimension(field: FieldDef): boolean {
   return (
-    field.type !== "struct" &&
-    field.type !== "turtle" &&
-    field.expressionType === "scalar"
+    field.type !== 'struct' &&
+    field.type !== 'turtle' &&
+    field.expressionType === 'scalar'
   );
 }
 
 export function isQuery(field: FieldDef): boolean {
-  return field.type === "turtle";
+  return field.type === 'turtle';
 }
 
 export function flatFields(
   source: StructDef,
   path: string[] = []
-): { field: FieldDef; path: string }[] {
-  return source.fields.flatMap((field) => {
-    if (field.type === "struct") {
+): {field: FieldDef; path: string}[] {
+  return source.fields.flatMap(field => {
+    if (field.type === 'struct') {
       return flatFields(field, [...path, field.as || field.name]);
     } else {
-      return [{ field, path: [...path, field.as || field.name].join(".") }];
+      return [{field, path: [...path, field.as || field.name].join('.')}];
     }
   });
 }
 
 export function pathSuffixes(path: string): string[] {
-  const parts = path.split(".");
-  return parts.map((_, index) => parts.slice(index).join("."));
+  const parts = path.split('.');
+  return parts.map((_, index) => parts.slice(index).join('.'));
 }
 
 export function termsForField(field: FieldDef, path: string): string[] {
@@ -229,7 +225,7 @@ export function termsForField(field: FieldDef, path: string): string[] {
 }
 
 export function pathParent(path: string): string {
-  const parts = path.split(".");
+  const parts = path.split('.');
   return parts[parts.length - 2];
 }
 
@@ -237,13 +233,13 @@ export function largeNumberLabel(n: number): string {
   if (n < 1_000) {
     return n.toLocaleString();
   } else if (n < 10_000) {
-    return (n / 1000).toFixed(1) + "K";
+    return (n / 1000).toFixed(1) + 'K';
   } else if (n < 1_000_000) {
-    return Math.floor(n / 1000).toLocaleString() + "K";
+    return Math.floor(n / 1000).toLocaleString() + 'K';
   } else if (n < 10_000_000) {
-    return (n / 1_000_000).toFixed(1) + "M";
+    return (n / 1_000_000).toFixed(1) + 'M';
   } else {
-    return Math.floor(n / 1000).toLocaleString() + "M";
+    return Math.floor(n / 1000).toLocaleString() + 'M';
   }
 }
 
@@ -253,14 +249,14 @@ export function downloadFile(
   filename: string,
   newTab: boolean
 ): void {
-  const downloadLink = document.createElement("a");
-  const blob = new Blob([content], { type: mimeType });
+  const downloadLink = document.createElement('a');
+  const blob = new Blob([content], {type: mimeType});
   const url = URL.createObjectURL(blob);
-  downloadLink.setAttribute("href", url);
+  downloadLink.setAttribute('href', url);
   if (newTab) {
-    downloadLink.setAttribute("target", "_blank");
+    downloadLink.setAttribute('target', '_blank');
   } else {
-    downloadLink.setAttribute("download", filename);
+    downloadLink.setAttribute('download', filename);
   }
   downloadLink.click();
 }
@@ -304,9 +300,9 @@ export function extractErrorMessage(error: Error): string {
 
 export function indentCode(code: string, spaces = 2): string {
   return code
-    .split("\n")
-    .map((line) => " ".repeat(spaces) + line)
-    .join("\n");
+    .split('\n')
+    .map(line => ' '.repeat(spaces) + line)
+    .join('\n');
 }
 
 export function copyToClipboard(text: string): void {

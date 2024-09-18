@@ -20,16 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import ChevronLeftIcon from "./assets/img/chevrons/chevron_left.svg?react";
-import ChevronRightIcon from "./assets/img/chevrons/chevron_right.svg?react";
-import { ColorKey, COLORS } from "./colors";
-import { extractErrorMessage } from "./utils";
+import styled from 'styled-components';
+import ChevronLeftIcon from './assets/img/chevrons/chevron_left.svg?react';
+import ChevronRightIcon from './assets/img/chevrons/chevron_right.svg?react';
+import {ColorKey, COLORS} from './colors';
+import {extractErrorMessage} from './utils';
 
 export const PanelTitle = styled.div`
   text-transform: uppercase;
   color: #939393;
-  font-family: "Google Sans";
+  font-family: 'Google Sans';
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -43,7 +43,7 @@ export const PanelTitle = styled.div`
 export const FieldLabel = styled.div`
   display: flex;
   font-weight: normal;
-  font-family: "Roboto Mono";
+  font-family: 'Roboto Mono';
   gap: 5px;
   margin-top: -3px;
   align-items: center;
@@ -61,7 +61,7 @@ export const FormInputLabel = styled.label`
 `;
 
 export const Button = styled.button<{
-  color?: "primary" | "secondary";
+  color?: 'primary' | 'secondary';
   outline?: boolean;
 }>`
   padding: 5.5px 10px;
@@ -70,9 +70,9 @@ export const Button = styled.button<{
   cursor: pointer;
   min-width: 80px;
 
-  ${({ color = "primary", outline = false }) => `
+  ${({color = 'primary', outline = false}) => `
     ${
-      color === "primary" && !outline
+      color === 'primary' && !outline
         ? `
         border: 1px solid #4285F4;
         background-color: #4285F4;
@@ -82,7 +82,7 @@ export const Button = styled.button<{
           background-color: #175cb7;
         }
       `
-        : color === "primary" && outline
+        : color === 'primary' && outline
         ? `
         border: 1px solid #d8dade;
         background-color: white;
@@ -92,7 +92,7 @@ export const Button = styled.button<{
           background-color: #efefef;
         }
       `
-        : color === "secondary" && !outline
+        : color === 'secondary' && !outline
         ? `
         border: 0;
         background-color: transparent;
@@ -133,27 +133,23 @@ interface ChevronButtonProps {
   onClick: () => void;
 }
 
-export const ChevronLeftButton: React.FC<ChevronButtonProps> = ({
-  onClick,
-}) => {
+export const ChevronLeftButton: React.FC<ChevronButtonProps> = ({onClick}) => {
   return (
     <ChevronLeftIcon
       width="22px"
       height="22px"
-      style={{ cursor: "pointer" }}
+      style={{cursor: 'pointer'}}
       onClick={onClick}
     />
   );
 };
 
-export const ChevronRightButton: React.FC<ChevronButtonProps> = ({
-  onClick,
-}) => {
+export const ChevronRightButton: React.FC<ChevronButtonProps> = ({onClick}) => {
   return (
     <ChevronRightIcon
       width="22px"
       height="22px"
-      style={{ cursor: "pointer" }}
+      style={{cursor: 'pointer'}}
       onClick={onClick}
     />
   );
@@ -233,7 +229,7 @@ export const FieldIcon = styled.div<{
   justify-content: center;
   display: flex;
 
-  ${({ color }) => {
+  ${({color}) => {
     return `
       svg .primaryfill {
         fill: ${COLORS[color].fillStrong};
@@ -263,7 +259,7 @@ export interface FormErrorProps {
   error: Error;
 }
 
-export const FormError: React.FC<FormErrorProps> = ({ error }) => {
+export const FormError: React.FC<FormErrorProps> = ({error}) => {
   if (error) {
     const message = extractErrorMessage(error);
     return <StyledFormError>{message}</StyledFormError>;

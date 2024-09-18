@@ -25,11 +25,9 @@ import {
   FilterCondition,
   ModelDef,
   StructDef,
-} from "@malloydata/malloy";
-import { useContext, useState } from "react";
-// TODO: extract api
-import { compileFilter } from "../core/compile";
-import { CodeInput } from "../CodeInput";
+} from '@malloydata/malloy';
+import {useContext, useState} from 'react';
+import {CodeInput} from '../CodeInput';
 import {
   Button,
   ContextMenuTitle,
@@ -39,28 +37,28 @@ import {
   RightButtonRow,
   FieldLabel,
   FormInputLabel,
-} from "../CommonElements";
-import { TypeIcon } from "../TypeIcon";
-import { StringFilterBuilder } from "./StringFilterBuilder";
+} from '../CommonElements';
+import {TypeIcon} from '../TypeIcon';
+import {StringFilterBuilder} from './StringFilterBuilder';
 import {
   BooleanFilter,
   Filter,
   NumberFilter,
   StringFilter,
   TimeFilter,
-} from "../types";
+} from '../types';
 import {
   booleanFilterToString,
   numberFilterToString,
   stringFilterToString,
   timeFilterToString,
-} from "../core/filters";
-import styled from "styled-components";
-import { NumberFilterBuilder } from "./NumberFilterBuilder";
-import { TimeFilterBuilder } from "./TimeFilterBuilder";
-import { BooleanFilterBuilder } from "./BooleanFilterBuilder";
-import { kindOfField, typeOfField } from "../utils";
-import { ComposerOptionsContext } from "../ExploreQueryEditor/ExploreQueryEditor";
+} from '../core/filters';
+import styled from 'styled-components';
+import {NumberFilterBuilder} from './NumberFilterBuilder';
+import {TimeFilterBuilder} from './TimeFilterBuilder';
+import {BooleanFilterBuilder} from './BooleanFilterBuilder';
+import {kindOfField, typeOfField} from '../utils';
+import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface AddFilterProps {
   model: ModelDef;
@@ -85,50 +83,50 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   fieldPath,
   initial,
 }) => {
-  const { dummyCompiler } = useContext(ComposerOptionsContext);
+  const {dummyCompiler} = useContext(ComposerOptionsContext);
   const type = typeOfField(field);
   const kind = kindOfField(field);
   const [stringFilter, setStringFilter] = useState<StringFilter>(
-    (type === "string" && (initial as StringFilter)) ?? {
-      type: "is_equal_to",
+    (type === 'string' && (initial as StringFilter)) ?? {
+      type: 'is_equal_to',
       values: [],
     }
   );
   const [numberFilter, setNumberFilter] = useState<NumberFilter>(
-    (type === "number" && (initial as NumberFilter)) ?? {
-      type: "is_equal_to",
+    (type === 'number' && (initial as NumberFilter)) ?? {
+      type: 'is_equal_to',
       values: [],
     }
   );
   const [timeFilter, setTimeFilter] = useState<TimeFilter>(
-    ((type === "date" || type === "timestamp") && (initial as TimeFilter)) ?? {
-      type: "is_on",
+    ((type === 'date' || type === 'timestamp') && (initial as TimeFilter)) ?? {
+      type: 'is_on',
       date: new Date(),
-      granularity: "day",
+      granularity: 'day',
     }
   );
   const [booleanFilter, setBooleanFilter] = useState<BooleanFilter>(
-    (type === "boolean" && (initial as BooleanFilter)) ?? {
-      type: "is_true",
+    (type === 'boolean' && (initial as BooleanFilter)) ?? {
+      type: 'is_true',
     }
   );
   const [filter, setFilter] = useState(
-    type === "string"
+    type === 'string'
       ? stringFilterToString(fieldPath, stringFilter)
-      : type === "number"
+      : type === 'number'
       ? numberFilterToString(fieldPath, numberFilter)
-      : type === "date" || type === "timestamp"
+      : type === 'date' || type === 'timestamp'
       ? timeFilterToString(fieldPath, timeFilter)
-      : type === "boolean"
+      : type === 'boolean'
       ? booleanFilterToString(fieldPath, booleanFilter)
-      : ""
+      : ''
   );
-  const [newName, setNewName] = useState("");
+  const [newName, setNewName] = useState('');
 
   return (
     <div>
       <form>
-        <ContextMenuTitle style={{ padding: "15px", paddingBottom: 0 }}>
+        <ContextMenuTitle style={{padding: '15px', paddingBottom: 0}}>
           Filter
           <FieldLabel>
             <FieldIcon color="dimension">
@@ -151,56 +149,56 @@ export const AddFilter: React.FC<AddFilterProps> = ({
             </FormFieldList>
           </RenameBox>
         )}
-        {type === "string" && (
+        {type === 'string' && (
           <StringFilterBuilder
             modelPath={modelPath}
             model={model}
             source={source}
             fieldPath={fieldPath}
             filter={stringFilter}
-            setFilter={(f) => {
+            setFilter={f => {
               setStringFilter(f);
               setFilter(stringFilterToString(fieldPath, f));
             }}
           />
         )}
-        {type === "boolean" && (
+        {type === 'boolean' && (
           <BooleanFilterBuilder
             filter={booleanFilter}
-            setFilter={(f) => {
+            setFilter={f => {
               setBooleanFilter(f);
               setFilter(booleanFilterToString(fieldPath, f));
             }}
           />
         )}
-        {type === "number" && (
+        {type === 'number' && (
           <NumberFilterBuilder
             filter={numberFilter}
-            setFilter={(f) => {
+            setFilter={f => {
               setNumberFilter(f);
               setFilter(numberFilterToString(fieldPath, f));
             }}
           />
         )}
-        {(type === "date" || type === "timestamp") && (
+        {(type === 'date' || type === 'timestamp') && (
           <TimeFilterBuilder
             type={type}
             filter={timeFilter}
-            setFilter={(f) => {
+            setFilter={f => {
               setTimeFilter(f);
               setFilter(timeFilterToString(fieldPath, f));
             }}
           />
         )}
-        <RightButtonRow style={{ padding: "0 15px 15px 15px" }}>
+        <RightButtonRow style={{padding: '0 15px 15px 15px'}}>
           <Button type="button" color="secondary" onClick={onComplete}>
             Cancel
           </Button>
           <Button
-            onClick={(event) => {
+            onClick={event => {
               dummyCompiler
                 .compileFilter(source, filter)
-                .then((filterExpression) => {
+                .then(filterExpression => {
                   addFilter(filterExpression, newName || undefined);
                   onComplete();
                 })

@@ -3,21 +3,21 @@ import {
   StructDef,
   Result as MalloyResult,
   ModelDef,
-} from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
-import { createContext, useMemo, useState } from "react";
-import styled from "styled-components";
-import { QuerySummary } from "../types";
-import { ActionIcon } from "../ActionIcon";
-import { PageContent, PageHeader } from "../CommonElements";
-import { QueryModifiers } from "../hooks/use_query_builder";
-import { Popover } from "../Popover";
-import { QuerySummaryPanel } from "../QuerySummaryPanel";
-import { Result } from "../Result";
-import { TopQueryActionMenu } from "../TopQueryActionMenu";
-import RunIcon from "../assets/img/query_run_wide.svg?react";
-import { LoadTopQueryContextBar } from "../LoadTopQueryContextBar";
-import { CompileHandler, DummyCompile } from "../core/dummy-compile";
+} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
+import {createContext, useMemo, useState} from 'react';
+import styled from 'styled-components';
+import {QuerySummary} from '../types';
+import {ActionIcon} from '../ActionIcon';
+import {PageContent, PageHeader} from '../CommonElements';
+import {QueryModifiers} from '../hooks/use_query_builder';
+import {Popover} from '../Popover';
+import {QuerySummaryPanel} from '../QuerySummaryPanel';
+import {Result} from '../Result';
+import {TopQueryActionMenu} from '../TopQueryActionMenu';
+import RunIcon from '../assets/img/query_run_wide.svg?react';
+import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
+import {CompileHandler, DummyCompile} from '../core/dummy-compile';
 
 interface ExploreQueryEditorProps {
   source: StructDef | undefined;
@@ -45,7 +45,9 @@ interface ExploreQueryEditorProps {
   dummyCompile?: CompileHandler;
 }
 
-export const ComposerOptionsContext = createContext<{dummyCompiler: DummyCompile}>(null);
+export const ComposerOptionsContext = createContext<{
+  dummyCompiler: DummyCompile;
+}>(null);
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   dirty,
@@ -65,110 +67,115 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   canUndo,
   isQueryEmpty,
   canQueryRun,
-  dummyCompile
+  dummyCompile,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
-  const composerOptions = useMemo(() => ({
-    dummyCompiler: new DummyCompile({ compile: dummyCompile })
-  }), [dummyCompile]);
+  const composerOptions = useMemo(
+    () => ({
+      dummyCompiler: new DummyCompile({compile: dummyCompile}),
+    }),
+    [dummyCompile]
+  );
   return (
     <ComposerOptionsContext.Provider value={composerOptions}>
-    <Outer>
-      <SidebarOuter>
-        <SidebarHeader>
-          {source && (
-            <>
-              <div>
-                <ActionIcon
-                  action="add"
-                  onClick={() => setInsertOpen(true)}
-                  color="dimension"
-                />
-                <Popover open={insertOpen} setOpen={setInsertOpen}>
-                  <TopQueryActionMenu
-                    model={model}
-                    modelPath={modelPath}
-                    source={source}
-                    queryModifiers={queryModifiers}
-                    stagePath={{ stageIndex: 0 }}
-                    orderByFields={querySummary?.stages[0].orderByFields || []}
-                    closeMenu={() => setInsertOpen(false)}
-                    queryName={queryName}
-                    stageSummary={querySummary?.stages[0].items || []}
-                    isOnlyStage={querySummary?.stages.length === 1}
-                    topValues={topValues}
+      <Outer>
+        <SidebarOuter>
+          <SidebarHeader>
+            {source && (
+              <>
+                <div>
+                  <ActionIcon
+                    action="add"
+                    onClick={() => setInsertOpen(true)}
+                    color="dimension"
                   />
-                </Popover>
-              </div>
-              <div>
-                <ActionIcon
-                  action="load"
-                  onClick={() => setLoadOpen(true)}
-                  color="query"
-                />
-                <Popover open={loadOpen} setOpen={setLoadOpen}>
-                  <LoadTopQueryContextBar
-                    model={model}
-                    source={source}
-                    selectField={queryModifiers.replaceQuery}
-                    onComplete={() => setLoadOpen(false)}
+                  <Popover open={insertOpen} setOpen={setInsertOpen}>
+                    <TopQueryActionMenu
+                      model={model}
+                      modelPath={modelPath}
+                      source={source}
+                      queryModifiers={queryModifiers}
+                      stagePath={{stageIndex: 0}}
+                      orderByFields={
+                        querySummary?.stages[0].orderByFields || []
+                      }
+                      closeMenu={() => setInsertOpen(false)}
+                      queryName={queryName}
+                      stageSummary={querySummary?.stages[0].items || []}
+                      isOnlyStage={querySummary?.stages.length === 1}
+                      topValues={topValues}
+                    />
+                  </Popover>
+                </div>
+                <div>
+                  <ActionIcon
+                    action="load"
+                    onClick={() => setLoadOpen(true)}
+                    color="query"
                   />
-                </Popover>
-              </div>
-              <ActionIcon
-                action="undo"
-                onClick={() => undo()}
-                color={canUndo ? "dimension" : "other"}
-              />
-              <ActionIcon
-                action="remove"
-                onClick={() => queryModifiers.clearQuery()}
-                color={isQueryEmpty ? "other" : "dimension"}
-              />
-              <StyledRunIcon
-                width="80px"
-                onClick={() => runQuery()}
-                className={
-                  isRunning
-                    ? "running"
-                    : isQueryEmpty || !canQueryRun
-                    ? "blank"
-                    : dirty
-                    ? "dirty"
-                    : "clean"
-                }
-              />
-            </>
-          )}
-        </SidebarHeader>
-        <QueryBar>
-          <QueryBarInner>
-            {querySummary && (
-              <QuerySummaryPanel
-                model={model}
-                modelPath={modelPath}
-                source={source}
-                querySummary={querySummary}
-                queryModifiers={queryModifiers}
-                stagePath={undefined}
-                queryName={queryName}
-                topValues={topValues}
-              />
+                  <Popover open={loadOpen} setOpen={setLoadOpen}>
+                    <LoadTopQueryContextBar
+                      model={model}
+                      source={source}
+                      selectField={queryModifiers.replaceQuery}
+                      onComplete={() => setLoadOpen(false)}
+                    />
+                  </Popover>
+                </div>
+                <ActionIcon
+                  action="undo"
+                  onClick={() => undo()}
+                  color={canUndo ? 'dimension' : 'other'}
+                />
+                <ActionIcon
+                  action="remove"
+                  onClick={() => queryModifiers.clearQuery()}
+                  color={isQueryEmpty ? 'other' : 'dimension'}
+                />
+                <StyledRunIcon
+                  width="80px"
+                  onClick={() => runQuery()}
+                  className={
+                    isRunning
+                      ? 'running'
+                      : isQueryEmpty || !canQueryRun
+                      ? 'blank'
+                      : dirty
+                      ? 'dirty'
+                      : 'clean'
+                  }
+                />
+              </>
             )}
-          </QueryBarInner>
-        </QueryBar>
-      </SidebarOuter>
-      <Result
-        model={model}
-        source={source}
-        result={result}
-        dataStyles={dataStyles}
-        malloy={queryMalloy}
-        onDrill={queryModifiers.onDrill}
-        isRunning={isRunning}
-      />
-    </Outer>
+          </SidebarHeader>
+          <QueryBar>
+            <QueryBarInner>
+              {querySummary && (
+                <QuerySummaryPanel
+                  model={model}
+                  modelPath={modelPath}
+                  source={source}
+                  querySummary={querySummary}
+                  queryModifiers={queryModifiers}
+                  stagePath={undefined}
+                  queryName={queryName}
+                  topValues={topValues}
+                />
+              )}
+            </QueryBarInner>
+          </QueryBar>
+        </SidebarOuter>
+        <Result
+          model={model}
+          source={source}
+          result={result}
+          dataStyles={dataStyles}
+          malloy={queryMalloy}
+          onDrill={queryModifiers.onDrill}
+          isRunning={isRunning}
+        />
+      </Outer>
     </ComposerOptionsContext.Provider>
   );
 };

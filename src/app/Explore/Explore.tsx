@@ -28,7 +28,6 @@ import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
-import {useTopValues} from '../data/use_top_values';
 import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
 import {
   _compileModel,
@@ -48,7 +47,7 @@ import {Apps} from '../Apps';
 import {LoadingSpinner} from '../Spinner';
 import {runQuery as runQueryExternal} from '../data/use_run_query';
 
-type DataStyles = any;
+type DataStyles = unknown;
 
 const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 
@@ -349,6 +348,7 @@ export const Explore: React.FC = () => {
     section = 'loading';
   }
 
+  // eslint-disable-next-line no-console
   console.log({
     model,
     modelPath,
