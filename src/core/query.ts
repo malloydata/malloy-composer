@@ -133,7 +133,10 @@ const BLANK_QUERY: TurtleDef = {
 };
 
 class NotAStageError extends Error {
-  constructor(message: string, public readonly field: QueryFieldDef) {
+  constructor(
+    message: string,
+    public readonly field: QueryFieldDef
+  ) {
     super(message);
   }
 }
@@ -903,7 +906,10 @@ export class QueryBuilder extends SourceUtils {
 }
 
 export class QueryWriter extends SourceUtils {
-  constructor(private readonly query: TurtleDef, source: StructDef) {
+  constructor(
+    private readonly query: TurtleDef,
+    source: StructDef
+  ) {
     super(source);
   }
 
@@ -1561,9 +1567,9 @@ type FilteredField = QueryFieldDef & {
         {
           type: "field";
           path: string[];
-        }
+        },
       ];
-    }
+    },
   ];
 };
 

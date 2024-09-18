@@ -347,11 +347,13 @@ export const Explore: React.FC = () => {
               {sourceName && section === "query" && (
                 <span>
                   {" ›"} {snakeToTitle(sourceName)}
-                  {(urlParams.get("name") || queryName) && section === "query" && (
-                    <span>
-                      {" ›"} {urlParams.get("name") || snakeToTitle(queryName)}
-                    </span>
-                  )}
+                  {(urlParams.get("name") || queryName) &&
+                    section === "query" && (
+                      <span>
+                        {" ›"}{" "}
+                        {urlParams.get("name") || snakeToTitle(queryName)}
+                      </span>
+                    )}
                 </span>
               )}
             </span>
