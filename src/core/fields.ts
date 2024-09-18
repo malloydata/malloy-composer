@@ -69,7 +69,7 @@ export function generateMeasure(
     case 'percent':
       return `100 * ${quotedFieldName} / all(${quotedFieldName})`;
   }
-  return;
+  return undefined;
 }
 
 function findField(

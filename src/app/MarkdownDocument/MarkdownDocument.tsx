@@ -196,6 +196,8 @@ export const MarkdownNode: React.FC<{
           <QueryIcon width="80" height="22" />
         </QueryLink>
       );
+    default:
+      return null;
   }
 };
 
