@@ -38,7 +38,7 @@ https://user-images.githubusercontent.com/7178946/170373869-3cf43dd2-25c4-4ed0-b
 
 You don't need to setup anything to run the DuckDB examples (the data is included with the samples).
 
-To run the BigQuery Samples uou will need to have a [Google Cloud Account](https://cloud.google.com/), access to BigQuery, and the [gcloud CLI](https://cloud.google.com/sdk/gcloud) installed. Once the gcloud CLI is installed, open a terminal and type the following:
+To run the BigQuery Samples you will need to have a [Google Cloud Account](https://cloud.google.com/), access to BigQuery, and the [gcloud CLI](https://cloud.google.com/sdk/gcloud) installed. Once the gcloud CLI is installed, open a terminal and type the following:
 
 ```
 gcloud auth login --update-adc
