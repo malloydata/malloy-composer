@@ -21,4 +21,4 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { SaveQueryButton } from "./SaveQueryButton";
+export {SaveQueryButton} from './SaveQueryButton';

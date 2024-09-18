@@ -21,5 +21,5 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { ActionIcon } from "./ActionIcon";
-export type { ActionIconName } from "./ActionIcon";
+export {ActionIcon} from './ActionIcon';
+export type {ActionIconName} from './ActionIcon';

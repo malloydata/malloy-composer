@@ -22,23 +22,23 @@
  */
 
 /* eslint-disable no-console */
-import * as fs from "fs";
-import * as path from "path";
-import { Command } from "commander";
-import archiver from "archiver";
+import * as fs from 'fs';
+import * as path from 'path';
+import {Command} from 'commander';
+import archiver from 'archiver';
 
-const OUT_DIR = "bundle";
-const MALLOY_SAMPLES_DIR = "malloy-samples";
-const BUNDLE_README = "bundle-readme.txt";
-const BUNDLE_README_NAME = "readme.txt";
+const OUT_DIR = 'bundle';
+const MALLOY_SAMPLES_DIR = 'malloy-samples';
+const BUNDLE_README = 'bundle-readme.txt';
+const BUNDLE_README_NAME = 'readme.txt';
 
-const BINARY_NAME = "composer";
+const BINARY_NAME = 'composer';
 
 async function createReleaseBundle(
   binary: string,
   verbose = false
 ): Promise<void> {
-  const targetBinary = path.resolve(__dirname, "..", binary);
+  const targetBinary = path.resolve(__dirname, '..', binary);
   if (!fs.existsSync(targetBinary))
     throw new Error(`Could not find: ${targetBinary}`);
 
@@ -54,7 +54,7 @@ async function createReleaseBundle(
     0,
     targetName.length - version.length - extensionOffset
   );
-  fs.mkdirSync(path.resolve(__dirname, "..", OUT_DIR, version), {
+  fs.mkdirSync(path.resolve(__dirname, '..', OUT_DIR, version), {
     recursive: true,
   });
 
@@ -62,50 +62,50 @@ async function createReleaseBundle(
   const archiveWrapper = new Promise<void>((resolve, reject) => {
     const targetZip = path.resolve(
       __dirname,
-      "..",
+      '..',
       OUT_DIR,
       version,
       `${outName}.zip`
     );
     const zipFile = fs.createWriteStream(targetZip);
     console.log(`Creating zip bundle:`);
-    const archive = archiver("zip", { zlib: { level: 9 } });
-    zipFile.on("close", function () {
+    const archive = archiver('zip', {zlib: {level: 9}});
+    zipFile.on('close', function () {
       console.log(`Bundle created: ${targetZip}`);
       console.log(`  size: ${(archive.pointer() / 2 ** 20).toFixed(2)} MB`);
       resolve();
     });
-    archive.on("entry", (data) => {
+    archive.on('entry', data => {
       if (verbose) console.log(`  adding: ${data.name}`);
     });
-    archive.on("warning", (err) => {
-      if (err.code === "ENOENT") {
+    archive.on('warning', err => {
+      if (err.code === 'ENOENT') {
         console.warn(err.message);
       } else {
         console.error(err.message, err);
         reject(err);
       }
     });
-    archive.on("error", (err) => {
+    archive.on('error', err => {
       reject(err);
     });
     archive.pipe(zipFile);
-    const globCwd = path.resolve(__dirname, "..");
+    const globCwd = path.resolve(__dirname, '..');
     archive
-      .glob(`${MALLOY_SAMPLES_DIR}/*.md`, { cwd: globCwd })
-      .glob(`${MALLOY_SAMPLES_DIR}/*.json`, { cwd: globCwd })
-      .glob(`${MALLOY_SAMPLES_DIR}/LICENSE`, { cwd: globCwd })
-      .file(targetBinary, { name: BINARY_NAME + (isExe ? ".exe" : "") })
-      .file(path.resolve(__dirname, "..", BUNDLE_README), {
+      .glob(`${MALLOY_SAMPLES_DIR}/*.md`, {cwd: globCwd})
+      .glob(`${MALLOY_SAMPLES_DIR}/*.json`, {cwd: globCwd})
+      .glob(`${MALLOY_SAMPLES_DIR}/LICENSE`, {cwd: globCwd})
+      .file(targetBinary, {name: BINARY_NAME + (isExe ? '.exe' : '')})
+      .file(path.resolve(__dirname, '..', BUNDLE_README), {
         name: BUNDLE_README_NAME,
       })
       .directory(
         path.resolve(__dirname, `../${MALLOY_SAMPLES_DIR}/bigquery`),
-        "malloy-samples/bigquery"
+        'malloy-samples/bigquery'
       )
       .directory(
         path.resolve(__dirname, `../${MALLOY_SAMPLES_DIR}/duckdb`),
-        "malloy-samples/duckdb"
+        'malloy-samples/duckdb'
       );
 
     archive.finalize();
@@ -117,8 +117,8 @@ async function createReleaseBundle(
 (async () => {
   const program = new Command();
   program
-    .option("-t, --target <path>", "Target binary to create a bundle for")
-    .option("-v, --verbose", "Provide verbose output logs", false);
+    .option('-t, --target <path>', 'Target binary to create a bundle for')
+    .option('-v, --verbose', 'Provide verbose output logs', false);
 
   program.parse();
   const options = program.opts();
@@ -128,7 +128,7 @@ async function createReleaseBundle(
   if (options.target) {
     targets.push(options.target);
   } else {
-    fs.readdirSync(path.resolve(__dirname, "..", "pkg")).forEach((file) =>
+    fs.readdirSync(path.resolve(__dirname, '..', 'pkg')).forEach(file =>
       targets.push(`pkg/${file}`)
     );
   }
@@ -138,9 +138,9 @@ async function createReleaseBundle(
   }
 })()
   .then(() => {
-    console.log("Composer bundle built successfully");
+    console.log('Composer bundle built successfully');
   })
-  .catch((error) => {
+  .catch(error => {
     console.log(error);
     process.exit(1);
   });

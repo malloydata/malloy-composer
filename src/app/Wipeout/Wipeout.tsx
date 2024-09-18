@@ -20,8 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import errorSrc from "../assets/img/error.png";
+import styled from 'styled-components';
+import errorSrc from '../assets/img/error.png';
 
 export const Wipeout = (): JSX.Element => {
   return <Oops src={errorSrc} alt="Oops" />;

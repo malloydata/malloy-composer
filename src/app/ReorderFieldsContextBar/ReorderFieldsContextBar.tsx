@@ -20,18 +20,18 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useState } from "react";
-import { QuerySummaryItem } from "../../types";
-import { ActionIcon, ActionIconName } from "../ActionIcon";
+import {useEffect, useState} from 'react';
+import {QuerySummaryItem} from '../../types';
+import {ActionIcon, ActionIconName} from '../ActionIcon';
 import {
   Button,
   ContextMenuMain,
   RightButtonRow,
   ContextMenuTitle,
   EmptyMessage,
-} from "../CommonElements";
-import { FieldButton } from "../FieldButton";
-import { notUndefined } from "../utils";
+} from '../CommonElements';
+import {FieldButton} from '../FieldButton';
+import {notUndefined} from '../utils';
 
 interface ReorderFieldsContextBarProps {
   updateFieldOrder: (newOrdering: number[]) => void;
@@ -42,28 +42,28 @@ interface ReorderFieldsContextBarProps {
 
 export const ReorderFieldsContextBar: React.FC<
   ReorderFieldsContextBarProps
-> = ({ updateFieldOrder, stageSummary, onComplete, fieldIndex }) => {
+> = ({updateFieldOrder, stageSummary, onComplete, fieldIndex}) => {
   const [selectedField, setSelectedField] = useState<number | undefined>(
     fieldIndex
   );
 
   const originalOrdering = stageSummary
-    .map((item) => {
+    .map(item => {
       if (
-        item.type === "field" ||
-        item.type === "field_definition" ||
-        item.type === "nested_query_definition"
+        item.type === 'field' ||
+        item.type === 'field_definition' ||
+        item.type === 'nested_query_definition'
       ) {
         const kind =
-          item.type === "field" || item.type === "field_definition"
+          item.type === 'field' || item.type === 'field_definition'
             ? item.kind
-            : "query";
+            : 'query';
         const action: ActionIconName =
-          kind === "dimension"
-            ? "group_by"
-            : kind === "measure"
-            ? "aggregate"
-            : "nest";
+          kind === 'dimension'
+            ? 'group_by'
+            : kind === 'measure'
+            ? 'aggregate'
+            : 'nest';
         return {
           fieldIndex: item.fieldIndex,
           kind,
@@ -81,10 +81,10 @@ export const ReorderFieldsContextBar: React.FC<
   useEffect(() => {
     const handle = (event: KeyboardEvent) => {
       const currentIndex = currentOrdering.findIndex(
-        (item) => item.fieldIndex === selectedField
+        item => item.fieldIndex === selectedField
       );
       const moveOffset =
-        event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0;
+        event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
       const otherIndex = currentIndex + moveOffset;
       if (
         currentIndex > -1 &&
@@ -99,14 +99,14 @@ export const ReorderFieldsContextBar: React.FC<
         setCurrentOrdering(newList);
       }
     };
-    window.addEventListener("keyup", handle);
-    return () => window.removeEventListener("keyup", handle);
+    window.addEventListener('keyup', handle);
+    return () => window.removeEventListener('keyup', handle);
   });
 
   return (
     <ContextMenuMain>
       <ContextMenuTitle>Reorder Fields</ContextMenuTitle>
-      {currentOrdering.map((item) => {
+      {currentOrdering.map(item => {
         const active = selectedField === item.fieldIndex;
         const disableHover = selectedField !== undefined;
         return (
@@ -134,7 +134,7 @@ export const ReorderFieldsContextBar: React.FC<
         </Button>
         <Button
           onClick={() => {
-            updateFieldOrder(currentOrdering.map((item) => item.fieldIndex));
+            updateFieldOrder(currentOrdering.map(item => item.fieldIndex));
             onComplete();
           }}
         >

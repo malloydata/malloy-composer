@@ -21,19 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Malloy, Result, Runtime } from "@malloydata/malloy";
-import { CONNECTION_MANAGER } from "./connections";
-import { URL_READER } from "./urls";
-import * as path from "path";
-import { getConfig } from "./config";
+import {Malloy, Result, Runtime} from '@malloydata/malloy';
+import {CONNECTION_MANAGER} from './connections';
+import {URL_READER} from './urls';
+import * as path from 'path';
+import {getConfig} from './config';
 
 export async function runQuery(
   query: string,
   queryName: string,
   modelPath: string
 ): Promise<Result> {
-  const { workingDirectory } = await getConfig();
-  const modelURL = new URL("file://" + path.join(workingDirectory, modelPath));
+  const {workingDirectory} = await getConfig();
+  const modelURL = new URL('file://' + path.join(workingDirectory, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
   const runtime = new Runtime(URL_READER, connections);
   const baseModel = await runtime.getModel(modelURL);
@@ -41,11 +41,11 @@ export async function runQuery(
     urlReader: URL_READER,
     connections,
     model: baseModel,
-    parse: Malloy.parse({ source: query }),
+    parse: Malloy.parse({source: query}),
   });
   const runnable = runtime
     ._loadModelFromModelDef(queryModel._modelDef)
     .loadQueryByName(queryName);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
-  return runnable.run({ rowLimit });
+  return runnable.run({rowLimit});
 }

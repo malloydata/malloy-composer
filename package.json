@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "tsc && eslint .",
+    "lint-fix": "tsc && eslint . --fix",
     "start": "npm run server-build && node ./dist/cli.js",
     "build": "ts-node scripts/build",
     "clean": "rm -rf ./build && rm -rf ./dist && rm -rf ./pkg && rm -rf ./bundle",

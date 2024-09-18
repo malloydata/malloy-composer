@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useMemo, useState } from "react";
-import { compileMeasure } from "../../core/compile";
-import { CodeInput, CodeTextArea } from "../CodeInput";
+import {useEffect, useMemo, useState} from 'react';
+import {compileMeasure} from '../../core/compile';
+import {CodeInput, CodeTextArea} from '../CodeInput';
 import {
   Button,
   ContextMenuTitle,
@@ -32,24 +32,24 @@ import {
   FormFieldList,
   FormInputLabel,
   FormItem,
-} from "../CommonElements";
-import { SelectDropdown } from "../SelectDropdown";
-import { FieldDef, QueryFieldDef, StructDef } from "@malloydata/malloy";
+} from '../CommonElements';
+import {SelectDropdown} from '../SelectDropdown';
+import {FieldDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
 import {
   degenerateMeasure,
   generateMeasure,
   MeasureType,
   sortFlatFields,
-} from "../../core/fields";
-import { FieldButton } from "../FieldButton";
-import { TypeIcon } from "../TypeIcon";
+} from '../../core/fields';
+import {FieldButton} from '../FieldButton';
+import {TypeIcon} from '../TypeIcon';
 import {
   flatFields,
   isAggregate,
   kindOfField,
   pathParent,
   typeOfField,
-} from "../utils";
+} from '../utils';
 
 interface AddMeasureProps {
   source: StructDef;
@@ -60,13 +60,13 @@ interface AddMeasureProps {
 }
 
 const VALID_MEASURES: Record<
-  "string" | "number" | "date" | "timestamp",
+  'string' | 'number' | 'date' | 'timestamp',
   MeasureType[]
 > = {
-  string: ["count_distinct"],
-  number: ["count_distinct", "avg", "sum", "min", "max"],
-  date: ["count_distinct", "min", "max"],
-  timestamp: ["count_distinct", "min", "max"],
+  string: ['count_distinct'],
+  number: ['count_distinct', 'avg', 'sum', 'min', 'max'],
+  date: ['count_distinct', 'min', 'max'],
+  timestamp: ['count_distinct', 'min', 'max'],
 };
 
 const MEASURE_OPTIONS: {
@@ -75,20 +75,20 @@ const MEASURE_OPTIONS: {
   divider?: boolean;
 }[] = [
   {
-    label: "Count Distinct",
-    value: "count_distinct",
+    label: 'Count Distinct',
+    value: 'count_distinct',
   },
-  { label: "Sum", value: "sum" },
-  { label: "Average", value: "avg" },
-  { label: "Max", value: "max" },
-  { label: "Min", value: "min" },
+  {label: 'Sum', value: 'sum'},
+  {label: 'Average', value: 'avg'},
+  {label: 'Max', value: 'max'},
+  {label: 'Min', value: 'min'},
   {
-    label: "Percent of All",
-    value: "percent",
+    label: 'Percent of All',
+    value: 'percent',
   },
 ];
 
-type FlatField = { field: FieldDef; path: string };
+type FlatField = {field: FieldDef; path: string};
 
 enum Mode {
   FIELD,
@@ -107,21 +107,21 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   let initialField: FlatField;
   let initialType: MeasureType;
   if (initialCode) {
-    const { measureType, field, path } = degenerateMeasure(source, initialCode);
+    const {measureType, field, path} = degenerateMeasure(source, initialCode);
     initialMode =
-      measureType === "custom"
+      measureType === 'custom'
         ? Mode.CUSTOM
-        : measureType === "count"
+        : measureType === 'count'
         ? Mode.COUNT
         : Mode.FIELD;
     if (field) {
-      initialField = { field, path };
+      initialField = {field, path};
     }
     initialType = measureType;
   }
   const [mode, setMode] = useState(initialMode);
-  const [measure, setMeasure] = useState(initialCode || "");
-  const [newName, setNewName] = useState(initialName || "");
+  const [measure, setMeasure] = useState(initialCode || '');
+  const [newName, setNewName] = useState(initialName || '');
   const [measureType, setMeasureType] = useState<MeasureType>(initialType);
   const [flatField, setFlatField] = useState<FlatField>(initialField);
 
@@ -134,19 +134,19 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
         setMeasure(newMeasure);
       }
     } else if (mode === Mode.COUNT) {
-      setMeasure("count()");
+      setMeasure('count()');
     }
   }, [mode, measureType, flatField]);
 
   const flattened = useMemo(
     () =>
       sortFlatFields(flatFields(source)).reduce<
-        Array<{ label: JSX.Element; value: FlatField }>
-      >((acc, { path, field }) => {
+        Array<{label: JSX.Element; value: FlatField}>
+      >((acc, {path, field}) => {
         const type = typeOfField(field);
         const kind = kindOfField(field);
 
-        if (["dimension", "measure"].includes(kind)) {
+        if (['dimension', 'measure'].includes(kind)) {
           const label = (
             <FieldButton
               name={field.name}
@@ -156,7 +156,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               disableHover={true}
             />
           );
-          acc.push({ label, value: { field, path } });
+          acc.push({label, value: {field, path}});
         }
         return acc;
       }, []),
@@ -167,7 +167,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 
   return (
     <ContextMenuMain>
-      <ContextMenuTitle>{needsName ? "New" : "Edit"} measure</ContextMenuTitle>
+      <ContextMenuTitle>{needsName ? 'New' : 'Edit'} measure</ContextMenuTitle>
       <form>
         <FormFieldList>
           <FormItem>
@@ -176,11 +176,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               autoFocus={true}
               value={mode}
               options={[
-                { label: "From a field", value: Mode.FIELD },
-                { label: "Count", value: Mode.COUNT },
-                { label: "Custom", value: Mode.CUSTOM },
+                {label: 'From a field', value: Mode.FIELD},
+                {label: 'Count', value: Mode.COUNT},
+                {label: 'Custom', value: Mode.CUSTOM},
               ]}
-              onChange={(value) => setMode(value)}
+              onChange={value => setMode(value)}
               width={300}
             />
           </FormItem>
@@ -191,7 +191,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 value={flatField}
                 valueEqual={(a, b) => a.path === b.path}
                 options={flattened}
-                onChange={(value) => setFlatField(value)}
+                onChange={value => setFlatField(value)}
                 width={300}
               />
             </FormItem>
@@ -203,14 +203,14 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 value={measureType}
                 options={
                   flatField
-                    ? MEASURE_OPTIONS.filter(({ value }) =>
+                    ? MEASURE_OPTIONS.filter(({value}) =>
                         isAggregate(flatField.field)
-                          ? value === "percent"
+                          ? value === 'percent'
                           : VALID_MEASURES[flatField.field.type].includes(value)
                       )
                     : []
                 }
-                onChange={(value) => setMeasureType(value)}
+                onChange={value => setMeasureType(value)}
                 width={300}
               />
             </FormItem>
@@ -221,7 +221,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               value={measure}
               setValue={setMeasure}
               placeholder="count() * items_per_count"
-              label={needsName ? "Definition" : undefined}
+              label={needsName ? 'Definition' : undefined}
               rows={3}
             />
           )}
@@ -240,29 +240,29 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={(event) => {
+            onClick={event => {
               event.preventDefault();
               event.stopPropagation();
               if (!newName) {
-                return setError(new Error("Enter a name"));
+                return setError(new Error('Enter a name'));
               }
               if (mode === Mode.CUSTOM) {
                 if (!measure) {
-                  return setError(new Error("Enter a definition"));
+                  return setError(new Error('Enter a definition'));
                 }
               } else if (mode === Mode.FIELD) {
                 if (!flatField) {
-                  return setError(new Error("Select a field"));
+                  return setError(new Error('Select a field'));
                 }
               }
               compileMeasure(source, newName, measure)
-                .then((measure) => {
-                  if (measure.type !== "struct") {
+                .then(measure => {
+                  if (measure.type !== 'struct') {
                     addMeasure(measure);
                     onComplete();
                   }
                 })
-                .catch((error) => {
+                .catch(error => {
                   setError(error);
                 });
             }}

@@ -20,69 +20,69 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useEffect, useState } from "react";
-import moment from "moment";
-import styled from "styled-components";
-import { COLORS } from "../colors";
+import {useEffect, useState} from 'react';
+import moment from 'moment';
+import styled from 'styled-components';
+import {COLORS} from '../colors';
 import {
   ChevronLeftButton,
   ChevronRightButton,
   FormFieldList,
-} from "../CommonElements";
-import { NumberInput } from "../NumberInput";
-import { SelectDropdown } from "../SelectDropdown";
+} from '../CommonElements';
+import {NumberInput} from '../NumberInput';
+import {SelectDropdown} from '../SelectDropdown';
 
 interface DatePickerProps {
   value: Date;
   setValue: (value: Date) => void;
   maxLevel:
-    | "year"
-    | "month"
-    | "day"
-    | "quarter"
-    | "week"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'month'
+    | 'day'
+    | 'quarter'
+    | 'week'
+    | 'hour'
+    | 'minute'
+    | 'second';
 }
 
 function granularityIndex(
   granularity:
-    | "year"
-    | "month"
-    | "day"
-    | "quarter"
-    | "week"
-    | "hour"
-    | "minute"
-    | "second"
+    | 'year'
+    | 'month'
+    | 'day'
+    | 'quarter'
+    | 'week'
+    | 'hour'
+    | 'minute'
+    | 'second'
 ) {
   return [
-    "year",
-    "quarter",
-    "month",
-    "week",
-    "day",
-    "hour",
-    "minute",
-    "second",
+    'year',
+    'quarter',
+    'month',
+    'week',
+    'day',
+    'hour',
+    'minute',
+    'second',
   ].indexOf(granularity);
 }
 
 function monthName(month: number) {
   return [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ][month];
 }
 
@@ -94,16 +94,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [date, setDate] = useState(value);
   const calendar = getCalendar(date);
   const [pickLevel, setPickLevel] = useState<
-    "day" | "month" | "year" | "quarter" | "week" | "hour" | "minute" | "second"
+    'day' | 'month' | 'year' | 'quarter' | 'week' | 'hour' | 'minute' | 'second'
   >(maxLevel);
   const yearBucket = Math.floor(moment(date).year() / 10) * 10;
 
   useEffect(() => {
     if (granularityIndex(maxLevel) < granularityIndex(pickLevel)) {
       setPickLevel(maxLevel);
-    } else if (pickLevel === "quarter" && maxLevel !== "quarter") {
+    } else if (pickLevel === 'quarter' && maxLevel !== 'quarter') {
       setPickLevel(maxLevel);
-    } else if (pickLevel === "week" && maxLevel !== "week") {
+    } else if (pickLevel === 'week' && maxLevel !== 'week') {
       setPickLevel(maxLevel);
     }
   }, [maxLevel, pickLevel]);
@@ -116,11 +116,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     const newDate = moment(date).year(year).toDate();
     setDate(newDate);
     setValue(newDate);
-    if (maxLevel !== "year") {
-      if (maxLevel === "quarter") {
-        setPickLevel("quarter");
+    if (maxLevel !== 'year') {
+      if (maxLevel === 'quarter') {
+        setPickLevel('quarter');
       } else {
-        setPickLevel("month");
+        setPickLevel('month');
       }
     }
   };
@@ -148,11 +148,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     const newDate = moment(date).month(month).toDate();
     setDate(newDate);
     setValue(newDate);
-    if (maxLevel !== "month") {
-      if (maxLevel === "week") {
-        setPickLevel("week");
+    if (maxLevel !== 'month') {
+      if (maxLevel === 'week') {
+        setPickLevel('week');
       } else {
-        setPickLevel("day");
+        setPickLevel('day');
       }
     }
   };
@@ -160,7 +160,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const setDay = (day: Date) => {
     setDate(day);
     setValue(day);
-    if (maxLevel !== "day") {
+    if (maxLevel !== 'day') {
       setPickLevel(maxLevel);
     }
   };
@@ -168,8 +168,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const setWeekByDay = (dateOfFirstDayOfWeek: Date) => {
     setDate(dateOfFirstDayOfWeek);
     setValue(dateOfFirstDayOfWeek);
-    if (maxLevel !== "week") {
-      setPickLevel("day");
+    if (maxLevel !== 'week') {
+      setPickLevel('day');
     }
   };
 
@@ -217,65 +217,65 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         <ArrowButton>
           <ChevronLeftButton
             onClick={() => {
-              if (pickLevel === "day" || pickLevel === "week") {
-                setDate(moment(date).subtract(1, "month").toDate());
-              } else if (pickLevel === "month" || pickLevel === "quarter") {
-                setDate(moment(date).subtract(1, "year").toDate());
-              } else if (pickLevel === "year") {
-                setDate(moment(date).subtract(10, "years").toDate());
+              if (pickLevel === 'day' || pickLevel === 'week') {
+                setDate(moment(date).subtract(1, 'month').toDate());
+              } else if (pickLevel === 'month' || pickLevel === 'quarter') {
+                setDate(moment(date).subtract(1, 'year').toDate());
+              } else if (pickLevel === 'year') {
+                setDate(moment(date).subtract(10, 'years').toDate());
               } else {
-                setDay(moment(date).subtract(1, "days").toDate());
+                setDay(moment(date).subtract(1, 'days').toDate());
               }
             }}
           />
         </ArrowButton>
         <MiddleButton
           onClick={() => {
-            if (pickLevel === "day" || pickLevel === "week") {
-              setPickLevel("month");
-            } else if (pickLevel === "month" || pickLevel === "quarter") {
-              setPickLevel("year");
+            if (pickLevel === 'day' || pickLevel === 'week') {
+              setPickLevel('month');
+            } else if (pickLevel === 'month' || pickLevel === 'quarter') {
+              setPickLevel('year');
             } else if (
-              pickLevel === "hour" ||
-              pickLevel === "minute" ||
-              pickLevel === "second"
+              pickLevel === 'hour' ||
+              pickLevel === 'minute' ||
+              pickLevel === 'second'
             ) {
-              setPickLevel("day");
+              setPickLevel('day');
             }
           }}
         >
-          {(pickLevel === "day" || pickLevel === "week") &&
-            moment(date).format("MMMM YYYY")}
-          {(pickLevel === "month" || pickLevel === "quarter") &&
-            moment(date).format("YYYY")}
-          {pickLevel === "year" && (
+          {(pickLevel === 'day' || pickLevel === 'week') &&
+            moment(date).format('MMMM YYYY')}
+          {(pickLevel === 'month' || pickLevel === 'quarter') &&
+            moment(date).format('YYYY')}
+          {pickLevel === 'year' && (
             <>
               {yearBucket}-{yearBucket + 9}
             </>
           )}
-          {(pickLevel === "hour" ||
-            pickLevel === "minute" ||
-            pickLevel === "second") && (
-            <>{moment(date).format("MMMM D, YYYY")}</>
+          {(pickLevel === 'hour' ||
+            pickLevel === 'minute' ||
+            pickLevel === 'second') && (
+            <>{moment(date).format('MMMM D, YYYY')}</>
           )}
         </MiddleButton>
         <ArrowButton>
           <ChevronRightButton
             onClick={() => {
-              if (pickLevel === "day" || pickLevel === "week") {
-                setDate(moment(date).add(1, "month").toDate());
-              } else if (pickLevel === "month" || pickLevel === "quarter") {
-                setDate(moment(date).add(1, "year").toDate());
-              } else if (pickLevel === "year") {
-                setDate(moment(date).add(10, "years").toDate());
+              if (pickLevel === 'day' || pickLevel === 'week') {
+                setDate(moment(date).add(1, 'month').toDate());
+              } else if (pickLevel === 'month' || pickLevel === 'quarter') {
+                setDate(moment(date).add(1, 'year').toDate());
+              } else if (pickLevel === 'year') {
+                setDate(moment(date).add(10, 'years').toDate());
               } else {
-                setDay(moment(date).add(1, "days").toDate());
+                setDay(moment(date).add(1, 'days').toDate());
               }
             }}
           />
         </ArrowButton>
       </ControlRow>
-      {pickLevel === "day" && (
+      {pickLevel === 'day' && (
         <Calendar>
           <WeekHeader>
             <DayHeader>S</DayHeader>
@@ -288,7 +288,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           </WeekHeader>
           {calendar.map((week, index) => (
             <Week key={index}>
-              {week.map((day) => (
+              {week.map(day => (
                 <Day
                   key={day.number}
                   isCurrentMonth={day.isCurrentMonth}
@@ -304,7 +304,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           ))}
         </Calendar>
       )}
-      {pickLevel === "month" && (
+      {pickLevel === 'month' && (
         <MonthPicker>
           <MonthsRow>
             {monthButton(0)}
@@ -328,7 +328,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           </MonthsRow>
         </MonthPicker>
       )}
-      {pickLevel === "year" && (
+      {pickLevel === 'year' && (
         <YearPicker>
           <YearsRow>
             {yearButton(-1)}
@@ -352,7 +352,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           </YearsRow>
         </YearPicker>
       )}
-      {pickLevel === "quarter" && (
+      {pickLevel === 'quarter' && (
         <QuarterPicker>
           {quarterButton(0)}
           {quarterButton(1)}
@@ -360,7 +360,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           {quarterButton(3)}
         </QuarterPicker>
       )}
-      {pickLevel === "week" && (
+      {pickLevel === 'week' && (
         <Calendar>
           <WeekHeader>
             <DayHeader>S</DayHeader>
@@ -379,7 +379,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               }}
               isSelected={value.getTime() === week[0].date.valueOf()}
             >
-              {week.map((day) => (
+              {week.map(day => (
                 <DayNotButton
                   key={day.number}
                   isCurrentMonth={day.isCurrentMonth}
@@ -391,41 +391,41 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           ))}
         </Calendar>
       )}
-      {(pickLevel === "hour" ||
-        pickLevel === "minute" ||
-        pickLevel === "second") && (
+      {(pickLevel === 'hour' ||
+        pickLevel === 'minute' ||
+        pickLevel === 'second') && (
         <TimePicker>
           <TimePickerInner>
             <FormFieldList>
               <NumberInput
                 label="Hours"
-                value={parseInt(moment(date).format("hh"))}
-                setValue={(hour12) => {
-                  const amPm = moment(date).hour() >= 12 ? "PM" : "AM";
+                value={parseInt(moment(date).format('hh'))}
+                setValue={hour12 => {
+                  const amPm = moment(date).hour() >= 12 ? 'PM' : 'AM';
                   const newHour24 = parseInt(
-                    moment(`${hour12} ${amPm}`, ["hh A"]).format("H")
+                    moment(`${hour12} ${amPm}`, ['hh A']).format('H')
                   );
                   setValue(moment(date).hour(newHour24).toDate());
                 }}
               ></NumberInput>
             </FormFieldList>
-            {(maxLevel === "minute" || maxLevel === "second") && (
+            {(maxLevel === 'minute' || maxLevel === 'second') && (
               <FormFieldList>
                 <NumberInput
                   label="Minutes"
                   value={moment(date).minutes()}
-                  setValue={(minute) => {
+                  setValue={minute => {
                     setValue(moment(date).minute(minute).toDate());
                   }}
                 ></NumberInput>
               </FormFieldList>
             )}
-            {maxLevel === "second" && (
+            {maxLevel === 'second' && (
               <FormFieldList>
                 <NumberInput
                   label="Seconds"
                   value={moment(date).seconds()}
-                  setValue={(second) => {
+                  setValue={second => {
                     setValue(moment(date).second(second).toDate());
                   }}
                 ></NumberInput>
@@ -433,23 +433,23 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             )}
             <div
               style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                flexDirection: "column",
+                display: 'flex',
+                justifyContent: 'flex-end',
+                flexDirection: 'column',
               }}
             >
               <SelectDropdown
-                value={moment(date).hour() >= 12 ? "PM" : "AM"}
-                onChange={(amPm) => {
-                  const hour12 = parseInt(moment(date).format("h"));
+                value={moment(date).hour() >= 12 ? 'PM' : 'AM'}
+                onChange={amPm => {
+                  const hour12 = parseInt(moment(date).format('h'));
                   const newHour24 = parseInt(
-                    moment(`${hour12} ${amPm}`, ["hh A"]).format("H")
+                    moment(`${hour12} ${amPm}`, ['hh A']).format('H')
                   );
                   setValue(moment(date).hour(newHour24).toDate());
                 }}
                 options={[
-                  { value: "AM", label: "AM" },
-                  { value: "PM", label: "PM" },
+                  {value: 'AM', label: 'AM'},
+                  {value: 'PM', label: 'PM'},
                 ]}
               />
             </div>
@@ -560,13 +560,13 @@ const Quarter = styled.div<{
     border-color: ${COLORS.dimension.fillMedium};
   }
 
-  ${({ isSelected }) =>
+  ${({isSelected}) =>
     isSelected
       ? `
       background-color: ${COLORS.dimension.fillLight};
       border-color: ${COLORS.dimension.fillMedium};
     `
-      : ""}
+      : ''}
 `;
 
 const Month = styled.div<{
@@ -591,13 +591,13 @@ const Month = styled.div<{
     border-color: ${COLORS.dimension.fillMedium};
   }
 
-  ${({ isSelected }) =>
+  ${({isSelected}) =>
     isSelected
       ? `
       background-color: ${COLORS.dimension.fillLight};
       border-color: ${COLORS.dimension.fillMedium};
     `
-      : ""}
+      : ''}
 `;
 
 const YearPicker = styled.div`
@@ -637,13 +637,13 @@ const Year = styled.div<{
     border-color: ${COLORS.dimension.fillMedium};
   }
 
-  ${({ isSelected }) =>
+  ${({isSelected}) =>
     isSelected
       ? `
       background-color: ${COLORS.dimension.fillLight};
       border-color: ${COLORS.dimension.fillMedium};
     `
-      : ""}
+      : ''}
 `;
 
 const NonCurrentYear = styled(Year)`
@@ -682,7 +682,7 @@ const WeekButton = styled.div<{
   justify-content: space-between;
   border: 1px solid transparent;
 
-  ${({ isSelected }) =>
+  ${({isSelected}) =>
     isSelected
       ? `
     background-color: ${COLORS.dimension.fillLight};
@@ -718,8 +718,8 @@ const DayNotButton = styled(Cell)<{
   cursor: pointer;
   border-radius: 50px;
   font-size: 12px;
-  ${({ isCurrentMonth }) => `
-    color: ${isCurrentMonth ? "#505050" : "#909090"};
+  ${({isCurrentMonth}) => `
+    color: ${isCurrentMonth ? '#505050' : '#909090'};
   `}
 `;
 
@@ -731,8 +731,8 @@ const Day = styled(Cell)<{
   border-radius: 50px;
   font-size: 12px;
   border: 1px solid transparent;
-  ${({ isCurrentMonth, isSelected }) => `
-    color: ${isCurrentMonth ? "#505050" : "#909090"};
+  ${({isCurrentMonth, isSelected}) => `
+    color: ${isCurrentMonth ? '#505050' : '#909090'};
     ${
       isSelected
         ? `
@@ -755,7 +755,7 @@ function getCalendar(date: Date) {
   const daysInMonth = firstDayOfMonth.daysInMonth();
   const daysInPreviousMonth = firstDayOfMonth
     .clone()
-    .subtract(1, "day")
+    .subtract(1, 'day')
     .daysInMonth();
   const calendar = [];
   for (let week = 0; week < 6; week++) {
@@ -765,7 +765,7 @@ function getCalendar(date: Date) {
         const diff = dow - day;
         row.push({
           number: daysInPreviousMonth - diff + 1,
-          date: firstDayOfMonth.clone().subtract(diff, "days").toDate(),
+          date: firstDayOfMonth.clone().subtract(diff, 'days').toDate(),
           isCurrentMonth: false,
         });
       } else {
@@ -773,13 +773,13 @@ function getCalendar(date: Date) {
         if (dom < daysInMonth) {
           row.push({
             number: dom + 1,
-            date: firstDayOfMonth.clone().add(dom, "days").toDate(),
+            date: firstDayOfMonth.clone().add(dom, 'days').toDate(),
             isCurrentMonth: true,
           });
         } else {
           row.push({
             number: dom - daysInMonth + 1,
-            date: firstDayOfMonth.clone().add(dom, "days").toDate(),
+            date: firstDayOfMonth.clone().add(dom, 'days').toDate(),
             isCurrentMonth: false,
           });
         }

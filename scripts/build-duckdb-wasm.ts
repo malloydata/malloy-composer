@@ -22,50 +22,50 @@
  */
 /* eslint-disable no-console */
 
-import fs from "fs";
-import path from "path";
-import { build, BuildOptions, serve } from "esbuild";
-import svgrPlugin from "esbuild-plugin-svgr";
-import { argv } from "process";
+import fs from 'fs';
+import path from 'path';
+import {build, BuildOptions, serve} from 'esbuild';
+import svgrPlugin from 'esbuild-plugin-svgr';
+import {argv} from 'process';
 
-const outDir = path.join(__dirname, "..", "duckdb-wasm", "dist");
-fs.mkdirSync(outDir, { recursive: true });
+const outDir = path.join(__dirname, '..', 'duckdb-wasm', 'dist');
+fs.mkdirSync(outDir, {recursive: true});
 
 let port: number | undefined;
 
 export async function doBuild(): Promise<void> {
-  const development = process.env.NODE_ENV == "development";
+  const development = process.env.NODE_ENV == 'development';
 
   const options: BuildOptions = {
     define: {
-      "process.env.NODE_DEBUG": "false",
-      "window.IS_DUCKDB_WASM": "true",
-      "window.MALLOY_CONFIG_URL": `"${
-        process.env.MALLOY_CONFIG_URL || "composer.json"
+      'process.env.NODE_DEBUG': 'false',
+      'window.IS_DUCKDB_WASM': 'true',
+      'window.MALLOY_CONFIG_URL': `"${
+        process.env.MALLOY_CONFIG_URL || 'composer.json'
       }"`,
     },
     entryPoints: {
-      main: "./src/index.tsx",
+      main: './src/index.tsx',
     },
-    entryNames: "app",
+    entryNames: 'app',
     bundle: true,
     minify: !development,
     sourcemap: development,
-    outdir: "duckdb-wasm/dist/",
-    platform: "browser",
-    plugins: [svgrPlugin({ exportType: "named" })],
+    outdir: 'duckdb-wasm/dist/',
+    platform: 'browser',
+    plugins: [svgrPlugin({exportType: 'named'})],
     loader: {
-      [".ttf"]: "dataurl",
-      [".svg"]: "dataurl",
-      [".png"]: "dataurl",
+      ['.ttf']: 'dataurl',
+      ['.svg']: 'dataurl',
+      ['.png']: 'dataurl',
     },
-    inject: ["./react-shim.js"],
+    inject: ['./react-shim.js'],
     watch:
       development && !port
         ? {
             onRebuild(error, result) {
-              if (error) console.error("Extension server build failed:", error);
-              else console.log("Extension server build succeeded:", result);
+              if (error) console.error('Extension server build failed:', error);
+              else console.log('Extension server build succeeded:', result);
             },
           }
         : false,
@@ -73,7 +73,7 @@ export async function doBuild(): Promise<void> {
 
   if (port) {
     console.log(`Listening on port ${port}`);
-    await serve({ port, servedir: "duckdb-wasm" }, options);
+    await serve({port, servedir: 'duckdb-wasm'}, options);
   } else {
     await build(options);
   }
@@ -90,10 +90,10 @@ if (argv.length > 2) {
 
 doBuild()
   .then(() => {
-    console.log("Built successfully");
+    console.log('Built successfully');
   })
-  .catch((error) => {
-    console.error("Built with errors");
+  .catch(error => {
+    console.error('Built with errors');
     console.log(error);
     if (!port) {
       process.exit(1);

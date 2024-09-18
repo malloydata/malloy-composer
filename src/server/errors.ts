@@ -21,14 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export async function wrapErrors<T>(
-  fn: () => T
-): Promise<T | { error: string }> {
+export async function wrapErrors<T>(fn: () => T): Promise<T | {error: string}> {
   try {
     return await fn();
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);
-    return { error: error.message };
+    return {error: error.message};
   }
 }
