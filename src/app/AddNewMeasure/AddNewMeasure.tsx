@@ -265,6 +265,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 .catch(error => {
                   setError(error);
                 });
+              return undefined;
             }}
           >
             Save

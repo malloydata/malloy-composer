@@ -25,7 +25,7 @@
     "malloy-unlink": "npm --no-fund --no-save --no-audit unlink $(./scripts/malloy-packages.js) && npm --no-fund --no-audit install --force"
   },
   "bin": {
-    "malloy-packages": "./scripts/malloy-packages.js"
+    "malloy-packages": "./scripts/malloy-packages.ts"
   },
   "dependencies": {
     "@malloydata/db-bigquery": "0.0.181",

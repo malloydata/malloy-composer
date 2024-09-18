@@ -38,6 +38,7 @@ export const noNodeModulesSourceMaps = {
           loader: 'default',
         };
       }
+      return undefined;
     });
   },
 };
