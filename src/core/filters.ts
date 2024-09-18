@@ -82,6 +82,7 @@ export function numberFilterToString(
     case 'is_not_null':
       return `${quotedField} != null`;
     case 'custom':
+    default:
       return `${quotedField}: ${filter.partial}`;
   }
 }
@@ -191,6 +192,7 @@ export function stringFilterToString(
     case 'is_not_blank':
       return `${quotedField} != ''`;
     case 'custom':
+    default:
       return `${quotedField}: ${filter.partial}`;
   }
 }
@@ -214,6 +216,7 @@ export function booleanFilterToString(
     case 'is_not_null':
       return `${quotedField} != null`;
     case 'custom':
+    default:
       return `${quotedField}: ${filter.partial}`;
   }
 }
@@ -256,6 +259,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
     case 'is_not_null':
       return `${quotedField} != null`;
     case 'custom':
+    default:
       return `${quotedField}: ${filter.partial}`;
   }
 }
@@ -360,6 +364,7 @@ export function stringFilterChangeType(
     case 'is_not_null':
       return {type};
     case 'custom':
+    default:
       // TODO extract the partial and fill it in here
       return {type, partial: ''};
   }
@@ -411,6 +416,7 @@ export function numberFilterChangeType(
     case 'is_not_null':
       return {type};
     case 'custom':
+    default:
       // TODO extract the partial and fill it in here
       return {type, partial: ''};
   }
@@ -450,6 +456,7 @@ export function timeFilterChangeType(
     case 'is_not_null':
       return {type};
     case 'custom':
+    default:
       // TODO extract the partial and fill it in here
       return {type, partial: ''};
   }
@@ -620,10 +627,11 @@ function hackyTerribleStringToBooleanFilter(
       filter: {type: 'is_false_or_null'},
     };
   }
+  throw Error(`Unrecognized filter  ${filterString}`);
 }
 
 function hackyTerribleStringToAnyFilter(
-  filterString
+  filterString: string
 ): HackyFilterParserResult<Filter> {
   const isNullMatch = filterString.match(NULL_FILTER);
   if (isNullMatch) {
@@ -646,6 +654,7 @@ function hackyTerribleStringToAnyFilter(
       filter: {type: 'custom', partial: isCustomMatch[2]},
     };
   }
+  throw Error(`Unrecognized filter  ${filterString}`);
 }
 
 function deEscape(stringString: string) {
@@ -878,6 +887,7 @@ function hackyTerribleStringToStringFilter(
       },
     };
   }
+  throw Error(`Unrecognized filter  ${filterString}`);
 }
 
 function hackyTerribleStringToNumberFilter(
@@ -954,6 +964,7 @@ function hackyTerribleStringToNumberFilter(
       },
     };
   }
+  throw Error(`Unrecognized filter  ${filterString}`);
 }
 
 function hackyTerribleStringToTimeFilter(
@@ -1035,4 +1046,5 @@ function hackyTerribleStringToTimeFilter(
       },
     };
   }
+  throw Error(`Unrecognized filter  ${filterString}`);
 }

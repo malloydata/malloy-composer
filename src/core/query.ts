@@ -1042,6 +1042,7 @@ ${malloy}
       // eslint-disable-next-line no-console
       console.log(error);
     }
+    return undefined;
   }
 
   private writeMalloyForPropertyValues(

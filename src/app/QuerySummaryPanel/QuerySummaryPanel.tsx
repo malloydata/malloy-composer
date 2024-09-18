@@ -580,6 +580,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
           } else {
             return <div />;
           }
+          return null;
         }}
         content={({isOpen, closeMenu}) => {
           if (item.type === 'field' || item.type === 'field_definition') {

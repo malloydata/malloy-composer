@@ -1,0 +1,75 @@
+{
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
+  "ignorePatterns": [
+    "*.d.ts",
+    "node_modules/",
+    "dist/",
+    "build/",
+    "malloy-samples/"
+  ],
+  "rules": {
+    "consistent-return": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": ["debug", "info", "warn", "error"]
+      }
+    ],
+    "prettier/prettier": "error",
+    "sort-keys": "off",
+    "no-duplicate-imports": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": ["@malloydata/malloy/src/*"],
+        "paths": [
+          {
+            "name": "lodash",
+            "message": "Import [module] from lodash/[module] instead"
+          }
+        ]
+      }
+    ],
+    "no-throw-literal": "error",
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {"prefer": "no-type-imports"}
+    ],
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {"argsIgnorePattern": "^_", "varsIgnorePattern": "^_"}
+    ],
+    "@typescript-eslint/parameter-properties": [
+      "error",
+      {"prefer": "parameter-property"}
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.tsx?"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "warnOnUnsupportedTypeScriptVersion": false,
+        "project": ["./tsconfig.json"]
+      },
+      "rules": {"@typescript-eslint/no-floating-promises": "error"}
+    },
+    {
+      "files": ["scripts/**"],
+      "rules": {
+        "node/no-unpublished-import": "off",
+        "no-console": "off",
+        "no-process-exit": "off"
+      }
+    }
+  ]
+}
