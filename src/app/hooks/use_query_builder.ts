@@ -395,7 +395,7 @@ export function useQueryBuilder(
   const addNewMeasure = addNewDimension;
 
   const onDrill = (filters: FilterCondition[]) => {
-    modifyQuery((qb) => {
+    modifyQuery(qb => {
       for (const filter of filters) {
         qb.addFilter({stageIndex: 0}, filter);
       }
