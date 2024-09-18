@@ -134,7 +134,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       // Automatically map table names to URLs
       const remoteTableCallback = async (tableName: string) => {
         if (registeredTables[tableName]) {
-          return;
+          return undefined;
         }
         connection.registerRemoteTable(
           tableName,

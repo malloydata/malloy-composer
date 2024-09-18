@@ -63,5 +63,7 @@ export const ChannelIcon: React.FC<{name: ChannelIconName}> = ({name}) => {
       return <ChannelIconSource {...sizeProps} />;
     case 'home':
       return <ChannelIconHome {...sizeProps} />;
+    default:
+      return null;
   }
 };
