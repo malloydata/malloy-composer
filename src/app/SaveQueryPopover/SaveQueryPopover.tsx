@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import styled from "styled-components";
-import { CodeInput } from "../CodeInput";
-import { Button, ButtonAndInputRow, ContextMenuTitle } from "../CommonElements";
-import { Popover } from "../Popover";
+import {useState} from 'react';
+import styled from 'styled-components';
+import {CodeInput} from '../CodeInput';
+import {Button, ButtonAndInputRow, ContextMenuTitle} from '../CommonElements';
+import {Popover} from '../Popover';
 
 interface SaveQueryPopoverProps {
   open: boolean;
@@ -37,7 +37,7 @@ export const SaveQueryPopover: React.FC<SaveQueryPopoverProps> = ({
   open,
   setOpen,
 }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   return (
     <Popover open={open} setOpen={setOpen}>
       <Content>
@@ -52,7 +52,7 @@ export const SaveQueryPopover: React.FC<SaveQueryPopoverProps> = ({
           <Button
             onClick={() => {
               saveQuery(name);
-              setName("");
+              setName('');
             }}
           >
             Save
@@ -83,12 +83,12 @@ export function useSaveQueryPopover({
     <SaveQueryPopover
       open={open}
       setOpen={setOpen}
-      saveQuery={(name) => {
+      saveQuery={name => {
         saveQuery(name);
         setOpen(false);
       }}
     />
   );
 
-  return { saveQueryPopover, openSaveQueryPopover: () => setOpen(true) };
+  return {saveQueryPopover, openSaveQueryPopover: () => setOpen(true)};
 }

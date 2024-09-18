@@ -20,16 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ReactElement, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { Popover } from "../Popover";
+import {ReactElement, useEffect, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {Popover} from '../Popover';
 
 interface HoverToPopoverProps {
   popoverContent: (props: {
     setOpen: (open: boolean) => void;
     closeMenu: () => void;
   }) => ReactElement | null;
-  content: (props: { isOpen: boolean; closeMenu: () => void }) => ReactElement;
+  content: (props: {isOpen: boolean; closeMenu: () => void}) => ReactElement;
   width: number;
   enabled?: boolean;
   zIndex?: number;
@@ -60,9 +60,9 @@ export const HoverToPopover: React.FC<HoverToPopoverProps> = ({
       onMouseEnter={() => !closing.current && setOpen(true)}
       onMouseLeave={closeMenu}
     >
-      <div ref={ref}>{content({ isOpen: open, closeMenu })}</div>
+      <div ref={ref}>{content({isOpen: open, closeMenu})}</div>
       {(() => {
-        const content = popoverContent({ setOpen, closeMenu });
+        const content = popoverContent({setOpen, closeMenu});
         return (
           <Popover
             open={enabled && open && content !== null}

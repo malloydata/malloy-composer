@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import { COLORS } from "../colors";
-import { ChannelIcon, ChannelIconName } from "../ChannelIcon";
+import styled from 'styled-components';
+import {COLORS} from '../colors';
+import {ChannelIcon, ChannelIconName} from '../ChannelIcon';
 
 export const ChannelButton: React.FC<{
   icon: ChannelIconName;
@@ -30,7 +30,7 @@ export const ChannelButton: React.FC<{
   onClick: () => void;
   selected: boolean;
   disabled?: boolean;
-}> = ({ icon, text, onClick, selected, disabled = false }) => {
+}> = ({icon, text, onClick, selected, disabled = false}) => {
   return (
     <StyledButton onClick={onClick} selected={selected} disabled={disabled}>
       <ChannelIcon name={icon} />
@@ -39,7 +39,7 @@ export const ChannelButton: React.FC<{
   );
 };
 
-const StyledButton = styled.button<{ selected: boolean; disabled: boolean }>`
+const StyledButton = styled.button<{selected: boolean; disabled: boolean}>`
   outline: none;
   border: none;
   color: ${COLORS.dimension.fillStrong};
@@ -52,7 +52,7 @@ const StyledButton = styled.button<{ selected: boolean; disabled: boolean }>`
   padding: 10px;
   font-weight: 600;
 
-  ${({ selected, disabled }) =>
+  ${({selected, disabled}) =>
     (!disabled
       ? `
       cursor: pointer;
@@ -86,5 +86,5 @@ const StyledButton = styled.button<{ selected: boolean; disabled: boolean }>`
         fill: ${COLORS.dimension.fillStrong};
       }
       `
-      : "")}
+      : '')}
 `;

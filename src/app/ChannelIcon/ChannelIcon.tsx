@@ -21,47 +21,49 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ReactComponent as ChannelIconAbout } from "../assets/img/channel_icons/channel_about.svg";
-import { ReactComponent as ChannelIconFeedback } from "../assets/img/channel_icons/channel_feedback.svg";
-import { ReactComponent as ChannelIconHelp } from "../assets/img/channel_icons/channel_help.svg";
-import { ReactComponent as ChannelIconPreview } from "../assets/img/channel_icons/channel_preview.svg";
-import { ReactComponent as ChannelIconQuery } from "../assets/img/channel_icons/channel_query.svg";
-import { ReactComponent as ChannelIconSamples } from "../assets/img/channel_icons/channel_samples.svg";
-import { ReactComponent as ChannelIconSettings } from "../assets/img/channel_icons/channel_settings.svg";
-import { ReactComponent as ChannelIconSource } from "../assets/img/channel_icons/channel_source.svg";
-import { ReactComponent as ChannelIconHome } from "../assets/img/channel_icons/channel_home.svg";
+import {ReactComponent as ChannelIconAbout} from '../assets/img/channel_icons/channel_about.svg';
+import {ReactComponent as ChannelIconFeedback} from '../assets/img/channel_icons/channel_feedback.svg';
+import {ReactComponent as ChannelIconHelp} from '../assets/img/channel_icons/channel_help.svg';
+import {ReactComponent as ChannelIconPreview} from '../assets/img/channel_icons/channel_preview.svg';
+import {ReactComponent as ChannelIconQuery} from '../assets/img/channel_icons/channel_query.svg';
+import {ReactComponent as ChannelIconSamples} from '../assets/img/channel_icons/channel_samples.svg';
+import {ReactComponent as ChannelIconSettings} from '../assets/img/channel_icons/channel_settings.svg';
+import {ReactComponent as ChannelIconSource} from '../assets/img/channel_icons/channel_source.svg';
+import {ReactComponent as ChannelIconHome} from '../assets/img/channel_icons/channel_home.svg';
 
 export type ChannelIconName =
-  | "about"
-  | "feedback"
-  | "help"
-  | "preview"
-  | "query"
-  | "samples"
-  | "settings"
-  | "source"
-  | "home";
+  | 'about'
+  | 'feedback'
+  | 'help'
+  | 'preview'
+  | 'query'
+  | 'samples'
+  | 'settings'
+  | 'source'
+  | 'home';
 
-export const ChannelIcon: React.FC<{ name: ChannelIconName }> = ({ name }) => {
-  const sizeProps = { width: "18px", height: "18px" };
+export const ChannelIcon: React.FC<{name: ChannelIconName}> = ({name}) => {
+  const sizeProps = {width: '18px', height: '18px'};
   switch (name) {
-    case "about":
+    case 'about':
       return <ChannelIconAbout {...sizeProps} />;
-    case "feedback":
+    case 'feedback':
       return <ChannelIconFeedback {...sizeProps} />;
-    case "help":
+    case 'help':
       return <ChannelIconHelp {...sizeProps} />;
-    case "preview":
+    case 'preview':
       return <ChannelIconPreview {...sizeProps} />;
-    case "query":
+    case 'query':
       return <ChannelIconQuery {...sizeProps} />;
-    case "samples":
+    case 'samples':
       return <ChannelIconSamples {...sizeProps} />;
-    case "settings":
+    case 'settings':
       return <ChannelIconSettings {...sizeProps} />;
-    case "source":
+    case 'source':
       return <ChannelIconSource {...sizeProps} />;
-    case "home":
+    case 'home':
       return <ChannelIconHome {...sizeProps} />;
+    default:
+      return null;
   }
 };

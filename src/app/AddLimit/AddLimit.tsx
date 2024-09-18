@@ -20,14 +20,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import { CodeInput } from "../CodeInput";
+import {useState} from 'react';
+import {CodeInput} from '../CodeInput';
 import {
   Button,
   ContextMenuMain,
   ContextMenuTitle,
   ButtonAndInputRow,
-} from "../CommonElements";
+} from '../CommonElements';
 
 interface LimitContextBarProps {
   existing?: number;
@@ -40,7 +40,7 @@ export const AddLimit: React.FC<LimitContextBarProps> = ({
   addLimit,
   onComplete,
 }) => {
-  const [limit, setLimit] = useState(existing?.toString() || "10");
+  const [limit, setLimit] = useState(existing?.toString() || '10');
   return (
     <ContextMenuMain>
       <ContextMenuTitle>Limit</ContextMenuTitle>
@@ -50,7 +50,7 @@ export const AddLimit: React.FC<LimitContextBarProps> = ({
           setValue={setLimit}
           autoFocus={true}
           autoSelect={true}
-        />{" "}
+        />{' '}
         <Button type="button" color="secondary" onClick={onComplete}>
           Cancel
         </Button>

@@ -21,55 +21,55 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import express from "express";
-import { routes } from "./routes";
-import cors from "cors";
-import * as http from "http";
-import * as path from "path";
-import logging from "./logging";
-import { AddressInfo } from "net";
+import express from 'express';
+import {routes} from './routes';
+import cors from 'cors';
+import * as http from 'http';
+import * as path from 'path';
+import logging from './logging';
+import {AddressInfo} from 'net';
 
 const app = express();
 
-const DEV = process.env.DEV === "1";
+const DEV = process.env.DEV === '1';
 const PORT = Number(process.env.PORT || 4000);
-const HOST = process.env.HOST || "localhost";
+const HOST = process.env.HOST || 'localhost';
 
 const allowedOrigins = [];
 
 if (DEV) {
   // eslint-disable-next-line no-console
-  console.log("DEV Enabled");
+  console.log('DEV Enabled');
   allowedOrigins.push(`http://${HOST}:${PORT}`);
 }
 
 app.use(logging.basicLogging);
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({origin: allowedOrigins}));
 app.use(express.json());
 
 const router = express.Router();
 
 routes(router);
 
-app.use("/api", router);
+app.use('/api', router);
 
-const BUILD_ROOT = path.join(__dirname, "../build");
+const BUILD_ROOT = path.join(__dirname, '../build');
 
-app.use("/static", express.static(path.join(BUILD_ROOT, "/app")));
+app.use('/static', express.static(path.join(BUILD_ROOT, '/app')));
 
-app.use("/fonts", express.static(path.join(BUILD_ROOT, "/app/fonts")));
+app.use('/fonts', express.static(path.join(BUILD_ROOT, '/app/fonts')));
 
-app.use("/", express.static(path.join(BUILD_ROOT, "/app")));
+app.use('/', express.static(path.join(BUILD_ROOT, '/app')));
 
-app.get("/shutdown", function (req, res) {
-  res.send("Shutting down");
+app.get('/shutdown', function (req, res) {
+  res.send('Shutting down');
   process.exit(0);
 });
 
 if (DEV) {
   app.use(
-    "/packages",
-    express.static(path.join(BUILD_ROOT, "../../../packages"))
+    '/packages',
+    express.static(path.join(BUILD_ROOT, '../../../packages'))
   );
 }
 

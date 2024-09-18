@@ -22,7 +22,7 @@
  */
 
 /* eslint-disable no-console */
-import fs from "fs";
+import fs from 'fs';
 
 export interface NpmPackage {
   dependencies?: Record<string, string>;
@@ -37,10 +37,10 @@ export interface NpmPackage {
 
 export function readPackageJson(path: string): NpmPackage {
   try {
-    const fileBuffer = fs.readFileSync(path, "utf8");
+    const fileBuffer = fs.readFileSync(path, 'utf8');
     return JSON.parse(fileBuffer);
   } catch (error) {
-    console.warn("Could not read package.json", error.message);
+    console.warn('Could not read package.json', error.message);
   }
   return {};
 }

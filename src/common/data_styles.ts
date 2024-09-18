@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { URLReader } from "@malloydata/malloy";
-import { DataStyles } from "@malloydata/render";
+import {URLReader} from '@malloydata/malloy';
+import {DataStyles} from '@malloydata/render';
 
 export function compileDataStyles(styles: string): DataStyles {
   try {
@@ -38,9 +38,9 @@ export async function dataStylesForFile(
   text: string,
   urlReader: URLReader
 ): Promise<DataStyles> {
-  const PREFIX = "--! styles ";
+  const PREFIX = '--! styles ';
   let styles: DataStyles = {};
-  for (const line of text.split("\n")) {
+  for (const line of text.split('\n')) {
     if (line.startsWith(PREFIX)) {
       const fileName = line.trimEnd().substring(PREFIX.length);
       // TODO instead of failing silently when the file does not exist, perform this after the WebView has been
@@ -51,9 +51,9 @@ export async function dataStylesForFile(
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(`Error loading data style '${fileName}': ${error}`);
-        stylesText = "{}";
+        stylesText = '{}';
       }
-      styles = { ...styles, ...compileDataStyles(stylesText) };
+      styles = {...styles, ...compileDataStyles(stylesText)};
     }
   }
 
@@ -65,12 +65,9 @@ export async function dataStylesForFile(
 //      we abuse the `URLReader` API to keep track of requested URLs
 //      and accumulate data styles for those files.
 export class HackyDataStylesAccumulator implements URLReader {
-  private urlReader: URLReader;
   private dataStyles: DataStyles = {};
 
-  constructor(urlReader: URLReader) {
-    this.urlReader = urlReader;
-  }
+  constructor(private urlReader: URLReader) {}
 
   async readURL(url: URL): Promise<string> {
     const contents = await this.urlReader.readURL(url);

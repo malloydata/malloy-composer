@@ -27,22 +27,22 @@ import {
   PipeSegment,
   Segment,
   StructDef,
-} from "@malloydata/malloy";
-import { maybeQuoteIdentifier, unquoteIdentifier } from "./utils";
+} from '@malloydata/malloy';
+import {maybeQuoteIdentifier, unquoteIdentifier} from './utils';
 
 /**
  * Pre-defined types for new measures.
  */
 
 export type MeasureType =
-  | "count"
-  | "count_distinct"
-  | "max"
-  | "min"
-  | "avg"
-  | "sum"
-  | "percent"
-  | "custom";
+  | 'count'
+  | 'count_distinct'
+  | 'max'
+  | 'min'
+  | 'avg'
+  | 'sum'
+  | 'percent'
+  | 'custom';
 
 /**
  * Generates a new measure string based on a pre-defined type, and
@@ -58,18 +58,18 @@ export function generateMeasure(
 ): string | undefined {
   const quotedFieldName = maybeQuoteIdentifier(fieldName);
   switch (measureType) {
-    case "count_distinct":
+    case 'count_distinct':
       return `count(${quotedFieldName})`;
-    case "avg":
-    case "sum":
+    case 'avg':
+    case 'sum':
       return `${quotedFieldName}.${measureType}()`;
-    case "min":
-    case "max":
+    case 'min':
+    case 'max':
       return `${measureType}(${quotedFieldName})`;
-    case "percent":
+    case 'percent':
       return `100 * ${quotedFieldName} / all(${quotedFieldName})`;
   }
-  return;
+  return undefined;
 }
 
 function findField(
@@ -82,12 +82,12 @@ function findField(
   ): StructDef => Segment.nextStructDef(source, stage);
 
   const _findField = (fields: FieldDef[], parts: string[]) => {
-    const field = fields.find((field) => (field.as || field.name) === parts[0]);
+    const field = fields.find(field => (field.as || field.name) === parts[0]);
     if (field) {
       if (parts.length > 1) {
-        if (field.type === "struct") {
+        if (field.type === 'struct') {
           return _findField(field.fields, parts.slice(1));
-        } else if (field.type === "turtle") {
+        } else if (field.type === 'turtle') {
           let turtleSource = source;
           for (const stage of field.pipeline) {
             turtleSource = modifySourceForStage(stage, turtleSource);
@@ -105,7 +105,7 @@ function findField(
       return undefined;
     }
   };
-  const parts = unquoteIdentifier(identifier).split(".");
+  const parts = unquoteIdentifier(identifier).split('.');
   return _findField(source.fields, parts);
 }
 
@@ -130,15 +130,15 @@ export function degenerateMeasure(
   parts = MEASURE_COUNT.exec(measure);
   if (parts) {
     return {
-      measureType: "count",
-      path: "",
+      measureType: 'count',
+      path: '',
       field: undefined,
     };
   }
   parts = MEASURE_COUNT_DISTINCT.exec(measure);
   if (parts) {
     return {
-      measureType: "count_distinct",
+      measureType: 'count_distinct',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -146,7 +146,7 @@ export function degenerateMeasure(
   parts = MEASURE_AVG.exec(measure);
   if (parts) {
     return {
-      measureType: "avg",
+      measureType: 'avg',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -154,7 +154,7 @@ export function degenerateMeasure(
   parts = MEASURE_SUM.exec(measure);
   if (parts) {
     return {
-      measureType: "sum",
+      measureType: 'sum',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -162,7 +162,7 @@ export function degenerateMeasure(
   parts = MEASURE_MIN.exec(measure);
   if (parts) {
     return {
-      measureType: "min",
+      measureType: 'min',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -170,7 +170,7 @@ export function degenerateMeasure(
   parts = MEASURE_MAX.exec(measure);
   if (parts) {
     return {
-      measureType: "max",
+      measureType: 'max',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -178,22 +178,22 @@ export function degenerateMeasure(
   parts = MEASURE_PERCENT.exec(measure);
   if (parts && parts[1] === parts[2]) {
     return {
-      measureType: "percent",
+      measureType: 'percent',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
   }
   return {
-    measureType: "custom",
-    path: "",
+    measureType: 'custom',
+    path: '',
     field: undefined,
   };
 }
 
 export function sortFieldOrder(field: FieldDef): 0 | 1 | 2 | 3 {
-  if (field.type === "struct") {
+  if (field.type === 'struct') {
     return 3;
-  } else if (field.type === "turtle") {
+  } else if (field.type === 'turtle') {
     return 2;
   } else if (expressionIsCalculation(field.expressionType)) {
     return 1;
@@ -211,10 +211,10 @@ export function sortFields(fields: FieldDef[]): FieldDef[] {
   });
 }
 
-export type FlatField = { field: FieldDef; path: string };
+export type FlatField = {field: FieldDef; path: string};
 
 export function sortFlatFields(
-  fields: { field: FieldDef; path: string }[]
+  fields: {field: FieldDef; path: string}[]
 ): FlatField[] {
   return fields.sort((a, b) => {
     const orderA = sortFieldOrder(a.field);

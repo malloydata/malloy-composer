@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React, { RefObject, useRef, useState } from "react";
-import styled from "styled-components";
-import { useClickOutside } from "../hooks";
-import { usePopper } from "react-popper";
-import { Placement } from "@popperjs/core";
+import React, {RefObject, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {useClickOutside} from '../hooks';
+import {usePopper} from 'react-popper';
+import {Placement} from '@popperjs/core';
 
 interface PopoverProps {
   open: boolean;
@@ -49,7 +49,7 @@ export const PopoverBox = styled.div<{
   box-shadow: 0px 1px 5px 1px #0000001a;
   background-color: white;
   font-size: 14px;
-  ${({ width, zIndex }) => `
+  ${({width, zIndex}) => `
     width: ${width}px;
     z-index: ${zIndex};
   `}
@@ -64,7 +64,7 @@ export const Popover: React.FC<PopoverProps> = ({
   setOpen,
   children,
   width = 350,
-  placement = "right-start",
+  placement = 'right-start',
   referenceDiv,
   zIndex = 10,
   xOffset = 0,
@@ -74,28 +74,28 @@ export const Popover: React.FC<PopoverProps> = ({
   const triggerRef = useRef<HTMLDivElement>(null);
   const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null);
 
-  const { styles, attributes } = usePopper(
+  const {styles, attributes} = usePopper(
     referenceDiv?.current || triggerRef.current,
     tooltipRef,
     {
       placement,
       modifiers: [
         {
-          name: "offset",
+          name: 'offset',
           options: {
             offset: [xOffset, yOffset],
           },
         },
         {
-          name: "preventOverflow",
+          name: 'preventOverflow',
           options: {
             altAxis: true,
             padding: 20,
-            boundary: document.getElementsByTagName("body")[0],
+            boundary: document.getElementsByTagName('body')[0],
           },
         },
         {
-          name: "flip",
+          name: 'flip',
           options: {
             flipVariations: false,
           },
@@ -112,7 +112,7 @@ export const Popover: React.FC<PopoverProps> = ({
         <PopoverBox
           width={width}
           ref={setTooltipRef}
-          style={{ ...styles.popper, position: "fixed" }}
+          style={{...styles.popper, position: 'fixed'}}
           {...attributes.popper}
           zIndex={zIndex}
         >

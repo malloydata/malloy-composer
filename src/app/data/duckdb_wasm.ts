@@ -21,11 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { DuckDBWASMConnection } from "@malloydata/db-duckdb/wasm";
-import * as malloy from "@malloydata/malloy";
-import { HackyDataStylesAccumulator } from "../../common/data_styles";
-import * as explore from "../../types";
-import { snakeToTitle } from "../utils";
+import {DuckDBWASMConnection} from '@malloydata/db-duckdb/wasm';
+import * as malloy from '@malloydata/malloy';
+import {HackyDataStylesAccumulator} from '../../common/data_styles';
+import * as explore from '../../types';
+import {snakeToTitle} from '../utils';
 
 declare global {
   interface Window {
@@ -39,7 +39,7 @@ export class DuckDBWasmLookup
   connection: DuckDBWASMConnection;
 
   constructor() {
-    this.connection = new DuckDBWASMConnection("duckdb");
+    this.connection = new DuckDBWASMConnection('duckdb');
   }
 
   async lookupConnection(_name: string): Promise<DuckDBWASMConnection> {
@@ -79,7 +79,7 @@ export async function apps(): Promise<explore.ComposerConfig> {
   const url = new URL(window.MALLOY_CONFIG_URL, base);
   const response = await URL_READER.readURL(url);
   const config = JSON.parse(response) as explore.ComposerConfig;
-  if ("apps" in config) {
+  if ('apps' in config) {
     const readme =
       config.readme && (await URL_READER.readURL(new URL(config.readme, url)));
     return {
@@ -90,8 +90,8 @@ export async function apps(): Promise<explore.ComposerConfig> {
   return {
     apps: [
       {
-        id: "default",
-        path: "composer.json",
+        id: 'default',
+        path: 'composer.json',
       },
     ],
   };
@@ -110,15 +110,15 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
 
   const models: explore.ModelInfo[] = await Promise.all(
     app.models.map(async (sample: explore.ModelConfig) => {
-      const connection = await DUCKDB_WASM.lookupConnection("duckdb");
+      const connection = await DUCKDB_WASM.lookupConnection('duckdb');
 
       // Manually map table names to URLs
       if (sample.tables) {
         await Promise.all(
-          sample.tables.map((table) => {
+          sample.tables.map(table => {
             let tableName: string;
             let tableUrl: string;
-            if (typeof table === "string") {
+            if (typeof table === 'string') {
               tableName = table;
               tableUrl = new URL(tableName, samplesURL).toString();
             } else {
@@ -134,7 +134,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       // Automatically map table names to URLs
       const remoteTableCallback = async (tableName: string) => {
         if (registeredTables[tableName]) {
-          return;
+          return undefined;
         }
         connection.registerRemoteTable(
           tableName,
@@ -153,8 +153,8 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
-          .filter((obj) => obj.type === "struct")
-          .map((obj) => ({
+          .filter(obj => obj.type === 'struct')
+          .map(obj => ({
             title: snakeToTitle(obj.as || obj.name),
             sourceName: obj.as || obj.name,
             description: `Source ${obj.as} in ${sample.id}`,
@@ -187,13 +187,13 @@ export async function runQuery(
     urlReader: URL_READER,
     connections: DUCKDB_WASM,
     model: baseModel,
-    parse: malloy.Malloy.parse({ source: query }),
+    parse: malloy.Malloy.parse({source: query}),
   });
   const runnable = RUNTIME._loadModelFromModelDef(
     queryModel._modelDef
   ).loadQueryByName(queryName);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
-  return runnable.run({ rowLimit });
+  return runnable.run({rowLimit});
 }
 
 export async function search(
