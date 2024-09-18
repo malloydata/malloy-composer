@@ -21,10 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useMutation } from "react-query";
-import * as malloy from "@malloydata/malloy";
-import { isDuckDBWASM } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
+import {useMutation} from 'react-query';
+import * as malloy from '@malloydata/malloy';
+import {isDuckDBWASM} from '../utils';
+import * as duckDBWASM from './duckdb_wasm';
 
 async function runQuery(
   query: string,
@@ -41,10 +41,10 @@ async function runQuery(
   }
 
   const raw = await (
-    await fetch("api/run_query", {
-      method: "POST",
+    await fetch('api/run_query', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         query,
@@ -68,15 +68,15 @@ export function useRunQuery(
   model: malloy.ModelDef,
   modelPath: string
 ): UseRunQueryResult {
-  const { data, mutateAsync, isLoading, reset } = useMutation(
-    ({ query, queryName }: { query: string; queryName: string }) =>
+  const {data, mutateAsync, isLoading, reset} = useMutation(
+    ({query, queryName}: {query: string; queryName: string}) =>
       runQuery(query, model, modelPath, queryName),
-    { onError }
+    {onError}
   );
 
   const runQueryRet = (query: string, queryName: string) => {
     reset();
-    mutateAsync({ query, queryName });
+    mutateAsync({query, queryName});
   };
 
   return {

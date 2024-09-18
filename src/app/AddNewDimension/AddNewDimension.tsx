@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { useState } from "react";
-import { compileDimension } from "../../core/compile";
-import { CodeInput } from "../CodeInput";
+import {useState} from 'react';
+import {compileDimension} from '../../core/compile';
+import {CodeInput} from '../CodeInput';
 import {
   Button,
   ContextMenuMain,
@@ -30,8 +30,8 @@ import {
   ContextMenuTitle,
   FormError,
   FormFieldList,
-} from "../CommonElements";
-import { QueryFieldDef, StructDef } from "@malloydata/malloy";
+} from '../CommonElements';
+import {QueryFieldDef, StructDef} from '@malloydata/malloy';
 
 interface AddFilterProps {
   source: StructDef;
@@ -48,14 +48,14 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
   initialCode,
   initialName,
 }) => {
-  const [dimension, setDimension] = useState(initialCode || "");
-  const [newName, setNewName] = useState(initialName || "");
+  const [dimension, setDimension] = useState(initialCode || '');
+  const [newName, setNewName] = useState(initialName || '');
   const [error, setError] = useState<Error>();
   const needsName = initialCode === undefined;
   return (
     <ContextMenuMain>
       <ContextMenuTitle>
-        {needsName ? "New" : "Edit"} Dimension
+        {needsName ? 'New' : 'Edit'} Dimension
       </ContextMenuTitle>
       <form>
         <FormFieldList>
@@ -72,7 +72,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             value={dimension}
             setValue={setDimension}
             placeholder="some_field * 10"
-            label={needsName ? "Definition" : undefined}
+            label={needsName ? 'Definition' : undefined}
           />
         </FormFieldList>
         <FormError error={error} />
@@ -81,12 +81,12 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={(event) => {
+            onClick={event => {
               event.stopPropagation();
               event.preventDefault();
               compileDimension(source, newName, dimension)
-                .then((dimension) => {
-                  if (dimension.type !== "struct") {
+                .then(dimension => {
+                  if (dimension.type !== 'struct') {
                     addDimension(dimension);
                     onComplete();
                   }

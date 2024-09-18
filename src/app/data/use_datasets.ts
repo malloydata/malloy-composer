@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { useQuery } from "react-query";
-import * as explore from "../../types";
-import { isDuckDBWASM } from "../utils";
-import * as duckDBWASM from "./duckdb_wasm";
+import {useQuery} from 'react-query';
+import * as explore from '../../types';
+import {isDuckDBWASM} from '../utils';
+import * as duckDBWASM from './duckdb_wasm';
 
 export function useDatasets(
-  app: { path: string; id?: string | undefined } | undefined
+  app: {path: string; id?: string | undefined} | undefined
 ): explore.AppInfo | undefined {
-  const { data: directory } = useQuery(
-    ["datasets", app ? app.id ?? "default" : "empty"],
+  const {data: directory} = useQuery(
+    ['datasets', app ? app.id ?? 'default' : 'empty'],
     async () => {
       if (app === undefined) {
         return undefined;
@@ -39,10 +39,10 @@ export function useDatasets(
         return duckDBWASM.datasets(app.path);
       }
       const raw = await (
-        await fetch("api/datasets", {
-          method: "POST",
+        await fetch('api/datasets', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             app,

@@ -20,27 +20,27 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { StructDef } from "@malloydata/malloy";
-import { useState } from "react";
-import { ActionIcon } from "../ActionIcon";
-import { AddNewNest } from "../AddNewNest";
+import {StructDef} from '@malloydata/malloy';
+import {useState} from 'react';
+import {ActionIcon} from '../ActionIcon';
+import {AddNewNest} from '../AddNewNest';
 import {
   ContextMenuContent,
   ContextMenuOuter,
   ContextMenuSearchHeader,
   ScrollMain,
-} from "../CommonElements";
-import { FieldButton } from "../FieldButton";
-import { FieldList } from "../FieldList";
-import { SearchInput } from "../SearchInput";
-import { SearchList } from "../SearchList";
+} from '../CommonElements';
+import {FieldButton} from '../FieldButton';
+import {FieldList} from '../FieldList';
+import {SearchInput} from '../SearchInput';
+import {SearchList} from '../SearchList';
 import {
   fieldToSummaryItem,
   flatFields,
   isQuery,
   pathParent,
   termsForField,
-} from "../utils";
+} from '../utils';
 
 interface NestContextBarProps {
   source: StructDef;
@@ -56,7 +56,7 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
   onComplete,
 }) => {
   const [isAddingNest, setIsAddingNest] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   return (
     <ContextMenuOuter>
       {!isAddingNest && (
@@ -71,7 +71,7 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
           </ContextMenuSearchHeader>
           <ScrollMain>
             <ContextMenuContent>
-              {searchTerm === "" && (
+              {searchTerm === '' && (
                 <>
                   <FieldButton
                     icon={<ActionIcon action="add" />}
@@ -81,23 +81,23 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
                   />
                   <FieldList
                     fields={source.fields}
-                    filter={(field) => field.type === "turtle"}
+                    filter={field => field.type === 'turtle'}
                     showNested={true}
                     selectField={selectField}
                     topValues={undefined}
                   />
                 </>
               )}
-              {searchTerm !== "" && (
+              {searchTerm !== '' && (
                 <>
                   <SearchList
                     topValues={undefined}
                     searchTerm={searchTerm}
                     items={flatFields(source)
-                      .filter(({ field }) => isQuery(field))
-                      .map(({ field, path }) => ({
+                      .filter(({field}) => isQuery(field))
+                      .map(({field, path}) => ({
                         item: fieldToSummaryItem(field, path),
-                        terms: [...termsForField(field, path), "nest"],
+                        terms: [...termsForField(field, path), 'nest'],
                         detail: pathParent(path),
                         key: keyFor(path),
                         select: () => selectField(path),
@@ -117,5 +117,5 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
 };
 
 export function keyFor(path: string): string {
-  return "nest/" + path;
+  return 'nest/' + path;
 }

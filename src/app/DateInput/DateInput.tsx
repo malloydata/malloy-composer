@@ -20,11 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import styled from "styled-components";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { COLORS } from "../colors";
-import { FormItem, FormInputLabel } from "../CommonElements";
+import styled from 'styled-components';
+import moment from 'moment';
+import {useEffect, useState} from 'react';
+import {COLORS} from '../colors';
+import {FormItem, FormInputLabel} from '../CommonElements';
 
 interface DateInputProps {
   value: Date;
@@ -33,14 +33,14 @@ interface DateInputProps {
   label?: string;
   autoFocus?: boolean;
   granularity:
-    | "year"
-    | "month"
-    | "day"
-    | "quarter"
-    | "week"
-    | "hour"
-    | "minute"
-    | "second";
+    | 'year'
+    | 'month'
+    | 'day'
+    | 'quarter'
+    | 'week'
+    | 'hour'
+    | 'minute'
+    | 'second';
   onFocus?: () => void;
   onBlur?: () => void;
   isActive?: boolean;
@@ -58,21 +58,21 @@ export const DateInput: React.FC<DateInputProps> = ({
   isActive,
 }) => {
   const format =
-    granularity === "year"
-      ? "YYYY"
-      : granularity === "month"
-      ? "YYYY-MM"
-      : granularity === "quarter"
-      ? "YYYY-[Q]Q"
-      : granularity === "week"
-      ? "[WK]YYYY-MM-DD"
-      : granularity === "day"
-      ? "YYYY-MM-DD"
-      : granularity === "hour"
-      ? "YYYY-MM-DD HH:00"
-      : granularity === "minute"
-      ? "YYYY-MM-DD HH:mm"
-      : "YYYY-MM-DD HH:mm:ss";
+    granularity === 'year'
+      ? 'YYYY'
+      : granularity === 'month'
+      ? 'YYYY-MM'
+      : granularity === 'quarter'
+      ? 'YYYY-[Q]Q'
+      : granularity === 'week'
+      ? '[WK]YYYY-MM-DD'
+      : granularity === 'day'
+      ? 'YYYY-MM-DD'
+      : granularity === 'hour'
+      ? 'YYYY-MM-DD HH:00'
+      : granularity === 'minute'
+      ? 'YYYY-MM-DD HH:mm'
+      : 'YYYY-MM-DD HH:mm:ss';
   const [tempValue, setTempValue] = useState(moment(value).format(format));
 
   useEffect(() => {
@@ -89,23 +89,23 @@ export const DateInput: React.FC<DateInputProps> = ({
         onFocus={onFocus}
         onBlur={onBlur}
         isActive={isActive}
-        onChange={(event) => {
+        onChange={event => {
           const raw = event.target.value;
           setTempValue(raw);
           const regex =
-            granularity === "year"
+            granularity === 'year'
               ? /\d\d\d\d/
-              : granularity === "month"
+              : granularity === 'month'
               ? /\d\d-\d\d\d\d/
-              : granularity === "quarter"
+              : granularity === 'quarter'
               ? /\d\d\d\d-Q\d/
-              : granularity === "week"
+              : granularity === 'week'
               ? /WK\d\d-\d\d-\d\d\d\d/
-              : granularity === "day"
+              : granularity === 'day'
               ? /\d\d-\d\d-\d\d\d\d/
-              : granularity === "hour"
+              : granularity === 'hour'
               ? /\d\d-\d\d-\d\d\d\d \d\d:00/
-              : granularity === "minute"
+              : granularity === 'minute'
               ? /\d\d-\d\d-\d\d\d\d \d\d:\d\d/
               : /\d\d-\d\d-\d\d\d\d \d\d:\d\d:\d\d/;
           if (raw.match(regex)) {
@@ -131,10 +131,10 @@ const StyledInput = styled.input<{
   outline: none;
   width: calc(100% - 22px);
 
-  ${({ isActive }) => `
-    border: 1px solid ${isActive ? COLORS.dimension.fillStrong : "#efefef"};
-    background-color: ${isActive ? COLORS.dimension.fillLight : "white"};
-    color: ${isActive ? COLORS.dimension.fillStrong : "#505050"};
+  ${({isActive}) => `
+    border: 1px solid ${isActive ? COLORS.dimension.fillStrong : '#efefef'};
+    background-color: ${isActive ? COLORS.dimension.fillLight : 'white'};
+    color: ${isActive ? COLORS.dimension.fillStrong : '#505050'};
   `}
 
   &:focus {

@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ReactElement, useRef, useState } from "react";
-import styled from "styled-components";
-import { timeFilterChangeType } from "../../core/filters";
+import {ReactElement, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {timeFilterChangeType} from '../../core/filters';
 import {
   InThePastUnit,
   ThisLastPeriod,
@@ -37,16 +37,16 @@ import {
   TimeIsLastFilter,
   TimeIsOnFilter,
   TimeIsThisFilter,
-} from "../../types";
-import { CodeInput } from "../CodeInput";
-import { DateInput } from "../DateInput";
-import { DatePicker } from "../DatePicker";
-import { useClickOutside } from "../hooks";
-import { SelectDropdown } from "../SelectDropdown";
+} from '../../types';
+import {CodeInput} from '../CodeInput';
+import {DateInput} from '../DateInput';
+import {DatePicker} from '../DatePicker';
+import {useClickOutside} from '../hooks';
+import {SelectDropdown} from '../SelectDropdown';
 
 interface TimeFilterBuilderProps {
   filter: TimeFilter;
-  type: "date" | "timestamp";
+  type: 'date' | 'timestamp';
   setFilter: (filter: TimeFilter) => void;
 }
 
@@ -65,17 +65,17 @@ export const TimeFilterBuilder: React.FC<TimeFilterBuilderProps> = ({
       onChange={changeType}
       options={
         [
-          { value: "is_in_the_past", label: "Past" },
-          { value: "is_last", label: "Last" },
-          { value: "is_this", label: "This" },
-          { value: "is_on", label: "On" },
-          { value: "is_after", label: "After" },
-          { value: "is_before", label: "Before" },
-          { value: "is_between", label: "Between" },
-          { value: "is_null", label: "Null" },
-          { value: "is_not_null", label: "Not null" },
-          { value: "custom", label: "Custom" },
-        ] as { value: TimeFilterType; label: string }[]
+          {value: 'is_in_the_past', label: 'Past'},
+          {value: 'is_last', label: 'Last'},
+          {value: 'is_this', label: 'This'},
+          {value: 'is_on', label: 'On'},
+          {value: 'is_after', label: 'After'},
+          {value: 'is_before', label: 'Before'},
+          {value: 'is_between', label: 'Between'},
+          {value: 'is_null', label: 'Null'},
+          {value: 'is_not_null', label: 'Not null'},
+          {value: 'custom', label: 'Custom'},
+        ] as {value: TimeFilterType; label: string}[]
       }
     />
   );
@@ -91,8 +91,8 @@ export const TimeFilterBuilder: React.FC<TimeFilterBuilderProps> = ({
   const isOn = useTimeIsOnBuilder(filter, setFilter, type, typeDropdown);
   const custom = useTimeCustomBuilder(filter, setFilter, typeDropdown);
   const noBuilder =
-    filter.type === "is_null" || filter.type === "is_not_null" ? (
-      <div style={{ width: "100%" }}>{typeDropdown}</div>
+    filter.type === 'is_null' || filter.type === 'is_not_null' ? (
+      <div style={{width: '100%'}}>{typeDropdown}</div>
     ) : null;
 
   const showUtilRow =
@@ -149,93 +149,93 @@ const Column = styled.div`
 function useTimeInThePastBuilder(
   filter: TimeFilter,
   setFilter: (filter: TimeIsInThePastFilter) => void,
-  type: "date" | "timestamp",
+  type: 'date' | 'timestamp',
   typeDropdown: ReactElement
 ) {
-  if (filter.type !== "is_in_the_past") {
-    return { builder: null, util: null };
+  if (filter.type !== 'is_in_the_past') {
+    return {builder: null, util: null};
   }
 
   const options = [
-    { value: "years", label: "Years" },
-    { value: "quarters", label: "Quarters" },
-    { value: "months", label: "Months" },
-    { value: "weeks", label: "Weeks" },
-    { value: "days", label: "Days" },
-  ] as { value: InThePastUnit; label: string }[];
+    {value: 'years', label: 'Years'},
+    {value: 'quarters', label: 'Quarters'},
+    {value: 'months', label: 'Months'},
+    {value: 'weeks', label: 'Weeks'},
+    {value: 'days', label: 'Days'},
+  ] as {value: InThePastUnit; label: string}[];
 
-  if (type === "timestamp") {
+  if (type === 'timestamp') {
     options.push(
-      { value: "hours", label: "Hours" },
-      { value: "minutes", label: "Minutes" },
-      { value: "seconds", label: "Seconds" }
+      {value: 'hours', label: 'Hours'},
+      {value: 'minutes', label: 'Minutes'},
+      {value: 'seconds', label: 'Seconds'}
     );
   }
 
   const builder = (
     <Row>
-      <div style={{ width: "30%", flexShrink: 1 }}>{typeDropdown}</div>
-      <div style={{ width: "30%", flexShrink: 1 }}>
+      <div style={{width: '30%', flexShrink: 1}}>{typeDropdown}</div>
+      <div style={{width: '30%', flexShrink: 1}}>
         <CodeInput
           value={filter.amount.toString()}
-          setValue={(amount) =>
-            setFilter({ ...filter, amount: parseFloat(amount) })
+          setValue={amount =>
+            setFilter({...filter, amount: parseFloat(amount)})
           }
         />
       </div>
-      <div style={{ width: "40%", flexShrink: 1 }}>
+      <div style={{width: '40%', flexShrink: 1}}>
         <SelectDropdown
           value={filter.unit}
           options={options}
-          onChange={(unit) => setFilter({ ...filter, unit })}
+          onChange={unit => setFilter({...filter, unit})}
         />
       </div>
     </Row>
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useTimeLastThis(
   filter: TimeFilter,
   setFilter: (filter: TimeIsLastFilter | TimeIsThisFilter) => void,
-  type: "timestamp" | "date",
+  type: 'timestamp' | 'date',
   typeDropdown: ReactElement
 ) {
-  if (filter.type !== "is_this" && filter.type !== "is_last") {
-    return { builder: null, util: null };
+  if (filter.type !== 'is_this' && filter.type !== 'is_last') {
+    return {builder: null, util: null};
   }
 
   const options = [
-    { value: "year", label: "Year" },
-    { value: "quarter", label: "Quarter" },
-    { value: "month", label: "Month" },
-    { value: "week", label: "Week" },
-    { value: "day", label: "Day" },
-  ] as { value: ThisLastPeriod; label: string }[];
+    {value: 'year', label: 'Year'},
+    {value: 'quarter', label: 'Quarter'},
+    {value: 'month', label: 'Month'},
+    {value: 'week', label: 'Week'},
+    {value: 'day', label: 'Day'},
+  ] as {value: ThisLastPeriod; label: string}[];
 
-  if (type === "timestamp") {
+  if (type === 'timestamp') {
     options.push(
-      { value: "hour", label: "Hour" },
-      { value: "minute", label: "Minute" },
-      { value: "second", label: "Second" }
+      {value: 'hour', label: 'Hour'},
+      {value: 'minute', label: 'Minute'},
+      {value: 'second', label: 'Second'}
     );
   }
 
   const builder = (
     <Row>
-      <div style={{ width: "50%", flexShrink: 1 }}>{typeDropdown}</div>
-      <div style={{ width: "50%", flexShrink: 1 }}>
+      <div style={{width: '50%', flexShrink: 1}}>{typeDropdown}</div>
+      <div style={{width: '50%', flexShrink: 1}}>
         <SelectDropdown
           value={filter.period}
           options={options}
-          onChange={(period) => setFilter({ ...filter, period })}
+          onChange={period => setFilter({...filter, period})}
         />
       </div>
     </Row>
   );
   const util = null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useTimeIsOnBuilder(
@@ -243,7 +243,7 @@ function useTimeIsOnBuilder(
   setFilter: (
     filter: TimeIsOnFilter | TimeIsAfterFilter | TimeIsBeforeFilter
   ) => void,
-  type: "date" | "timestamp",
+  type: 'date' | 'timestamp',
   typeDropdown: ReactElement
 ) {
   const [isActive, setIsActive] = useState(false);
@@ -253,54 +253,54 @@ function useTimeIsOnBuilder(
   useClickOutside([dateInputRef, datePickerRef], () => setIsActive(false));
 
   if (
-    filter.type !== "is_on" &&
-    filter.type !== "is_after" &&
-    filter.type !== "is_before"
+    filter.type !== 'is_on' &&
+    filter.type !== 'is_after' &&
+    filter.type !== 'is_before'
   ) {
-    return { builder: null, util: null };
+    return {builder: null, util: null};
   }
 
   const options = [
-    { value: "year", label: "Year" },
-    { value: "quarter", label: "Quarter" },
-    { value: "month", label: "Month" },
-    { value: "week", label: "Week" },
-    { value: "day", label: "Day" },
-  ] as { value: TimeGranularity; label: string }[];
+    {value: 'year', label: 'Year'},
+    {value: 'quarter', label: 'Quarter'},
+    {value: 'month', label: 'Month'},
+    {value: 'week', label: 'Week'},
+    {value: 'day', label: 'Day'},
+  ] as {value: TimeGranularity; label: string}[];
 
-  if (type === "timestamp") {
+  if (type === 'timestamp') {
     options.push(
-      { value: "hour", label: "Hour" },
-      { value: "minute", label: "Minute" },
-      { value: "second", label: "Second" }
+      {value: 'hour', label: 'Hour'},
+      {value: 'minute', label: 'Minute'},
+      {value: 'second', label: 'Second'}
     );
   }
 
   const granularity =
-    type === "date" &&
-    (filter.granularity === "second" ||
-      filter.granularity === "minute" ||
-      filter.granularity === "hour")
-      ? "day"
+    type === 'date' &&
+    (filter.granularity === 'second' ||
+      filter.granularity === 'minute' ||
+      filter.granularity === 'hour')
+      ? 'day'
       : filter.granularity;
 
   const builder = (
     <Column>
       <Row>
-        <div style={{ width: "50%", flexShrink: 1 }}>{typeDropdown}</div>
-        <div style={{ width: "50%", flexShrink: 1 }}>
+        <div style={{width: '50%', flexShrink: 1}}>{typeDropdown}</div>
+        <div style={{width: '50%', flexShrink: 1}}>
           <SelectDropdown
             value={filter.granularity}
             options={options}
-            onChange={(granularity) => setFilter({ ...filter, granularity })}
+            onChange={granularity => setFilter({...filter, granularity})}
           />
         </div>
       </Row>
       <Row>
-        <div ref={dateInputRef} style={{ width: "100%", flexShrink: 1 }}>
+        <div ref={dateInputRef} style={{width: '100%', flexShrink: 1}}>
           <DateInput
             value={filter.date}
-            setValue={(date) => setFilter({ ...filter, date })}
+            setValue={date => setFilter({...filter, date})}
             granularity={granularity}
             onFocus={() => setIsActive(true)}
             isActive={isActive}
@@ -313,18 +313,18 @@ function useTimeIsOnBuilder(
     <div ref={datePickerRef}>
       <DatePicker
         value={filter.date}
-        setValue={(date) => setFilter({ ...filter, date })}
+        setValue={date => setFilter({...filter, date})}
         maxLevel={granularity}
       />
     </div>
   ) : null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useTimeBetweenBuilder(
   filter: TimeFilter,
   setFilter: (filter: TimeIsBetweenFilter) => void,
-  type: "date" | "timestamp",
+  type: 'date' | 'timestamp',
   typeDropdown: ReactElement
 ) {
   const [currentUtil, setCurrentUtil] = useState<
@@ -343,43 +343,43 @@ function useTimeBetweenBuilder(
     setCurrentUtil(undefined);
   });
 
-  if (filter.type !== "is_between") {
-    return { builder: null, util: null };
+  if (filter.type !== 'is_between') {
+    return {builder: null, util: null};
   }
 
   const options = [
-    { value: "year", label: "Year" },
-    { value: "quarter", label: "Quarter" },
-    { value: "month", label: "Month" },
-    { value: "week", label: "Week" },
-    { value: "day", label: "Day" },
-  ] as { value: TimeGranularity; label: string }[];
+    {value: 'year', label: 'Year'},
+    {value: 'quarter', label: 'Quarter'},
+    {value: 'month', label: 'Month'},
+    {value: 'week', label: 'Week'},
+    {value: 'day', label: 'Day'},
+  ] as {value: TimeGranularity; label: string}[];
 
-  if (type === "timestamp") {
+  if (type === 'timestamp') {
     options.push(
-      { value: "hour", label: "Hour" },
-      { value: "minute", label: "Minute" },
-      { value: "second", label: "Second" }
+      {value: 'hour', label: 'Hour'},
+      {value: 'minute', label: 'Minute'},
+      {value: 'second', label: 'Second'}
     );
   }
 
   const granularity =
-    type === "date" &&
-    (filter.granularity === "second" ||
-      filter.granularity === "minute" ||
-      filter.granularity === "hour")
-      ? "day"
+    type === 'date' &&
+    (filter.granularity === 'second' ||
+      filter.granularity === 'minute' ||
+      filter.granularity === 'hour')
+      ? 'day'
       : filter.granularity;
 
   const builder = (
     <Column>
       <Row>
-        <div style={{ width: "50%", flexShrink: 1 }}>{typeDropdown}</div>
-        <div style={{ width: "50%", flexShrink: 1 }}>
+        <div style={{width: '50%', flexShrink: 1}}>{typeDropdown}</div>
+        <div style={{width: '50%', flexShrink: 1}}>
           <SelectDropdown
             value={filter.granularity}
             options={options}
-            onChange={(granularity) => setFilter({ ...filter, granularity })}
+            onChange={granularity => setFilter({...filter, granularity})}
           />
         </div>
       </Row>
@@ -387,31 +387,31 @@ function useTimeBetweenBuilder(
         <div ref={startRef}>
           <DateInput
             value={filter.start}
-            setValue={(start) => setFilter({ ...filter, start })}
+            setValue={start => setFilter({...filter, start})}
             granularity={granularity}
             onFocus={() =>
               setCurrentUtil({
-                key: "start",
+                key: 'start',
                 date: filter.start,
-                setValue: (start) => setFilter({ ...filter, start }),
+                setValue: start => setFilter({...filter, start}),
               })
             }
-            isActive={currentUtil?.key === "start"}
+            isActive={currentUtil?.key === 'start'}
           />
         </div>
         <div ref={endRef}>
           <DateInput
             value={filter.end}
-            setValue={(end) => setFilter({ ...filter, end })}
+            setValue={end => setFilter({...filter, end})}
             granularity={granularity}
             onFocus={() =>
               setCurrentUtil({
-                key: "end",
+                key: 'end',
                 date: filter.end,
-                setValue: (end) => setFilter({ ...filter, end }),
+                setValue: end => setFilter({...filter, end}),
               })
             }
-            isActive={currentUtil?.key === "end"}
+            isActive={currentUtil?.key === 'end'}
           />
         </div>
       </Row>
@@ -427,7 +427,7 @@ function useTimeBetweenBuilder(
       />
     </div>
   ) : null;
-  return { builder, util };
+  return {builder, util};
 }
 
 function useTimeCustomBuilder(
@@ -435,8 +435,8 @@ function useTimeCustomBuilder(
   setFilter: (filter: TimeCustomFilter) => void,
   typeDropdown: ReactElement
 ) {
-  if (filter.type !== "custom") {
-    return { builder: null, util: null };
+  if (filter.type !== 'custom') {
+    return {builder: null, util: null};
   }
 
   const builder = (
@@ -444,7 +444,7 @@ function useTimeCustomBuilder(
       {typeDropdown}
       <CodeInput
         value={filter.partial}
-        setValue={(partial) => setFilter({ type: "custom", partial })}
+        setValue={partial => setFilter({type: 'custom', partial})}
         placeholder="!= null"
       />
     </Column>
@@ -452,5 +452,5 @@ function useTimeCustomBuilder(
 
   const util = null;
 
-  return { builder, util };
+  return {builder, util};
 }

@@ -21,5 +21,5 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { Explore } from "./Explore";
-export { Apps } from "./Apps";
+export {Explore} from './Explore';
+export {Apps} from './Apps';
