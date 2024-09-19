@@ -20,6 +20,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --outDir 'dist' --config vite.config.ts",
+    "dev": "vite dev --outDir 'dist' --config vite.config.ts",
     "build-types": "tsc --declaration --emitDeclarationOnly"
   },
   "author": "",
@@ -31,6 +32,8 @@
   },
   "peerDependencies": {
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "@malloydata/malloy": "0.0.187",
+    "@malloydata/render": "0.0.187"
   }
 }
