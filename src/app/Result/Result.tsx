@@ -50,6 +50,7 @@ interface ResultProps {
     source: string;
     model: string;
     markdown: string;
+    notebook: string;
     isRunnable: boolean;
   };
   onDrill: (filters: malloy.FilterCondition[]) => void;
@@ -66,6 +67,8 @@ export const Result: React.FC<ResultProps> = ({
   isRunning,
 }) => {
   const [html, setHTML] = useState<HTMLElement>();
+  const [highlightedNotebookMalloy, setHighlightedNotebookMalloy] =
+    useState<HTMLElement>();
   const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
     useState<HTMLElement>();
   const [highlightedModelMalloy, setHighlightedModelMalloy] =
@@ -76,7 +79,7 @@ export const Result: React.FC<ResultProps> = ({
   const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
-  const [malloyType, setMalloyType] = useState('source');
+  const [malloyType, setMalloyType] = useState('notebook');
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
@@ -89,6 +92,10 @@ export const Result: React.FC<ResultProps> = ({
       .catch(console.log);
     highlightPre(indentCode(malloy.source), 'malloy')
       .then(setHighlightedSourceMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(indentCode(malloy.notebook), 'malloy')
+      .then(setHighlightedNotebookMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
     highlightPre(malloy.model, 'malloy')
@@ -243,6 +250,9 @@ export const Result: React.FC<ResultProps> = ({
           <PreWrapper
             style={{marginLeft: malloyType === 'source' ? '-2ch' : ''}}
           >
+            {malloyType === 'notebook' && highlightedNotebookMalloy && (
+              <DOMElement element={highlightedNotebookMalloy} />
+            )}
             {malloyType === 'source' && highlightedSourceMalloy && (
               <DOMElement element={highlightedSourceMalloy} />
             )}
@@ -272,6 +282,7 @@ export const Result: React.FC<ResultProps> = ({
                   setCopiedMalloy(false);
                 }}
                 options={[
+                  {value: 'notebook', label: 'Notebook'},
                   {value: 'source', label: 'Source'},
                   {value: 'model', label: 'Model'},
                   {value: 'markdown', label: 'Markdown'},
