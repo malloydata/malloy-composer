@@ -627,7 +627,7 @@ function hackyTerribleStringToBooleanFilter(
       filter: {type: 'is_false_or_null'},
     };
   }
-  throw new Error(`Unrecognized filterString ${filterString}`);
+  return undefined;
 }
 
 function hackyTerribleStringToAnyFilter(
@@ -654,7 +654,7 @@ function hackyTerribleStringToAnyFilter(
       filter: {type: 'custom', partial: isCustomMatch[2]},
     };
   }
-  throw new Error(`Unrecognized filterString ${filterString}`);
+  return undefined;
 }
 
 function deEscape(stringString: string) {
@@ -887,7 +887,7 @@ function hackyTerribleStringToStringFilter(
       },
     };
   }
-  throw new Error(`Unrecognized filterString ${filterString}`);
+  return undefined;
 }
 
 function hackyTerribleStringToNumberFilter(
@@ -964,7 +964,7 @@ function hackyTerribleStringToNumberFilter(
       },
     };
   }
-  throw new Error(`Unrecognized filterString ${filterString}`);
+  return undefined;
 }
 
 function hackyTerribleStringToTimeFilter(
@@ -1046,5 +1046,5 @@ function hackyTerribleStringToTimeFilter(
       },
     };
   }
-  throw new Error(`Unrecognized filterString ${filterString}`);
+  return undefined;
 }
