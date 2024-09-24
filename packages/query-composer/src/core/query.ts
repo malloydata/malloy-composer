@@ -544,10 +544,10 @@ export class QueryBuilder extends SourceUtils {
       if (!isFilteredField(field)) {
         throw new Error('Cannot edit filter on non-filtered field.');
       }
-      if (field.e[0].filterList === undefined) {
+      if (field.e.filterList === undefined) {
         throw new Error('Field has no filters');
       }
-      field.e[0].filterList[filterIndex] = filter;
+      field.e.filterList[filterIndex] = filter;
     }
   }
 
@@ -575,13 +575,13 @@ export class QueryBuilder extends SourceUtils {
       if (!isFilteredField(field)) {
         throw new Error('Cannot edit filter on non-filtered field.');
       }
-      if (field.e[0].filterList === undefined) {
+      if (field.e.filterList === undefined) {
         throw new Error('Field has no filters');
       }
       // TODO just changed this to "filterIndex" rather than "fieldIndex"...
       // seems like it must have been broken before? Unless somewhere I passed the
       // args in the wrong order...
-      field.e[0].filterList.splice(filterIndex, 1);
+      field.e.filterList.splice(filterIndex, 1);
     }
   }
 
@@ -826,7 +826,7 @@ export class QueryBuilder extends SourceUtils {
         expressionType: def.expressionType,
       };
     } else if (isFilteredField(field)) {
-      field.e[0].filterList = [...(field.e[0].filterList || []), filter];
+      field.e.filterList = [...(field.e.filterList || []), filter];
     } else if (isRenamedField(field)) {
       if (field.type === 'turtle') {
         throw new Error('Invalid field');
@@ -987,12 +987,12 @@ ${malloy}
           : 'group_by';
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${dottify(
-            field.e[0].path
+            field.e.path
           )}`,
         ];
         return {property, malloy};
       } else if (isFilteredField(field)) {
-        const fieldDef = this.getField(source, dottify(field.e[0].e[0].path));
+        const fieldDef = this.getField(source, dottify(field.e.e.path));
         if (fieldDef.type === 'struct') {
           throw new Error("Don't know how to deal with this");
         }
@@ -1005,11 +1005,11 @@ ${malloy}
         const malloy: Fragment[] = [];
         const newNameIs = `${maybeQuoteIdentifier(field.name)} is `;
         malloy.push(
-          `${newNameIs}${maybeQuoteIdentifier(dottify(field.e[0].e[0].path))}`
+          `${newNameIs}${maybeQuoteIdentifier(dottify(field.e.e.path))}`
         );
-        if (field.e[0].filterList && field.e[0].filterList.length > 0) {
+        if (field.e.filterList && field.e.filterList.length > 0) {
           malloy.push(' {', NEWLINE, INDENT, 'where:');
-          malloy.push(...this.getFiltersString(field.e[0].filterList || []));
+          malloy.push(...this.getFiltersString(field.e.filterList || []));
           malloy.push(OUTDENT, '}');
         }
         return {property, malloy};
@@ -1403,7 +1403,7 @@ ${malloy}
             fieldIndex,
             filters: this.getSummaryItemsForFilterList(
               source,
-              field.e[0].filterList || []
+              field.e.filterList || []
             ),
             styles: styleItems.filter(s => s.canRemove),
             isRefined: true,
@@ -1506,10 +1506,10 @@ ${malloy}
   }
 
   fanToDef(fan: FilteredField, def: FieldTypeDef): FieldDef {
-    const malloy: Fragment[] = [dottify(fan.e[0].e[0].path)];
-    if (fan.e[0].filterList && fan.e[0].filterList.length > 0) {
+    const malloy: Fragment[] = [dottify(fan.e.e.path)];
+    if (fan.e.filterList && fan.e.filterList.length > 0) {
       malloy.push(' {', INDENT, 'where:');
-      malloy.push(...this.getFiltersString(fan.e[0].filterList || []));
+      malloy.push(...this.getFiltersString(fan.e.filterList || []));
       malloy.push(OUTDENT, '}');
     }
     const code = codeFromFragments(malloy);
@@ -1556,18 +1556,14 @@ function codeFromFragments(fragments: Fragment[]) {
 }
 
 type FilteredField = QueryFieldDef & {
-  e: [
-    {
-      type: 'filterExpression';
-      filterList: FilterCondition[];
-      e: [
-        {
-          type: 'field';
-          path: string[];
-        },
-      ];
-    },
-  ];
+  e: {
+    type: 'filterExpression';
+    filterList: FilterCondition[];
+    e: {
+      type: 'field';
+      path: string[];
+    };
+  };
 };
 
 function isFilteredField(field: QueryFieldDef): field is FilteredField {
