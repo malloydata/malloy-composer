@@ -30,6 +30,7 @@ export default defineConfig({
       },
     },
     minify: false,
+    sourcemap: true,
   },
   define: {
     'process.env': {},
