@@ -1008,7 +1008,11 @@ ${malloy}
           `${newNameIs}${maybeQuoteIdentifier(dottify(field.e.e.path))}`
         );
         if (field.e.filterList && field.e.filterList.length > 0) {
-          malloy.push(' {', NEWLINE, INDENT, 'where:');
+          const whereOrHaving =
+            field.e.filterList[0].expressionType === 'aggregate'
+              ? 'having:'
+              : 'where:';
+          malloy.push(' {', NEWLINE, INDENT, whereOrHaving);
           malloy.push(...this.getFiltersString(field.e.filterList || []));
           malloy.push(OUTDENT, '}');
         }
@@ -1076,7 +1080,11 @@ ${malloy}
     const malloy: Fragment[] = [];
     malloy.push(' {', NEWLINE, INDENT);
     if (stage.filterList && stage.filterList.length > 0) {
-      malloy.push('where:', ...this.getFiltersString(stage.filterList));
+      const whereOrHaving =
+        stage.filterList[0].expressionType === 'aggregate'
+          ? 'having:'
+          : 'where:';
+      malloy.push(whereOrHaving, ...this.getFiltersString(stage.filterList));
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
@@ -1508,7 +1516,11 @@ ${malloy}
   fanToDef(fan: FilteredField, def: FieldTypeDef): FieldDef {
     const malloy: Fragment[] = [dottify(fan.e.e.path)];
     if (fan.e.filterList && fan.e.filterList.length > 0) {
-      malloy.push(' {', INDENT, 'where:');
+      const whereOrHaving =
+        fan.e.filterList[0].expressionType === 'aggregate'
+          ? 'having:'
+          : 'where:';
+      malloy.push(' {', INDENT, whereOrHaving);
       malloy.push(...this.getFiltersString(fan.e.filterList || []));
       malloy.push(OUTDENT, '}');
     }
