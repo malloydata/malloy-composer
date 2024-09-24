@@ -40,14 +40,13 @@ import {MarkdownDocument} from '../MarkdownDocument';
 import {StructDef} from '@malloydata/malloy';
 import {useSearchParams, useParams} from 'react-router-dom';
 // TODO: this is causing the custom elements to get registered twice (since the bundled ExploreQueryEditor also has that)
-// import { DataStyles } from "@malloydata/render";
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type {DataStyles} from '@malloydata/render';
 import {snakeToTitle} from '../utils';
 import {useApps} from '../data/use_apps';
 import {Apps} from '../Apps';
 import {LoadingSpinner} from '../Spinner';
 import {runQuery as runQueryExternal} from '../data/use_run_query';
-
-type DataStyles = unknown;
 
 const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 
@@ -161,7 +160,6 @@ export const Explore: React.FC = () => {
     modelInfo?.styles,
     runQueryExternal
   );
-  // eslint-disable-next-line no-console
 
   let section = urlParams.get('page') || 'datasets';
   if (onlyDefaultDataset && section === 'datasets') {

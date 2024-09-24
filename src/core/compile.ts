@@ -250,7 +250,7 @@ async function _compileQuery(
   query: string
 ): Promise<PreparedQuery> {
   const model = await _compileModel(modelDef, query);
-  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
   const match = query.match(regex);
   const preparedQuery = match
     ? model.getPreparedQueryByName(match[1])
@@ -287,7 +287,7 @@ export async function getSourceNameForQuery(
   query: string
 ): Promise<string> {
   const model = await _compileModel(modelDef, query);
-  const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+  const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
   const match = query.match(regex);
   const preparedQuery = match
     ? model.getPreparedQueryByName(match[1])

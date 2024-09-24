@@ -146,7 +146,7 @@ export class DummyCompile {
     query: string
   ): Promise<PreparedQuery> {
     const model = await this._compileModel(modelDef, query);
-    const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+    const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
     const match = query.match(regex);
     const preparedQuery = match
       ? model.getPreparedQueryByName(match[1])
@@ -177,7 +177,7 @@ export class DummyCompile {
     query: string
   ): Promise<string> {
     const model = await this._compileModel(modelDef, query);
-    const regex = /\s*query\s*:\s*([^\s]*)\s*is/;
+    const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
     const match = query.match(regex);
     const preparedQuery = match
       ? model.getPreparedQueryByName(match[1])

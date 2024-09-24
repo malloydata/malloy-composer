@@ -26,10 +26,8 @@ import {
   StructDef,
   ModelDef,
 } from '@malloydata/malloy';
-import {ReactElement, useState} from 'react';
+import {ReactElement, useContext, useState} from 'react';
 import styled from 'styled-components';
-// TODO: extract api
-import {compileFilter} from '../core/compile';
 import {stringFilterToString} from '../core/filters';
 import {ActionIcon, ActionIconName} from '../ActionIcon';
 import {ColorKey, COLORS} from '../colors';
@@ -45,6 +43,7 @@ import {FieldButton} from '../FieldButton';
 import {SearchInput} from '../SearchInput';
 import {SearchItem, useSearchList} from '../SearchList';
 import {LoadingSpinner} from '../Spinner';
+import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface ActionBase {
   id: string;
@@ -105,6 +104,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
     searchResults &&
     searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
   const isSearchEnabled = searchItems !== undefined;
+  const {dummyCompiler} = useContext(ComposerOptionsContext);
 
   const {searchList, count: resultCount} = useSearchList({
     searchTerm,
@@ -199,16 +199,21 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
-                                compileFilter(
-                                  valueSearchSource,
-                                  stringFilterToString(searchResult.fieldName, {
-                                    type: 'is_equal_to',
-                                    values: [searchResult.fieldValue],
-                                  })
-                                ).then(expression => {
-                                  addFilter && addFilter(expression);
-                                  closeMenu();
-                                });
+                                dummyCompiler
+                                  .compileFilter(
+                                    valueSearchSource,
+                                    stringFilterToString(
+                                      searchResult.fieldName,
+                                      {
+                                        type: 'is_equal_to',
+                                        values: [searchResult.fieldValue],
+                                      }
+                                    )
+                                  )
+                                  .then(expression => {
+                                    addFilter && addFilter(expression);
+                                    closeMenu();
+                                  });
                               }}
                             />
                           );
