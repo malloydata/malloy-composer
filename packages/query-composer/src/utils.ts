@@ -64,10 +64,10 @@ function getHighlighter() {
       json,
       md,
       {
-        id: 'malloy',
+        name: 'malloy',
         scopeName: 'source.malloy',
         embeddedLangs: ['sql'],
-        grammar: MALLOY_GRAMMAR,
+        ...MALLOY_GRAMMAR,
       } as unknown as LanguageRegistration,
     ],
     loadWasm: getWasm,

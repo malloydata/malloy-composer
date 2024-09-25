@@ -1,55 +1,54 @@
-/*
- * Copyright 2023 Google LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 export const MALLOY_GRAMMAR = {
   scopeName: 'source.malloy',
-  patterns: [
-    {include: '#sql-statement'},
-    {include: '#comments'},
-    {include: '#strings'},
-    {include: '#numbers'},
-    {include: '#keywords'},
-    {include: '#properties'},
-    {include: '#functions'},
-    {include: '#dates'},
-    {include: '#identifiers-quoted'},
-    {include: '#types'},
-    {include: '#constants'},
-    {include: '#timeframes'},
-    {include: '#identifiers-unquoted'},
-  ],
+  patterns: [{include: '#malloy-language'}],
   repository: {
-    'sql-statement': {
-      begin: '\\|\\|',
-      end: ';;',
-      beginCaptures: {
-        '0': {name: 'punctuation.sql-block.open'},
-      },
-      endCaptures: {
-        '0': {name: 'punctuation.sql-block.close'},
-      },
-      name: 'source.sql',
-      patterns: [{include: 'source.sql'}],
+    'malloy-language': {
+      patterns: [
+        {include: '#sql-string'},
+        {include: '#comments'},
+        {include: '#tags'},
+        {include: '#strings'},
+        {include: '#numbers'},
+        {include: '#keywords'},
+        {include: '#properties'},
+        {include: '#functions'},
+        {include: '#datetimes'},
+        {include: '#identifiers-quoted'},
+        {include: '#types'},
+        {include: '#constants'},
+        {include: '#timeframes'},
+        {include: '#identifiers-unquoted'},
+      ],
+    },
+    'malloy-matched': {
+      begin: '{',
+      end: '}',
+      patterns: [{include: '#malloy-matched'}, {include: '#malloy-language'}],
+    },
+    'malloy-in-sql': {
+      begin: '%{',
+      name: 'source.malloy-in-sql',
+      end: '}%?',
+      patterns: [{include: '#malloy-matched'}, {include: '#malloy-language'}],
+    },
+    'sql-string': {
+      patterns: [
+        {
+          begin:
+            '(\\b[A-Za-z_][A-Za-z_0-9]*)(\\s*\\.\\s*)(sql)(\\s*\\(\\s*)(""")',
+          end: '"""',
+          beginCaptures: {
+            '1': {name: 'variable.other'},
+            '3': {name: 'keyword.control.sql'},
+            '5': {name: 'punctuation.sql-block.open'},
+          },
+          endCaptures: {
+            '0': {name: 'punctuation.sql-block.close'},
+          },
+          name: 'source.sql',
+          patterns: [{include: '#malloy-in-sql'}, {include: 'source.sql'}],
+        },
+      ],
     },
     functions: {
       patterns: [
@@ -62,24 +61,36 @@ export const MALLOY_GRAMMAR = {
         },
         {
           match:
-            '(?i)\\b(AVG|COUNT|FIRST|FORMAT|LAST|LCASE|LEN|MAX|MID|MIN|MOD|NOW|ROUND|SUM|UCASE|TABLE|FROM|FROM_SQL|UNGROUPED)(\\s*\\()',
+            '(?i)\\b(AVG|COUNT|FIRST|FORMAT|LAST|LCASE|LEN|MAX|MID|MIN|MOD|NOW|ROUND|SUM|UCASE|UNGROUPED)(\\s*\\()',
           captures: {
             '1': {name: 'entity.name.function'},
           },
         },
         {
-          match: '(?i)\\b([a-zA-Z]*)(\\s*\\()',
+          match: '(?i)\\b([a-zA-Z_][a-zA-Z_0-9]*)(\\s*\\()',
           captures: {
             '1': {name: 'entity.name.function'},
+          },
+        },
+        {
+          match:
+            '(?i)\\b([a-zA-Z_][a-zA-Z_0-9]*)(!)(timestamp|number|string|boolean|date)?(\\s*\\()',
+          captures: {
+            '1': {name: 'entity.name.function'},
+            '3': {name: 'entity.name.type'},
           },
         },
       ],
     },
-    dates: {
+    datetimes: {
       patterns: [
         {
           match:
-            '(?i)@[0-9A-Z-]*(\\s[0-9A-Z-][0-9A-Z-](:[0-9A-Z-][0-9A-Z-])?(:[0-9A-Z-][0-9A-Z-])?)?',
+            '(?i)@[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}((:[0-9]{2})(([\\.,][0-9]+)(\\[[A-Za-z_/]+\\])?)?)?',
+          name: 'constant.numeric.timestamp',
+        },
+        {
+          match: '(?i)@[0-9]{4}(-Q[1-4]|-[0-9]{2}(-[0-9]{2}(-WK)?)?)?',
           name: 'constant.numeric.date',
         },
       ],
@@ -87,7 +98,7 @@ export const MALLOY_GRAMMAR = {
     'identifiers-quoted': {
       patterns: [
         {
-          match: '(?i)`[A-z_][A-z_0-9]*`',
+          match: '`[^`]*`',
           name: 'variable.other.quoted',
         },
       ],
@@ -95,7 +106,7 @@ export const MALLOY_GRAMMAR = {
     'identifiers-unquoted': {
       patterns: [
         {
-          match: '(?i)\\b[A-z_][A-z_0-9]*\\b',
+          match: '(?i)\\b[A-Za-z_][A-Za-z_0-9]*\\b',
           name: 'variable.other',
         },
       ],
@@ -144,6 +155,71 @@ export const MALLOY_GRAMMAR = {
         },
       ],
     },
+    tags: {
+      patterns: [
+        {
+          match: '##\\n',
+          name: 'string.quoted',
+          captures: {
+            '0': {name: 'string.quoted'},
+          },
+        },
+        {
+          begin: '#"',
+          end: '\\n',
+          beginCaptures: {
+            '0': {name: 'punctuation.definition.comment'},
+          },
+          name: 'comment.line.double-slash',
+        },
+        {
+          match: '#\\n',
+          name: 'string.quoted',
+          captures: {
+            '0': {name: 'string.quoted'},
+          },
+        },
+        {
+          begin: '#\\s',
+          end: '\\n',
+          beginCaptures: {
+            '0': {name: 'support.type.property-name.json'},
+          },
+          name: 'comment.line.double-slash',
+          patterns: [{include: '#tag-values'}],
+        },
+        {
+          begin: '##\\s',
+          end: '\\n',
+          beginCaptures: {
+            '0': {name: 'support.type.property-name.json'},
+          },
+          name: 'comment.line.double-slash',
+          patterns: [{include: '#tag-values'}],
+        },
+        {
+          begin: '#',
+          end: '\\n',
+          beginCaptures: {
+            '0': {name: 'string.quoted'},
+          },
+          name: 'string.quoted',
+        },
+      ],
+      repository: {
+        'tag-values': {
+          name: 'support.type.property-name.json',
+          match:
+            '(-)?((?:[^\\s=#]+)|(?:"[^#]+"))(?:\\s*(=)\\s*((?:[^\\s=#]+)|(?:"[^#]+")))?',
+          captures: {
+            '1': {name: 'keyword.control.negate'},
+            '2': {name: 'support.type.property-name.json'},
+            '3': {name: 'keyword.operator.comparison.ts'},
+            '4': {name: 'string.quoted'},
+          },
+        },
+      },
+    },
     strings: {
       patterns: [
         {
@@ -155,7 +231,7 @@ export const MALLOY_GRAMMAR = {
           endCaptures: {
             '0': {name: 'punctuation.definition.string.end'},
           },
-          name: 'string.unquoted.single',
+          name: 'string.quoted.single',
           patterns: [{include: '#escapes'}],
         },
         {
@@ -167,21 +243,38 @@ export const MALLOY_GRAMMAR = {
           endCaptures: {
             '0': {name: 'punctuation.definition.string.end'},
           },
-          name: 'string.unquoted.double',
+          name: 'string.quoted.double',
           patterns: [{include: '#escapes'}],
+        },
+        {
+          begin: '"""',
+          end: '"""',
+          beginCaptures: {
+            '0': {name: 'punctuation.definition.string.begin'},
+          },
+          endCaptures: {
+            '0': {name: 'punctuation.definition.string.end'},
+          },
+          name: 'string.quoted.triple',
         },
         {
           begin: "(?i)[r|/]'",
           end: "'",
           name: 'string.regexp',
-          patterns: [{include: '#escapes'}],
+          patterns: [{include: '#regex-escapes'}],
         },
       ],
       repository: {
         escapes: {
           name: 'constant.character.escape',
-          match:
-            '\\\\(x\\h{2}|[0-2][0-7]{0,2}|3[0-6][0-7]|37[0-7]?|[4-7][0-7]?|.)',
+          match: '\\\\(u[A-Fa-f0-9]{4}|.)',
+          captures: {
+            '0': {name: 'constant.character.escape'},
+          },
+        },
+        'regex-escapes': {
+          name: 'constant.character.escape',
+          match: '\\\\.',
           captures: {
             '0': {name: 'constant.character.escape'},
           },
@@ -189,7 +282,7 @@ export const MALLOY_GRAMMAR = {
       },
     },
     numbers: {
-      match: '\\b((0|[1-9][0-9]*)(\\.[0-9]*)?| \\.[0-9]+)\\b',
+      match: '(?i)(\\b((0|[1-9][0-9]*)(E[+-]?[0-9]+|\\.[0-9]*)?)|\\.[0-9]+)',
       name: 'constant.numeric',
     },
     constants: {
@@ -239,12 +332,40 @@ export const MALLOY_GRAMMAR = {
           name: 'keyword.control.accept',
         },
         {
-          match: '(?i)\\bsql\\b',
-          name: 'keyword.control.sql',
+          match: '(?i)\\bselect\\b',
+          name: 'keyword.control.select',
+        },
+        {
+          match: '(?i)\\bconnection\\b',
+          name: 'keyword.control.connection',
+        },
+        {
+          match: '(?i)\\brun\\b',
+          name: 'keyword.control.run',
+        },
+        {
+          match: '(?i)\\bextend\\b',
+          name: 'keyword.control.extend',
+        },
+        {
+          match: '(?i)\\brefine\\b',
+          name: 'keyword.control.refine',
         },
         {
           match: '(?i)\\baggregate\\b',
           name: 'keyword.control.aggregate',
+        },
+        {
+          match: '(?i)\\bsample\\b',
+          name: 'keyword.control.sample',
+        },
+        {
+          match: '(?i)\\bcalculate\\b',
+          name: 'keyword.control.calculate',
+        },
+        {
+          match: '(?i)\\btimezone\\b',
+          name: 'keyword.control.timezone',
         },
         {
           match: '(?i)\\bdimension\\b',
@@ -255,8 +376,8 @@ export const MALLOY_GRAMMAR = {
           name: 'keyword.control.except',
         },
         {
-          match: '(?i)\\bexplore\\b',
-          name: 'keyword.control.explore',
+          match: '(?i)\\bsource\\b',
+          name: 'keyword.control.source',
         },
         {
           match: '(?i)\\bgroup_by\\b',
@@ -303,6 +424,10 @@ export const MALLOY_GRAMMAR = {
           name: 'keyword.control.order_by',
         },
         {
+          match: '(?i)\\bpartition_by\\b',
+          name: 'keyword.control.partition_by',
+        },
+        {
           match: '(?i)\\bprimary_key\\b',
           name: 'keyword.control.primary_key',
         },
@@ -321,6 +446,10 @@ export const MALLOY_GRAMMAR = {
         {
           match: '(?i)\\btop\\b',
           name: 'keyword.control.top',
+        },
+        {
+          match: '(?i)\\bview\\b',
+          name: 'keyword.control.view',
         },
         {
           match: '(?i)\\bwhere\\b',
