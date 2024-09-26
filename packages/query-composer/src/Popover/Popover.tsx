@@ -20,7 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React, {RefObject, useRef, useState} from 'react';
+import React, {ReactNode, RefObject, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {useClickOutside} from '../hooks';
 import {usePopper} from 'react-popper';
@@ -37,6 +37,7 @@ interface PopoverProps {
   xOffset?: number;
   yOffset?: number;
   disabled?: boolean;
+  children: ReactNode;
 }
 
 export const PopoverBox = styled.div<{

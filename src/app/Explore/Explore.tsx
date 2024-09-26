@@ -22,13 +22,18 @@
  */
 import {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import {AppInfo, ModelInfo, RendererName} from '../../types';
+import {AppInfo} from '../../types';
 import {useDatasets} from '../data/use_datasets';
 import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
-import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
+import {
+  ExploreQueryEditor,
+  useQueryBuilder,
+  ModelInfo,
+  RendererName,
+} from '@malloydata/query-composer';
 import {
   _compileModel,
   compileQuery,

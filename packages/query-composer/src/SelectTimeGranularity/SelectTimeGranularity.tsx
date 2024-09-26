@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {useState} from 'react';
+import {ReactNode, useState} from 'react';
 import styled from 'styled-components';
 import {
   Button,
@@ -160,6 +160,7 @@ export const SelectTimeGranularity: React.FC<SelectTimeGranularityProps> = ({
 
 interface LabelProps {
   detail: string;
+  children: ReactNode;
 }
 
 const Label: React.FC<LabelProps> = ({children, detail}) => {

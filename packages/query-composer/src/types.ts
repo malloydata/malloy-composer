@@ -21,71 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {FieldDef, ModelDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
-
-export interface AppListing {
-  path: string;
-  id: string;
-}
-
-export type ComposerConfig =
-  | {
-      apps: AppListing[];
-      readme?: string;
-    }
-  | {
-      readme?: string | undefined;
-      apps: [
-        {
-          path: string;
-          id: undefined;
-        },
-      ];
-    };
-
-export interface SourceConfig {
-  title: string;
-  sourceName: string;
-  description: string;
-}
-
-export interface RemoteTable {
-  name: string;
-  url: string;
-}
-export interface ModelConfig {
-  id: string;
-  path: string;
-  tables: Array<string | RemoteTable>;
-  sources?: SourceConfig[];
-}
-
-export interface AppConfig {
-  readme?: string;
-  linkedReadmes?: string[];
-  title?: string;
-  models?: ModelConfig[];
-}
-
-export interface ModelInfo {
-  id: string;
-  model: ModelDef;
-  path: string;
-  styles: DataStyles;
-  sources: {
-    title: string;
-    sourceName: string;
-    description: string;
-  }[];
-}
-
-export interface AppInfo {
-  readme: string;
-  linkedReadmes: string[];
-  title?: string;
-  models: ModelInfo[];
-}
+import {FieldDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
 
 export interface SchemaFieldMeasure {
   name: string;
