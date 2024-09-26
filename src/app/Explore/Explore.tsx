@@ -22,7 +22,7 @@
  */
 import {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import {AppInfo} from '../../types';
+import {AppInfo, ModelInfo} from '../../types';
 import {useDatasets} from '../data/use_datasets';
 import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
@@ -31,14 +31,9 @@ import {HotKeys} from 'react-hotkeys';
 import {
   ExploreQueryEditor,
   useQueryBuilder,
-  ModelInfo,
   RendererName,
 } from '@malloydata/query-composer';
-import {
-  _compileModel,
-  compileQuery,
-  getSourceNameForQuery,
-} from '../../core/compile';
+import {compileQuery, getSourceNameForQuery} from '../../core/compile';
 import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
 import {MarkdownDocument} from '../MarkdownDocument';
@@ -442,7 +437,6 @@ export const Explore: React.FC = () => {
                   undo={undo}
                   isQueryEmpty={isQueryEmpty}
                   canQueryRun={canQueryRun}
-                  dummyCompile={_compileModel}
                 />
               )}
               {section === 'about' && (

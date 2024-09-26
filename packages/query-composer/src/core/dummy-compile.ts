@@ -1,30 +1,86 @@
 import {
   FieldDef,
   FilterCondition,
+  FixedConnectionMap,
+  Malloy,
+  MalloyQueryData,
   Model,
   ModelDef,
   NamedQuery,
   PreparedQuery,
   QueryFieldDef,
+  QueryRunStats,
+  Runtime,
   StructDef,
+  URLReader,
 } from '@malloydata/malloy';
 import {maybeQuoteIdentifier} from './utils';
-
-export type CompileHandler = (
-  modelDef: ModelDef,
-  malloy: string
-) => Promise<Model>;
+import {BaseConnection} from '@malloydata/malloy/connection';
 
 const DEFAULT_NAME = 'new_query';
 
-export class DummyCompile {
-  compile: CompileHandler;
-  constructor({compile}: {compile: CompileHandler}) {
-    this.compile = compile;
+class DummyFiles implements URLReader {
+  async readURL(): Promise<string> {
+    return '';
   }
+}
+
+class DummyConnection extends BaseConnection {
+  name = 'dummy';
+
+  dialectName = 'duckdb';
+
+  estimateQueryCost(_sqlCommand: string): Promise<QueryRunStats> {
+    throw new Error('Dummy connection cannot estimate query cost');
+  }
+
+  runSQL(): Promise<MalloyQueryData> {
+    throw new Error('Dummy connection cannot run SQL.');
+  }
+
+  runSQLBlockAndFetchResultSchema(): Promise<{
+    data: MalloyQueryData;
+    schema: StructDef;
+  }> {
+    throw new Error('Dummy connection cannot run SQL blocks.');
+  }
+
+  fetchSchemaForSQLBlock(): Promise<
+    | {structDef: StructDef; error?: undefined}
+    | {error: string; structDef?: undefined}
+  > {
+    throw new Error('Dummy connection cannot fetch schemas.');
+  }
+
+  fetchSchemaForSQLBlocks(): Promise<{
+    schemas: Record<string, StructDef>;
+    errors: Record<string, string>;
+  }> {
+    throw new Error('Dummy connection cannot fetch schemas.');
+  }
+
+  fetchSchemaForTables(): Promise<{
+    schemas: Record<string, StructDef>;
+    errors: Record<string, string>;
+  }> {
+    throw new Error('Dummy connection cannot fetch schemas.');
+  }
+}
+
+export class DummyCompile {
   async _compileModel(modelDef: ModelDef, malloy: string): Promise<Model> {
+    const runtime = new Runtime(new DummyFiles(), new DummyConnection());
+    const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
-    const model = await this.compile(modelDef, malloy);
+    const model = await Malloy.compile({
+      urlReader: new DummyFiles(),
+      connections: new FixedConnectionMap(
+        new Map([['dummy', new DummyConnection()]]),
+        'dummy'
+      ),
+      model: baseModel,
+      parse: Malloy.parse({source: malloy}),
+    });
     return model;
   }
 
