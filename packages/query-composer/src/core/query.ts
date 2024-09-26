@@ -210,7 +210,12 @@ export class QueryBuilder extends SourceUtils {
   }
 
   public setQuery(query: NamedQuery): void {
+    let tag = {};
+    if (query.annotation) {
+      tag = {annotation: JSON.parse(JSON.stringify(query.annotation))};
+    }
     this.query = {
+      ...tag,
       pipeline: query.pipeline,
       name: query.as || query.name,
       type: 'turtle',
@@ -428,7 +433,12 @@ export class QueryBuilder extends SourceUtils {
         : [];
     const pipeline = JSON.parse(JSON.stringify(field.pipeline));
     pipeline[0].filterList = [...filters, ...(pipeline[0].filterList || [])];
+    let tag = {};
+    if (field.annotation) {
+      tag = {annotation: JSON.parse(JSON.stringify(field.annotation))};
+    }
     this.query = {
+      ...tag,
       pipeline,
       name: field.as || field.name,
       type: 'turtle',
@@ -1141,6 +1151,11 @@ ${malloy}
 
   private getMalloyString(forSource: boolean, name?: string): string {
     if (this.getSource() === undefined) return '';
+    const malloy: Fragment[] = [];
+    let stageSource = this.getSource();
+    if (this.query.annotation?.blockNotes) {
+      malloy.push(...this.query.annotation.blockNotes.map(({text}) => text));
+    }
     const initParts = [];
     if (forSource) {
       initParts.push('view:');
@@ -1155,8 +1170,8 @@ ${malloy}
         maybeQuoteIdentifier(this.getSource().as || this.getSource().name)
       );
     }
-    const malloy: Fragment[] = [initParts.join(' ')];
-    let stageSource = this.getSource();
+    malloy.push(initParts.join(' '));
+    stageSource = this.getSource();
     for (
       let stageIndex = 0;
       stageIndex < this.query.pipeline.length;
