@@ -974,8 +974,14 @@ ${malloy}
     field: QueryFieldDef,
     source: StructDef,
     indent: string
-  ): {property: string; malloy: Fragment[]} | undefined {
+  ): {property: string; malloy: Fragment[]; blockNotes?: string[]} | undefined {
     try {
+      let blockNotes: string[] | undefined;
+      if (field.annotation?.blockNotes) {
+        blockNotes = field.annotation?.blockNotes.map(({text}) =>
+          text.replace('\n', '')
+        );
+      }
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
         if (fieldDef.type === 'struct') {
@@ -988,6 +994,7 @@ ${malloy}
             ? 'aggregate'
             : 'group_by';
         return {
+          blockNotes,
           property,
           malloy: [maybeQuoteIdentifier(dottify(field.path))],
         };
@@ -1026,7 +1033,7 @@ ${malloy}
           malloy.push(...this.getFiltersString(field.e.filterList || []));
           malloy.push(OUTDENT, '}');
         }
-        return {property, malloy};
+        return {blockNotes, property, malloy};
       } else if (field.type === 'turtle') {
         const malloy: Fragment[] = [];
         malloy.push(`${maybeQuoteIdentifier(field.as || field.name)} is`);
@@ -1042,7 +1049,7 @@ ${malloy}
           stageSource = this.modifySourceForStage(stage, stageSource);
           head = false;
         }
-        return {property: 'nest', malloy};
+        return {blockNotes, property: 'nest', malloy};
       } else {
         const property = expressionIsCalculation(field.expressionType)
           ? 'aggregate'
@@ -1050,7 +1057,7 @@ ${malloy}
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
-        return {property, malloy};
+        return {blockNotes, property, malloy};
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -1112,6 +1119,9 @@ ${malloy}
             )
           );
           currentMalloys = [];
+        }
+        if (info.blockNotes) {
+          info.blockNotes.forEach(blockNote => malloy.push(blockNote, NEWLINE));
         }
         currentProperty = info.property;
         currentMalloys.push(info.malloy);
