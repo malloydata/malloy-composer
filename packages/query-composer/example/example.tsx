@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom';
-import {ExploreQueryEditor, useQueryBuilder} from '../src';
+import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
 
 import {model, modelPath, source} from './example_model';
 
@@ -16,22 +16,15 @@ const App = () => {
   const {
     queryMalloy,
     queryName,
-    // clearQuery,
-    // clearResult,
-    // runQuery,
     isRunning,
     queryModifiers,
     querySummary,
     dataStyles,
     result,
     registerNewSource,
-    // error,
-    // setError,
     dirty,
     canUndo,
     undo,
-    // redo,
-    // resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
   } = useQueryBuilder(

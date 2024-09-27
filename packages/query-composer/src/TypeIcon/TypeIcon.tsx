@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import * as React from 'react';
 import TypeIconBoolean from '../assets/img/type_icons/type-icon-on-off.svg?react';
 import TypeIconDate from '../assets/img/type_icons/type-icon-date.svg?react';
 import TypeIconNumber from '../assets/img/type_icons/type-icon-number.svg?react';

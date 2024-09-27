@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import * as React from 'react';
 import VisIconTable from './assets/img/vis_icons/viz_table.svg?react';
 import VisIconDashboard from './assets/img/vis_icons/viz_dashboard.svg?react';
 import VisIconText from './assets/img/vis_icons/viz_text.svg?react';

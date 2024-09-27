@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import * as React from 'react';
 import {FilterCondition, StructDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {CodeTextArea} from '../CodeInput';

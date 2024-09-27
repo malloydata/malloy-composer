@@ -20,7 +20,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --outDir 'dist' --config vite.config.ts",
-    "dev": "vite dev --outDir 'dist' --config vite.config.ts",
+    "dev": "vite dev --config vite.config.ts",
     "build-types": "tsc --declaration --emitDeclarationOnly"
   },
   "author": "",
