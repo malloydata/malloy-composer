@@ -23,7 +23,6 @@
 
 import {FieldDef, StructDef, expressionIsCalculation} from '@malloydata/malloy';
 import * as shiki from 'shiki';
-import {QuerySummaryItem} from '../types';
 import {MALLOY_GRAMMAR} from './malloyGrammar';
 
 declare global {
@@ -143,28 +142,6 @@ export function kindOfField(fieldDef: FieldDef): FieldKind {
 
 export function notUndefined<T>(item: T | undefined): item is T {
   return item !== undefined;
-}
-
-export function fieldToSummaryItem(
-  field: FieldDef,
-  path: string
-): QuerySummaryItem {
-  const kind = kindOfField(field);
-  if (field.type === 'struct' || kind === 'source') {
-    throw new Error('Cannot make a summary item from a struct.');
-  } else {
-    return {
-      type: 'field',
-      field,
-      path,
-      saveDefinition: undefined,
-      isRefined: false,
-      name: field.as || field.name,
-      isRenamed: false,
-      fieldIndex: -1,
-      kind,
-    } as QuerySummaryItem;
-  }
 }
 
 export function isAggregate(field: FieldDef): boolean {
