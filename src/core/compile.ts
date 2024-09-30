@@ -83,7 +83,7 @@ class DummyConnection extends BaseConnection {
   }
 }
 
-export async function compileModel(
+async function compileModel(
   modelDef: ModelDef,
   malloy: string
 ): Promise<Model> {
