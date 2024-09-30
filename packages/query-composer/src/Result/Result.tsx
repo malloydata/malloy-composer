@@ -303,7 +303,7 @@ const MalloyTypeSwitcher = styled.div`
 
 const ResultWrapper = styled.div`
   font-size: 14px;
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
 `;
 
 const OuterDiv = styled.div`
@@ -334,7 +334,7 @@ const ViewTab = styled.div<{
   cursor: pointer;
   text-transform: uppercase;
   color: #939393;
-  font-family: 'Google Sans';
+  font-family: Arial, Helvetica, sans-serif;
   border-top: 1px solid transparent;
   font-size: 11pt;
   ${({selected}) =>
@@ -343,7 +343,7 @@ const ViewTab = styled.div<{
 
 const PreWrapper = styled.div`
   padding: 0 15px;
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   font-size: 14px;
   position: relative;
   width: 100%;

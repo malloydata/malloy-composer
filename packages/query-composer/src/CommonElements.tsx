@@ -30,7 +30,7 @@ import {extractErrorMessage} from './utils';
 export const PanelTitle = styled.div`
   text-transform: uppercase;
   color: #939393;
-  font-family: 'Google Sans';
+  font-family: Arial, Helvetica, sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,7 +44,7 @@ export const PanelTitle = styled.div`
 export const FieldLabel = styled.div`
   display: flex;
   font-weight: normal;
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   gap: 5px;
   margin-top: -3px;
   align-items: center;
@@ -66,7 +66,7 @@ export const Button = styled.button<{
   outline?: boolean;
 }>`
   padding: 5.5px 10px;
-  font-family: Google Sans;
+  font-family: Arial, Helvetica, sans-serif;
   border-radius: 5px;
   cursor: pointer;
   min-width: 80px;
@@ -168,7 +168,7 @@ export const EmptyMessage = styled.div`
 `;
 
 export const ContextMenuTitle = styled.div`
-  font-family: Google Sans;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #505050;
   text-transform: none;

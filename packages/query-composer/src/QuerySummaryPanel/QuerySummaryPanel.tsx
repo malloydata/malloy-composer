@@ -878,7 +878,7 @@ export const StageButton = styled.div<{
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: 'Google Sans';
+  font-family: Arial, Helvetica, sans-serif;
   color: #9aa0a6;
 
   &:hover {

@@ -66,7 +66,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
 };
 
 const StyledInput = styled.input`
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;
@@ -125,7 +125,7 @@ export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
 };
 
 const StyledTextArea = styled.textarea`
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #efefef;

@@ -26,7 +26,7 @@ import styled from 'styled-components';
 const SimpleErrorMessage = styled.div`
   padding: 5px;
   background-color: #fbb;
-  font-family: 'Google Sans', sans-serif;
+  font-family: Arial, Helvetica, sans-serif, sans-serif;
   font-size: 12px;
   color: #4b4c50;
   border-radius: 5px;
@@ -34,7 +34,7 @@ const SimpleErrorMessage = styled.div`
 
 const MultiLineErrorMessage = styled(SimpleErrorMessage)`
   white-space: pre-wrap;
-  font-family: 'Roboto Mono', monospace;
+  font-family: Courier, Menlo, monspace, monospace;
 `;
 
 export interface ErrorMessageProps {

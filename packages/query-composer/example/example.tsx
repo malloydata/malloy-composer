@@ -1,6 +1,10 @@
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom';
-import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
+import {
+  ExploreQueryEditor,
+  QuerySummaryPanel,
+  useQueryBuilder,
+} from '../src/index';
 
 import {model, modelPath, source} from './example_model';
 
@@ -60,6 +64,18 @@ const App = () => {
         isQueryEmpty={isQueryEmpty}
         canQueryRun={canQueryRun}
       />
+      {querySummary && (
+        <QuerySummaryPanel
+          model={model}
+          modelPath={modelPath}
+          queryName={queryName}
+          querySummary={querySummary}
+          queryModifiers={queryModifiers}
+          source={source}
+          stagePath={{stageIndex: 0}}
+          topValues={topValues}
+        />
+      )}
     </div>
   );
 };

@@ -81,7 +81,7 @@ const SearchIcon = styled.div`
 `;
 
 const StyledInput = styled.input`
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   font-size: 14px;
   border-radius: 5px;
   border: none;

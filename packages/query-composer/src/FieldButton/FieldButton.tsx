@@ -158,7 +158,7 @@ export const FieldButtonRaw = styled.div<{
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
 
   ${({active, color}) => {
     if (active) {

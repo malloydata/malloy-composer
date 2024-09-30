@@ -281,7 +281,7 @@ const ActionButton = styled.button<{
   justify-content: flex-start;
   gap: 10px;
   align-items: center;
-  font-family: 'Roboto Mono';
+  font-family: Courier, Menlo, monspace;
   color: #353535;
 
   ${({color}) => `

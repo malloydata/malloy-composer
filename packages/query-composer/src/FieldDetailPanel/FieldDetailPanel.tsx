@@ -108,7 +108,7 @@ const NullSymbol = styled.span``;
 const FieldPath = styled.div`
   color: #505050;
   font-weight: normal;
-  font-family: Roboto Mono;
+  font-family: Courier, Menlo, monspace;
   font-weight: normal;
   font-size: 14px;
   text-transform: none;
