@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  OrderByField,
-  QuerySummaryItem,
-  RendererName,
-  StagePath,
-} from '../types';
+import {OrderByField, RendererName, StagePath, StageSummary} from '../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -73,7 +68,7 @@ interface NestQueryActionMenuProps {
   closeMenu: () => void;
   setDataStyle: (rendererName: RendererName) => void;
   addStage: () => void;
-  stageSummary: QuerySummaryItem[];
+  stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   beginReorderingField: () => void;
   topValues: SearchValueMapResult[] | undefined;

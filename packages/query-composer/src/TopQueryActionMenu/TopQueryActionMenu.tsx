@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 
-import {OrderByField, StagePath, QuerySummaryItem} from '../types';
+import {OrderByField, StagePath, StageSummary} from '../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -46,7 +46,7 @@ interface TopQueryActionMenuProps {
   orderByFields: OrderByField[];
   closeMenu: () => void;
   topValues: SearchValueMapResult[] | undefined;
-  stageSummary: QuerySummaryItem[];
+  stageSummary: StageSummary;
   queryName: string;
   isOnlyStage: boolean;
   queryModifiers: QueryModifiers;

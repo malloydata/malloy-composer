@@ -119,7 +119,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     setDataStyle={renderer =>
                       queryModifiers.setDataStyle(queryName, renderer)
                     }
-                    stageSummary={stage.items}
+                    stageSummary={stage}
                     updateFieldOrder={queryModifiers.updateFieldOrder}
                     topValues={topValues}
                   />
@@ -223,7 +223,7 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
           modelPath={modelPath}
           key={`${item.type}/${index}`}
           item={item}
-          stageSummary={stage.items}
+          stageSummary={stage}
           beginReorderingField={beginReorderingField}
           isSelected={
             'fieldIndex' in item && item.fieldIndex === selectedFieldIndex
@@ -292,7 +292,7 @@ interface SummaryItemProps {
   item: QuerySummaryItem;
   source: StructDef;
   stagePath: StagePath;
-  stageSummary: QuerySummaryItem[];
+  stageSummary: StageSummary;
   beginReorderingField: (fieldIndex: number) => void;
   fieldIndex?: number | undefined;
   isSelected: boolean;
@@ -546,7 +546,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 addStage={() =>
                   queryModifiers.addStage(stagePath, item.fieldIndex)
                 }
-                stageSummary={item.stages[0].items}
+                stageSummary={item.stages[0]}
                 updateFieldOrder={queryModifiers.updateFieldOrder}
                 topValues={topValues}
                 rename={newName => {
@@ -792,7 +792,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                         queryModifiers.setDataStyle(item.name, renderer)
                       }
                       isLastStage={stageIndex === item.stages.length - 1}
-                      stageSummary={stage.items}
+                      stageSummary={stage}
                       updateFieldOrder={queryModifiers.updateFieldOrder}
                       topValues={topValues}
                     />

@@ -28,12 +28,7 @@ import {
   StructDef,
   ModelDef,
 } from '@malloydata/malloy';
-import {
-  RendererName,
-  StagePath,
-  QuerySummaryItem,
-  OrderByField,
-} from '../types';
+import {OrderByField, RendererName, StagePath, StageSummary} from '../types';
 import {ActionMenu} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
 import {AddNewDimension} from '../AddNewDimension';
@@ -50,7 +45,7 @@ interface DimensionActionMenuProps {
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   stagePath: StagePath;
   fieldIndex: number;
-  stageSummary: QuerySummaryItem[];
+  stageSummary: StageSummary;
   beginReorderingField: () => void;
   isEditable: boolean;
   name: string;

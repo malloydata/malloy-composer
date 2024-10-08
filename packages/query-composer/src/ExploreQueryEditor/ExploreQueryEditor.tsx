@@ -100,7 +100,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                       }
                       closeMenu={() => setInsertOpen(false)}
                       queryName={queryName}
-                      stageSummary={querySummary?.stages[0].items || []}
+                      stageSummary={querySummary?.stages[0]}
                       isOnlyStage={querySummary?.stages.length === 1}
                       topValues={topValues}
                     />
