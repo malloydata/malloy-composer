@@ -38,7 +38,7 @@ import {
   FilterCondition,
   PipeSegment,
   QueryFieldDef,
-  Segment as QuerySegment,
+  Segment,
   StructDef,
   TurtleDef,
   FieldTypeDef,
@@ -50,7 +50,6 @@ import {DataStyles} from '@malloydata/render';
 import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
 import {maybeQuoteIdentifier} from './utils';
-import {RefToField} from '@malloydata/malloy/dist/model';
 
 // TODO this is a hack to turn `string[]` paths (the new way dotted)
 // paths are stored in the struct def back to the old way (just a
@@ -61,6 +60,28 @@ function dottify(path: string[]) {
 
 function undottify(path: string) {
   return path.split('.');
+}
+
+function getFields(stage: PipeSegment): QueryFieldDef[] {
+  if (stage.type === 'project' || stage.type === 'reduce') {
+    return stage.queryFields;
+  } else if (stage.type === 'index') {
+    return stage.indexFields;
+  } else {
+    throw new Error(`Unexpected stage type ${stage.type}`);
+  }
+}
+
+function setFields(stage: PipeSegment, fields: QueryFieldDef[]) {
+  if (stage.type === 'project' || stage.type === 'reduce') {
+    stage.queryFields = fields;
+  } else if (stage.type === 'index') {
+    // Unexported internal type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    stage.indexFields = fields as any;
+  } else {
+    throw new Error(`Unexpected stage type ${stage.type}`);
+  }
 }
 
 class SourceUtils {
@@ -116,7 +137,7 @@ class SourceUtils {
     stage: PipeSegment,
     source: StructDef
   ): StructDef {
-    return QuerySegment.nextStructDef(source, stage);
+    return Segment.nextStructDef(source, stage);
   }
 }
 
@@ -261,10 +282,8 @@ export class QueryBuilder extends SourceUtils {
       } = stagePathPop(stagePath);
       if (fieldIndex !== undefined) {
         const stage = current[stageIndex];
-        if (stage.type !== 'reduce' && stage.type !== 'project') {
-          throw new Error('Stage is not a reduce stage');
-        }
-        const newField = stage.queryFields[fieldIndex];
+        const fields = getFields(stage);
+        const newField = fields[fieldIndex];
         if (newField.type === 'fieldref' || newField.type !== 'turtle') {
           throw new NotAStageError(
             'Path does not refer to a stage correctly',
@@ -304,10 +323,8 @@ export class QueryBuilder extends SourceUtils {
       }
       if (fieldIndex !== undefined) {
         const stage = currentPipeline[stageIndex];
-        if (stage.type !== 'reduce' && stage.type !== 'project') {
-          throw new Error('Stage must be a reduce stage');
-        }
-        const newField = stage.queryFields[fieldIndex];
+        const fields = getFields(stage);
+        const newField = fields[fieldIndex];
         if (newField.type === 'fieldref' || newField.type !== 'turtle') {
           throw new Error('Path does not refer to a stage correctly');
         }
@@ -342,15 +359,9 @@ export class QueryBuilder extends SourceUtils {
     const stageSource = this.sourceForStageAtPath(stagePath);
     const fieldDef = this.fieldDefForQueryFieldDef(queryFieldDef, stageSource);
     const sortOrder = this.sortOrder(fieldDef);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    for (
-      let fieldIndex = 0;
-      fieldIndex < stage.queryFields.length;
-      fieldIndex++
-    ) {
-      const existingField = stage.queryFields[fieldIndex];
+    const fields = getFields(stage);
+    for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+      const existingField = fields[fieldIndex];
       try {
         const existingFieldDef = this.fieldDefForQueryFieldDef(
           existingField,
@@ -365,16 +376,14 @@ export class QueryBuilder extends SourceUtils {
         console.log(error);
       }
     }
-    return stage.queryFields.length;
+    return fields.length;
   }
 
   private insertField(stagePath: StagePath, field: QueryFieldDef) {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
+    const fields = getFields(stage);
     const insertIndex = this.getIndexToInsertNewField(stagePath, field);
-    stage.queryFields.splice(insertIndex, 0, field);
+    setFields(stage, fields.splice(insertIndex, 0, field));
   }
 
   addField(stagePath: StagePath, fieldPath: string): void {
@@ -394,7 +403,12 @@ export class QueryBuilder extends SourceUtils {
         this.query.pipeline[stageIndex] = JSON.parse(JSON.stringify(stage));
       } else {
         const existingStage = this.query.pipeline[stageIndex];
-        if (existingStage.type !== 'reduce' || stage.type !== 'reduce') {
+        if (
+          !(
+            existingStage.type === 'reduce' || existingStage.type === 'project'
+          ) ||
+          !(stage.type === 'reduce' || stage.type === 'project')
+        ) {
           throw new Error('Cannot load query with non-reduce stages');
         }
         if (stage.by) {
@@ -433,8 +447,8 @@ export class QueryBuilder extends SourceUtils {
 
   public replaceQuery(field: TurtleDef): void {
     const stage = this.query.pipeline[0];
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     const filters =
       this.query.pipeline.length === 1 && stage.queryFields.length === 0
@@ -468,38 +482,38 @@ export class QueryBuilder extends SourceUtils {
     name: string
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    stage.queryFields.splice(fieldIndex, 1, {
-      type: 'fieldref',
-      path: undottify(name),
-    });
+    const fields = getFields(stage);
+    setFields(
+      stage,
+      fields.splice(fieldIndex, 1, {
+        type: 'fieldref',
+        path: undottify(name),
+      })
+    );
   }
 
   removeField(stagePath: StagePath, fieldIndex: number): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    if (stage.type === 'reduce' && stage.orderBy) {
+    const fields = getFields(stage);
+    if (
+      (stage.type === 'reduce' || stage.type === 'project') &&
+      stage.orderBy
+    ) {
       const orderIndex = stage.orderBy.findIndex(order => {
-        const field = stage.queryFields[fieldIndex];
+        const field = fields[fieldIndex];
         return order.field === this.nameOf(field);
       });
       if (orderIndex !== -1) {
         stage.orderBy.splice(orderIndex, 1);
       }
     }
-    stage.queryFields.splice(fieldIndex, 1);
+    setFields(stage, fields.splice(fieldIndex, 1));
   }
 
   getFieldIndex(stagePath: StagePath, fieldPath: string): number | undefined {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    const index = stage.queryFields.findIndex(
+    const fields = getFields(stage);
+    const index = fields.findIndex(
       f => f.type === 'fieldref' && dottify(f.path) === fieldPath
     );
     return index === -1 ? undefined : index;
@@ -511,11 +525,9 @@ export class QueryBuilder extends SourceUtils {
 
   reorderFields(stagePath: StagePath, order: number[]): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    const newFields = order.map(index => stage.queryFields[index]);
-    stage.queryFields = newFields;
+    const fields = getFields(stage);
+    const newFields = order.map(index => fields[index]);
+    setFields(stage, newFields);
   }
 
   toggleField(stagePath: StagePath, fieldPath: string): void {
@@ -544,7 +556,7 @@ export class QueryBuilder extends SourceUtils {
     filter: FilterCondition
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
       throw new Error('Stage must be reduce');
     }
     if (fieldIndex === undefined) {
@@ -576,8 +588,8 @@ export class QueryBuilder extends SourceUtils {
     fieldIndex?: number
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     if (fieldIndex === undefined) {
       if (stage.filterList) {
@@ -606,8 +618,8 @@ export class QueryBuilder extends SourceUtils {
 
   hasLimit(stagePath: StagePath): boolean {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     return stage.limit !== undefined;
   }
@@ -619,8 +631,8 @@ export class QueryBuilder extends SourceUtils {
     direction?: 'asc' | 'desc'
   ): void {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     stage.limit = limit;
     if (byField) {
@@ -639,8 +651,8 @@ export class QueryBuilder extends SourceUtils {
     direction?: 'asc' | 'desc'
   ): void {
     const stage = this.autoExpandStageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     stage.orderBy = stage.orderBy || [];
     const field = stage.queryFields[byFieldIndex];
@@ -657,8 +669,8 @@ export class QueryBuilder extends SourceUtils {
     direction: 'asc' | 'desc' | undefined
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     stage.orderBy = stage.orderBy || [];
     stage.orderBy[orderByIndex] = {
@@ -669,8 +681,8 @@ export class QueryBuilder extends SourceUtils {
 
   removeLimit(stagePath: StagePath): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     stage.limit = undefined;
   }
@@ -682,8 +694,8 @@ export class QueryBuilder extends SourceUtils {
       if (fieldIndex === undefined) {
         throw new Error('fieldIndex must be provided if stagePath is');
       }
-      if (parentStage.type !== 'reduce') {
-        throw new Error('Stage must be reduce');
+      if (!(parentStage.type === 'reduce' || parentStage.type === 'project')) {
+        throw new Error(`Unhandled stage type ${parentStage.type}`);
       }
       const field = parentStage.queryFields[fieldIndex];
       const fieldDef = this.fieldDefForQueryFieldDef(
@@ -721,8 +733,8 @@ export class QueryBuilder extends SourceUtils {
       if (fieldIndex === undefined) {
         throw new Error('Invalid stage path');
       }
-      if (parentStage.type !== 'reduce') {
-        throw new Error('Stage must be reduce');
+      if (!(parentStage.type === 'reduce' || parentStage.type === 'project')) {
+        throw new Error(`Unhandled stage type ${parentStage.type}`);
       }
       const field = parentStage.queryFields[fieldIndex];
       if (typeof field !== 'string' && field.type === 'turtle') {
@@ -744,8 +756,8 @@ export class QueryBuilder extends SourceUtils {
 
   removeOrderBy(stagePath: StagePath, orderingIndex: number): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     if (stage.orderBy) {
       stage.orderBy.splice(orderingIndex, 1);
@@ -755,23 +767,20 @@ export class QueryBuilder extends SourceUtils {
   canRun(): boolean {
     // TODO check that all nested stages can run, too
     const stage = this.query.pipeline[0];
-    if (stage.type === 'reduce' || stage.type === 'project') {
-      return stage.queryFields.length > 0;
-    } else if (stage.type === 'index') {
-      return stage.indexFields.length > 0;
-    }
-    throw new Error(`Unsupported stage type: ${stage.type}`);
+    const fields = getFields(stage);
+    return fields.length > 0;
   }
 
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
-    }
-    const field = stage.queryFields[fieldIndex];
+    const fields = getFields(stage);
+    const field = fields[fieldIndex];
     const fieldName = this.nameOf(field);
     // Rename references in order bys
-    if (stage.orderBy) {
+    if (
+      (stage.type === 'reduce' || stage.type === 'project') &&
+      stage.orderBy
+    ) {
       stage.orderBy.forEach(order => {
         if (order.field === fieldName) {
           order.field = as;
@@ -783,7 +792,7 @@ export class QueryBuilder extends SourceUtils {
       const source = this.sourceForStageAtPath(stagePath);
       const lookup = this.getField(source, dottify(field.path));
       if (lookup.type === 'turtle') {
-        stage.queryFields[fieldIndex] = {
+        fields[fieldIndex] = {
           ...lookup,
           name: as,
         };
@@ -801,7 +810,7 @@ export class QueryBuilder extends SourceUtils {
         },
         expressionType: lookup.expressionType,
       };
-      stage.queryFields[fieldIndex] = newField;
+      fields[fieldIndex] = newField;
     } else {
       field.as = as;
     }
@@ -817,8 +826,8 @@ export class QueryBuilder extends SourceUtils {
       this.renameField(stagePath, fieldIndex, as);
     }
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error("Don't know how to handle this yet");
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     const field = stage.queryFields[fieldIndex];
     if (field.type === 'fieldref') {
@@ -887,10 +896,8 @@ export class QueryBuilder extends SourceUtils {
     definition: QueryFieldDef
   ): void {
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
-    }
-    stage.queryFields[fieldIndex] = definition;
+    const fields = getFields(stage);
+    fields[fieldIndex] = definition;
   }
 
   replaceWithDefinition(
@@ -902,8 +909,8 @@ export class QueryBuilder extends SourceUtils {
       structDef = this._source;
     }
     const stage = this.stageAtPath(stagePath);
-    if (stage.type !== 'reduce' && stage.type !== 'project') {
-      throw new Error('Stage must be reduce');
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
     }
     const field = stage.queryFields[fieldIndex];
     if (field.type !== 'fieldref') {
@@ -990,13 +997,22 @@ ${malloy}
     field: QueryFieldDef,
     source: StructDef,
     indent: string
-  ): {property: string; malloy: Fragment[]; blockNotes?: string[]} | undefined {
+  ):
+    | {
+        property: string;
+        malloy: Fragment[];
+        blockNotes?: string[];
+        notes?: string[];
+      }
+    | undefined {
     try {
       let blockNotes: string[] | undefined;
-      if (field.annotation?.blockNotes) {
-        blockNotes = field.annotation?.blockNotes.map(({text}) =>
+      let notes: string[] | undefined;
+      if (field.annotation) {
+        blockNotes = field.annotation.blockNotes.map(({text}) =>
           text.replace('\n', '')
         );
+        notes = field.annotation.notes.map(({text}) => text.replace('\n', ''));
       }
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
@@ -1013,6 +1029,7 @@ ${malloy}
             : 'group_by';
         return {
           blockNotes,
+          notes,
           property,
           malloy: [maybeQuoteIdentifier(dottify(field.path))],
         };
@@ -1123,6 +1140,7 @@ ${malloy}
       throw new Error(`Unsupported stage type ${stage.type}`);
     }
     const malloy: Fragment[] = [];
+    // TODO(whscullin) Handle mixed filter types
     malloy.push(' {', NEWLINE, INDENT);
     if (stage.filterList && stage.filterList.length > 0) {
       const whereOrHaving =
@@ -1133,13 +1151,9 @@ ${malloy}
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
-    let fields: Array<RefToField | QueryFieldDef> = [];
-    if (stage.type === 'index') {
-      fields = stage.indexFields;
-    } else {
-      fields = stage.queryFields;
-    }
+    const fields = getFields(stage);
     for (const field of fields) {
+      // TODO(whscullin) Handle notes
       const info = this.codeInfoForField(stage, field, source, indent);
       if (info) {
         if (
@@ -1376,12 +1390,7 @@ ${malloy}
         ...this.getSummaryItemsForFilterList(source, stage.filterList)
       );
     }
-    let fields: Array<RefToField | QueryFieldDef> = [];
-    if (stage.type === 'index') {
-      fields = stage.indexFields;
-    } else {
-      fields = stage.queryFields;
-    }
+    const fields = getFields(stage);
     for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
       const field = fields[fieldIndex];
       try {
