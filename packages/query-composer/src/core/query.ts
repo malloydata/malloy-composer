@@ -383,7 +383,8 @@ export class QueryBuilder extends SourceUtils {
     const stage = this.autoExpandStageAtPath(stagePath);
     const fields = getFields(stage);
     const insertIndex = this.getIndexToInsertNewField(stagePath, field);
-    setFields(stage, fields.splice(insertIndex, 0, field));
+    fields.splice(insertIndex, 0, field);
+    setFields(stage, fields);
   }
 
   addField(stagePath: StagePath, fieldPath: string): void {
@@ -483,13 +484,11 @@ export class QueryBuilder extends SourceUtils {
   ): void {
     const stage = this.stageAtPath(stagePath);
     const fields = getFields(stage);
-    setFields(
-      stage,
-      fields.splice(fieldIndex, 1, {
-        type: 'fieldref',
-        path: undottify(name),
-      })
-    );
+    fields.splice(fieldIndex, 1, {
+      type: 'fieldref',
+      path: undottify(name),
+    });
+    setFields(stage, fields);
   }
 
   removeField(stagePath: StagePath, fieldIndex: number): void {
@@ -507,7 +506,8 @@ export class QueryBuilder extends SourceUtils {
         stage.orderBy.splice(orderIndex, 1);
       }
     }
-    setFields(stage, fields.splice(fieldIndex, 1));
+    fields.splice(fieldIndex, 1);
+    setFields(stage, fields);
   }
 
   getFieldIndex(stagePath: StagePath, fieldPath: string): number | undefined {
