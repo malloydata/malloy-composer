@@ -238,7 +238,15 @@ const MarkdownCodeBlock: React.FC<MarkdownCodeBlockProps> = ({
   const [pre, setPre] = useState<HTMLElement>();
 
   useEffect(() => {
-    highlightPre(code, language).then(setPre);
+    let mounted = true;
+    highlightPre(code, language).then(hightlighted => {
+      if (mounted) {
+        setPre(hightlighted);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, [code, language]);
 
   return pre ? (

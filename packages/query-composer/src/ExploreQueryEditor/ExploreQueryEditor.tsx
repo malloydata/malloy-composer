@@ -31,6 +31,7 @@ interface ExploreQueryEditorProps {
     model: string;
     source: string;
     markdown: string;
+    notebook: string;
     isRunnable: boolean;
   };
   isRunning: boolean;

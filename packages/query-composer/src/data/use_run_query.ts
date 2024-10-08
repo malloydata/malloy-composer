@@ -30,7 +30,7 @@ export type RunQuery = (
   queryName: string
 ) => Promise<malloy.Result>;
 
-interface UseRunQueryResult {
+export interface UseRunQueryResult {
   result: malloy.Result | undefined;
   runQuery: (query: string, queryName: string) => void;
   isRunning: boolean;

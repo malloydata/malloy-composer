@@ -51,6 +51,7 @@ interface ResultProps {
     source: string;
     model: string;
     markdown: string;
+    notebook: string;
     isRunnable: boolean;
   };
   onDrill: (filters: malloy.FilterCondition[]) => void;
@@ -74,11 +75,13 @@ export const Result: React.FC<ResultProps> = ({
     useState<HTMLElement>();
   const [highlightedMarkdownMalloy, setHighlightedMarkdownMalloy] =
     useState<HTMLElement>();
+  const [highlightedNotebookMalloy, setHighlightedNotebookMalloy] =
+    useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
   const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
-  const [malloyType, setMalloyType] = useState('source');
+  const [malloyType, setMalloyType] = useState('notebook');
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
@@ -95,6 +98,10 @@ export const Result: React.FC<ResultProps> = ({
       .catch(console.log);
     highlightPre(malloy.model, 'malloy')
       .then(setHighlightedModelMalloy)
+      // eslint-disable-next-line no-console
+      .catch(console.log);
+    highlightPre(indentCode(malloy.notebook), 'malloy')
+      .then(setHighlightedNotebookMalloy)
       // eslint-disable-next-line no-console
       .catch(console.log);
   }, [malloy]);
@@ -254,6 +261,9 @@ export const Result: React.FC<ResultProps> = ({
             {malloyType === 'markdown' && highlightedMarkdownMalloy && (
               <DOMElement element={highlightedMarkdownMalloy} />
             )}
+            {malloyType === 'notebook' && highlightedNotebookMalloy && (
+              <DOMElement element={highlightedNotebookMalloy} />
+            )}{' '}
             <MalloyTypeSwitcher>
               <ActionIcon
                 action="copy"
@@ -274,6 +284,7 @@ export const Result: React.FC<ResultProps> = ({
                   setCopiedMalloy(false);
                 }}
                 options={[
+                  {value: 'notebook', label: 'Notebook'},
                   {value: 'source', label: 'Source'},
                   {value: 'model', label: 'Model'},
                   {value: 'markdown', label: 'Markdown'},

@@ -28,25 +28,18 @@ import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
-import {
-  ExploreQueryEditor,
-  useQueryBuilder,
-  RendererName,
-} from '@malloydata/query-composer';
+import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
 import {compileQuery, getSourceNameForQuery} from '../../core/compile';
 import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
 import {MarkdownDocument} from '../MarkdownDocument';
 import {StructDef} from '@malloydata/malloy';
 import {useSearchParams, useParams} from 'react-router-dom';
-// TODO: this is causing the custom elements to get registered twice (since the bundled ExploreQueryEditor also has that)
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type {DataStyles} from '@malloydata/render';
 import {snakeToTitle} from '../utils';
+import {runQuery as runQueryExternal} from '../data/run_query';
 import {useApps} from '../data/use_apps';
 import {Apps} from '../Apps';
 import {LoadingSpinner} from '../Spinner';
-import {runQuery as runQueryExternal} from '../data/use_run_query';
 
 const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 
@@ -91,17 +84,12 @@ export const Explore: React.FC = () => {
   const updateQueryInURL = ({
     run,
     query: newQuery,
-    styles: newStylesJSON,
   }: {
     run: boolean;
     query: string | undefined;
-    styles: DataStyles;
   }) => {
     const oldQuery = urlParams.get('query') || undefined;
-    let newStyles = JSON.stringify(newStylesJSON);
-    if (newStyles === '{}') newStyles = undefined;
-    const oldStyles = urlParams.get('styles') || undefined;
-    if (oldQuery === newQuery && oldStyles === newStyles) {
+    if (oldQuery === newQuery) {
       return;
     }
     if (newQuery === undefined) {
@@ -114,11 +102,6 @@ export const Explore: React.FC = () => {
       urlParams.set('run', 'true');
     } else {
       urlParams.delete('run');
-    }
-    if (newStyles === undefined) {
-      urlParams.delete('styles');
-    } else {
-      urlParams.set('styles', newStyles);
     }
     setParams(urlParams);
   };
@@ -153,13 +136,7 @@ export const Explore: React.FC = () => {
     resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(
-    model,
-    modelPath,
-    updateQueryInURL,
-    modelInfo?.styles,
-    runQueryExternal
-  );
+  } = useQueryBuilder(model, modelPath, updateQueryInURL, {}, runQueryExternal);
 
   let section = urlParams.get('page') || 'datasets';
   if (onlyDefaultDataset && section === 'datasets') {
@@ -203,7 +180,6 @@ export const Explore: React.FC = () => {
       const model = urlParams.get('model');
       const query = urlParams.get('query')?.replace(/->\s*{\n}/g, '');
       const source = urlParams.get('source');
-      const styles = urlParams.get('styles');
       const page = urlParams.get('page');
       if (model && (query || source) && appInfo) {
         if (urlParams.toString() === params.current) return;
@@ -224,10 +200,6 @@ export const Explore: React.FC = () => {
             if (page !== 'query') return;
             clearResult();
             const compiledQuery = await compileQuery(newModelInfo.model, query);
-            queryModifiers.setDataStyles(
-              styles ? JSON.parse(styles) : {},
-              true
-            );
             queryModifiers.setQuery(compiledQuery, true);
             if (urlParams.has('run') && urlParams.get('page') === 'query') {
               runQuery();
@@ -288,12 +260,7 @@ export const Explore: React.FC = () => {
     }
   };
 
-  const loadQueryLink = async (
-    model: string,
-    query: string,
-    name?: string,
-    renderer?: string
-  ) => {
+  const loadQueryLink = async (model: string, query: string, name?: string) => {
     try {
       setLoading(loading => ++loading);
       const newModelInfo = findModelByMarkdownId(model);
@@ -307,15 +274,6 @@ export const Explore: React.FC = () => {
       registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
       const compiledQuery = await compileQuery(newModelInfo.model, query);
       queryModifiers.setQuery(compiledQuery, true);
-      if (renderer) {
-        const styles = queryModifiers.setDataStyle(
-          compiledQuery.name,
-          renderer as RendererName,
-          true
-        );
-        urlParams.delete('renderer');
-        urlParams.set('styles', JSON.stringify(styles));
-      }
       runQuery();
       setParams(urlParams);
     } catch (error) {
@@ -350,7 +308,6 @@ export const Explore: React.FC = () => {
   console.log({
     model,
     modelPath,
-    dataStyles,
     source,
   });
 

@@ -9,7 +9,6 @@ import {
 import {model, modelPath, source} from './example_model';
 
 const updateQueryInURL = () => {};
-const mockDataStyles = {};
 const runQueryExternal = () => {
   throw new Error('Unimplemented');
 };
@@ -31,13 +30,7 @@ const App = () => {
     undo,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(
-    model,
-    modelPath,
-    updateQueryInURL,
-    mockDataStyles,
-    runQueryExternal
-  );
+  } = useQueryBuilder(model, modelPath, updateQueryInURL, runQueryExternal);
 
   useEffect(() => {
     registerNewSource(source);

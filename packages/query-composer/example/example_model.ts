@@ -5614,4 +5614,4 @@ export const model: ModelDef = {
   },
 };
 
-export const source: StructDef = model.contents.names as StructDef;
+export const source: StructDef = model.contents['names'] as StructDef;

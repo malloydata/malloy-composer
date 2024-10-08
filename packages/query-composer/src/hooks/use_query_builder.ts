@@ -42,6 +42,7 @@ interface UseQueryBuilderResult {
     model: string;
     source: string;
     markdown: string;
+    notebook: string;
     isRunnable: boolean;
   };
   queryName: string;
@@ -142,7 +143,7 @@ export interface QueryModifiers {
 }
 
 export function useQueryBuilder(
-  model?: ModelDef,
+  modelDef?: ModelDef,
   modelPath?: string,
   updateQueryInURL?: (params: {
     run: boolean;
@@ -171,7 +172,7 @@ export function useQueryBuilder(
     runQuery: runQueryRaw,
     isRunning,
     clearResult,
-  } = useRunQuery(setError, model, modelPath, runQueryExternal);
+  } = useRunQuery(setError, modelDef, modelPath, runQueryExternal);
 
   const runQuery = () => {
     const summary = queryBuilder.current.getQuerySummary({
@@ -189,7 +190,7 @@ export function useQueryBuilder(
     }
     const query = queryBuilder.current.getQuery();
     if (queryBuilder.current?.canRun()) {
-      const queryString = queryBuilder.current.getQueryStringForModel();
+      const queryString = queryBuilder.current.getQueryStringForNotebook();
       runQueryRaw(queryString, query.name);
       setDirty(false);
     }

@@ -193,6 +193,7 @@ export interface StageSummary {
   items: QuerySummaryItem[];
   orderByFields: OrderByField[];
   inputSource: StructDef;
+  type: 'reduce' | 'project' | 'index';
 }
 
 export interface QuerySummary {

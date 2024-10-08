@@ -22,7 +22,6 @@
  */
 
 import {ModelDef} from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
 
 export interface AppListing {
   path: string;
@@ -73,7 +72,6 @@ export interface ModelInfo {
   id: string;
   model: ModelDef;
   path: string;
-  styles: DataStyles;
   sources: {
     title: string;
     sourceName: string;
