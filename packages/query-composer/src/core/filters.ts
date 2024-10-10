@@ -431,7 +431,7 @@ export function timeFilterChangeType(
       return {type, unit: 'days', amount: 7};
     case 'is_last':
     case 'is_this':
-      return {type, period: 'day', amount: 1};
+      return {type, period: 'day'};
     case 'is_on':
     case 'is_after':
     case 'is_before':

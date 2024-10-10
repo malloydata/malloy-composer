@@ -38,7 +38,6 @@ import {
   EmptyMessage,
   ScrollMain,
 } from '../CommonElements';
-// TODO: extract api
 import {useSearch} from '../data';
 import {FieldButton} from '../FieldButton';
 import {SearchInput} from '../SearchInput';

@@ -190,6 +190,6 @@ export const TopValuesRow = styled.div`
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: "Roboto"
-  font-weight: normal;;
+  font-family: 'Roboto';
+  font-weight: normal;
 `;

@@ -40,6 +40,7 @@ import {runQuery as runQueryExternal} from '../data/run_query';
 import {useApps} from '../data/use_apps';
 import {Apps} from '../Apps';
 import {LoadingSpinner} from '../Spinner';
+import {useTopValues} from '../data/use_top_values';
 
 const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 
@@ -298,8 +299,7 @@ export const Explore: React.FC = () => {
     REDO: redo,
   };
 
-  // const topValues = useTopValues(model, modelPath, source);
-  const topValues = [];
+  const topValues = useTopValues(model, modelPath, source);
   if (loading || (appId && !appInfo)) {
     section = 'loading';
   }

@@ -41,7 +41,6 @@ import {
 import {ActionIcon} from '../ActionIcon';
 import {CodeInput} from '../CodeInput';
 import {ContextMenuContent, EmptyMessage, ScrollMain} from '../CommonElements';
-// TODO: extract api
 import {useSearch} from '../data';
 import {FieldButton} from '../FieldButton';
 import {PillInput} from '../PillInput/PillInput';
