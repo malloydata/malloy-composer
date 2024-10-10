@@ -372,8 +372,7 @@ export class QueryBuilder extends SourceUtils {
           return fieldIndex;
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
+        console.error(error);
       }
     }
     return fields.length;
@@ -1009,10 +1008,28 @@ ${malloy}
       let blockNotes: string[] | undefined;
       let notes: string[] | undefined;
       if (field.annotation) {
-        blockNotes = field.annotation.blockNotes.map(({text}) =>
+        blockNotes = field.annotation.blockNotes?.map(({text}) =>
           text.replace('\n', '')
         );
-        notes = field.annotation.notes.map(({text}) => text.replace('\n', ''));
+        notes = field.annotation.notes?.map(({text}) => text.replace('\n', ''));
+        if (field.annotation.inherits) {
+          if (field.annotation.inherits.blockNotes) {
+            blockNotes ??= [];
+            blockNotes.push(
+              ...field.annotation.inherits.blockNotes.map(({text}) =>
+                text.replace('\n', '')
+              )
+            );
+          }
+          if (field.annotation.inherits.notes) {
+            notes ??= [];
+            notes.push(
+              ...field.annotation.inherits.notes.map(({text}) =>
+                text.replace('\n', '')
+              )
+            );
+          }
+        }
       }
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
@@ -1027,11 +1044,16 @@ ${malloy}
             : stage.type === 'project'
             ? 'select'
             : 'group_by';
+        const malloy: Fragment[] = [];
+        if (notes) {
+          notes.forEach(note => malloy.push(note, NEWLINE));
+        }
+        malloy.push(maybeQuoteIdentifier(dottify(field.path)));
         return {
           blockNotes,
           notes,
           property,
-          malloy: [maybeQuoteIdentifier(dottify(field.path))],
+          malloy,
         };
       } else if (isRenamedField(field)) {
         const property = expressionIsCalculation(field.expressionType)
@@ -1101,8 +1123,7 @@ ${malloy}
         return {blockNotes, property, malloy};
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
+      console.error(error);
     }
     return undefined;
   }
@@ -1151,31 +1172,37 @@ ${malloy}
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
+    let currentBlockNotes: string[] = [];
     const fields = getFields(stage);
     for (const field of fields) {
-      // TODO(whscullin) Handle notes
       const info = this.codeInfoForField(stage, field, source, indent);
       if (info) {
         if (
-          currentProperty !== undefined &&
-          info.property !== currentProperty
+          (currentProperty !== undefined &&
+            info.property !== currentProperty) ||
+          (currentBlockNotes.length &&
+            JSON.stringify(currentBlockNotes) !==
+              JSON.stringify(info.blockNotes))
         ) {
+          currentBlockNotes.forEach(blockNote =>
+            malloy.push(blockNote, NEWLINE)
+          );
           malloy.push(
             ...this.writeMalloyForPropertyValues(
               currentProperty,
               currentMalloys
             )
           );
+          currentBlockNotes = [];
           currentMalloys = [];
         }
-        if (info.blockNotes) {
-          info.blockNotes.forEach(blockNote => malloy.push(blockNote, NEWLINE));
-        }
+        currentBlockNotes = info.blockNotes ?? [];
         currentProperty = info.property;
         currentMalloys.push(info.malloy);
       }
     }
     if (currentProperty) {
+      currentBlockNotes.forEach(blockNote => malloy.push(blockNote, NEWLINE));
       malloy.push(
         ...this.writeMalloyForPropertyValues(currentProperty, currentMalloys)
       );
@@ -1214,6 +1241,11 @@ ${malloy}
     if (this.getSource() === undefined) return '';
     const malloy: Fragment[] = [];
     let stageSource = this.getSource();
+    if (this.query.annotation?.inherits?.blockNotes) {
+      malloy.push(
+        ...this.query.annotation.inherits.blockNotes.map(({text}) => text)
+      );
+    }
     if (this.query.annotation?.blockNotes) {
       malloy.push(...this.query.annotation.blockNotes.map(({text}) => text));
     }
