@@ -26,7 +26,6 @@ import {Runtime} from '@malloydata/malloy';
 import {CONNECTION_MANAGER} from './connections';
 import {URL_READER} from './urls';
 import {promises as fs} from 'fs';
-import {HackyDataStylesAccumulator} from '../common/data_styles';
 import * as path from 'path';
 import {getConfig} from './config';
 import {snakeToTitle} from '../app/utils';
@@ -75,11 +74,9 @@ export async function getDatasets(
     modelConfigs.map(async (sample: explore.ModelConfig) => {
       const modelPath = path.resolve(rootDirectory, sample.path);
       const modelURL = new URL('file://' + modelPath);
-      const urlReader = new HackyDataStylesAccumulator(URL_READER);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
-      const runtime = new Runtime(urlReader, connections);
+      const runtime = new Runtime(URL_READER, connections);
       const model = await runtime.getModel(modelURL);
-      const dataStyles = urlReader.getHackyAccumulatedDataStyles();
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
@@ -94,7 +91,6 @@ export async function getDatasets(
         model: model._modelDef,
         path: sample.path,
         readme,
-        styles: dataStyles,
         sources,
       };
     })
