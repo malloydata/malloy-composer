@@ -90,7 +90,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
 
   return (
     <FieldListDiv>
-      {querySummary.stages.map((stage, stageIndex) => {
+      {querySummary.stages.map((stageSummary, stageIndex) => {
         const nestStagePath = stagePathPush(stagePath, {
           stageIndex,
           fieldIndex: 0,
@@ -103,7 +103,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                   <StageActionMenu
                     model={model}
                     modelPath={modelPath}
-                    source={stage.inputSource}
+                    source={stageSummary.inputSource}
                     toggleField={queryModifiers.toggleField}
                     addFilter={queryModifiers.addFilter}
                     addLimit={queryModifiers.addLimit}
@@ -111,7 +111,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     addNewNestedQuery={queryModifiers.addNewNestedQuery}
                     stagePath={nestStagePath}
                     remove={() => queryModifiers.removeStage(nestStagePath)}
-                    orderByFields={stage.orderByFields}
+                    orderByFields={stageSummary.orderByFields}
                     addNewDimension={queryModifiers.addNewDimension}
                     addNewMeasure={queryModifiers.addNewMeasure}
                     closeMenu={closeMenu}
@@ -119,7 +119,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     setDataStyle={renderer =>
                       queryModifiers.setDataStyle(queryName, renderer)
                     }
-                    stageSummary={stage}
+                    stageSummary={stageSummary}
                     updateFieldOrder={queryModifiers.updateFieldOrder}
                     topValues={topValues}
                   />
@@ -145,11 +145,11 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
             <StageSummaryUI
               model={model}
               modelPath={modelPath}
-              stage={stage}
+              stageSummary={stageSummary}
               queryModifiers={queryModifiers}
               stagePath={nestStagePath}
               key={'stage/' + stageIndex}
-              source={stage.inputSource}
+              source={stageSummary.inputSource}
               topValues={topValues}
             />
           </div>
@@ -160,7 +160,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
 };
 
 interface SummaryStageProps {
-  stage: StageSummary;
+  stageSummary: StageSummary;
   stagePath: StagePath;
   source: StructDef;
   topValues: SearchValueMapResult[] | undefined;
@@ -173,7 +173,7 @@ interface SummaryStageProps {
 const StageSummaryUI: React.FC<SummaryStageProps> = ({
   model,
   modelPath,
-  stage,
+  stageSummary,
   topValues,
   queryModifiers,
   source,
@@ -185,7 +185,7 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
     setSelectedFieldIndex(fieldIndex);
   };
 
-  const currentFieldOrdering = stage.items
+  const currentFieldOrdering = stageSummary.items
     .map(item => ('fieldIndex' in item ? item.fieldIndex : undefined))
     .filter(notUndefined);
 
@@ -217,13 +217,13 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
 
   return (
     <FieldListDiv>
-      {stage.items.map((item, index) => (
+      {stageSummary.items.map((item, index) => (
         <SummaryItem
           model={model}
           modelPath={modelPath}
           key={`${item.type}/${index}`}
           item={item}
-          stageSummary={stage}
+          stageSummary={stageSummary}
           beginReorderingField={beginReorderingField}
           isSelected={
             'fieldIndex' in item && item.fieldIndex === selectedFieldIndex
@@ -763,7 +763,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
       />
       {item.type === 'nested_query_definition' &&
         (item.stages[0].items.length > 0 || item.stages.length > 1) &&
-        item.stages.map((stage, stageIndex) => {
+        item.stages.map((stageSummary, stageIndex) => {
           const nestStagePath = stagePathPush(stagePath, {
             fieldIndex: item.fieldIndex,
             stageIndex,
@@ -776,7 +776,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     <StageActionMenu
                       model={model}
                       modelPath={modelPath}
-                      source={stage.inputSource}
+                      source={stageSummary.inputSource}
                       toggleField={queryModifiers.toggleField}
                       addFilter={queryModifiers.addFilter}
                       addLimit={queryModifiers.addLimit}
@@ -784,7 +784,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                       addNewNestedQuery={queryModifiers.addNewNestedQuery}
                       stagePath={nestStagePath}
                       remove={() => queryModifiers.removeStage(nestStagePath)}
-                      orderByFields={stage.orderByFields}
+                      orderByFields={stageSummary.orderByFields}
                       addNewDimension={queryModifiers.addNewDimension}
                       addNewMeasure={queryModifiers.addNewMeasure}
                       closeMenu={closeMenu}
@@ -792,7 +792,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                         queryModifiers.setDataStyle(item.name, renderer)
                       }
                       isLastStage={stageIndex === item.stages.length - 1}
-                      stageSummary={stage}
+                      stageSummary={stageSummary}
                       updateFieldOrder={queryModifiers.updateFieldOrder}
                       topValues={topValues}
                     />
@@ -818,7 +818,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
               <StageSummaryUI
                 model={model}
                 modelPath={modelPath}
-                stage={stage}
+                stageSummary={stageSummary}
                 stagePath={nestStagePath}
                 source={source}
                 topValues={topValues}
