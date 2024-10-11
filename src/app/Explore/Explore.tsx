@@ -125,7 +125,6 @@ export const Explore: React.FC = () => {
     isRunning,
     queryModifiers,
     querySummary,
-    dataStyles,
     result,
     registerNewSource,
     error,
@@ -137,7 +136,7 @@ export const Explore: React.FC = () => {
     resetUndoHistory,
     isQueryEmpty,
     canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, {}, runQueryExternal);
+  } = useQueryBuilder(model, modelPath, updateQueryInURL, runQueryExternal);
 
   let section = urlParams.get('page') || 'datasets';
   if (onlyDefaultDataset && section === 'datasets') {
@@ -386,7 +385,6 @@ export const Explore: React.FC = () => {
                   queryName={queryName}
                   querySummary={querySummary}
                   queryMalloy={queryMalloy}
-                  dataStyles={dataStyles}
                   result={result}
                   isRunning={isRunning}
                   runQuery={runQueryAction}

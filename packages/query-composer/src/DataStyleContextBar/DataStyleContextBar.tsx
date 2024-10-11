@@ -32,13 +32,13 @@ import {FieldButton} from '../FieldButton';
 import {VisIcon} from '../VisIcon';
 
 interface DataStyleContextBarProps {
-  setDataStyle: (rendererName: RendererName) => void;
+  setRenderer: (rendererName: RendererName) => void;
   onComplete: () => void;
   allowedRenderers: RendererName[];
 }
 
 export const DataStyleContextBar: React.FC<DataStyleContextBarProps> = ({
-  setDataStyle,
+  setRenderer,
   onComplete,
   allowedRenderers,
 }) => (
@@ -52,7 +52,7 @@ export const DataStyleContextBar: React.FC<DataStyleContextBarProps> = ({
                 icon={<VisIcon renderer={renderer} />}
                 key={renderer}
                 onClick={() => {
-                  setDataStyle(renderer);
+                  setRenderer(renderer);
                   onComplete();
                 }}
                 name={renderer}

@@ -22,7 +22,6 @@ const App = () => {
     isRunning,
     queryModifiers,
     querySummary,
-    dataStyles,
     result,
     registerNewSource,
     dirty,
@@ -48,7 +47,6 @@ const App = () => {
         queryName={queryName}
         querySummary={querySummary}
         queryMalloy={queryMalloy}
-        dataStyles={dataStyles}
         result={result}
         isRunning={isRunning}
         runQuery={runQueryAction}

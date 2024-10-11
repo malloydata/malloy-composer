@@ -5,7 +5,6 @@ import {
   Result as MalloyResult,
   ModelDef,
 } from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
 import {createContext, useState} from 'react';
 import styled from 'styled-components';
 import {QuerySummary} from '../types';
@@ -26,7 +25,6 @@ interface ExploreQueryEditorProps {
   queryName: string;
   querySummary: QuerySummary | undefined;
   result: MalloyResult | undefined;
-  dataStyles: DataStyles;
   queryMalloy: {
     model: string;
     source: string;
@@ -64,7 +62,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   runQuery,
   querySummary,
   result,
-  dataStyles,
   isRunning,
   queryMalloy,
   queryModifiers,
@@ -168,7 +165,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
           model={model}
           source={source}
           result={result}
-          dataStyles={dataStyles}
           malloy={queryMalloy}
           onDrill={queryModifiers.onDrill}
           isRunning={isRunning}

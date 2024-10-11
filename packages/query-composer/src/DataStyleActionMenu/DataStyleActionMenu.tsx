@@ -25,20 +25,20 @@ import {RendererName} from '../types';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 
 interface DataStyleActionMenuProps {
-  setDataStyle: (rendererName: RendererName) => void;
+  setRenderer: (rendererName: RendererName) => void;
   onComplete: () => void;
   allowedRenderers: RendererName[];
 }
 
 export const DataStyleActionMenu: React.FC<DataStyleActionMenuProps> = ({
   onComplete,
-  setDataStyle,
+  setRenderer,
   allowedRenderers,
 }) => {
   return (
     <DataStyleContextBar
       onComplete={onComplete}
-      setDataStyle={setDataStyle}
+      setRenderer={setRenderer}
       allowedRenderers={allowedRenderers}
     />
   );
