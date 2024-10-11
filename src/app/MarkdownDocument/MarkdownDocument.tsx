@@ -238,7 +238,15 @@ const MarkdownCodeBlock: React.FC<MarkdownCodeBlockProps> = ({
   const [pre, setPre] = useState<HTMLElement>();
 
   useEffect(() => {
-    highlightPre(code, language).then(setPre);
+    let mounted = true;
+    highlightPre(code, language).then(hightlighted => {
+      if (mounted) {
+        setPre(hightlighted);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, [code, language]);
 
   return pre ? (
@@ -326,7 +334,7 @@ const MarkdownHeading6 = styled.h6`
 const MarkdownDocumentRoot = styled.div`
   padding: 10px 30px 30px 30px;
   width: 100%;
-  font-family: Google Sans;
+  font-family: Arial, Helvetica, sans-serif;
   overflow-y: auto;
 `;
 

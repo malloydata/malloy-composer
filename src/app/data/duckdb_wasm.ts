@@ -23,7 +23,6 @@
 
 import {DuckDBWASMConnection} from '@malloydata/db-duckdb/wasm';
 import * as malloy from '@malloydata/malloy';
-import {HackyDataStylesAccumulator} from '../../common/data_styles';
 import * as explore from '../../types';
 import {snakeToTitle} from '../utils';
 
@@ -146,10 +145,8 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       connection.registerRemoteTableCallback(remoteTableCallback);
 
       const modelURL = new URL(sample.path, samplesURL);
-      const urlReader = new HackyDataStylesAccumulator(URL_READER);
-      const runtime = new malloy.Runtime(urlReader, DUCKDB_WASM);
+      const runtime = new malloy.Runtime(URL_READER, DUCKDB_WASM);
       const model = await runtime.getModel(modelURL);
-      const dataStyles = urlReader.getHackyAccumulatedDataStyles();
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
@@ -164,7 +161,6 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
         model: model._modelDef,
         path: sample.path,
         readme,
-        styles: dataStyles,
         sources,
       };
     })
@@ -191,7 +187,7 @@ export async function runQuery(
   });
   const runnable = RUNTIME._loadModelFromModelDef(
     queryModel._modelDef
-  ).loadQueryByName(queryName);
+  ).loadQuery(query);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({rowLimit});
 }

@@ -1,0 +1,53 @@
+{
+  "name": "@malloydata/query-composer",
+  "version": "0.0.191",
+  "description": "A query composer component for Malloy",
+  "main": "dist/cjs/index.cjs",
+  "type": "module",
+  "types": "dist/types/index.d.ts",
+  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./package.json": "./package.json",
+    "./example/example_model": "./example/example_model.ts"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tsc --noEmit && eslint .",
+    "build": "npm run build-bundle && npm run build-types",
+    "build-bundle": "vite build --outDir 'dist' --config vite.config.ts",
+    "build-types": "tsc --declaration --emitDeclarationOnly",
+    "dev": "vite dev --config vite.config.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment-js": "^1.1.15",
+    "react-popper": "^2.2.5",
+    "shiki": "^1.1.6"
+  },
+  "devDependencies": {
+    "@types/moment": "^2.13.0",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.25",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "5.3.3",
+    "vite": "^5.3.4",
+    "vite-plugin-svgr": "^4.2.0"
+  },
+  "peerDependencies": {
+    "@malloydata/malloy": "^0.0.191",
+    "@malloydata/render": "^0.0.191",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.3"
+  }
+}
