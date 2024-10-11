@@ -187,7 +187,7 @@ export async function runQuery(
   });
   const runnable = RUNTIME._loadModelFromModelDef(
     queryModel._modelDef
-  ).loadQueryByName(queryName);
+  ).loadQuery(query);
   const rowLimit = (await runnable.getPreparedResult()).resultExplore.limit;
   return runnable.run({rowLimit});
 }

@@ -20,10 +20,12 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tsc --noEmit && eslint .",
     "build": "npm run build-bundle && npm run build-types",
     "build-bundle": "vite build --outDir 'dist' --config vite.config.ts",
     "build-types": "tsc --declaration --emitDeclarationOnly",
-    "dev": "vite dev --config vite.config.ts"
+    "dev": "vite dev --config vite.config.ts",
+    "prepublishOnly": "npm run build"
   },
   "author": "",
   "license": "ISC",

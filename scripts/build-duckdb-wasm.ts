@@ -24,7 +24,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import {build, BuildOptions, serve} from 'esbuild';
+import {build, BuildOptions, context} from 'esbuild';
 import svgrPlugin from 'esbuild-plugin-svgr';
 import {argv} from 'process';
 
@@ -60,20 +60,12 @@ export async function doBuild(): Promise<void> {
       ['.png']: 'dataurl',
     },
     inject: ['./react-shim.js'],
-    watch:
-      development && !port
-        ? {
-            onRebuild(error, result) {
-              if (error) console.error('Extension server build failed:', error);
-              else console.log('Extension server build succeeded:', result);
-            },
-          }
-        : false,
   };
 
   if (port) {
     console.log(`Listening on port ${port}`);
-    await serve({port, servedir: 'duckdb-wasm'}, options);
+    const ctx = await context(options);
+    await ctx.serve({port, servedir: 'duckdb-wasm'});
   } else {
     await build(options);
   }
