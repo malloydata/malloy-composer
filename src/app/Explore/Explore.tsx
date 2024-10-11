@@ -148,7 +148,6 @@ export const Explore: React.FC = () => {
       urlParams.delete('query');
       urlParams.delete('run');
       urlParams.delete('name');
-      urlParams.delete('styles');
       clearQuery(true);
       resetUndoHistory();
       setError(undefined);
@@ -169,7 +168,6 @@ export const Explore: React.FC = () => {
       urlParams.delete('query');
       urlParams.delete('run');
       urlParams.delete('name');
-      urlParams.delete('styles');
       clearQuery(true);
       setParams(urlParams);
     }
@@ -208,7 +206,6 @@ export const Explore: React.FC = () => {
             urlParams.delete('query');
             urlParams.delete('run');
             urlParams.delete('name');
-            urlParams.delete('styles');
             clearQuery(true);
           }
           params.current = urlParams.toString();
