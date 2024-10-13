@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {FieldDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {FieldDef, QueryFieldDef, SourceDef} from '@malloydata/malloy';
 
 export interface SchemaFieldMeasure {
   name: string;
@@ -192,7 +192,7 @@ export type QuerySummaryItem =
 export interface StageSummary {
   items: QuerySummaryItem[];
   orderByFields: OrderByField[];
-  inputSource: StructDef;
+  inputSource: SourceDef;
   type: 'reduce' | 'project' | 'index';
 }
 

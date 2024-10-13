@@ -11,7 +11,9 @@ import {
   QueryFieldDef,
   QueryRunStats,
   Runtime,
+  SQLSourceDef,
   StructDef,
+  TableSourceDef,
   URLReader,
 } from '@malloydata/malloy';
 import {maybeQuoteIdentifier} from './utils';
@@ -45,24 +47,14 @@ class DummyConnection extends BaseConnection {
     throw new Error('Dummy connection cannot run SQL blocks.');
   }
 
-  fetchSchemaForSQLBlock(): Promise<
-    | {structDef: StructDef; error?: undefined}
-    | {error: string; structDef?: undefined}
-  > {
+  fetchSelectSchema(_sqlSource: SQLSourceDef): Promise<SQLSourceDef | string> {
     throw new Error('Dummy connection cannot fetch schemas.');
   }
 
-  fetchSchemaForSQLBlocks(): Promise<{
-    schemas: Record<string, StructDef>;
-    errors: Record<string, string>;
-  }> {
-    throw new Error('Dummy connection cannot fetch schemas.');
-  }
-
-  fetchSchemaForTables(): Promise<{
-    schemas: Record<string, StructDef>;
-    errors: Record<string, string>;
-  }> {
+  fetchTableSchema(
+    _tableName: string,
+    _tablePath: string
+  ): Promise<TableSourceDef | string> {
     throw new Error('Dummy connection cannot fetch schemas.');
   }
 }

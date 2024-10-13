@@ -33,7 +33,7 @@ import {
   FilterCondition,
   QueryFieldDef,
   SearchValueMapResult,
-  StructDef,
+  SourceDef,
   ModelDef,
 } from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
@@ -45,7 +45,7 @@ import {
 } from '../utils';
 
 interface StageActionMenuProps {
-  source: StructDef;
+  source: SourceDef;
   toggleField: (stagePath: StagePath, fieldPath: string) => void;
   addFilter: (
     stagePath: StagePath,

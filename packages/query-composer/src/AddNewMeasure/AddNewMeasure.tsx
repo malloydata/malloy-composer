@@ -34,7 +34,12 @@ import {
   FormItem,
 } from '../CommonElements';
 import {SelectDropdown} from '../SelectDropdown';
-import {FieldDef, QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {
+  FieldDef,
+  isLeafAtomic,
+  QueryFieldDef,
+  SourceDef,
+} from '@malloydata/malloy';
 import {
   degenerateMeasure,
   generateMeasure,
@@ -53,7 +58,7 @@ import {
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface AddMeasureProps {
-  source: StructDef;
+  source: SourceDef;
   addMeasure: (measure: QueryFieldDef) => void;
   onComplete: () => void;
   initialCode?: string;
@@ -260,7 +265,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               dummyCompiler
                 .compileMeasure(source, newName, measure)
                 .then(measure => {
-                  if (measure.type !== 'struct') {
+                  if (isLeafAtomic(measure)) {
                     addMeasure(measure);
                     onComplete();
                   }

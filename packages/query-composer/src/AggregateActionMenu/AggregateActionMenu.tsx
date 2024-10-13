@@ -26,7 +26,7 @@ import {
   ModelDef,
   QueryFieldDef,
   SearchValueMapResult,
-  StructDef,
+  SourceDef,
 } from '@malloydata/malloy';
 import {OrderByField, RendererName, StagePath} from '../types';
 import {FilterContextBar} from '../FilterContextBar';
@@ -37,7 +37,7 @@ import {AddNewMeasure} from '../AddNewMeasure';
 import {EditOrderBy} from '../EditOrderBy';
 
 interface AggregateActionMenuProps {
-  source: StructDef;
+  source: SourceDef;
   removeField: () => void;
   addFilter: (filter: FilterCondition, as?: string) => void;
   rename: (newName: string) => void;

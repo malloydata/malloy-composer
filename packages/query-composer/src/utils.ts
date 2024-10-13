@@ -21,7 +21,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {FieldDef, StructDef, expressionIsCalculation} from '@malloydata/malloy';
+import {
+  FieldDef,
+  StructDef,
+  expressionIsCalculation,
+  isJoined,
+  isLeafAtomic,
+} from '@malloydata/malloy';
 import {Highlighter, LanguageRegistration} from 'shiki';
 // `shiki/core` entry does not include any themes or languages or the wasm binary.
 import {getHighlighterCore} from 'shiki/core';
@@ -113,12 +119,12 @@ export type FieldType =
 export type FieldKind = 'measure' | 'dimension' | 'query' | 'source';
 
 export function typeOfField(fieldDef: FieldDef): FieldType {
-  return fieldDef.type === 'struct'
-    ? 'source'
+  return fieldDef.type === 'error'
+    ? 'number' // HACK
     : fieldDef.type === 'turtle'
     ? 'query'
-    : fieldDef.type === 'error'
-    ? 'number' // HACK
+    : isJoined(fieldDef)
+    ? 'source'
     : fieldDef.type;
 }
 
@@ -132,7 +138,7 @@ export function scalarTypeOfField(
   | 'timestamp'
   | 'json'
   | 'sql native' {
-  return fieldDef.type === 'struct'
+  return isJoined(fieldDef)
     ? 'string'
     : fieldDef.type === 'turtle'
     ? 'string'
@@ -142,7 +148,7 @@ export function scalarTypeOfField(
 }
 
 export function kindOfField(fieldDef: FieldDef): FieldKind {
-  return fieldDef.type === 'struct'
+  return isJoined(fieldDef)
     ? 'source'
     : fieldDef.type === 'turtle'
     ? 'query'
@@ -160,7 +166,7 @@ export function fieldToSummaryItem(
   path: string
 ): QuerySummaryItem {
   const kind = kindOfField(field);
-  if (field.type === 'struct' || kind === 'source') {
+  if (isJoined(field) || kind === 'source') {
     throw new Error('Cannot make a summary item from a struct.');
   } else {
     return {
@@ -178,19 +184,11 @@ export function fieldToSummaryItem(
 }
 
 export function isAggregate(field: FieldDef): boolean {
-  return (
-    field.type !== 'struct' &&
-    field.type !== 'turtle' &&
-    expressionIsCalculation(field.expressionType)
-  );
+  return isLeafAtomic(field) && expressionIsCalculation(field.expressionType);
 }
 
 export function isDimension(field: FieldDef): boolean {
-  return (
-    field.type !== 'struct' &&
-    field.type !== 'turtle' &&
-    field.expressionType === 'scalar'
-  );
+  return isLeafAtomic(field) && field.expressionType === 'scalar';
 }
 
 export function isQuery(field: FieldDef): boolean {
@@ -202,7 +200,7 @@ export function flatFields(
   path: string[] = []
 ): {field: FieldDef; path: string}[] {
   return source.fields.flatMap(field => {
-    if (field.type === 'struct') {
+    if (isJoined(field)) {
       return flatFields(field, [...path, field.as || field.name]);
     } else {
       return [{field, path: [...path, field.as || field.name].join('.')}];

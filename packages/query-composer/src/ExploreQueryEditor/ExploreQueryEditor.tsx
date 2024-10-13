@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   SearchValueMapResult,
-  StructDef,
+  SourceDef,
   Result as MalloyResult,
   ModelDef,
 } from '@malloydata/malloy';
@@ -21,7 +21,7 @@ import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 import {DummyCompile} from '../core/dummy-compile';
 
 interface ExploreQueryEditorProps {
-  source: StructDef | undefined;
+  source: SourceDef | undefined;
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
   querySummary: QuerySummary | undefined;

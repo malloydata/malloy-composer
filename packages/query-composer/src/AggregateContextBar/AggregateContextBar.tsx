@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {QueryFieldDef, SourceDef} from '@malloydata/malloy';
 import {useState} from 'react';
 import {ActionIcon} from '../ActionIcon';
 import {AddNewMeasure} from '../AddNewMeasure';
@@ -44,7 +44,7 @@ import {
 } from '../utils';
 
 interface AggregateContextBarProps {
-  source: StructDef;
+  source: SourceDef;
   selectField: (fieldPath: string) => void;
   addNewMeasure: (measure: QueryFieldDef) => void;
   onComplete: () => void;

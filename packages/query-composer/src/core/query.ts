@@ -39,12 +39,15 @@ import {
   PipeSegment,
   QueryFieldDef,
   Segment,
-  StructDef,
   TurtleDef,
-  FieldTypeDef,
   NamedQuery,
   expressionIsCalculation,
   ExpressionType,
+  isJoined,
+  SourceDef,
+  isLeafAtomic,
+  AtomicFieldDef,
+  StructDef,
 } from '@malloydata/malloy';
 import {DataStyles} from '@malloydata/render';
 import {snakeToTitle} from '../utils';
@@ -85,9 +88,9 @@ function setFields(stage: PipeSegment, fields: QueryFieldDef[]) {
 }
 
 class SourceUtils {
-  constructor(protected _source: StructDef | undefined) {}
+  constructor(protected _source: SourceDef | undefined) {}
 
-  updateSource(source: StructDef) {
+  updateSource(source: SourceDef) {
     this._source = source;
   }
 
@@ -95,7 +98,10 @@ class SourceUtils {
     return this._source;
   }
 
-  protected fieldDefForQueryFieldDef(field: QueryFieldDef, source: StructDef) {
+  protected fieldDefForQueryFieldDef(
+    field: QueryFieldDef,
+    source: SourceDef
+  ): FieldDef {
     if (field.type === 'fieldref') {
       return this.getField(source, dottify(field.path));
     } else {
@@ -103,16 +109,18 @@ class SourceUtils {
     }
   }
 
-  protected getField(source: StructDef, fieldName: string): FieldDef {
+  protected getField(source: SourceDef, fieldName: string): FieldDef {
     let parts = fieldName.split('.');
-    let currentSource = source;
+    let currentSource: StructDef = source;
     while (parts.length > 1) {
       const part = parts[0];
-      const found = currentSource.fields.find(f => (f.as || f.name) === part);
+      const found: FieldDef = currentSource.fields.find(
+        f => (f.as || f.name) === part
+      );
       if (found === undefined) {
         throw new Error(`Could not find (inner) ${part}`);
       }
-      if (found.type === 'struct') {
+      if (isJoined(found)) {
         currentSource = found;
         parts = parts.slice(1);
       } else if (found.type === 'turtle') {
@@ -135,8 +143,8 @@ class SourceUtils {
 
   protected modifySourceForStage(
     stage: PipeSegment,
-    source: StructDef
-  ): StructDef {
+    source: SourceDef
+  ): SourceDef {
     return Segment.nextStructDef(source, stage);
   }
 }
@@ -163,7 +171,7 @@ class NotAStageError extends Error {
 
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
-  constructor(source: StructDef) {
+  constructor(source: SourceDef) {
     super(source);
     this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
   }
@@ -340,7 +348,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   private sortOrder(field: FieldDef) {
-    if (field.type === 'struct') {
+    if (isJoined(field)) {
       return 3;
     } else if (field.type === 'turtle') {
       return 2;
@@ -797,7 +805,7 @@ export class QueryBuilder extends SourceUtils {
         };
         return;
       }
-      if (lookup.type === 'struct') {
+      if (isJoined(lookup)) {
         throw new Error('Invalid field');
       }
       const newField: QueryFieldDef = {
@@ -834,7 +842,7 @@ export class QueryBuilder extends SourceUtils {
         this.sourceForStageAtPath(stagePath),
         dottify(field.path)
       );
-      if (def.type === 'turtle' || def.type === 'struct') {
+      if (def.type === 'turtle' || isJoined(def)) {
         throw new Error('Invalid field');
       }
       stage.queryFields[fieldIndex] = {
@@ -857,7 +865,7 @@ export class QueryBuilder extends SourceUtils {
     } else if (isFilteredField(field)) {
       field.e.filterList = [...(field.e.filterList || []), filter];
     } else if (isRenamedField(field)) {
-      if (field.type === 'turtle') {
+      if (!isLeafAtomic(field)) {
         throw new Error('Invalid field');
       }
       stage.queryFields[fieldIndex] = {
@@ -902,10 +910,10 @@ export class QueryBuilder extends SourceUtils {
   replaceWithDefinition(
     stagePath: StagePath,
     fieldIndex: number,
-    structDef?: StructDef
+    SourceDef?: SourceDef
   ): void {
-    if (structDef === undefined) {
-      structDef = this._source;
+    if (SourceDef === undefined) {
+      SourceDef = this._source;
     }
     const stage = this.stageAtPath(stagePath);
     if (!(stage.type === 'reduce' || stage.type === 'project')) {
@@ -915,7 +923,7 @@ export class QueryBuilder extends SourceUtils {
     if (field.type !== 'fieldref') {
       throw new Error("Don't deal with this yet");
     }
-    const definition = structDef.fields.find(
+    const definition = SourceDef.fields.find(
       def => (def.as || def.name) === dottify(field.path)
     );
     // TODO handle case where definition is too complex...
@@ -933,7 +941,7 @@ export class QueryBuilder extends SourceUtils {
 export class QueryWriter extends SourceUtils {
   constructor(
     private readonly query: TurtleDef,
-    source: StructDef
+    source: SourceDef
   ) {
     super(source);
   }
@@ -994,7 +1002,7 @@ ${malloy}
   private codeInfoForField(
     stage: PipeSegment,
     field: QueryFieldDef,
-    source: StructDef,
+    source: SourceDef,
     indent: string
   ):
     | {
@@ -1033,7 +1041,7 @@ ${malloy}
       }
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
-        if (fieldDef.type === 'struct') {
+        if (isJoined(fieldDef)) {
           throw new Error("Don't know how to deal with this");
         }
         const property =
@@ -1069,7 +1077,7 @@ ${malloy}
         return {property, malloy};
       } else if (isFilteredField(field)) {
         const fieldDef = this.getField(source, dottify(field.e.e.path));
-        if (fieldDef.type === 'struct') {
+        if (isJoined(fieldDef)) {
           throw new Error("Don't know how to deal with this");
         }
         const property =
@@ -1150,7 +1158,7 @@ ${malloy}
 
   private getMalloyStringForStage(
     stage: PipeSegment,
-    source: StructDef,
+    source: SourceDef,
     indent = ''
   ): Fragment[] {
     if (
@@ -1277,7 +1285,7 @@ ${malloy}
   }
 
   private getSummaryItemsForFilterList(
-    source: StructDef,
+    source: SourceDef,
     filterList: FilterCondition[]
   ): QuerySummaryItemFilter[] {
     const items: QuerySummaryItemFilter[] = [];
@@ -1331,7 +1339,7 @@ ${malloy}
 
   getStyleItem(
     field: QueryFieldDef,
-    source: StructDef,
+    source: SourceDef,
     dataStyles: DataStyles
   ): QuerySummaryItemDataStyle | undefined {
     let name: string;
@@ -1339,7 +1347,7 @@ ${malloy}
     if (field.type === 'fieldref') {
       name = dottify(field.path);
       const fieldDef = this.getField(source, name);
-      if (fieldDef.type === 'struct') {
+      if (isJoined(fieldDef)) {
         throw new Error("Don't know how to deal with this");
       }
       kind =
@@ -1405,7 +1413,7 @@ ${malloy}
 
   getStageSummary(
     stage: PipeSegment,
-    source: StructDef,
+    source: SourceDef,
     dataStyles: DataStyles
   ): StageSummary {
     if (
@@ -1438,7 +1446,7 @@ ${malloy}
         const styleItem = this.getStyleItem(field, source, dataStyles);
         const styleItems = styleItem ? [styleItem] : [];
         if (field.type === 'fieldref') {
-          if (fieldDef.type === 'struct') {
+          if (isJoined(fieldDef)) {
             throw new Error("Don't know how to deal with this");
           }
           items.push({
@@ -1467,7 +1475,7 @@ ${malloy}
             });
           }
         } else if (isRenamedField(field)) {
-          if (fieldDef.type === 'struct') {
+          if (isJoined(fieldDef)) {
             throw new Error("Don't know how to deal with this");
           }
           if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
@@ -1496,7 +1504,7 @@ ${malloy}
             stages,
           });
         } else if (isFilteredField(field)) {
-          if (fieldDef.type === 'struct') {
+          if (isJoined(fieldDef)) {
             throw new Error("Don't know how to deal with this");
           }
           if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
@@ -1553,7 +1561,8 @@ ${malloy}
               : 'dimension',
             styles: styleItems,
           });
-          if (field.type !== 'error') {
+          // mtoy to will: This is stripping more things from order by
+          if (field.type !== 'error' && isLeafAtomic(field)) {
             orderByFields.push({
               name: field.as || field.name,
               fieldIndex,
@@ -1618,7 +1627,7 @@ ${malloy}
     return {type: stage.type, items, orderByFields, inputSource: source};
   }
 
-  fanToDef(fan: FilteredField, def: FieldTypeDef): FieldDef {
+  fanToDef(fan: FilteredField, def: AtomicFieldDef): FieldDef {
     const malloy: Fragment[] = [dottify(fan.e.e.path)];
     if (fan.e.filterList && fan.e.filterList.length > 0) {
       const whereOrHaving =
@@ -1633,9 +1642,8 @@ ${malloy}
 
     // TODO this may not be necessary? Maybe can already just use it as code?
     return {
-      type: def.type,
+      ...def,
       name: this.nameOf(fan),
-      expressionType: def.expressionType,
       code,
     };
   }

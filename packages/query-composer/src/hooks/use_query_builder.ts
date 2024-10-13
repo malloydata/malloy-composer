@@ -24,7 +24,7 @@
 import {
   FilterCondition,
   QueryFieldDef,
-  StructDef,
+  SourceDef,
   Result as MalloyResult,
   ModelDef,
   NamedQuery,
@@ -50,14 +50,14 @@ interface UseQueryBuilderResult {
   runQuery: () => void;
   isRunning: boolean;
   clearResult: () => void;
-  source: StructDef | undefined;
+  source: SourceDef | undefined;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
   result: MalloyResult | undefined;
   dataStyles: DataStyles;
   error: Error | undefined;
   setError: (error: Error | undefined) => void;
-  registerNewSource: (source: StructDef) => void;
+  registerNewSource: (source: SourceDef) => void;
   dirty: boolean;
   canUndo: boolean;
   canRedo: boolean;
@@ -161,7 +161,7 @@ export function useQueryBuilder(
 
   const dataStyles = useRef<DataStyles>({});
 
-  const registerNewSource = (source: StructDef) => {
+  const registerNewSource = (source: SourceDef) => {
     queryBuilder.current.updateSource(source);
   };
 

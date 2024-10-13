@@ -40,7 +40,7 @@ import {ListNest} from '../ListNest';
 import {NestQueryActionMenu} from '../NestQueryActionMenu';
 import styled from 'styled-components';
 import {FilterActionMenu} from '../FilterActionMenu';
-import {ModelDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
+import {ModelDef, SearchValueMapResult, SourceDef} from '@malloydata/malloy';
 import {OrderByActionMenu} from '../OrderByActionMenu';
 import {EmptyMessage} from '../CommonElements';
 import {DataStyleActionMenu} from '../DataStyleActionMenu';
@@ -56,7 +56,7 @@ import {QueryModifiers} from '../hooks/use_query_builder';
 
 interface QuerySummaryPanelProps {
   model: ModelDef;
-  source: StructDef;
+  source: SourceDef;
   querySummary: QuerySummary;
   stagePath: StagePath | undefined;
   topValues: SearchValueMapResult[] | undefined;
@@ -162,7 +162,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
 interface SummaryStageProps {
   stageSummary: StageSummary;
   stagePath: StagePath;
-  source: StructDef;
+  source: SourceDef;
   topValues: SearchValueMapResult[] | undefined;
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
@@ -290,7 +290,7 @@ const ClickToPopoverDiv = styled.div`
 
 interface SummaryItemProps {
   item: QuerySummaryItem;
-  source: StructDef;
+  source: SourceDef;
   stagePath: StagePath;
   stageSummary: StageSummary;
   beginReorderingField: (fieldIndex: number) => void;

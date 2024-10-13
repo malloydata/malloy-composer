@@ -24,9 +24,10 @@
 import {
   expressionIsCalculation,
   FieldDef,
+  isJoined,
   PipeSegment,
   Segment,
-  StructDef,
+  SourceDef,
 } from '@malloydata/malloy';
 import {maybeQuoteIdentifier, unquoteIdentifier} from './utils';
 
@@ -73,19 +74,19 @@ export function generateMeasure(
 }
 
 function findField(
-  source: StructDef,
+  source: SourceDef,
   identifier: string
 ): FieldDef | undefined {
   const modifySourceForStage = (
     stage: PipeSegment,
-    source: StructDef
-  ): StructDef => Segment.nextStructDef(source, stage);
+    source: SourceDef
+  ): SourceDef => Segment.nextStructDef(source, stage);
 
   const _findField = (fields: FieldDef[], parts: string[]) => {
     const field = fields.find(field => (field.as || field.name) === parts[0]);
     if (field) {
       if (parts.length > 1) {
-        if (field.type === 'struct') {
+        if (isJoined(field)) {
           return _findField(field.fields, parts.slice(1));
         } else if (field.type === 'turtle') {
           let turtleSource = source;
@@ -118,7 +119,7 @@ const MEASURE_MAX = /^max\((.*)\)/;
 const MEASURE_PERCENT = /^100 \* (.*) \/ all\((.*)\)$/;
 
 export function degenerateMeasure(
-  source: StructDef,
+  source: SourceDef,
   measure: string
 ): {
   measureType: MeasureType;
@@ -191,7 +192,7 @@ export function degenerateMeasure(
 }
 
 export function sortFieldOrder(field: FieldDef): 0 | 1 | 2 | 3 {
-  if (field.type === 'struct') {
+  if (isJoined(field)) {
     return 3;
   } else if (field.type === 'turtle') {
     return 2;

@@ -31,7 +31,7 @@ import {
   FormError,
   FormFieldList,
 } from '../CommonElements';
-import {QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {isLeafAtomic, QueryFieldDef, StructDef} from '@malloydata/malloy';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface AddFilterProps {
@@ -89,7 +89,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
               dummyCompiler
                 .compileDimension(source, newName, dimension)
                 .then(dimension => {
-                  if (dimension.type !== 'struct') {
+                  if (isLeafAtomic(dimension)) {
                     addDimension(dimension);
                     onComplete();
                   }
