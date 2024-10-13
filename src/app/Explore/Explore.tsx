@@ -33,7 +33,7 @@ import {compileQuery, getSourceNameForQuery} from '../../core/compile';
 import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
 import {MarkdownDocument} from '../MarkdownDocument';
-import {StructDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {useSearchParams, useParams} from 'react-router-dom';
 import {snakeToTitle} from '../utils';
 import {runQuery as runQueryExternal} from '../data/run_query';
@@ -114,7 +114,7 @@ export const Explore: React.FC = () => {
           .pathname
       : undefined;
   const source =
-    model && sourceName ? (model.contents[sourceName] as StructDef) : undefined;
+    model && sourceName ? (model.contents[sourceName] as SourceDef) : undefined;
 
   const {
     queryMalloy,
@@ -162,7 +162,7 @@ export const Explore: React.FC = () => {
     sourceName: string,
     fromURL = false
   ) => {
-    registerNewSource(modelInfo.model.contents[sourceName] as StructDef);
+    registerNewSource(modelInfo.model.contents[sourceName] as SourceDef);
     if (!fromURL) {
       urlParams.set('source', sourceName);
       urlParams.set('model', modelInfo.id);
@@ -195,7 +195,7 @@ export const Explore: React.FC = () => {
           const sourceName =
             source || (await getSourceNameForQuery(newModelInfo.model, query));
           registerNewSource(
-            newModelInfo.model.contents[sourceName] as StructDef
+            newModelInfo.model.contents[sourceName] as SourceDef
           );
           if (query) {
             if (page !== 'query') return;
@@ -272,7 +272,7 @@ export const Explore: React.FC = () => {
       urlParams.set('page', 'query');
       urlParams.set('run', 'true');
       urlParams.set('name', name);
-      registerNewSource(newModelInfo.model.contents[sourceName] as StructDef);
+      registerNewSource(newModelInfo.model.contents[sourceName] as SourceDef);
       const compiledQuery = await compileQuery(newModelInfo.model, query);
       queryModifiers.setQuery(compiledQuery, true);
       runQuery();
