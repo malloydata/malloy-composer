@@ -80,7 +80,7 @@ export async function getDatasets(
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
-          .filter(obj => isSourceDef(obj as StructDef))
+          .filter(obj => isSourceDef(obj))
           .map(obj => ({
             title: snakeToTitle(obj.as || obj.name),
             sourceName: obj.as || obj.name,
