@@ -22,7 +22,7 @@
  */
 
 import * as explore from '../types';
-import {Runtime, StructDef, isSourceDef} from '@malloydata/malloy';
+import {Runtime, isSourceDef} from '@malloydata/malloy';
 import {CONNECTION_MANAGER} from './connections';
 import {URL_READER} from './urls';
 import {promises as fs} from 'fs';
