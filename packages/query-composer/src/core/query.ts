@@ -708,11 +708,15 @@ export class QueryBuilder extends SourceUtils {
     const fields = getFields(stage);
     const field = fields[fieldIndex];
     // TODO(whscullin) This is violent
-    const at: DocumentLocation = {
-      url: 'internal://internal.malloy',
-      range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
-    };
-    field.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+    if (renderer) {
+      const at: DocumentLocation = {
+        url: 'internal://internal.malloy',
+        range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
+      };
+      field.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+    } else {
+      delete field.annotation;
+    }
   }
 
   addStage(stagePath: StagePath | undefined, fieldIndex?: number): void {
