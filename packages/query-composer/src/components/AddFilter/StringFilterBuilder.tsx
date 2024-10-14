@@ -39,7 +39,7 @@ import {
   StringStartsWithFilter,
 } from '../../types';
 import {ActionIcon} from '../ActionIcon';
-import {CodeInput} from '../../CodeInput';
+import {CodeInput} from '../CodeInput';
 import {ContextMenuContent, EmptyMessage, ScrollMain} from '../CommonElements';
 import {useSearch} from '../../data';
 import {FieldButton} from '../FieldButton';

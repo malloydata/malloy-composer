@@ -28,7 +28,7 @@ import {
   StructDef,
 } from '@malloydata/malloy';
 import {useContext, useState} from 'react';
-import {CodeInput} from '../../CodeInput';
+import {CodeInput} from '../CodeInput';
 import {
   Button,
   ContextMenuTitle,

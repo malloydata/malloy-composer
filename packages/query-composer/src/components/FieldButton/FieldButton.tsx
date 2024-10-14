@@ -23,7 +23,7 @@
 import * as React from 'react';
 import {ReactElement} from 'react';
 import styled from 'styled-components';
-import CloseIcon from '../assets/img/query_clear_hover.svg?react';
+import CloseIcon from '../../assets/img/query_clear_hover.svg?react';
 import {ColorKey, COLORS} from '../../colors';
 import {FieldName, FieldIcon} from '../CommonElements';
 

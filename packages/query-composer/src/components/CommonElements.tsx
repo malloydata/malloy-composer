@@ -22,8 +22,8 @@
  */
 import * as React from 'react';
 import styled from 'styled-components';
-import ChevronLeftIcon from './assets/img/chevrons/chevron_left.svg?react';
-import ChevronRightIcon from './assets/img/chevrons/chevron_right.svg?react';
+import ChevronLeftIcon from '../assets/img/chevrons/chevron_left.svg?react';
+import ChevronRightIcon from '../assets/img/chevrons/chevron_right.svg?react';
 import {ColorKey, COLORS} from '../colors';
 import {extractErrorMessage} from '../utils';
 

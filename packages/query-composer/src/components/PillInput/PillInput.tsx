@@ -24,7 +24,7 @@ import * as React from 'react';
 import {RefObject, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {ColorKey, COLORS} from '../../colors';
-import CloseIcon from '../assets/img/query_clear_hover.svg?react';
+import CloseIcon from '../../assets/img/query_clear_hover.svg?react';
 import {useClickOutside} from '../../hooks';
 
 interface PillInputProps {

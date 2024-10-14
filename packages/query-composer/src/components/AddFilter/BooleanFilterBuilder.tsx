@@ -29,7 +29,7 @@ import {
   BooleanFilter,
   BooleanFilterType,
 } from '../../types';
-import {CodeInput} from '../../CodeInput';
+import {CodeInput} from '../CodeInput';
 import {SelectDropdown} from '../SelectDropdown';
 
 interface BooleanFilterBuilderProps {

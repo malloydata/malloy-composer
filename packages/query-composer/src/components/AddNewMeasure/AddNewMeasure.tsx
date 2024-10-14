@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 import {useContext, useEffect, useMemo, useState} from 'react';
-import {CodeInput, CodeTextArea} from '../../CodeInput';
+import {CodeInput, CodeTextArea} from '../CodeInput';
 import {
   Button,
   ContextMenuTitle,

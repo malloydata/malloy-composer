@@ -21,14 +21,14 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import TypeIconBoolean from '../assets/img/type_icons/type-icon-on-off.svg?react';
-import TypeIconDate from '../assets/img/type_icons/type-icon-date.svg?react';
-import TypeIconNumber from '../assets/img/type_icons/type-icon-number.svg?react';
-import TypeIconString from '../assets/img/type_icons/type-icon-string.svg?react';
-import TypeIconJSON from '../assets/img/type_icons/type-icon-json.svg?react';
-import TypeIconQuery from '../assets/img/type_icons/type-icon-query.svg?react';
-import TypeIconSource from '../assets/img/type_icons/type-icon-projection.svg?react';
-import TypeIconMeasure from '../assets/img/type_icons/type-icon-number-measure.svg?react';
+import TypeIconBoolean from '../../assets/img/type_icons/type-icon-on-off.svg?react';
+import TypeIconDate from '../../assets/img/type_icons/type-icon-date.svg?react';
+import TypeIconNumber from '../../assets/img/type_icons/type-icon-number.svg?react';
+import TypeIconString from '../../assets/img/type_icons/type-icon-string.svg?react';
+import TypeIconJSON from '../../assets/img/type_icons/type-icon-json.svg?react';
+import TypeIconQuery from '../../assets/img/type_icons/type-icon-query.svg?react';
+import TypeIconSource from '../../assets/img/type_icons/type-icon-projection.svg?react';
+import TypeIconMeasure from '../../assets/img/type_icons/type-icon-number-measure.svg?react';
 import {FieldKind, FieldType} from '../../utils';
 
 interface TypeIconProps {

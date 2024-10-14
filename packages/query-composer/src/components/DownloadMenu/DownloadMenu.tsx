@@ -23,7 +23,7 @@
 import React, {useRef, useState} from 'react';
 import {Popover} from '../Popover';
 import {DropdownMenu} from '../SelectDropdown/SelectDropdown';
-import Icon from '../assets/img/download_hover.svg?react';
+import Icon from '../../assets/img/download_hover.svg?react';
 import styled from 'styled-components';
 import {COLORS} from '../../colors';
 

@@ -39,7 +39,7 @@ import {
   TimeIsOnFilter,
   TimeIsThisFilter,
 } from '../../types';
-import {CodeInput} from '../../CodeInput';
+import {CodeInput} from '../CodeInput';
 import {DateInput} from '../DateInput';
 import {DatePicker} from '../DatePicker';
 import {useClickOutside} from '../../hooks';

@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 import styled, {keyframes} from 'styled-components';
-import SpinnerSVG from '../assets/img/spinner.svg?react';
+import SpinnerSVG from '../../assets/img/spinner.svg?react';
 import {ColorKey, COLORS} from '../../colors';
 
 interface LoadingSpinnerProps {

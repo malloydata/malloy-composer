@@ -36,7 +36,7 @@ import {
   NumberLessThanOrEqualToFilter,
   NumberBetweenFilter,
 } from '../../types';
-import {CodeInput} from '../../CodeInput';
+import {CodeInput} from '../CodeInput';
 import {NumberInput} from '../NumberInput';
 import {PillInput} from '../PillInput/PillInput';
 import {SelectDropdown} from '../SelectDropdown';

@@ -21,26 +21,26 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import VisIconTable from './assets/img/vis_icons/viz_table.svg?react';
-import VisIconDashboard from './assets/img/vis_icons/viz_dashboard.svg?react';
-import VisIconText from './assets/img/vis_icons/viz_text.svg?react';
-import VisIconCurrency from './assets/img/vis_icons/viz_currency.svg?react';
-import VisIconImage from './assets/img/vis_icons/viz_image.svg?react';
-import VisIconTime from './assets/img/vis_icons/viz_time.svg?react';
-import VisIconJSON from './assets/img/vis_icons/viz_json.svg?react';
-import VisIconList from './assets/img/vis_icons/viz_list.svg?react';
-import VisIconListDetail from './assets/img/vis_icons/viz_list_detail.svg?react';
-import VisIconBarChart from './assets/img/vis_icons/viz_bar_chart.svg?react';
-import VisIconScatterChart from './assets/img/vis_icons/viz_scatter.svg?react';
-import VisIconLineChart from './assets/img/vis_icons/viz_line.svg?react';
-import VisIconPointMap from './assets/img/vis_icons/viz_map_points.svg?react';
-import VisIconSegmentMap from './assets/img/vis_icons/viz_map_segment.svg?react';
-import VisIconShapeMap from './assets/img/vis_icons/viz_map_shape.svg?react';
-import VisIconNumber from './assets/img/vis_icons/viz_number.svg?react';
-import VisIconPercent from './assets/img/vis_icons/viz_percent.svg?react';
-import VisIconBoolean from './assets/img/vis_icons/viz_boolean.svg?react';
-import VisIconSparkLine from './assets/img/vis_icons/viz_sparkline.svg?react';
-import VisIconLink from './assets/img/vis_icons/viz_link.svg?react';
+import VisIconTable from '../assets/img/vis_icons/viz_table.svg?react';
+import VisIconDashboard from '../assets/img/vis_icons/viz_dashboard.svg?react';
+import VisIconText from '../assets/img/vis_icons/viz_text.svg?react';
+import VisIconCurrency from '../assets/img/vis_icons/viz_currency.svg?react';
+import VisIconImage from '../assets/img/vis_icons/viz_image.svg?react';
+import VisIconTime from '../assets/img/vis_icons/viz_time.svg?react';
+import VisIconJSON from '../assets/img/vis_icons/viz_json.svg?react';
+import VisIconList from '../assets/img/vis_icons/viz_list.svg?react';
+import VisIconListDetail from '../assets/img/vis_icons/viz_list_detail.svg?react';
+import VisIconBarChart from '../assets/img/vis_icons/viz_bar_chart.svg?react';
+import VisIconScatterChart from '../assets/img/vis_icons/viz_scatter.svg?react';
+import VisIconLineChart from '../assets/img/vis_icons/viz_line.svg?react';
+import VisIconPointMap from '../assets/img/vis_icons/viz_map_points.svg?react';
+import VisIconSegmentMap from '../assets/img/vis_icons/viz_map_segment.svg?react';
+import VisIconShapeMap from '../assets/img/vis_icons/viz_map_shape.svg?react';
+import VisIconNumber from '../assets/img/vis_icons/viz_number.svg?react';
+import VisIconPercent from '../assets/img/vis_icons/viz_percent.svg?react';
+import VisIconBoolean from '../assets/img/vis_icons/viz_boolean.svg?react';
+import VisIconSparkLine from '../assets/img/vis_icons/viz_sparkline.svg?react';
+import VisIconLink from '../assets/img/vis_icons/viz_link.svg?react';
 import {RendererName} from '../types';
 
 interface VisIconProps {

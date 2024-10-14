@@ -15,7 +15,7 @@ import {Popover} from '../Popover';
 import {QuerySummaryPanel} from '../QuerySummaryPanel';
 import {Result} from '../Result';
 import {TopQueryActionMenu} from '../TopQueryActionMenu';
-import RunIcon from '../assets/img/query_run_wide.svg?react';
+import RunIcon from '../../assets/img/query_run_wide.svg?react';
 import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 import {DummyCompile} from '../../core/dummy-compile';
 
