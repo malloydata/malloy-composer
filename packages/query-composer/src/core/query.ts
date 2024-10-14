@@ -1072,7 +1072,12 @@ ${malloy}
             field.e.path
           )}`,
         ];
-        return {property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       } else if (isFilteredField(field)) {
         const fieldDef = this.getField(source, dottify(field.e.e.path));
         if (isJoined(fieldDef)) {
@@ -1100,7 +1105,12 @@ ${malloy}
           malloy.push(...this.getFiltersString(field.e.filterList || []));
           malloy.push(OUTDENT, '}');
         }
-        return {blockNotes, property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       } else if (field.type === 'turtle') {
         const malloy: Fragment[] = [];
         malloy.push(`${maybeQuoteIdentifier(field.as || field.name)} is`);
@@ -1116,7 +1126,12 @@ ${malloy}
           stageSource = this.modifySourceForStage(stage, stageSource);
           head = false;
         }
-        return {blockNotes, property: 'nest', malloy};
+        return {
+          blockNotes,
+          notes,
+          property: 'nest',
+          malloy,
+        };
       } else {
         const property = expressionIsCalculation(field.expressionType)
           ? 'aggregate'
@@ -1126,7 +1141,12 @@ ${malloy}
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
-        return {blockNotes, property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       }
     } catch (error) {
       console.error(error);
@@ -1186,9 +1206,7 @@ ${malloy}
         if (
           (currentProperty !== undefined &&
             info.property !== currentProperty) ||
-          (currentBlockNotes.length &&
-            JSON.stringify(currentBlockNotes) !==
-              JSON.stringify(info.blockNotes))
+          JSON.stringify(currentBlockNotes) !== JSON.stringify(info.blockNotes)
         ) {
           currentBlockNotes.forEach(blockNote =>
             malloy.push(blockNote, NEWLINE)
