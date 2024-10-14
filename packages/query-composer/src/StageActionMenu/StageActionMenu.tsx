@@ -65,7 +65,7 @@ interface StageActionMenuProps {
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   closeMenu: () => void;
-  setDataStyle: (rendererName: RendererName) => void;
+  setRenderer: (rendererName: RendererName) => void;
   stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   topValues: SearchValueMapResult[] | undefined;
@@ -86,7 +86,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   addNewDimension,
   addNewMeasure,
   closeMenu,
-  setDataStyle,
+  setRenderer,
   isLastStage,
   topValues,
   model,
@@ -207,7 +207,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           isEnabled: isLastStage,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setDataStyle={setDataStyle}
+              setRenderer={setRenderer}
               onComplete={onComplete}
               allowedRenderers={[
                 'table',

@@ -30,7 +30,6 @@ import {
   NamedQuery,
   TurtleDef,
 } from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
 import {useRef, useState} from 'react';
 import {QueryBuilder} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
@@ -54,7 +53,6 @@ interface UseQueryBuilderResult {
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
   result: MalloyResult | undefined;
-  dataStyles: DataStyles;
   error: Error | undefined;
   setError: (error: Error | undefined) => void;
   registerNewSource: (source: SourceDef) => void;
@@ -84,12 +82,7 @@ export interface QueryModifiers {
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
-  setDataStyle: (
-    name: string,
-    renderer: RendererName | undefined,
-    noURLUpdate?: boolean
-  ) => DataStyles;
-  setDataStyles: (styles: DataStyles, noURLUpdate?: boolean) => void;
+  setRenderer: (name: string, renderer: RendererName | undefined) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
   replaceQuery: (field: TurtleDef) => void;
   loadQuery: (queryPath: string) => void;
@@ -148,9 +141,7 @@ export function useQueryBuilder(
   updateQueryInURL?: (params: {
     run: boolean;
     query: string | undefined;
-    styles: DataStyles;
   }) => void,
-  modelDataStyles?: DataStyles,
   runQueryExternal?: RunQuery
 ): UseQueryBuilderResult {
   const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
@@ -158,8 +149,6 @@ export function useQueryBuilder(
   const [dirty, setDirty] = useState(false);
   const [, setVersion] = useState(0);
   const history = useRef({size: 0, position: 0});
-
-  const dataStyles = useRef<DataStyles>({});
 
   const registerNewSource = (source: SourceDef) => {
     queryBuilder.current.updateSource(source);
@@ -175,10 +164,7 @@ export function useQueryBuilder(
   } = useRunQuery(setError, modelDef, modelPath, runQueryExternal);
 
   const runQuery = () => {
-    const summary = queryBuilder.current.getQuerySummary({
-      ...modelDataStyles,
-      ...dataStyles.current,
-    });
+    const summary = queryBuilder.current.getQuerySummary();
     const topLevel = {
       stageIndex: summary ? summary.stages.length - 1 : 0,
     };
@@ -214,7 +200,6 @@ export function useQueryBuilder(
           updateQueryInURL({
             run: noURLUpdate,
             query: queryString,
-            styles: dataStyles.current,
           });
         }
         setDirty(true);
@@ -258,15 +243,19 @@ export function useQueryBuilder(
     if (queryBuilder.current.isEmpty()) return;
     modifyQuery(qb => {
       qb.clearQuery();
-      dataStyles.current = {};
     }, noURLUpdate);
     clearResult();
-    updateQueryInURL({run: false, query: undefined, styles: {}});
+    updateQueryInURL({run: false, query: undefined});
   };
 
   const toggleField = (stagePath: StagePath, fieldPath: string) => {
     modifyQuery(qb => qb.toggleField(stagePath, fieldPath));
   };
+
+  const setRenderer = (
+    _name: string,
+    _renderer: RendererName | undefined
+  ) => {};
 
   const removeField = (stagePath: StagePath, fieldIndex: number) => {
     modifyQuery(qb => qb.removeField(stagePath, fieldIndex));
@@ -402,41 +391,12 @@ export function useQueryBuilder(
     });
   };
 
-  const setDataStyle = (
-    name: string,
-    renderer: RendererName | undefined,
-    noURLUpdate = false
-  ) => {
-    const newDataStyles = {...dataStyles.current};
-    if (renderer === undefined) {
-      if (name in newDataStyles) {
-        delete newDataStyles[name];
-      }
-    } else {
-      newDataStyles[name] = {renderer};
-    }
-    modifyQuery(() => {
-      dataStyles.current = newDataStyles;
-    }, noURLUpdate);
-    return newDataStyles;
-  };
-
-  const setDataStyles = (styles: DataStyles, noURLUpdate = false) => {
-    modifyQuery(() => {
-      dataStyles.current = styles;
-    }, noURLUpdate);
-  };
-
-  const currentDataStyles = {...modelDataStyles, ...dataStyles.current};
-  const querySummary = queryBuilder.current.getQuerySummary(currentDataStyles);
+  const querySummary = queryBuilder.current.getQuerySummary();
 
   return {
     dirty,
     queryBuilder,
-    queryMalloy: queryBuilder.current.getQueryStrings(
-      dataStyles.current[queryName]?.renderer,
-      modelPath
-    ),
+    queryMalloy: queryBuilder.current.getQueryStrings(undefined, modelPath),
     queryName,
     clearQuery,
     runQuery,
@@ -444,7 +404,6 @@ export function useQueryBuilder(
     clearResult,
     source: queryBuilder.current.getSource(),
     querySummary,
-    dataStyles: currentDataStyles,
     result,
     error,
     canUndo: history.current.position > 0,
@@ -457,7 +416,6 @@ export function useQueryBuilder(
     isQueryEmpty: queryBuilder.current.isEmpty(),
     canQueryRun: queryBuilder.current.canRun(),
     queryModifiers: {
-      setDataStyles,
       setQuery,
       addFilter,
       toggleField,
@@ -466,7 +424,7 @@ export function useQueryBuilder(
       addNewNestedQuery,
       addNewDimension,
       addNewMeasure,
-      setDataStyle,
+      setRenderer,
       addStage,
       loadQuery,
       replaceQuery,

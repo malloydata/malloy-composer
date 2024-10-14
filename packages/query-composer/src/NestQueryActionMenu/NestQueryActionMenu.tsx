@@ -66,7 +66,7 @@ interface NestQueryActionMenuProps {
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   closeMenu: () => void;
-  setDataStyle: (rendererName: RendererName) => void;
+  setRenderer: (rendererName: RendererName) => void;
   addStage: () => void;
   stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
@@ -93,7 +93,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   addNewDimension,
   addNewMeasure,
   closeMenu,
-  setDataStyle,
+  setRenderer,
   beginReorderingField,
   addStage,
   topValues,
@@ -219,7 +219,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setDataStyle={setDataStyle}
+              setRenderer={setRenderer}
               onComplete={onComplete}
               allowedRenderers={[
                 'table',

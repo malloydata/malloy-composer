@@ -41,7 +41,7 @@ interface DimensionActionMenuProps {
   removeField: () => void;
   rename: (name: string) => void;
   closeMenu: () => void;
-  setDataStyle: (renderer: RendererName) => void;
+  setRenderer: (renderer: RendererName) => void;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   stagePath: StagePath;
   fieldIndex: number;
@@ -71,7 +71,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   rename,
   name,
   closeMenu,
-  setDataStyle,
+  setRenderer,
   fieldIndex,
   beginReorderingField,
   isEditable,
@@ -148,7 +148,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setDataStyle={setDataStyle}
+              setRenderer={setRenderer}
               onComplete={onComplete}
               allowedRenderers={[
                 'number',

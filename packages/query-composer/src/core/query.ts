@@ -29,7 +29,6 @@ import {
   stagePathPop,
   StageSummary,
   OrderByField,
-  QuerySummaryItemDataStyle,
   QuerySummaryItemFilter,
   stagePathParent,
 } from '../types';
@@ -49,7 +48,6 @@ import {
   AtomicFieldDef,
   StructDef,
 } from '@malloydata/malloy';
-import {DataStyles} from '@malloydata/render';
 import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
 import {maybeQuoteIdentifier} from './utils';
@@ -180,12 +178,12 @@ export class QueryBuilder extends SourceUtils {
     return new QueryWriter(this.query, this._source);
   }
 
-  public getQuerySummary(dataStyles: DataStyles): QuerySummary | undefined {
+  public getQuerySummary(): QuerySummary | undefined {
     if (this._source === undefined) return undefined;
     // eslint-disable-next-line no-console
     console.log(this.query);
     const writer = this.getWriter();
-    return writer.getQuerySummary(dataStyles);
+    return writer.getQuerySummary();
   }
 
   public getQueryStringForModel(): string | undefined {
@@ -1308,22 +1306,11 @@ ${malloy}
     return items;
   }
 
-  getQuerySummary(dataStyles: DataStyles): QuerySummary {
-    const queryName = this.query.name;
+  getQuerySummary(): QuerySummary {
     let stageSource = this.getSource();
-    const stages = this.query.pipeline.map((stage, index) => {
-      const summary = this.getStageSummary(stage, stageSource, dataStyles);
+    const stages = this.query.pipeline.map(stage => {
+      const summary = this.getStageSummary(stage, stageSource);
       stageSource = this.modifySourceForStage(stage, stageSource);
-      if (index === this.query.pipeline.length - 1) {
-        const styleItem = this.getStyleItemForName(
-          queryName,
-          'query',
-          dataStyles
-        );
-        if (styleItem) {
-          summary.items.push(styleItem);
-        }
-      }
       return summary;
     });
     return {stages};
@@ -1337,85 +1324,7 @@ ${malloy}
     }
   }
 
-  getStyleItem(
-    field: QueryFieldDef,
-    source: SourceDef,
-    dataStyles: DataStyles
-  ): QuerySummaryItemDataStyle | undefined {
-    let name: string;
-    let kind: 'dimension' | 'measure' | 'query' | 'source';
-    if (field.type === 'fieldref') {
-      name = dottify(field.path);
-      const fieldDef = this.getField(source, name);
-      if (isJoined(fieldDef)) {
-        throw new Error("Don't know how to deal with this");
-      }
-      kind =
-        fieldDef.type === 'turtle'
-          ? 'query'
-          : expressionIsCalculation(fieldDef.expressionType)
-          ? 'measure'
-          : 'dimension';
-    } else {
-      kind =
-        field.type === 'turtle'
-          ? 'query'
-          : expressionIsCalculation(field.expressionType)
-          ? 'measure'
-          : 'dimension';
-    }
-    return this.getStyleItemForName(name, kind, dataStyles);
-  }
-
-  private getStyleItemForName(
-    name: string,
-    kind: string,
-    dataStyles: DataStyles
-  ): QuerySummaryItemDataStyle | undefined {
-    const dataStyle = dataStyles[name];
-    if (dataStyle === undefined || dataStyle.renderer === undefined) {
-      return undefined;
-    } else {
-      return {
-        type: 'data_style',
-        renderer: dataStyle.renderer,
-        styleKey: name,
-        canRemove: name in dataStyles,
-        allowedRenderers:
-          kind === 'query' || kind === 'source'
-            ? [
-                'table',
-                'bar_chart',
-                'dashboard',
-                'json',
-                'line_chart',
-                'list',
-                'list_detail',
-                'point_map',
-                'scatter_chart',
-                'segment_map',
-                'shape_map',
-                'sparkline',
-              ]
-            : [
-                'number',
-                'boolean',
-                'currency',
-                'image',
-                'url',
-                'percent',
-                'text',
-                'time',
-              ],
-      };
-    }
-  }
-
-  getStageSummary(
-    stage: PipeSegment,
-    source: SourceDef,
-    dataStyles: DataStyles
-  ): StageSummary {
+  getStageSummary(stage: PipeSegment, source: SourceDef): StageSummary {
     if (
       stage.type !== 'index' &&
       stage.type !== 'project' &&
@@ -1439,12 +1348,10 @@ ${malloy}
         if (fieldDef.type === 'turtle') {
           let stageSource = source;
           for (const stage of fieldDef.pipeline) {
-            stages.push(this.getStageSummary(stage, stageSource, dataStyles));
+            stages.push(this.getStageSummary(stage, stageSource));
             stageSource = this.modifySourceForStage(stage, stageSource);
           }
         }
-        const styleItem = this.getStyleItem(field, source, dataStyles);
-        const styleItems = styleItem ? [styleItem] : [];
         if (field.type === 'fieldref') {
           if (isJoined(fieldDef)) {
             throw new Error("Don't know how to deal with this");
@@ -1455,7 +1362,6 @@ ${malloy}
             saveDefinition: undefined,
             fieldIndex,
             isRefined: false,
-            styles: styleItems.filter(s => s.canRemove),
             isRenamed: false,
             path: dottify(field.path),
             kind:
@@ -1490,7 +1396,7 @@ ${malloy}
             field: fieldDef,
             saveDefinition: undefined, // TODO
             fieldIndex,
-            styles: styleItems.filter(s => s.canRemove),
+            styles: [],
             isRefined: true,
             path: field.name,
             isRenamed: true,
@@ -1526,7 +1432,7 @@ ${malloy}
               source,
               field.e.filterList || []
             ),
-            styles: styleItems.filter(s => s.canRemove),
+            styles: [],
             isRefined: true,
             path: field.name,
             isRenamed: field.as !== undefined,
@@ -1546,7 +1452,7 @@ ${malloy}
             fieldIndex,
             saveDefinition: source === this.getSource() ? field : undefined,
             stages: stages,
-            styles: styleItems,
+            styles: [],
           });
         } else {
           items.push({
@@ -1559,7 +1465,7 @@ ${malloy}
             kind: expressionIsCalculation(field.expressionType)
               ? 'measure'
               : 'dimension',
-            styles: styleItems,
+            styles: [],
           });
           // mtoy to will: This is stripping more things from order by
           if (field.type !== 'error' && isLeafAtomic(field)) {

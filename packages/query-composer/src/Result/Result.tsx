@@ -24,6 +24,7 @@ import * as React from 'react';
 import {useContext, useEffect, useRef, useState} from 'react';
 import * as malloy from '@malloydata/malloy';
 import * as render from '@malloydata/render';
+import '@malloydata/render/webcomponent';
 import styled from 'styled-components';
 import {LoadingSpinner} from '../Spinner';
 import {usePrevious} from '../hooks';
@@ -46,7 +47,6 @@ interface ResultProps {
   model: malloy.ModelDef;
   source: malloy.StructDef;
   result?: malloy.Result;
-  dataStyles: render.DataStyles;
   malloy: {
     source: string;
     model: string;
@@ -62,7 +62,6 @@ export const Result: React.FC<ResultProps> = ({
   model,
   source,
   result,
-  dataStyles,
   malloy,
   onDrill,
   isRunning,
@@ -85,7 +84,6 @@ export const Result: React.FC<ResultProps> = ({
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
-  const previousDataStyles = usePrevious(dataStyles);
 
   useEffect(() => {
     highlightPre(malloy.markdown, 'md')
@@ -138,10 +136,7 @@ export const Result: React.FC<ResultProps> = ({
   }, [result, malloy, model]);
 
   useEffect(() => {
-    if (
-      result === previousResult &&
-      JSON.stringify(dataStyles) === JSON.stringify(previousDataStyles)
-    ) {
+    if (result === previousResult) {
       return;
     }
     setRendering(false);
@@ -156,7 +151,7 @@ export const Result: React.FC<ResultProps> = ({
       console.log(result.sql);
       const currentResultId = ++resultId.current;
       const rendered = await new render.HTMLView(document).render(result, {
-        dataStyles,
+        dataStyles: {},
         isDrillingEnabled: true,
         onDrill: (_1, _2, drillFilters) => {
           Promise.all(
@@ -189,7 +184,7 @@ export const Result: React.FC<ResultProps> = ({
         }, 0);
       }, 0);
     });
-  }, [result, dataStyles, previousDataStyles, previousResult]);
+  }, [result, previousResult]);
 
   return (
     <OuterDiv>
