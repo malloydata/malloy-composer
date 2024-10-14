@@ -21,7 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
+import {
+  FieldDef,
+  isJoined,
+  SearchValueMapResult,
+  StructDef,
+} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {ActionIcon} from '../ActionIcon';
@@ -52,9 +57,7 @@ export const FieldList: React.FC<FieldListProps> = ({
   return (
     <ListDiv>
       {fields
-        .filter(
-          field => filter(field) || (showNested && field.type === 'struct')
-        )
+        .filter(field => filter(field) || (showNested && isJoined(field)))
         .map(field => {
           if (filter(field)) {
             const type = typeOfField(field);
@@ -82,7 +85,7 @@ export const FieldList: React.FC<FieldListProps> = ({
                 }}
               />
             );
-          } else if (field.type === 'struct' && sourceHasAny(field, filter)) {
+          } else if (isJoined(field) && sourceHasAny(field, filter)) {
             return (
               <CollapsibleSource
                 key={field.as || field.name}
@@ -113,9 +116,7 @@ function sourceHasAny(
 ): boolean {
   return (
     source.fields.some(filter) ||
-    source.fields.some(
-      field => field.type === 'struct' && sourceHasAny(field, filter)
-    )
+    source.fields.some(field => isJoined(field) && sourceHasAny(field, filter))
   );
 }
 

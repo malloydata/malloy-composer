@@ -24,9 +24,10 @@ import * as React from 'react';
 import {
   expressionIsCalculation,
   FieldDef,
+  isLeafAtomic,
   QueryFieldDef,
   SearchValueMapResult,
-  StructDef,
+  SourceDef,
 } from '@malloydata/malloy';
 import {useCallback, useContext, useState} from 'react';
 import {ActionIcon} from '../ActionIcon';
@@ -52,7 +53,7 @@ import {
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface GroupByContextBarProps {
-  source: StructDef;
+  source: SourceDef;
   toggleField: (fieldPath: string) => void;
   addNewDimension: (dimension: QueryFieldDef) => void;
   onComplete: () => void;
@@ -112,8 +113,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                   <FieldList
                     fields={source.fields}
                     filter={field =>
-                      field.type !== 'turtle' &&
-                      field.type !== 'struct' &&
+                      isLeafAtomic(field) &&
                       !expressionIsCalculation(field.expressionType)
                     }
                     showNested={true}

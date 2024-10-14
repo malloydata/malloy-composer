@@ -30,7 +30,7 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu} from '../ActionMenu';
-import {SearchValueMapResult, StructDef, ModelDef} from '@malloydata/malloy';
+import {SearchValueMapResult, SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
@@ -41,7 +41,7 @@ import {
 import {QueryModifiers} from '../hooks/use_query_builder';
 
 interface TopQueryActionMenuProps {
-  source: StructDef;
+  source: SourceDef;
   stagePath: StagePath;
   orderByFields: OrderByField[];
   closeMenu: () => void;

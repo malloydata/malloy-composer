@@ -34,12 +34,12 @@
     "malloy-packages": "./scripts/malloy-packages.ts"
   },
   "dependencies": {
-    "@malloydata/db-bigquery": "0.0.191",
-    "@malloydata/db-duckdb": "0.0.191",
-    "@malloydata/db-postgres": "0.0.191",
-    "@malloydata/malloy": "0.0.191",
-    "@malloydata/query-composer": "file:packages/query-composer",
-    "@malloydata/render": "0.0.191",
+    "@malloydata/db-bigquery": "0.0.201",
+    "@malloydata/db-duckdb": "0.0.201",
+    "@malloydata/db-postgres": "0.0.201",
+    "@malloydata/malloy": "0.0.201",
+    "@malloydata/query-composer": "0.0.201",
+    "@malloydata/render": "0.0.201",
     "@popperjs/core": "^2.11.4",
     "cors": "^2.8.5",
     "duckdb": "^0.9.2",

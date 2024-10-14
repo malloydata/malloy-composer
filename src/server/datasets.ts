@@ -22,7 +22,7 @@
  */
 
 import * as explore from '../types';
-import {Runtime} from '@malloydata/malloy';
+import {Runtime, isSourceDef} from '@malloydata/malloy';
 import {CONNECTION_MANAGER} from './connections';
 import {URL_READER} from './urls';
 import {promises as fs} from 'fs';
@@ -80,7 +80,7 @@ export async function getDatasets(
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
-          .filter(obj => obj.type === 'struct')
+          .filter(obj => isSourceDef(obj))
           .map(obj => ({
             title: snakeToTitle(obj.as || obj.name),
             sourceName: obj.as || obj.name,

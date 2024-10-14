@@ -150,7 +150,7 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       const sources =
         sample.sources ||
         Object.values(model._modelDef.contents)
-          .filter(obj => obj.type === 'struct')
+          .filter(obj => malloy.isSourceDef(obj))
           .map(obj => ({
             title: snakeToTitle(obj.as || obj.name),
             sourceName: obj.as || obj.name,
