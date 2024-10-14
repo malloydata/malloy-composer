@@ -1,5 +1,5 @@
-export {ExploreQueryEditor} from './ExploreQueryEditor/ExploreQueryEditor';
-export {QuerySummaryPanel} from './QuerySummaryPanel/QuerySummaryPanel';
+export {ExploreQueryEditor} from './components/ExploreQueryEditor/ExploreQueryEditor';
+export {QuerySummaryPanel} from './components/QuerySummaryPanel/QuerySummaryPanel';
 export type {RunQuery} from './data/use_run_query';
 
 export {useQueryBuilder} from './hooks';
