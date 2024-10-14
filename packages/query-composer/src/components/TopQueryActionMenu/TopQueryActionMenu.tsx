@@ -59,7 +59,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
   stagePath,
   orderByFields,
   closeMenu,
-  queryName,
   topValues,
   queryModifiers,
   model,
@@ -197,8 +196,8 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setRenderer={renderer =>
-                queryModifiers.setRenderer(queryName, renderer)
+              setRenderer={renderName =>
+                queryModifiers.setRenderer(stagePath, undefined, renderName)
               }
               onComplete={onComplete}
               allowedRenderers={[

@@ -65,7 +65,11 @@ interface StageActionMenuProps {
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   closeMenu: () => void;
-  setRenderer: (rendererName: RendererName) => void;
+  setRenderer: (
+    stagePath: StagePath,
+    fieldIndex: number | undefined,
+    rendererName: RendererName
+  ) => void;
   stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   topValues: SearchValueMapResult[] | undefined;
@@ -207,7 +211,9 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           isEnabled: isLastStage,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setRenderer={setRenderer}
+              setRenderer={renderName =>
+                setRenderer(stagePath, undefined, renderName)
+              }
               onComplete={onComplete}
               allowedRenderers={[
                 'table',

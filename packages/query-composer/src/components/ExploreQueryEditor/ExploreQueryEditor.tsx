@@ -154,7 +154,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                   querySummary={querySummary}
                   queryModifiers={queryModifiers}
                   stagePath={undefined}
-                  queryName={queryName}
                   topValues={topValues}
                 />
               )}
