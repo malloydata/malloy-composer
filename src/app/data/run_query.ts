@@ -14,7 +14,7 @@ export async function runQuery(
   model: malloy.ModelDef,
   modelPath: string,
   queryName: string
-) {
+): Promise<malloy.Result> {
   if (isDuckDBWASM()) {
     const result = await duckDBWASM.runQuery(query, queryName, model);
     if (result instanceof Error) {
@@ -36,5 +36,8 @@ export async function runQuery(
       }),
     })
   ).json();
-  return malloy.Result.fromJSON(raw.result) as malloy.Result;
+  if (raw.result) {
+    return malloy.Result.fromJSON(raw.result);
+  }
+  throw new Error(raw.error || 'No results');
 }
