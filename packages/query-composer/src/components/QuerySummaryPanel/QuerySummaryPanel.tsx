@@ -60,7 +60,6 @@ interface QuerySummaryPanelProps {
   querySummary: QuerySummary;
   stagePath: StagePath | undefined;
   topValues: SearchValueMapResult[] | undefined;
-  queryName: string;
   queryModifiers: QueryModifiers;
   modelPath: string | undefined;
 }
@@ -70,7 +69,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
   modelPath,
   querySummary,
   stagePath,
-  queryName,
   topValues,
   queryModifiers,
 }) => {
@@ -116,9 +114,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     addNewMeasure={queryModifiers.addNewMeasure}
                     closeMenu={closeMenu}
                     isLastStage={stageIndex === querySummary.stages.length - 1}
-                    setRenderer={renderer =>
-                      queryModifiers.setRenderer(queryName, renderer)
-                    }
+                    setRenderer={queryModifiers.setRenderer}
                     stageSummary={stageSummary}
                     updateFieldOrder={queryModifiers.updateFieldOrder}
                     topValues={topValues}
@@ -361,8 +357,12 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     );
                   }}
                   closeMenu={closeMenu}
-                  setRenderer={renderer =>
-                    queryModifiers.setRenderer(item.name, renderer)
+                  setRenderer={renderName =>
+                    queryModifiers.setRenderer(
+                      stagePath,
+                      item.fieldIndex,
+                      renderName
+                    )
                   }
                   stagePath={stagePath}
                   stageSummary={stageSummary}
@@ -425,9 +425,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                     );
                   }}
                   closeMenu={closeMenu}
-                  setRenderer={renderer =>
-                    queryModifiers.setRenderer(item.name, renderer)
-                  }
+                  setRenderer={queryModifiers.setRenderer}
                   isRenamed={isRenamed}
                   beginReorderingField={() => {
                     beginReorderingField(item.fieldIndex);
@@ -508,8 +506,12 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
             return (
               <DataStyleActionMenu
                 onComplete={closeMenu}
-                setRenderer={renderer =>
-                  queryModifiers.setRenderer(item.styleKey, renderer)
+                setRenderer={renderName =>
+                  queryModifiers.setRenderer(
+                    stagePath,
+                    item.fieldIndex,
+                    renderName
+                  )
                 }
                 allowedRenderers={item.allowedRenderers}
               />
@@ -540,8 +542,12 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 addNewDimension={queryModifiers.addNewDimension}
                 addNewMeasure={queryModifiers.addNewMeasure}
                 closeMenu={closeMenu}
-                setRenderer={renderer =>
-                  queryModifiers.setRenderer(item.name, renderer)
+                setRenderer={renderName =>
+                  queryModifiers.setRenderer(
+                    stagePath,
+                    item.fieldIndex,
+                    renderName
+                  )
                 }
                 addStage={() =>
                   queryModifiers.addStage(stagePath, item.fieldIndex)
@@ -720,7 +726,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 color="other"
                 canRemove={item.canRemove}
                 onRemove={() => {
-                  queryModifiers.setRenderer(item.styleKey, undefined);
+                  queryModifiers.setRenderer(stagePath, fieldIndex, undefined);
                   closeMenu();
                 }}
                 active={isOpen || isSelected}
@@ -788,9 +794,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                       addNewDimension={queryModifiers.addNewDimension}
                       addNewMeasure={queryModifiers.addNewMeasure}
                       closeMenu={closeMenu}
-                      setRenderer={renderer =>
-                        queryModifiers.setRenderer(item.name, renderer)
-                      }
+                      setRenderer={queryModifiers.setRenderer}
                       isLastStage={stageIndex === item.stages.length - 1}
                       stageSummary={stageSummary}
                       updateFieldOrder={queryModifiers.updateFieldOrder}

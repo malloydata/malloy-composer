@@ -82,7 +82,11 @@ export interface QueryModifiers {
   addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
-  setRenderer: (name: string, renderer: RendererName | undefined) => void;
+  setRenderer: (
+    stagePath: StagePath,
+    fieldIndex: number,
+    renderer: RendererName | undefined
+  ) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
   replaceQuery: (field: TurtleDef) => void;
   loadQuery: (queryPath: string) => void;
@@ -253,9 +257,12 @@ export function useQueryBuilder(
   };
 
   const setRenderer = (
-    _name: string,
-    _renderer: RendererName | undefined
-  ) => {};
+    stagePath: StagePath,
+    fieldIndex: number,
+    renderer: RendererName | undefined
+  ) => {
+    modifyQuery(qb => qb.setRenderer(stagePath, fieldIndex, renderer));
+  };
 
   const removeField = (stagePath: StagePath, fieldIndex: number) => {
     modifyQuery(qb => qb.removeField(stagePath, fieldIndex));

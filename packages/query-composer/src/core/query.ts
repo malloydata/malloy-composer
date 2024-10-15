@@ -31,6 +31,8 @@ import {
   OrderByField,
   QuerySummaryItemFilter,
   stagePathParent,
+  QuerySummaryItemDataStyle,
+  RendererName,
 } from '../types';
 import {
   FieldDef,
@@ -47,6 +49,8 @@ import {
   isLeafAtomic,
   AtomicFieldDef,
   StructDef,
+  Tag,
+  DocumentLocation,
 } from '@malloydata/malloy';
 import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
@@ -692,6 +696,29 @@ export class QueryBuilder extends SourceUtils {
     stage.limit = undefined;
   }
 
+  setRenderer(
+    stagePath: StagePath,
+    fieldIndex: number,
+    renderer: RendererName | undefined
+  ): void {
+    const stage = this.stageAtPath(stagePath);
+    if (!(stage.type === 'reduce' || stage.type === 'project')) {
+      throw new Error(`Unhandled stage type ${stage.type}`);
+    }
+    const fields = getFields(stage);
+    const field = fields[fieldIndex];
+    // TODO(whscullin) This is violent
+    if (renderer) {
+      const at: DocumentLocation = {
+        url: 'internal://internal.malloy',
+        range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
+      };
+      field.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+    } else {
+      delete field.annotation;
+    }
+  }
+
   addStage(stagePath: StagePath | undefined, fieldIndex?: number): void {
     let query;
     if (stagePath !== undefined) {
@@ -1072,7 +1099,12 @@ ${malloy}
             field.e.path
           )}`,
         ];
-        return {property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       } else if (isFilteredField(field)) {
         const fieldDef = this.getField(source, dottify(field.e.e.path));
         if (isJoined(fieldDef)) {
@@ -1100,7 +1132,12 @@ ${malloy}
           malloy.push(...this.getFiltersString(field.e.filterList || []));
           malloy.push(OUTDENT, '}');
         }
-        return {blockNotes, property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       } else if (field.type === 'turtle') {
         const malloy: Fragment[] = [];
         malloy.push(`${maybeQuoteIdentifier(field.as || field.name)} is`);
@@ -1116,7 +1153,12 @@ ${malloy}
           stageSource = this.modifySourceForStage(stage, stageSource);
           head = false;
         }
-        return {blockNotes, property: 'nest', malloy};
+        return {
+          blockNotes,
+          notes,
+          property: 'nest',
+          malloy,
+        };
       } else {
         const property = expressionIsCalculation(field.expressionType)
           ? 'aggregate'
@@ -1126,7 +1168,12 @@ ${malloy}
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
-        return {blockNotes, property, malloy};
+        return {
+          blockNotes,
+          notes,
+          property,
+          malloy,
+        };
       }
     } catch (error) {
       console.error(error);
@@ -1186,9 +1233,7 @@ ${malloy}
         if (
           (currentProperty !== undefined &&
             info.property !== currentProperty) ||
-          (currentBlockNotes.length &&
-            JSON.stringify(currentBlockNotes) !==
-              JSON.stringify(info.blockNotes))
+          JSON.stringify(currentBlockNotes) !== JSON.stringify(info.blockNotes)
         ) {
           currentBlockNotes.forEach(blockNote =>
             malloy.push(blockNote, NEWLINE)
@@ -1324,6 +1369,83 @@ ${malloy}
     }
   }
 
+  renderers: RendererName[] = [
+    'table',
+    'dashboard',
+    'text',
+    'currency',
+    'image',
+    'time',
+    'json',
+    'single_value',
+    'list',
+    'list_detail',
+    'bar_chart',
+    'scatter_chart',
+    'line_chart',
+    'point_map',
+    'segment_map',
+    'shape_map',
+    'number',
+    'percent',
+    'boolean',
+    'sparkline',
+    'url',
+  ];
+
+  private rendererFromAnnotation(notes: string[]): RendererName | undefined {
+    if (notes.length) {
+      if (this.renderers.includes(notes[0] as RendererName)) {
+        return notes[0] as RendererName;
+      }
+    }
+    return undefined;
+  }
+
+  private stylesForField(
+    field: QueryFieldDef,
+    fieldIndex: number
+  ): QuerySummaryItemDataStyle[] {
+    const result: QuerySummaryItemDataStyle[] = [];
+    const tagProps = Tag.annotationToTag(field.annotation).tag.getProperties();
+    const tags = Object.keys(tagProps);
+    if (tags.length) {
+      result.push({
+        type: 'data_style',
+        renderer: this.rendererFromAnnotation(tags),
+        canRemove: true,
+        allowedRenderers:
+          field.type === 'turtle'
+            ? [
+                'table',
+                'bar_chart',
+                'dashboard',
+                'json',
+                'line_chart',
+                'list',
+                'list_detail',
+                'point_map',
+                'scatter_chart',
+                'segment_map',
+                'shape_map',
+                'sparkline',
+              ]
+            : [
+                'number',
+                'boolean',
+                'currency',
+                'image',
+                'url',
+                'percent',
+                'text',
+                'time',
+              ],
+        fieldIndex,
+      });
+    }
+    return result;
+  }
+
   getStageSummary(stage: PipeSegment, source: SourceDef): StageSummary {
     if (
       stage.type !== 'index' &&
@@ -1452,7 +1574,7 @@ ${malloy}
             fieldIndex,
             saveDefinition: source === this.getSource() ? field : undefined,
             stages: stages,
-            styles: [],
+            styles: this.stylesForField(field, fieldIndex),
           });
         } else {
           items.push({

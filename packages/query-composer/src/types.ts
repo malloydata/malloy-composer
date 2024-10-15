@@ -166,7 +166,7 @@ export interface QuerySummaryItemOrderBy {
 export interface QuerySummaryItemDataStyle {
   type: 'data_style';
   renderer: RendererName;
-  styleKey: string;
+  fieldIndex: number;
   canRemove: boolean;
   allowedRenderers: RendererName[];
 }

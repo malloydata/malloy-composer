@@ -42,7 +42,11 @@ interface AggregateActionMenuProps {
   addFilter: (filter: FilterCondition, as?: string) => void;
   rename: (newName: string) => void;
   closeMenu: () => void;
-  setRenderer: (renderer: RendererName) => void;
+  setRenderer: (
+    stagePath: StagePath,
+    fieldIndex: number,
+    renderer: RendererName
+  ) => void;
   isRenamed: boolean;
   fieldIndex: number;
   beginReorderingField: () => void;
@@ -144,7 +148,9 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}) => (
             <DataStyleContextBar
-              setRenderer={setRenderer}
+              setRenderer={renderName =>
+                setRenderer(stagePath, fieldIndex, renderName)
+              }
               onComplete={onComplete}
               allowedRenderers={[
                 'number',
