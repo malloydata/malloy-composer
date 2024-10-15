@@ -22,6 +22,7 @@
  */
 
 import {
+  ExpressionType,
   FieldDef,
   StructDef,
   expressionIsCalculation,
@@ -41,21 +42,11 @@ import md from 'shiki/langs/md.mjs';
 import {QuerySummaryItem} from './types';
 import {MALLOY_GRAMMAR} from './malloyGrammar';
 
-declare global {
-  interface Window {
-    IS_DUCKDB_WASM: boolean;
-  }
-}
-
 export function snakeToTitle(snake: string): string {
   return snake
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-}
-
-export function isDuckDBWASM(): boolean {
-  return !!window.IS_DUCKDB_WASM;
 }
 
 let HIGHLIGHTER: Promise<Highlighter>;
@@ -81,7 +72,7 @@ function getHighlighter() {
   return HIGHLIGHTER;
 }
 
-export async function highlight(code: string, lang: string): Promise<string> {
+async function highlight(code: string, lang: string): Promise<string> {
   const highlighter = await getHighlighter();
   if (!highlighter.getLoadedLanguages().includes(lang)) {
     lang = 'txt';
@@ -193,6 +184,11 @@ export function isDimension(field: FieldDef): boolean {
 
 export function isQuery(field: FieldDef): boolean {
   return field.type === 'turtle';
+}
+
+// TODO(whscullin) export from Malloy
+export function expressionIsAnalytic(e: ExpressionType | undefined): boolean {
+  return e === 'aggregate_analytic' || e === 'scalar_analytic';
 }
 
 export function flatFields(

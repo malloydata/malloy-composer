@@ -25,8 +25,7 @@ export async function wrapErrors<T>(fn: () => T): Promise<T | {error: string}> {
   try {
     return await fn();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error);
+    console.error(error);
     return {error: error.message};
   }
 }
