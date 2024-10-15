@@ -21,8 +21,9 @@ export default defineConfig({
         'react',
         'react-dom',
         'react/jsx-runtime',
-        '@mallydata/malloy',
+        '@malloydata/malloy',
         '@malloydata/render',
+        '@malloydata/render/webcomponent',
       ],
       output: {
         manualChunks: _id => {
