@@ -1124,12 +1124,8 @@ ${malloy}
           `${newNameIs}${maybeQuoteIdentifier(dottify(field.e.e.path))}`
         );
         if (field.e.filterList && field.e.filterList.length > 0) {
-          const whereOrHaving =
-            field.e.filterList[0].expressionType === 'aggregate'
-              ? 'having:'
-              : 'where:';
-          malloy.push(' {', NEWLINE, INDENT, whereOrHaving);
-          malloy.push(...this.getFiltersString(field.e.filterList || []));
+          malloy.push(' {', NEWLINE, INDENT, 'where:');
+          malloy.push(...this.getFiltersString(field.e.filterList));
           malloy.push(OUTDENT, '}');
         }
         return {
@@ -1214,14 +1210,20 @@ ${malloy}
       throw new Error(`Unsupported stage type ${stage.type}`);
     }
     const malloy: Fragment[] = [];
-    // TODO(whscullin) Handle mixed filter types
     malloy.push(' {', NEWLINE, INDENT);
     if (stage.filterList && stage.filterList.length > 0) {
-      const whereOrHaving =
-        stage.filterList[0].expressionType === 'aggregate'
-          ? 'having:'
-          : 'where:';
-      malloy.push(whereOrHaving, ...this.getFiltersString(stage.filterList));
+      const wheres = stage.filterList.filter(
+        filter => !expressionIsCalculation(filter.expressionType)
+      );
+      const havings = stage.filterList.filter(filter =>
+        expressionIsCalculation(filter.expressionType)
+      );
+      if (wheres.length) {
+        malloy.push('where:', ...this.getFiltersString(wheres));
+      }
+      if (havings.length) {
+        malloy.push('having:', ...this.getFiltersString(havings));
+      }
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
@@ -1658,12 +1660,8 @@ ${malloy}
   fanToDef(fan: FilteredField, def: AtomicFieldDef): FieldDef {
     const malloy: Fragment[] = [dottify(fan.e.e.path)];
     if (fan.e.filterList && fan.e.filterList.length > 0) {
-      const whereOrHaving =
-        fan.e.filterList[0].expressionType === 'aggregate'
-          ? 'having:'
-          : 'where:';
-      malloy.push(' {', INDENT, whereOrHaving);
-      malloy.push(...this.getFiltersString(fan.e.filterList || []));
+      malloy.push(' {', NEWLINE, INDENT, 'where:');
+      malloy.push(...this.getFiltersString(fan.e.filterList));
       malloy.push(OUTDENT, '}');
     }
     const code = codeFromFragments(malloy);
