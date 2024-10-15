@@ -1,4 +1,4 @@
-import {ModelDef, StructDef} from '@malloydata/malloy';
+import {ModelDef, SourceDef} from '@malloydata/malloy';
 
 export const modelPath = '/names/names.malloy';
 
@@ -7,17 +7,11 @@ export const model: ModelDef = {
   exports: ['names', 'cohort', 'names2'],
   contents: {
     names: {
-      type: 'struct',
+      type: 'table',
       name: 'duckdb:usa_names.parquet',
       dialect: 'duckdb',
-      structSource: {
-        type: 'table',
-        tablePath: 'usa_names.parquet',
-      },
-      structRelationship: {
-        type: 'basetable',
-        connectionName: 'duckdb',
-      },
+      tablePath: 'usa_names.parquet',
+      connection: 'duckdb',
       fields: [
         {
           type: 'string',
@@ -108,8 +102,8 @@ export const model: ModelDef = {
           as: 'year_born',
         },
         {
-          name: 'population',
           type: 'number',
+          name: 'population',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -135,8 +129,8 @@ export const model: ModelDef = {
           code: '`number`.sum()',
         },
         {
-          name: 'decade',
           type: 'number',
+          name: 'decade',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -277,6 +271,23 @@ export const model: ModelDef = {
                       between: undefined,
                       defaultOrderByArgIndex: undefined,
                     },
+                    mysql: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
                   },
                   supportsOrderBy: undefined,
                   supportsLimit: undefined,
@@ -313,8 +324,8 @@ export const model: ModelDef = {
           code: 'floor(year_born/10)*10',
         },
         {
-          name: 'births_per_100k',
           type: 'number',
+          name: 'births_per_100k',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -436,6 +447,23 @@ export const model: ModelDef = {
                   defaultOrderByArgIndex: undefined,
                 },
                 presto: {
+                  e: {
+                    node: 'genericSQLExpr',
+                    kids: {
+                      args: [
+                        {
+                          node: 'function_parameter',
+                          name: 'value',
+                        },
+                      ],
+                    },
+                    src: ['FLOOR(', ')'],
+                  },
+                  needsWindowOrderBy: undefined,
+                  between: undefined,
+                  defaultOrderByArgIndex: undefined,
+                },
+                mysql: {
                   e: {
                     node: 'genericSQLExpr',
                     kids: {
@@ -662,6 +690,8 @@ export const model: ModelDef = {
       as: 'names',
     },
     cohort: {
+      type: 'query_source',
+      name: 'QuerySource-5331d762-e26e-4831-88e0-fa45d5b45352',
       fields: [
         {
           name: 'gender',
@@ -669,8 +699,9 @@ export const model: ModelDef = {
           resultMetadata: {
             sourceField: 'gender',
             sourceExpression: undefined,
-            filterList: undefined,
             sourceClasses: ['gender'],
+            referenceId: '2991e50b-1cdf-4961-a9f8-df740ee0d4cd',
+            filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
@@ -694,8 +725,9 @@ export const model: ModelDef = {
           resultMetadata: {
             sourceField: 'state',
             sourceExpression: undefined,
-            filterList: undefined,
             sourceClasses: ['state'],
+            referenceId: '116ab0a0-32b6-4639-9e1d-5661e44966c2',
+            filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
@@ -720,8 +752,9 @@ export const model: ModelDef = {
           resultMetadata: {
             sourceField: 'year',
             sourceExpression: undefined,
-            filterList: undefined,
             sourceClasses: ['year'],
+            referenceId: '0170c5ad-818d-43b9-8f63-5e88db8604f9',
+            filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
@@ -746,8 +779,9 @@ export const model: ModelDef = {
           resultMetadata: {
             sourceField: 'cohort_size',
             sourceExpression: 'population',
-            filterList: [],
             sourceClasses: ['cohort_size'],
+            referenceId: '91279434-d1e1-4ff7-a1e9-931ba39cf46f',
+            filterList: [],
             fieldKind: 'measure',
           },
           location: {
@@ -766,8 +800,8 @@ export const model: ModelDef = {
           annotation: undefined,
         },
         {
-          name: 'population',
           type: 'number',
+          name: 'population',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -793,733 +827,9 @@ export const model: ModelDef = {
           code: 'cohort_size.sum()',
         },
       ],
-      name: 'result',
       dialect: 'duckdb',
       primaryKey: undefined,
-      structRelationship: {
-        type: 'basetable',
-        connectionName: 'duckdb',
-      },
-      structSource: {
-        type: 'query',
-        query: {
-          type: 'query',
-          structRef: {
-            type: 'struct',
-            name: 'duckdb:usa_names.parquet',
-            dialect: 'duckdb',
-            structSource: {
-              type: 'table',
-              tablePath: 'usa_names.parquet',
-            },
-            structRelationship: {
-              type: 'basetable',
-              connectionName: 'duckdb',
-            },
-            fields: [
-              {
-                type: 'string',
-                name: 'state',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 0,
-                      character: 17,
-                    },
-                    end: {
-                      line: 0,
-                      character: 50,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'string',
-                name: 'gender',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 0,
-                      character: 17,
-                    },
-                    end: {
-                      line: 0,
-                      character: 50,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'string',
-                name: 'name',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 0,
-                      character: 17,
-                    },
-                    end: {
-                      line: 0,
-                      character: 50,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'number',
-                numberType: 'integer',
-                name: 'number',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 0,
-                      character: 17,
-                    },
-                    end: {
-                      line: 0,
-                      character: 50,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'number',
-                numberType: 'integer',
-                name: 'year',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 1,
-                      character: 10,
-                    },
-                    end: {
-                      line: 1,
-                      character: 29,
-                    },
-                  },
-                },
-                as: 'year_born',
-              },
-              {
-                name: 'population',
-                type: 'number',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 2,
-                      character: 11,
-                    },
-                    end: {
-                      line: 2,
-                      character: 39,
-                    },
-                  },
-                },
-                e: {
-                  node: 'aggregate',
-                  function: 'sum',
-                  e: {
-                    node: 'field',
-                    path: ['number'],
-                  },
-                },
-                expressionType: 'aggregate',
-                code: '`number`.sum()',
-              },
-              {
-                name: 'decade',
-                type: 'number',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 3,
-                      character: 13,
-                    },
-                    end: {
-                      line: 3,
-                      character: 45,
-                    },
-                  },
-                },
-                e: {
-                  node: '*',
-                  kids: {
-                    left: {
-                      node: 'function_call',
-                      overload: {
-                        returnType: {
-                          dataType: 'number',
-                          expressionType: 'scalar',
-                          evalSpace: 'input',
-                        },
-                        params: [
-                          {
-                            name: 'value',
-                            allowedTypes: [
-                              {
-                                dataType: 'number',
-                                expressionType: undefined,
-                                evalSpace: 'input',
-                              },
-                            ],
-                            isVariadic: false,
-                          },
-                        ],
-                        dialect: {
-                          postgres: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          standardsql: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          duckdb: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          snowflake: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          trino: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          presto: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                        },
-                        supportsOrderBy: undefined,
-                        supportsLimit: undefined,
-                        isSymmetric: undefined,
-                      },
-                      name: 'floor',
-                      kids: {
-                        args: [
-                          {
-                            node: '/',
-                            kids: {
-                              left: {
-                                node: 'field',
-                                path: ['year_born'],
-                              },
-                              right: {
-                                node: 'numberLiteral',
-                                literal: '10',
-                              },
-                            },
-                          },
-                        ],
-                      },
-                      expressionType: 'scalar',
-                      structPath: undefined,
-                    },
-                    right: {
-                      node: 'numberLiteral',
-                      literal: '10',
-                    },
-                  },
-                },
-                expressionType: 'scalar',
-                code: 'floor(year_born/10)*10',
-              },
-              {
-                name: 'births_per_100k',
-                type: 'number',
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 4,
-                      character: 11,
-                    },
-                    end: {
-                      line: 4,
-                      character: 70,
-                    },
-                  },
-                },
-                e: {
-                  node: 'function_call',
-                  overload: {
-                    returnType: {
-                      dataType: 'number',
-                      expressionType: 'scalar',
-                      evalSpace: 'input',
-                    },
-                    params: [
-                      {
-                        name: 'value',
-                        allowedTypes: [
-                          {
-                            dataType: 'number',
-                            expressionType: undefined,
-                            evalSpace: 'input',
-                          },
-                        ],
-                        isVariadic: false,
-                      },
-                    ],
-                    dialect: {
-                      postgres: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                      standardsql: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                      duckdb: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                      snowflake: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                      trino: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                      presto: {
-                        e: {
-                          node: 'genericSQLExpr',
-                          kids: {
-                            args: [
-                              {
-                                node: 'function_parameter',
-                                name: 'value',
-                              },
-                            ],
-                          },
-                          src: ['FLOOR(', ')'],
-                        },
-                        needsWindowOrderBy: undefined,
-                        between: undefined,
-                        defaultOrderByArgIndex: undefined,
-                      },
-                    },
-                    supportsOrderBy: undefined,
-                    supportsLimit: undefined,
-                    isSymmetric: undefined,
-                  },
-                  name: 'floor',
-                  kids: {
-                    args: [
-                      {
-                        node: '*',
-                        kids: {
-                          left: {
-                            node: '/',
-                            kids: {
-                              left: {
-                                node: 'field',
-                                path: ['population'],
-                              },
-                              right: {
-                                node: 'all',
-                                e: {
-                                  node: 'field',
-                                  path: ['population'],
-                                },
-                              },
-                            },
-                          },
-                          right: {
-                            node: 'numberLiteral',
-                            literal: '100000',
-                          },
-                        },
-                      },
-                    ],
-                  },
-                  expressionType: 'ungrouped_aggregate',
-                  structPath: undefined,
-                },
-                expressionType: 'ungrouped_aggregate',
-                code: 'floor(population/all(population)*100000)',
-              },
-              {
-                type: 'turtle',
-                name: 'by_name',
-                pipeline: [
-                  {
-                    type: 'reduce',
-                    queryFields: [
-                      {
-                        type: 'fieldref',
-                        path: ['name'],
-                      },
-                      {
-                        type: 'fieldref',
-                        path: ['population'],
-                      },
-                    ],
-                    limit: 10,
-                    filterList: [],
-                  },
-                ],
-                annotation: {
-                  inherits: undefined,
-                },
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 5,
-                      character: 8,
-                    },
-                    end: {
-                      line: 9,
-                      character: 3,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'turtle',
-                name: 'by_state',
-                pipeline: [
-                  {
-                    type: 'reduce',
-                    queryFields: [
-                      {
-                        type: 'fieldref',
-                        path: ['state'],
-                      },
-                      {
-                        type: 'fieldref',
-                        path: ['births_per_100k'],
-                      },
-                    ],
-                    filterList: [],
-                  },
-                ],
-                annotation: {
-                  inherits: undefined,
-                },
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 10,
-                      character: 8,
-                    },
-                    end: {
-                      line: 13,
-                      character: 3,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'turtle',
-                name: 'by_gender',
-                pipeline: [
-                  {
-                    type: 'reduce',
-                    queryFields: [
-                      {
-                        type: 'fieldref',
-                        path: ['gender'],
-                      },
-                      {
-                        type: 'fieldref',
-                        path: ['population'],
-                      },
-                    ],
-                    filterList: [],
-                  },
-                ],
-                annotation: {
-                  inherits: undefined,
-                },
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 14,
-                      character: 8,
-                    },
-                    end: {
-                      line: 17,
-                      character: 3,
-                    },
-                  },
-                },
-              },
-              {
-                type: 'turtle',
-                name: 'by_decade',
-                pipeline: [
-                  {
-                    type: 'reduce',
-                    queryFields: [
-                      {
-                        type: 'fieldref',
-                        path: ['decade'],
-                      },
-                      {
-                        type: 'fieldref',
-                        path: ['births_per_100k'],
-                      },
-                    ],
-                    orderBy: [
-                      {
-                        field: 1,
-                        dir: 'asc',
-                      },
-                    ],
-                    filterList: [],
-                  },
-                ],
-                annotation: {
-                  inherits: undefined,
-                },
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 18,
-                      character: 8,
-                    },
-                    end: {
-                      line: 22,
-                      character: 3,
-                    },
-                  },
-                },
-              },
-            ],
-            location: {
-              url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-              range: {
-                start: {
-                  line: 0,
-                  character: 8,
-                },
-                end: {
-                  line: 22,
-                  character: 5,
-                },
-              },
-            },
-            parameters: {},
-            as: 'names',
-            arguments: {},
-          },
-          pipeline: [
-            {
-              type: 'reduce',
-              queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['gender'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['year_born'],
-                },
-                {
-                  name: 'cohort_size',
-                  type: 'number',
-                  location: {
-                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                    range: {
-                      start: {
-                        line: 28,
-                        character: 13,
-                      },
-                      end: {
-                        line: 28,
-                        character: 38,
-                      },
-                    },
-                  },
-                  e: {
-                    node: 'field',
-                    path: ['population'],
-                  },
-                  expressionType: 'aggregate',
-                  code: 'population',
-                },
-              ],
-              filterList: [],
-            },
-          ],
-          location: {
-            url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-            range: {
-              start: {
-                line: 26,
-                character: 18,
-              },
-              end: {
-                line: 30,
-                character: 44,
-              },
-            },
-          },
-          name: undefined,
-          annotation: undefined,
-        },
-      },
+      connection: 'duckdb',
       resultMetadata: {
         sourceField: 'ignoreme',
         filterList: [],
@@ -1528,8 +838,752 @@ export const model: ModelDef = {
         limit: undefined,
         orderBy: undefined,
       },
-      type: 'struct',
       queryTimezone: undefined,
+      query: {
+        type: 'query',
+        structRef: {
+          type: 'table',
+          name: 'duckdb:usa_names.parquet',
+          dialect: 'duckdb',
+          tablePath: 'usa_names.parquet',
+          connection: 'duckdb',
+          fields: [
+            {
+              type: 'string',
+              name: 'state',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 0,
+                    character: 17,
+                  },
+                  end: {
+                    line: 0,
+                    character: 50,
+                  },
+                },
+              },
+            },
+            {
+              type: 'string',
+              name: 'gender',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 0,
+                    character: 17,
+                  },
+                  end: {
+                    line: 0,
+                    character: 50,
+                  },
+                },
+              },
+            },
+            {
+              type: 'string',
+              name: 'name',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 0,
+                    character: 17,
+                  },
+                  end: {
+                    line: 0,
+                    character: 50,
+                  },
+                },
+              },
+            },
+            {
+              type: 'number',
+              numberType: 'integer',
+              name: 'number',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 0,
+                    character: 17,
+                  },
+                  end: {
+                    line: 0,
+                    character: 50,
+                  },
+                },
+              },
+            },
+            {
+              type: 'number',
+              numberType: 'integer',
+              name: 'year',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 1,
+                    character: 10,
+                  },
+                  end: {
+                    line: 1,
+                    character: 29,
+                  },
+                },
+              },
+              as: 'year_born',
+            },
+            {
+              type: 'number',
+              name: 'population',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 2,
+                    character: 11,
+                  },
+                  end: {
+                    line: 2,
+                    character: 39,
+                  },
+                },
+              },
+              e: {
+                node: 'aggregate',
+                function: 'sum',
+                e: {
+                  node: 'field',
+                  path: ['number'],
+                },
+              },
+              expressionType: 'aggregate',
+              code: '`number`.sum()',
+            },
+            {
+              type: 'number',
+              name: 'decade',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 3,
+                    character: 13,
+                  },
+                  end: {
+                    line: 3,
+                    character: 45,
+                  },
+                },
+              },
+              e: {
+                node: '*',
+                kids: {
+                  left: {
+                    node: 'function_call',
+                    overload: {
+                      returnType: {
+                        dataType: 'number',
+                        expressionType: 'scalar',
+                        evalSpace: 'input',
+                      },
+                      params: [
+                        {
+                          name: 'value',
+                          allowedTypes: [
+                            {
+                              dataType: 'number',
+                              expressionType: undefined,
+                              evalSpace: 'input',
+                            },
+                          ],
+                          isVariadic: false,
+                        },
+                      ],
+                      dialect: {
+                        postgres: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        standardsql: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        duckdb: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        snowflake: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        trino: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        presto: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        mysql: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                      },
+                      supportsOrderBy: undefined,
+                      supportsLimit: undefined,
+                      isSymmetric: undefined,
+                    },
+                    name: 'floor',
+                    kids: {
+                      args: [
+                        {
+                          node: '/',
+                          kids: {
+                            left: {
+                              node: 'field',
+                              path: ['year_born'],
+                            },
+                            right: {
+                              node: 'numberLiteral',
+                              literal: '10',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    expressionType: 'scalar',
+                    structPath: undefined,
+                  },
+                  right: {
+                    node: 'numberLiteral',
+                    literal: '10',
+                  },
+                },
+              },
+              expressionType: 'scalar',
+              code: 'floor(year_born/10)*10',
+            },
+            {
+              type: 'number',
+              name: 'births_per_100k',
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 4,
+                    character: 11,
+                  },
+                  end: {
+                    line: 4,
+                    character: 70,
+                  },
+                },
+              },
+              e: {
+                node: 'function_call',
+                overload: {
+                  returnType: {
+                    dataType: 'number',
+                    expressionType: 'scalar',
+                    evalSpace: 'input',
+                  },
+                  params: [
+                    {
+                      name: 'value',
+                      allowedTypes: [
+                        {
+                          dataType: 'number',
+                          expressionType: undefined,
+                          evalSpace: 'input',
+                        },
+                      ],
+                      isVariadic: false,
+                    },
+                  ],
+                  dialect: {
+                    postgres: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    standardsql: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    duckdb: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    snowflake: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    trino: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    presto: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                    mysql: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
+                  },
+                  supportsOrderBy: undefined,
+                  supportsLimit: undefined,
+                  isSymmetric: undefined,
+                },
+                name: 'floor',
+                kids: {
+                  args: [
+                    {
+                      node: '*',
+                      kids: {
+                        left: {
+                          node: '/',
+                          kids: {
+                            left: {
+                              node: 'field',
+                              path: ['population'],
+                            },
+                            right: {
+                              node: 'all',
+                              e: {
+                                node: 'field',
+                                path: ['population'],
+                              },
+                            },
+                          },
+                        },
+                        right: {
+                          node: 'numberLiteral',
+                          literal: '100000',
+                        },
+                      },
+                    },
+                  ],
+                },
+                expressionType: 'ungrouped_aggregate',
+                structPath: undefined,
+              },
+              expressionType: 'ungrouped_aggregate',
+              code: 'floor(population/all(population)*100000)',
+            },
+            {
+              type: 'turtle',
+              name: 'by_name',
+              pipeline: [
+                {
+                  type: 'reduce',
+                  queryFields: [
+                    {
+                      type: 'fieldref',
+                      path: ['name'],
+                    },
+                    {
+                      type: 'fieldref',
+                      path: ['population'],
+                    },
+                  ],
+                  limit: 10,
+                  filterList: [],
+                },
+              ],
+              annotation: {
+                inherits: undefined,
+              },
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 5,
+                    character: 8,
+                  },
+                  end: {
+                    line: 9,
+                    character: 3,
+                  },
+                },
+              },
+            },
+            {
+              type: 'turtle',
+              name: 'by_state',
+              pipeline: [
+                {
+                  type: 'reduce',
+                  queryFields: [
+                    {
+                      type: 'fieldref',
+                      path: ['state'],
+                    },
+                    {
+                      type: 'fieldref',
+                      path: ['births_per_100k'],
+                    },
+                  ],
+                  filterList: [],
+                },
+              ],
+              annotation: {
+                inherits: undefined,
+              },
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 10,
+                    character: 8,
+                  },
+                  end: {
+                    line: 13,
+                    character: 3,
+                  },
+                },
+              },
+            },
+            {
+              type: 'turtle',
+              name: 'by_gender',
+              pipeline: [
+                {
+                  type: 'reduce',
+                  queryFields: [
+                    {
+                      type: 'fieldref',
+                      path: ['gender'],
+                    },
+                    {
+                      type: 'fieldref',
+                      path: ['population'],
+                    },
+                  ],
+                  filterList: [],
+                },
+              ],
+              annotation: {
+                inherits: undefined,
+              },
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 14,
+                    character: 8,
+                  },
+                  end: {
+                    line: 17,
+                    character: 3,
+                  },
+                },
+              },
+            },
+            {
+              type: 'turtle',
+              name: 'by_decade',
+              pipeline: [
+                {
+                  type: 'reduce',
+                  queryFields: [
+                    {
+                      type: 'fieldref',
+                      path: ['decade'],
+                    },
+                    {
+                      type: 'fieldref',
+                      path: ['births_per_100k'],
+                    },
+                  ],
+                  orderBy: [
+                    {
+                      field: 1,
+                      dir: 'asc',
+                    },
+                  ],
+                  filterList: [],
+                },
+              ],
+              annotation: {
+                inherits: undefined,
+              },
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 18,
+                    character: 8,
+                  },
+                  end: {
+                    line: 22,
+                    character: 3,
+                  },
+                },
+              },
+            },
+          ],
+          location: {
+            url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+            range: {
+              start: {
+                line: 0,
+                character: 8,
+              },
+              end: {
+                line: 22,
+                character: 5,
+              },
+            },
+          },
+          parameters: {},
+          as: 'names',
+          arguments: {},
+        },
+        pipeline: [
+          {
+            type: 'reduce',
+            queryFields: [
+              {
+                type: 'fieldref',
+                path: ['gender'],
+              },
+              {
+                type: 'fieldref',
+                path: ['state'],
+              },
+              {
+                type: 'fieldref',
+                path: ['year_born'],
+              },
+              {
+                type: 'number',
+                name: 'cohort_size',
+                location: {
+                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                  range: {
+                    start: {
+                      line: 28,
+                      character: 13,
+                    },
+                    end: {
+                      line: 28,
+                      character: 38,
+                    },
+                  },
+                },
+                e: {
+                  node: 'field',
+                  path: ['population'],
+                },
+                expressionType: 'aggregate',
+                code: 'population',
+              },
+            ],
+            filterList: [],
+          },
+        ],
+        location: {
+          url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+          range: {
+            start: {
+              line: 26,
+              character: 18,
+            },
+            end: {
+              line: 30,
+              character: 44,
+            },
+          },
+        },
+        name: undefined,
+        annotation: undefined,
+      },
       parameters: {},
       as: 'cohort',
       location: {
@@ -1547,17 +1601,11 @@ export const model: ModelDef = {
       },
     },
     names2: {
-      type: 'struct',
+      type: 'table',
       name: 'duckdb:usa_names.parquet',
       dialect: 'duckdb',
-      structSource: {
-        type: 'table',
-        tablePath: 'usa_names.parquet',
-      },
-      structRelationship: {
-        type: 'basetable',
-        connectionName: 'duckdb',
-      },
+      tablePath: 'usa_names.parquet',
+      connection: 'duckdb',
       fields: [
         {
           type: 'string',
@@ -1648,8 +1696,8 @@ export const model: ModelDef = {
           as: 'year_born',
         },
         {
-          name: 'population',
           type: 'number',
+          name: 'population',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -1675,8 +1723,8 @@ export const model: ModelDef = {
           code: '`number`.sum()',
         },
         {
-          name: 'decade',
           type: 'number',
+          name: 'decade',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -1817,6 +1865,23 @@ export const model: ModelDef = {
                       between: undefined,
                       defaultOrderByArgIndex: undefined,
                     },
+                    mysql: {
+                      e: {
+                        node: 'genericSQLExpr',
+                        kids: {
+                          args: [
+                            {
+                              node: 'function_parameter',
+                              name: 'value',
+                            },
+                          ],
+                        },
+                        src: ['FLOOR(', ')'],
+                      },
+                      needsWindowOrderBy: undefined,
+                      between: undefined,
+                      defaultOrderByArgIndex: undefined,
+                    },
                   },
                   supportsOrderBy: undefined,
                   supportsLimit: undefined,
@@ -1853,8 +1918,8 @@ export const model: ModelDef = {
           code: 'floor(year_born/10)*10',
         },
         {
-          name: 'births_per_100k',
           type: 'number',
+          name: 'births_per_100k',
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
@@ -1992,6 +2057,23 @@ export const model: ModelDef = {
                   between: undefined,
                   defaultOrderByArgIndex: undefined,
                 },
+                mysql: {
+                  e: {
+                    node: 'genericSQLExpr',
+                    kids: {
+                      args: [
+                        {
+                          node: 'function_parameter',
+                          name: 'value',
+                        },
+                      ],
+                    },
+                    src: ['FLOOR(', ')'],
+                  },
+                  needsWindowOrderBy: undefined,
+                  between: undefined,
+                  defaultOrderByArgIndex: undefined,
+                },
               },
               supportsOrderBy: undefined,
               supportsLimit: undefined,
@@ -2034,6 +2116,8 @@ export const model: ModelDef = {
           code: 'floor(population/all(population)*100000)',
         },
         {
+          type: 'query_source',
+          name: 'cohort',
           fields: [
             {
               name: 'gender',
@@ -2041,8 +2125,9 @@ export const model: ModelDef = {
               resultMetadata: {
                 sourceField: 'gender',
                 sourceExpression: undefined,
-                filterList: undefined,
                 sourceClasses: ['gender'],
+                referenceId: '2991e50b-1cdf-4961-a9f8-df740ee0d4cd',
+                filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
@@ -2066,8 +2151,9 @@ export const model: ModelDef = {
               resultMetadata: {
                 sourceField: 'state',
                 sourceExpression: undefined,
-                filterList: undefined,
                 sourceClasses: ['state'],
+                referenceId: '116ab0a0-32b6-4639-9e1d-5661e44966c2',
+                filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
@@ -2092,8 +2178,9 @@ export const model: ModelDef = {
               resultMetadata: {
                 sourceField: 'year',
                 sourceExpression: undefined,
-                filterList: undefined,
                 sourceClasses: ['year'],
+                referenceId: '0170c5ad-818d-43b9-8f63-5e88db8604f9',
+                filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
@@ -2118,8 +2205,9 @@ export const model: ModelDef = {
               resultMetadata: {
                 sourceField: 'cohort_size',
                 sourceExpression: 'population',
-                filterList: [],
                 sourceClasses: ['cohort_size'],
+                referenceId: '91279434-d1e1-4ff7-a1e9-931ba39cf46f',
+                filterList: [],
                 fieldKind: 'measure',
               },
               location: {
@@ -2138,8 +2226,8 @@ export const model: ModelDef = {
               annotation: undefined,
             },
             {
-              name: 'population',
               type: 'number',
+              name: 'population',
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
@@ -2165,782 +2253,9 @@ export const model: ModelDef = {
               code: 'cohort_size.sum()',
             },
           ],
-          name: 'cohort',
           dialect: 'duckdb',
           primaryKey: undefined,
-          structRelationship: {
-            type: 'one',
-            matrixOperation: 'left',
-            onExpression: {
-              node: 'and',
-              kids: {
-                left: {
-                  node: 'and',
-                  kids: {
-                    left: {
-                      node: '=',
-                      kids: {
-                        left: {
-                          node: 'field',
-                          path: ['gender'],
-                        },
-                        right: {
-                          node: 'field',
-                          path: ['cohort', 'gender'],
-                        },
-                      },
-                    },
-                    right: {
-                      node: '=',
-                      kids: {
-                        left: {
-                          node: 'field',
-                          path: ['state'],
-                        },
-                        right: {
-                          node: 'field',
-                          path: ['cohort', 'state'],
-                        },
-                      },
-                    },
-                  },
-                },
-                right: {
-                  node: '=',
-                  kids: {
-                    left: {
-                      node: 'field',
-                      path: ['year_born'],
-                    },
-                    right: {
-                      node: 'field',
-                      path: ['cohort', 'year_born'],
-                    },
-                  },
-                },
-              },
-            },
-          },
-          structSource: {
-            type: 'query',
-            query: {
-              type: 'query',
-              structRef: {
-                type: 'struct',
-                name: 'duckdb:usa_names.parquet',
-                dialect: 'duckdb',
-                structSource: {
-                  type: 'table',
-                  tablePath: 'usa_names.parquet',
-                },
-                structRelationship: {
-                  type: 'basetable',
-                  connectionName: 'duckdb',
-                },
-                fields: [
-                  {
-                    type: 'string',
-                    name: 'state',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 0,
-                          character: 17,
-                        },
-                        end: {
-                          line: 0,
-                          character: 50,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'string',
-                    name: 'gender',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 0,
-                          character: 17,
-                        },
-                        end: {
-                          line: 0,
-                          character: 50,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'string',
-                    name: 'name',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 0,
-                          character: 17,
-                        },
-                        end: {
-                          line: 0,
-                          character: 50,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'number',
-                    numberType: 'integer',
-                    name: 'number',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 0,
-                          character: 17,
-                        },
-                        end: {
-                          line: 0,
-                          character: 50,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'number',
-                    numberType: 'integer',
-                    name: 'year',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 1,
-                          character: 10,
-                        },
-                        end: {
-                          line: 1,
-                          character: 29,
-                        },
-                      },
-                    },
-                    as: 'year_born',
-                  },
-                  {
-                    name: 'population',
-                    type: 'number',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 2,
-                          character: 11,
-                        },
-                        end: {
-                          line: 2,
-                          character: 39,
-                        },
-                      },
-                    },
-                    e: {
-                      node: 'aggregate',
-                      function: 'sum',
-                      e: {
-                        node: 'field',
-                        path: ['number'],
-                      },
-                    },
-                    expressionType: 'aggregate',
-                    code: '`number`.sum()',
-                  },
-                  {
-                    name: 'decade',
-                    type: 'number',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 3,
-                          character: 13,
-                        },
-                        end: {
-                          line: 3,
-                          character: 45,
-                        },
-                      },
-                    },
-                    e: {
-                      node: '*',
-                      kids: {
-                        left: {
-                          node: 'function_call',
-                          overload: {
-                            returnType: {
-                              dataType: 'number',
-                              expressionType: 'scalar',
-                              evalSpace: 'input',
-                            },
-                            params: [
-                              {
-                                name: 'value',
-                                allowedTypes: [
-                                  {
-                                    dataType: 'number',
-                                    expressionType: undefined,
-                                    evalSpace: 'input',
-                                  },
-                                ],
-                                isVariadic: false,
-                              },
-                            ],
-                            dialect: {
-                              postgres: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                              standardsql: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                              duckdb: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                              snowflake: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                              trino: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                              presto: {
-                                e: {
-                                  node: 'genericSQLExpr',
-                                  kids: {
-                                    args: [
-                                      {
-                                        node: 'function_parameter',
-                                        name: 'value',
-                                      },
-                                    ],
-                                  },
-                                  src: ['FLOOR(', ')'],
-                                },
-                                needsWindowOrderBy: undefined,
-                                between: undefined,
-                                defaultOrderByArgIndex: undefined,
-                              },
-                            },
-                            supportsOrderBy: undefined,
-                            supportsLimit: undefined,
-                            isSymmetric: undefined,
-                          },
-                          name: 'floor',
-                          kids: {
-                            args: [
-                              {
-                                node: '/',
-                                kids: {
-                                  left: {
-                                    node: 'field',
-                                    path: ['year_born'],
-                                  },
-                                  right: {
-                                    node: 'numberLiteral',
-                                    literal: '10',
-                                  },
-                                },
-                              },
-                            ],
-                          },
-                          expressionType: 'scalar',
-                          structPath: undefined,
-                        },
-                        right: {
-                          node: 'numberLiteral',
-                          literal: '10',
-                        },
-                      },
-                    },
-                    expressionType: 'scalar',
-                    code: 'floor(year_born/10)*10',
-                  },
-                  {
-                    name: 'births_per_100k',
-                    type: 'number',
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 4,
-                          character: 11,
-                        },
-                        end: {
-                          line: 4,
-                          character: 70,
-                        },
-                      },
-                    },
-                    e: {
-                      node: 'function_call',
-                      overload: {
-                        returnType: {
-                          dataType: 'number',
-                          expressionType: 'scalar',
-                          evalSpace: 'input',
-                        },
-                        params: [
-                          {
-                            name: 'value',
-                            allowedTypes: [
-                              {
-                                dataType: 'number',
-                                expressionType: undefined,
-                                evalSpace: 'input',
-                              },
-                            ],
-                            isVariadic: false,
-                          },
-                        ],
-                        dialect: {
-                          postgres: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          standardsql: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          duckdb: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          snowflake: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          trino: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                          presto: {
-                            e: {
-                              node: 'genericSQLExpr',
-                              kids: {
-                                args: [
-                                  {
-                                    node: 'function_parameter',
-                                    name: 'value',
-                                  },
-                                ],
-                              },
-                              src: ['FLOOR(', ')'],
-                            },
-                            needsWindowOrderBy: undefined,
-                            between: undefined,
-                            defaultOrderByArgIndex: undefined,
-                          },
-                        },
-                        supportsOrderBy: undefined,
-                        supportsLimit: undefined,
-                        isSymmetric: undefined,
-                      },
-                      name: 'floor',
-                      kids: {
-                        args: [
-                          {
-                            node: '*',
-                            kids: {
-                              left: {
-                                node: '/',
-                                kids: {
-                                  left: {
-                                    node: 'field',
-                                    path: ['population'],
-                                  },
-                                  right: {
-                                    node: 'all',
-                                    e: {
-                                      node: 'field',
-                                      path: ['population'],
-                                    },
-                                  },
-                                },
-                              },
-                              right: {
-                                node: 'numberLiteral',
-                                literal: '100000',
-                              },
-                            },
-                          },
-                        ],
-                      },
-                      expressionType: 'ungrouped_aggregate',
-                      structPath: undefined,
-                    },
-                    expressionType: 'ungrouped_aggregate',
-                    code: 'floor(population/all(population)*100000)',
-                  },
-                  {
-                    type: 'turtle',
-                    name: 'by_name',
-                    pipeline: [
-                      {
-                        type: 'reduce',
-                        queryFields: [
-                          {
-                            type: 'fieldref',
-                            path: ['name'],
-                          },
-                          {
-                            type: 'fieldref',
-                            path: ['population'],
-                          },
-                        ],
-                        limit: 10,
-                        filterList: [],
-                      },
-                    ],
-                    annotation: {
-                      inherits: undefined,
-                    },
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 5,
-                          character: 8,
-                        },
-                        end: {
-                          line: 9,
-                          character: 3,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'turtle',
-                    name: 'by_state',
-                    pipeline: [
-                      {
-                        type: 'reduce',
-                        queryFields: [
-                          {
-                            type: 'fieldref',
-                            path: ['state'],
-                          },
-                          {
-                            type: 'fieldref',
-                            path: ['births_per_100k'],
-                          },
-                        ],
-                        filterList: [],
-                      },
-                    ],
-                    annotation: {
-                      inherits: undefined,
-                    },
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 10,
-                          character: 8,
-                        },
-                        end: {
-                          line: 13,
-                          character: 3,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'turtle',
-                    name: 'by_gender',
-                    pipeline: [
-                      {
-                        type: 'reduce',
-                        queryFields: [
-                          {
-                            type: 'fieldref',
-                            path: ['gender'],
-                          },
-                          {
-                            type: 'fieldref',
-                            path: ['population'],
-                          },
-                        ],
-                        filterList: [],
-                      },
-                    ],
-                    annotation: {
-                      inherits: undefined,
-                    },
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 14,
-                          character: 8,
-                        },
-                        end: {
-                          line: 17,
-                          character: 3,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'turtle',
-                    name: 'by_decade',
-                    pipeline: [
-                      {
-                        type: 'reduce',
-                        queryFields: [
-                          {
-                            type: 'fieldref',
-                            path: ['decade'],
-                          },
-                          {
-                            type: 'fieldref',
-                            path: ['births_per_100k'],
-                          },
-                        ],
-                        orderBy: [
-                          {
-                            field: 1,
-                            dir: 'asc',
-                          },
-                        ],
-                        filterList: [],
-                      },
-                    ],
-                    annotation: {
-                      inherits: undefined,
-                    },
-                    location: {
-                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                      range: {
-                        start: {
-                          line: 18,
-                          character: 8,
-                        },
-                        end: {
-                          line: 22,
-                          character: 3,
-                        },
-                      },
-                    },
-                  },
-                ],
-                location: {
-                  url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                  range: {
-                    start: {
-                      line: 0,
-                      character: 8,
-                    },
-                    end: {
-                      line: 22,
-                      character: 5,
-                    },
-                  },
-                },
-                parameters: {},
-                as: 'names',
-                arguments: {},
-              },
-              pipeline: [
-                {
-                  type: 'reduce',
-                  queryFields: [
-                    {
-                      type: 'fieldref',
-                      path: ['gender'],
-                    },
-                    {
-                      type: 'fieldref',
-                      path: ['state'],
-                    },
-                    {
-                      type: 'fieldref',
-                      path: ['year_born'],
-                    },
-                    {
-                      name: 'cohort_size',
-                      type: 'number',
-                      location: {
-                        url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                        range: {
-                          start: {
-                            line: 28,
-                            character: 13,
-                          },
-                          end: {
-                            line: 28,
-                            character: 38,
-                          },
-                        },
-                      },
-                      e: {
-                        node: 'field',
-                        path: ['population'],
-                      },
-                      expressionType: 'aggregate',
-                      code: 'population',
-                    },
-                  ],
-                  filterList: [],
-                },
-              ],
-              location: {
-                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
-                range: {
-                  start: {
-                    line: 26,
-                    character: 18,
-                  },
-                  end: {
-                    line: 30,
-                    character: 44,
-                  },
-                },
-              },
-              name: undefined,
-              annotation: undefined,
-            },
-          },
+          connection: 'duckdb',
           resultMetadata: {
             sourceField: 'ignoreme',
             filterList: [],
@@ -2949,8 +2264,752 @@ export const model: ModelDef = {
             limit: undefined,
             orderBy: undefined,
           },
-          type: 'struct',
           queryTimezone: undefined,
+          query: {
+            type: 'query',
+            structRef: {
+              type: 'table',
+              name: 'duckdb:usa_names.parquet',
+              dialect: 'duckdb',
+              tablePath: 'usa_names.parquet',
+              connection: 'duckdb',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'state',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 0,
+                        character: 17,
+                      },
+                      end: {
+                        line: 0,
+                        character: 50,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'string',
+                  name: 'gender',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 0,
+                        character: 17,
+                      },
+                      end: {
+                        line: 0,
+                        character: 50,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'string',
+                  name: 'name',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 0,
+                        character: 17,
+                      },
+                      end: {
+                        line: 0,
+                        character: 50,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'number',
+                  numberType: 'integer',
+                  name: 'number',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 0,
+                        character: 17,
+                      },
+                      end: {
+                        line: 0,
+                        character: 50,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'number',
+                  numberType: 'integer',
+                  name: 'year',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 1,
+                        character: 10,
+                      },
+                      end: {
+                        line: 1,
+                        character: 29,
+                      },
+                    },
+                  },
+                  as: 'year_born',
+                },
+                {
+                  type: 'number',
+                  name: 'population',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 2,
+                        character: 11,
+                      },
+                      end: {
+                        line: 2,
+                        character: 39,
+                      },
+                    },
+                  },
+                  e: {
+                    node: 'aggregate',
+                    function: 'sum',
+                    e: {
+                      node: 'field',
+                      path: ['number'],
+                    },
+                  },
+                  expressionType: 'aggregate',
+                  code: '`number`.sum()',
+                },
+                {
+                  type: 'number',
+                  name: 'decade',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 3,
+                        character: 13,
+                      },
+                      end: {
+                        line: 3,
+                        character: 45,
+                      },
+                    },
+                  },
+                  e: {
+                    node: '*',
+                    kids: {
+                      left: {
+                        node: 'function_call',
+                        overload: {
+                          returnType: {
+                            dataType: 'number',
+                            expressionType: 'scalar',
+                            evalSpace: 'input',
+                          },
+                          params: [
+                            {
+                              name: 'value',
+                              allowedTypes: [
+                                {
+                                  dataType: 'number',
+                                  expressionType: undefined,
+                                  evalSpace: 'input',
+                                },
+                              ],
+                              isVariadic: false,
+                            },
+                          ],
+                          dialect: {
+                            postgres: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            standardsql: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            duckdb: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            snowflake: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            trino: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            presto: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                            mysql: {
+                              e: {
+                                node: 'genericSQLExpr',
+                                kids: {
+                                  args: [
+                                    {
+                                      node: 'function_parameter',
+                                      name: 'value',
+                                    },
+                                  ],
+                                },
+                                src: ['FLOOR(', ')'],
+                              },
+                              needsWindowOrderBy: undefined,
+                              between: undefined,
+                              defaultOrderByArgIndex: undefined,
+                            },
+                          },
+                          supportsOrderBy: undefined,
+                          supportsLimit: undefined,
+                          isSymmetric: undefined,
+                        },
+                        name: 'floor',
+                        kids: {
+                          args: [
+                            {
+                              node: '/',
+                              kids: {
+                                left: {
+                                  node: 'field',
+                                  path: ['year_born'],
+                                },
+                                right: {
+                                  node: 'numberLiteral',
+                                  literal: '10',
+                                },
+                              },
+                            },
+                          ],
+                        },
+                        expressionType: 'scalar',
+                        structPath: undefined,
+                      },
+                      right: {
+                        node: 'numberLiteral',
+                        literal: '10',
+                      },
+                    },
+                  },
+                  expressionType: 'scalar',
+                  code: 'floor(year_born/10)*10',
+                },
+                {
+                  type: 'number',
+                  name: 'births_per_100k',
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 4,
+                        character: 11,
+                      },
+                      end: {
+                        line: 4,
+                        character: 70,
+                      },
+                    },
+                  },
+                  e: {
+                    node: 'function_call',
+                    overload: {
+                      returnType: {
+                        dataType: 'number',
+                        expressionType: 'scalar',
+                        evalSpace: 'input',
+                      },
+                      params: [
+                        {
+                          name: 'value',
+                          allowedTypes: [
+                            {
+                              dataType: 'number',
+                              expressionType: undefined,
+                              evalSpace: 'input',
+                            },
+                          ],
+                          isVariadic: false,
+                        },
+                      ],
+                      dialect: {
+                        postgres: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        standardsql: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        duckdb: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        snowflake: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        trino: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        presto: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                        mysql: {
+                          e: {
+                            node: 'genericSQLExpr',
+                            kids: {
+                              args: [
+                                {
+                                  node: 'function_parameter',
+                                  name: 'value',
+                                },
+                              ],
+                            },
+                            src: ['FLOOR(', ')'],
+                          },
+                          needsWindowOrderBy: undefined,
+                          between: undefined,
+                          defaultOrderByArgIndex: undefined,
+                        },
+                      },
+                      supportsOrderBy: undefined,
+                      supportsLimit: undefined,
+                      isSymmetric: undefined,
+                    },
+                    name: 'floor',
+                    kids: {
+                      args: [
+                        {
+                          node: '*',
+                          kids: {
+                            left: {
+                              node: '/',
+                              kids: {
+                                left: {
+                                  node: 'field',
+                                  path: ['population'],
+                                },
+                                right: {
+                                  node: 'all',
+                                  e: {
+                                    node: 'field',
+                                    path: ['population'],
+                                  },
+                                },
+                              },
+                            },
+                            right: {
+                              node: 'numberLiteral',
+                              literal: '100000',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    expressionType: 'ungrouped_aggregate',
+                    structPath: undefined,
+                  },
+                  expressionType: 'ungrouped_aggregate',
+                  code: 'floor(population/all(population)*100000)',
+                },
+                {
+                  type: 'turtle',
+                  name: 'by_name',
+                  pipeline: [
+                    {
+                      type: 'reduce',
+                      queryFields: [
+                        {
+                          type: 'fieldref',
+                          path: ['name'],
+                        },
+                        {
+                          type: 'fieldref',
+                          path: ['population'],
+                        },
+                      ],
+                      limit: 10,
+                      filterList: [],
+                    },
+                  ],
+                  annotation: {
+                    inherits: undefined,
+                  },
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 5,
+                        character: 8,
+                      },
+                      end: {
+                        line: 9,
+                        character: 3,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'turtle',
+                  name: 'by_state',
+                  pipeline: [
+                    {
+                      type: 'reduce',
+                      queryFields: [
+                        {
+                          type: 'fieldref',
+                          path: ['state'],
+                        },
+                        {
+                          type: 'fieldref',
+                          path: ['births_per_100k'],
+                        },
+                      ],
+                      filterList: [],
+                    },
+                  ],
+                  annotation: {
+                    inherits: undefined,
+                  },
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 10,
+                        character: 8,
+                      },
+                      end: {
+                        line: 13,
+                        character: 3,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'turtle',
+                  name: 'by_gender',
+                  pipeline: [
+                    {
+                      type: 'reduce',
+                      queryFields: [
+                        {
+                          type: 'fieldref',
+                          path: ['gender'],
+                        },
+                        {
+                          type: 'fieldref',
+                          path: ['population'],
+                        },
+                      ],
+                      filterList: [],
+                    },
+                  ],
+                  annotation: {
+                    inherits: undefined,
+                  },
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 14,
+                        character: 8,
+                      },
+                      end: {
+                        line: 17,
+                        character: 3,
+                      },
+                    },
+                  },
+                },
+                {
+                  type: 'turtle',
+                  name: 'by_decade',
+                  pipeline: [
+                    {
+                      type: 'reduce',
+                      queryFields: [
+                        {
+                          type: 'fieldref',
+                          path: ['decade'],
+                        },
+                        {
+                          type: 'fieldref',
+                          path: ['births_per_100k'],
+                        },
+                      ],
+                      orderBy: [
+                        {
+                          field: 1,
+                          dir: 'asc',
+                        },
+                      ],
+                      filterList: [],
+                    },
+                  ],
+                  annotation: {
+                    inherits: undefined,
+                  },
+                  location: {
+                    url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                    range: {
+                      start: {
+                        line: 18,
+                        character: 8,
+                      },
+                      end: {
+                        line: 22,
+                        character: 3,
+                      },
+                    },
+                  },
+                },
+              ],
+              location: {
+                url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                range: {
+                  start: {
+                    line: 0,
+                    character: 8,
+                  },
+                  end: {
+                    line: 22,
+                    character: 5,
+                  },
+                },
+              },
+              parameters: {},
+              as: 'names',
+              arguments: {},
+            },
+            pipeline: [
+              {
+                type: 'reduce',
+                queryFields: [
+                  {
+                    type: 'fieldref',
+                    path: ['gender'],
+                  },
+                  {
+                    type: 'fieldref',
+                    path: ['state'],
+                  },
+                  {
+                    type: 'fieldref',
+                    path: ['year_born'],
+                  },
+                  {
+                    type: 'number',
+                    name: 'cohort_size',
+                    location: {
+                      url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+                      range: {
+                        start: {
+                          line: 28,
+                          character: 13,
+                        },
+                        end: {
+                          line: 28,
+                          character: 38,
+                        },
+                      },
+                    },
+                    e: {
+                      node: 'field',
+                      path: ['population'],
+                    },
+                    expressionType: 'aggregate',
+                    code: 'population',
+                  },
+                ],
+                filterList: [],
+              },
+            ],
+            location: {
+              url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
+              range: {
+                start: {
+                  line: 26,
+                  character: 18,
+                },
+                end: {
+                  line: 30,
+                  character: 44,
+                },
+              },
+            },
+            name: undefined,
+            annotation: undefined,
+          },
           parameters: {},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
@@ -2966,6 +3025,57 @@ export const model: ModelDef = {
             },
           },
           arguments: {},
+          join: 'one',
+          matrixOperation: 'left',
+          onExpression: {
+            node: 'and',
+            kids: {
+              left: {
+                node: 'and',
+                kids: {
+                  left: {
+                    node: '=',
+                    kids: {
+                      left: {
+                        node: 'field',
+                        path: ['gender'],
+                      },
+                      right: {
+                        node: 'field',
+                        path: ['cohort', 'gender'],
+                      },
+                    },
+                  },
+                  right: {
+                    node: '=',
+                    kids: {
+                      left: {
+                        node: 'field',
+                        path: ['state'],
+                      },
+                      right: {
+                        node: 'field',
+                        path: ['cohort', 'state'],
+                      },
+                    },
+                  },
+                },
+              },
+              right: {
+                node: '=',
+                kids: {
+                  left: {
+                    node: 'field',
+                    path: ['year_born'],
+                  },
+                  right: {
+                    node: 'field',
+                    path: ['cohort', 'year_born'],
+                  },
+                },
+              },
+            },
+          },
         },
         {
           type: 'turtle',
@@ -3199,8 +3309,8 @@ export const model: ModelDef = {
                           path: ['state'],
                         },
                         {
-                          name: 'per_100k',
                           type: 'number',
+                          name: 'per_100k',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -3324,8 +3434,8 @@ export const model: ModelDef = {
                   path: ['gender'],
                 },
                 {
-                  name: 'all_name',
                   type: 'number',
+                  name: 'all_name',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -3351,8 +3461,8 @@ export const model: ModelDef = {
                   code: 'all(population, name)',
                 },
                 {
-                  name: 'name_popularity',
                   type: 'number',
+                  name: 'name_popularity',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -3390,8 +3500,8 @@ export const model: ModelDef = {
                   code: 'all(population, name) / all(population)',
                 },
                 {
-                  name: 'state_popularity',
                   type: 'number',
+                  name: 'state_popularity',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -3458,8 +3568,8 @@ export const model: ModelDef = {
                                   path: ['name'],
                                 },
                                 {
-                                  name: 'popularity',
                                   type: 'number',
+                                  name: 'popularity',
                                   location: {
                                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                     range: {
@@ -3600,8 +3710,8 @@ export const model: ModelDef = {
                   path: ['population'],
                 },
                 {
-                  name: 'gender',
                   type: 'string',
+                  name: 'gender',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -3616,9 +3726,9 @@ export const model: ModelDef = {
                     },
                   },
                   e: {
-                    node: 'pick',
+                    node: 'case',
                     kids: {
-                      pickWhen: [
+                      caseWhen: [
                         {
                           node: '=',
                           kids: {
@@ -3633,13 +3743,13 @@ export const model: ModelDef = {
                           },
                         },
                       ],
-                      pickThen: [
+                      caseThen: [
                         {
                           node: 'stringLiteral',
                           literal: 'Female',
                         },
                       ],
-                      pickElse: {
+                      caseElse: {
                         node: 'stringLiteral',
                         literal: 'Male',
                       },
@@ -3699,8 +3809,8 @@ export const model: ModelDef = {
                   path: ['state'],
                 },
                 {
-                  name: 'percent_female',
                   type: 'number',
+                  name: 'percent_female',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -3825,8 +3935,8 @@ export const model: ModelDef = {
                           path: ['population'],
                         },
                         {
-                          name: 'gender',
                           type: 'string',
+                          name: 'gender',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -3841,9 +3951,9 @@ export const model: ModelDef = {
                             },
                           },
                           e: {
-                            node: 'pick',
+                            node: 'case',
                             kids: {
-                              pickWhen: [
+                              caseWhen: [
                                 {
                                   node: '=',
                                   kids: {
@@ -3858,13 +3968,13 @@ export const model: ModelDef = {
                                   },
                                 },
                               ],
-                              pickThen: [
+                              caseThen: [
                                 {
                                   node: 'stringLiteral',
                                   literal: 'Female',
                                 },
                               ],
-                              pickElse: {
+                              caseElse: {
                                 node: 'stringLiteral',
                                 literal: 'Male',
                               },
@@ -3926,8 +4036,8 @@ export const model: ModelDef = {
                           path: ['state'],
                         },
                         {
-                          name: 'percent_female',
                           type: 'number',
+                          name: 'percent_female',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -4181,8 +4291,8 @@ export const model: ModelDef = {
                           path: ['population'],
                         },
                         {
-                          name: 'gender',
                           type: 'string',
+                          name: 'gender',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -4197,9 +4307,9 @@ export const model: ModelDef = {
                             },
                           },
                           e: {
-                            node: 'pick',
+                            node: 'case',
                             kids: {
-                              pickWhen: [
+                              caseWhen: [
                                 {
                                   node: '=',
                                   kids: {
@@ -4214,13 +4324,13 @@ export const model: ModelDef = {
                                   },
                                 },
                               ],
-                              pickThen: [
+                              caseThen: [
                                 {
                                   node: 'stringLiteral',
                                   literal: 'Female',
                                 },
                               ],
-                              pickElse: {
+                              caseElse: {
                                 node: 'stringLiteral',
                                 literal: 'Male',
                               },
@@ -4282,8 +4392,8 @@ export const model: ModelDef = {
                           path: ['state'],
                         },
                         {
-                          name: 'percent_female',
                           type: 'number',
+                          name: 'percent_female',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -4402,8 +4512,8 @@ export const model: ModelDef = {
                                   path: ['state'],
                                 },
                                 {
-                                  name: 'percent_female',
                                   type: 'number',
+                                  name: 'percent_female',
                                   location: {
                                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                     range: {
@@ -4547,8 +4657,8 @@ export const model: ModelDef = {
                                   path: ['population'],
                                 },
                                 {
-                                  name: 'gender',
                                   type: 'string',
+                                  name: 'gender',
                                   location: {
                                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                     range: {
@@ -4563,9 +4673,9 @@ export const model: ModelDef = {
                                     },
                                   },
                                   e: {
-                                    node: 'pick',
+                                    node: 'case',
                                     kids: {
-                                      pickWhen: [
+                                      caseWhen: [
                                         {
                                           node: '=',
                                           kids: {
@@ -4580,13 +4690,13 @@ export const model: ModelDef = {
                                           },
                                         },
                                       ],
-                                      pickThen: [
+                                      caseThen: [
                                         {
                                           node: 'stringLiteral',
                                           literal: 'Female',
                                         },
                                       ],
-                                      pickElse: {
+                                      caseElse: {
                                         node: 'stringLiteral',
                                         literal: 'Male',
                                       },
@@ -4742,8 +4852,8 @@ export const model: ModelDef = {
                           path: ['decade'],
                         },
                         {
-                          name: 'percent_in_decade',
                           type: 'number',
+                          name: 'percent_in_decade',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
@@ -4819,8 +4929,8 @@ export const model: ModelDef = {
                   path: ['population'],
                 },
                 {
-                  name: 'years_apart',
                   type: 'number',
+                  name: 'years_apart',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -4859,8 +4969,8 @@ export const model: ModelDef = {
                   code: 'max(by_decade.decade)-min(by_decade.decade)',
                 },
                 {
-                  name: 'total_percentage',
                   type: 'number',
+                  name: 'total_percentage',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -4887,8 +4997,8 @@ export const model: ModelDef = {
                   code: 'by_decade.percent_in_decade.sum()',
                 },
                 {
-                  name: 'max_percentage',
                   type: 'number',
+                  name: 'max_percentage',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
@@ -5194,8 +5304,8 @@ export const model: ModelDef = {
                                   path: ['state'],
                                 },
                                 {
-                                  name: 'per_100k',
                                   type: 'number',
+                                  name: 'per_100k',
                                   location: {
                                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                     range: {
@@ -5289,8 +5399,8 @@ export const model: ModelDef = {
                                   path: ['decade'],
                                 },
                                 {
-                                  name: 'per_100k',
                                   type: 'number',
+                                  name: 'per_100k',
                                   location: {
                                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                     range: {
@@ -5414,106 +5524,39 @@ export const model: ModelDef = {
                   node: 'filterCondition',
                   code: "name = 'Lloyd' | 'Anika' | 'Jessie' | 'Kelly' | 'Todd' | 'Chris'",
                   e: {
-                    node: 'or',
+                    node: 'in',
+                    not: false,
                     kids: {
-                      left: {
-                        node: '=',
-                        kids: {
-                          left: {
-                            node: 'field',
-                            path: ['name'],
-                          },
-                          right: {
-                            node: 'stringLiteral',
-                            literal: 'Lloyd',
-                          },
-                        },
+                      e: {
+                        node: 'field',
+                        path: ['name'],
                       },
-                      right: {
-                        node: 'or',
-                        kids: {
-                          left: {
-                            node: '=',
-                            kids: {
-                              left: {
-                                node: 'field',
-                                path: ['name'],
-                              },
-                              right: {
-                                node: 'stringLiteral',
-                                literal: 'Anika',
-                              },
-                            },
-                          },
-                          right: {
-                            node: 'or',
-                            kids: {
-                              left: {
-                                node: '=',
-                                kids: {
-                                  left: {
-                                    node: 'field',
-                                    path: ['name'],
-                                  },
-                                  right: {
-                                    node: 'stringLiteral',
-                                    literal: 'Jessie',
-                                  },
-                                },
-                              },
-                              right: {
-                                node: 'or',
-                                kids: {
-                                  left: {
-                                    node: '=',
-                                    kids: {
-                                      left: {
-                                        node: 'field',
-                                        path: ['name'],
-                                      },
-                                      right: {
-                                        node: 'stringLiteral',
-                                        literal: 'Kelly',
-                                      },
-                                    },
-                                  },
-                                  right: {
-                                    node: 'or',
-                                    kids: {
-                                      left: {
-                                        node: '=',
-                                        kids: {
-                                          left: {
-                                            node: 'field',
-                                            path: ['name'],
-                                          },
-                                          right: {
-                                            node: 'stringLiteral',
-                                            literal: 'Todd',
-                                          },
-                                        },
-                                      },
-                                      right: {
-                                        node: '=',
-                                        kids: {
-                                          left: {
-                                            node: 'field',
-                                            path: ['name'],
-                                          },
-                                          right: {
-                                            node: 'stringLiteral',
-                                            literal: 'Chris',
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
+                      oneOf: [
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Lloyd',
                         },
-                      },
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Anika',
+                        },
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Jessie',
+                        },
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Kelly',
+                        },
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Todd',
+                        },
+                        {
+                          node: 'stringLiteral',
+                          literal: 'Chris',
+                        },
+                      ],
                     },
                   },
                   expressionType: 'scalar',
@@ -5614,4 +5657,4 @@ export const model: ModelDef = {
   },
 };
 
-export const source: StructDef = model.contents['names'] as StructDef;
+export const source: SourceDef = model.contents['names'] as SourceDef;

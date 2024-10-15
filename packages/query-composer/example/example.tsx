@@ -59,7 +59,6 @@ const App = () => {
         <QuerySummaryPanel
           model={model}
           modelPath={modelPath}
-          queryName={queryName}
           querySummary={querySummary}
           queryModifiers={queryModifiers}
           source={source}
