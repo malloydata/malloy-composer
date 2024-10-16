@@ -32,7 +32,7 @@ export const Apps: React.FC = () => {
   const navigate = useNavigate();
   return (
     <MarkdownDocument
-      content={config?.readme || generateReadme(config)}
+      content={config?.readme ? generateReadme(config) : ''}
       loadApp={appId => navigate(`/${appId}`)}
     />
   );

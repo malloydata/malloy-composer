@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {AppInfo, ModelInfo} from '../../types';
 import {useDatasets} from '../data/use_datasets';
@@ -29,7 +29,11 @@ import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
-import {ExploreQueryEditor, useQueryBuilder} from '@malloydata/query-composer';
+import {
+  ExploreQueryEditor,
+  useQueryBuilder,
+  useRunQuery,
+} from '@malloydata/query-composer';
 import {compileQuery, getSourceNameForQuery} from '../../core/compile';
 import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
@@ -37,7 +41,7 @@ import {MarkdownDocument} from '../MarkdownDocument';
 import {SourceDef} from '@malloydata/malloy';
 import {useSearchParams, useParams} from 'react-router-dom';
 import {snakeToTitle} from '../utils';
-import {runQuery as runQueryExternal} from '../data/run_query';
+import {runQuery as runQueryExt} from '../data/run_query';
 import {useApps} from '../data/use_apps';
 import {Apps} from '../Apps';
 import {LoadingSpinner} from '../Spinner';
@@ -48,8 +52,6 @@ const MALLOY_DOCS = 'https://malloydata.github.io/documentation/';
 const KEY_MAP = {
   REMOVE_FIELDS: 'command+k',
   RUN_QUERY: 'command+enter',
-  UNDO: 'command+z',
-  REDO: 'shift+command+z',
 };
 
 export const Explore: React.FC = () => {
@@ -61,83 +63,75 @@ export const Explore: React.FC = () => {
     ? config.apps[0]
     : config?.apps?.find(app => app.id === appId);
   const appInfo = useDatasets(app);
-  const [urlParams, _setParams] = useSearchParams();
+
+  // URL Parameter values
+  const [urlParams, setParams] = useSearchParams();
+  const sourceName = urlParams.get('source') || undefined;
+  const model = urlParams.get('model');
+  const name = urlParams.get('name');
+  const query = urlParams.get('query');
+  const source = urlParams.get('source');
+  const page = urlParams.get('page');
+  const run = urlParams.get('run');
+
+  // Malloy Data Structures
   const modelInfo = appInfo?.models.find(
     modelInfo => modelInfo.id === urlParams.get('model')
   );
-  const sourceName = urlParams.get('source');
-  const params = useRef('');
+  const modelDef = modelInfo?.model;
+  const sourceDef =
+    sourceName && modelDef
+      ? (modelDef.contents[sourceName] as SourceDef)
+      : undefined;
+
   const [loading, setLoading] = useState(0);
 
-  const setParams = useCallback(
-    (newUrlParams: URLSearchParams, options?: {replace: boolean}) => {
-      params.current = newUrlParams.toString();
-      _setParams(newUrlParams, options);
+  useEffect(() => {
+    document.title = appInfo?.title || 'Malloy Composer';
+  }, [appInfo?.title]);
+
+  const updateQueryInURL = useCallback(
+    ({run, query: newQuery}: {run: boolean; query: string | undefined}) => {
+      const oldQuery = urlParams.get('query') || undefined;
+      if (oldQuery === newQuery) {
+        return;
+      }
+      if (newQuery === undefined) {
+        urlParams.delete('query');
+      } else {
+        urlParams.set('query', newQuery);
+        urlParams.delete('name');
+      }
+      if (run) {
+        urlParams.set('run', 'true');
+      } else {
+        urlParams.delete('run');
+      }
+      setParams(urlParams);
     },
-    [_setParams]
+    [setParams, urlParams]
   );
 
-  useEffect(() => {
-    if (appInfo) {
-      document.title = appInfo.title || 'Malloy Composer';
-    }
-  }, [appInfo]);
-
-  const updateQueryInURL = ({
-    run,
-    query: newQuery,
-  }: {
-    run: boolean;
-    query: string | undefined;
-  }) => {
-    const oldQuery = urlParams.get('query') || undefined;
-    if (oldQuery === newQuery) {
-      return;
-    }
-    if (newQuery === undefined) {
-      urlParams.delete('query');
-    } else {
-      urlParams.set('query', newQuery);
-      urlParams.delete('name');
-    }
-    if (run) {
-      urlParams.set('run', 'true');
-    } else {
-      urlParams.delete('run');
-    }
-    setParams(urlParams);
-  };
-
-  const model = modelInfo?.model;
   const modelPath =
     modelInfo && app
       ? new URL(modelInfo?.path, new URL(app.path, window.location.href))
           .pathname
       : undefined;
-  const source =
-    model && sourceName ? (model.contents[sourceName] as SourceDef) : undefined;
 
-  const {
-    queryMalloy,
-    queryName,
-    clearQuery,
-    clearResult,
-    runQuery,
-    isRunning,
-    queryModifiers,
-    querySummary,
-    result,
-    registerNewSource,
-    error,
-    setError,
-    dirty,
-    canUndo,
-    undo,
-    redo,
-    resetUndoHistory,
-    isQueryEmpty,
-    canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, runQueryExternal);
+  const {queryMalloy, queryName, queryModifiers, querySummary} =
+    useQueryBuilder(modelDef, sourceName, modelPath, updateQueryInURL);
+
+  const {error, result, runQuery, reset, isRunning} = useRunQuery(
+    modelDef,
+    modelPath,
+    runQueryExt
+  );
+
+  useEffect(() => {
+    if (loading > 0) {
+      reset();
+    }
+  }, [reset, loading]);
 
   let section = urlParams.get('page') || 'datasets';
   if (onlyDefaultDataset && section === 'datasets') {
@@ -149,9 +143,7 @@ export const Explore: React.FC = () => {
       urlParams.delete('query');
       urlParams.delete('run');
       urlParams.delete('name');
-      clearQuery(true);
-      resetUndoHistory();
-      setError(undefined);
+      queryModifiers.clearQuery(true);
     }
     setParams(urlParams);
   };
@@ -161,7 +153,6 @@ export const Explore: React.FC = () => {
     sourceName: string,
     fromURL = false
   ) => {
-    registerNewSource(modelInfo.model.contents[sourceName] as SourceDef);
     if (!fromURL) {
       urlParams.set('source', sourceName);
       urlParams.set('model', modelInfo.id);
@@ -169,19 +160,14 @@ export const Explore: React.FC = () => {
       urlParams.delete('query');
       urlParams.delete('run');
       urlParams.delete('name');
-      clearQuery(true);
+      queryModifiers.clearQuery(true);
       setParams(urlParams);
     }
   };
 
   useEffect(() => {
     const loadDataset = async () => {
-      const model = urlParams.get('model');
-      const query = urlParams.get('query')?.replace(/->\s*{\n}/g, '');
-      const source = urlParams.get('source');
-      const page = urlParams.get('page');
       if (model && (query || source) && appInfo) {
-        if (urlParams.toString() === params.current) return;
         const newModelInfo = appInfo.models.find(
           modelInfo => modelInfo.id === model
         );
@@ -190,30 +176,22 @@ export const Explore: React.FC = () => {
         }
         try {
           setLoading(loading => ++loading);
-          const sourceName =
-            source || (await getSourceNameForQuery(newModelInfo.model, query));
-          registerNewSource(
-            newModelInfo.model.contents[sourceName] as SourceDef
-          );
           if (query) {
             if (page !== 'query') return;
-            clearResult();
             const compiledQuery = await compileQuery(newModelInfo.model, query);
             queryModifiers.setQuery(compiledQuery, true);
-            if (urlParams.has('run') && urlParams.get('page') === 'query') {
-              runQuery();
+            if (run === 'true' && page === 'query') {
+              runQuery(query, name || 'unnamed');
             }
           } else {
             urlParams.delete('query');
             urlParams.delete('run');
             urlParams.delete('name');
-            clearQuery(true);
+            queryModifiers.clearQuery(true);
           }
-          params.current = urlParams.toString();
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(error);
-          setError(error);
         } finally {
           setLoading(loading => --loading);
         }
@@ -227,19 +205,24 @@ export const Explore: React.FC = () => {
     urlParams,
     appInfo,
     modelInfo,
-    registerNewSource,
-    clearResult,
     queryModifiers,
-    runQuery,
-    clearQuery,
-    setError,
     setParams,
+    runQuery,
+    model,
+    query,
+    source,
+    page,
+    run,
+    name,
   ]);
 
   const findModelByMarkdownId = (model: string) => {
+    if (!app || !appInfo) {
+      return undefined;
+    }
     const urlBase = window.location.href;
     const targetHref = new URL(model, new URL(app.path, urlBase)).href;
-    const modelInfo = appInfo?.models.find(
+    const modelInfo = appInfo.models.find(
       modelInfo =>
         new URL(modelInfo.path, new URL(app.path, urlBase)).href === targetHref
     );
@@ -257,13 +240,15 @@ export const Explore: React.FC = () => {
     try {
       setLoading(loading => ++loading);
       const modelInfo = findModelByMarkdownId(model);
+      if (!modelInfo) {
+        return;
+      }
       setDatasetSource(modelInfo, source);
       urlParams.set('page', 'query');
       setParams(urlParams, {replace: true});
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
-      setError(error);
     } finally {
       setLoading(loading => --loading);
     }
@@ -272,42 +257,40 @@ export const Explore: React.FC = () => {
   const loadQueryLink = async (model: string, query: string, name?: string) => {
     try {
       setLoading(loading => ++loading);
-      const newModelInfo = findModelByMarkdownId(model);
-      const sourceName = await getSourceNameForQuery(newModelInfo.model, query);
-      urlParams.set('model', newModelInfo.id);
+      const modelInfo = findModelByMarkdownId(model);
+      if (!modelInfo) {
+        return;
+      }
+      const sourceName = await getSourceNameForQuery(modelInfo.model, query);
+      urlParams.set('model', modelInfo.id);
       urlParams.set('source', sourceName);
       urlParams.set('query', query);
       urlParams.set('page', 'query');
       urlParams.set('run', 'true');
-      urlParams.set('name', name);
-      registerNewSource(newModelInfo.model.contents[sourceName] as SourceDef);
-      const compiledQuery = await compileQuery(newModelInfo.model, query);
-      queryModifiers.setQuery(compiledQuery, true);
-      runQuery();
+      if (name) {
+        urlParams.set('name', name);
+      } else {
+        urlParams.delete('name');
+      }
       setParams(urlParams);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
-      setError(error);
     } finally {
       setLoading(loading => --loading);
     }
   };
 
   const runQueryAction = () => {
-    runQuery();
-    urlParams.set('run', 'true');
-    setParams(urlParams, {replace: true});
+    runQuery(queryMalloy.notebook, queryName);
   };
 
   const handlers = {
-    REMOVE_FIELDS: () => clearQuery(),
+    REMOVE_FIELDS: () => queryModifiers.clearQuery(),
     RUN_QUERY: runQueryAction,
-    UNDO: undo,
-    REDO: redo,
   };
 
-  const topValues = useTopValues(model, modelPath, source);
+  const topValues = useTopValues(modelDef, modelPath, sourceDef);
   if (loading || (appId && !appInfo)) {
     section = 'loading';
   }
@@ -318,6 +301,8 @@ export const Explore: React.FC = () => {
     modelPath,
     source,
   });
+
+  console.info('SECTION', section);
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -330,13 +315,11 @@ export const Explore: React.FC = () => {
               {sourceName && section === 'query' && (
                 <span>
                   {' ›'} {snakeToTitle(sourceName)}
-                  {(urlParams.get('name') || queryName) &&
-                    section === 'query' && (
-                      <span>
-                        {' ›'}{' '}
-                        {urlParams.get('name') || snakeToTitle(queryName)}
-                      </span>
-                    )}
+                  {(name || queryName) && section === 'query' && (
+                    <span>
+                      {' ›'} {name || snakeToTitle(queryName)}
+                    </span>
+                  )}
                 </span>
               )}
             </span>
@@ -385,22 +368,17 @@ export const Explore: React.FC = () => {
             <PageContainer>
               {section === 'query' && (
                 <ExploreQueryEditor
-                  dirty={dirty}
-                  model={model}
+                  model={modelDef}
                   modelPath={modelPath}
-                  source={source}
+                  source={sourceDef}
                   queryModifiers={queryModifiers}
                   topValues={topValues}
                   queryName={queryName}
                   querySummary={querySummary}
                   queryMalloy={queryMalloy}
                   result={result}
-                  isRunning={isRunning}
                   runQuery={runQueryAction}
-                  canUndo={canUndo}
-                  undo={undo}
-                  isQueryEmpty={isQueryEmpty}
-                  canQueryRun={canQueryRun}
+                  isRunning={isRunning}
                 />
               )}
               {section === 'about' && (

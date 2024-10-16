@@ -4,8 +4,9 @@ import {
   SourceDef,
   Result as MalloyResult,
   ModelDef,
+  TurtleDef,
 } from '@malloydata/malloy';
-import {createContext, useState} from 'react';
+import {createContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {QuerySummary} from '../../types';
 import {ActionIcon} from '../ActionIcon';
@@ -24,7 +25,6 @@ interface ExploreQueryEditorProps {
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
   querySummary: QuerySummary | undefined;
-  result: MalloyResult | undefined;
   queryMalloy: {
     model: string;
     source: string;
@@ -32,16 +32,12 @@ interface ExploreQueryEditorProps {
     notebook: string;
     isRunnable: boolean;
   };
-  isRunning: boolean;
   queryModifiers: QueryModifiers;
-  runQuery: () => void;
-  model: ModelDef;
-  dirty: boolean;
+  runQuery: (query: string, queryName: string) => void;
+  isRunning: boolean;
+  result: MalloyResult | Error | undefined;
+  model: ModelDef | undefined;
   modelPath: string | undefined;
-  undo: () => void;
-  canUndo: boolean;
-  isQueryEmpty: boolean;
-  canQueryRun: boolean;
 }
 
 const composerOptions = {
@@ -53,25 +49,58 @@ export const ComposerOptionsContext = createContext<{
 }>(composerOptions);
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
-  dirty,
   model,
   modelPath,
   source,
   queryName,
   topValues,
   runQuery,
-  querySummary,
-  result,
   isRunning,
+  result: currentResult,
+  querySummary,
   queryMalloy,
   queryModifiers,
-  undo,
-  canUndo,
-  isQueryEmpty,
-  canQueryRun,
 }) => {
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
+  const [result, setResult] = useState<MalloyResult>();
+  const [_error, setError] = useState<Error>();
+  const [lastRunQuery, setLastRunQuery] = useState<string>();
+
+  const {notebook: query, isRunnable} = queryMalloy;
+
+  const runQueryCallback = React.useCallback(() => {
+    setResult(undefined);
+    setLastRunQuery(query);
+    runQuery(query, queryName);
+  }, [query, queryName, runQuery]);
+
+  useEffect(() => {
+    if (currentResult instanceof Error) {
+      setResult(undefined);
+      setError(currentResult);
+    } else {
+      setResult(currentResult);
+    }
+  }, [currentResult]);
+
+  // TODO
+  const isQueryEmpty = false;
+
+  const clearQuery = () => {
+    queryModifiers.clearQuery();
+    setResult(undefined);
+    setError(undefined);
+  };
+
+  const replaceQuery = (field: TurtleDef) => {
+    queryModifiers.replaceQuery(field);
+    setResult(undefined);
+    setError(undefined);
+  };
+
+  const dirty = query !== lastRunQuery;
+
   return (
     <ComposerOptionsContext.Provider value={composerOptions}>
       <Outer>
@@ -113,28 +142,23 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     <LoadTopQueryContextBar
                       model={model}
                       source={source}
-                      selectField={queryModifiers.replaceQuery}
+                      selectField={replaceQuery}
                       onComplete={() => setLoadOpen(false)}
                     />
                   </Popover>
                 </div>
                 <ActionIcon
-                  action="undo"
-                  onClick={() => undo()}
-                  color={canUndo ? 'dimension' : 'other'}
-                />
-                <ActionIcon
                   action="remove"
-                  onClick={() => queryModifiers.clearQuery()}
+                  onClick={clearQuery}
                   color={isQueryEmpty ? 'other' : 'dimension'}
                 />
                 <StyledRunIcon
                   width="80px"
-                  onClick={() => runQuery()}
+                  onClick={runQueryCallback}
                   className={
                     isRunning
                       ? 'running'
-                      : isQueryEmpty || !canQueryRun
+                      : isQueryEmpty || !isRunnable
                       ? 'blank'
                       : dirty
                       ? 'dirty'
