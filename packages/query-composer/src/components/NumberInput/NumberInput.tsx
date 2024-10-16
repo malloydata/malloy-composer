@@ -80,6 +80,6 @@ const StyledInput = styled.input`
 
   &:focus {
     border-color: #4285f4;
-    background-color: ${COLORS.dimension.fillLight};
+    background-color: var(--malloy-theme--dimension-light);
   }
 `;

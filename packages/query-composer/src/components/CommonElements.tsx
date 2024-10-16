@@ -276,13 +276,13 @@ export const PageHeader = styled.div`
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  background-color: ${COLORS.mainBackground};
+  background-color: var(--malloy-theme--header-background, rgb(247, 249, 252));
   flex-shrink: 0;
 `;
 
 export const PageContent = styled.div`
   overflow: hidden;
-  background-color: white;
+  background-color: var(--malloy-theme--background, white);
   border-radius: 5px;
   width: 100%;
   height: 100%;

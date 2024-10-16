@@ -83,7 +83,7 @@ const OptionDiv = styled.label`
   display: flex;
   align-items: center;
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
+    background-color: var(--malloy-theme--dimension-light);
   }
 `;
 

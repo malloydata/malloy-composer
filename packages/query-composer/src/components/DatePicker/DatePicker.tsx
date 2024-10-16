@@ -557,15 +557,15 @@ const Quarter = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-theme--dimension-light);
+    border-color: var(--malloy-theme--dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-theme--dimension-light);
+      border-color: var(--malloy-theme--dimension-medium);
     `
       : ''}
 `;
@@ -588,15 +588,15 @@ const Month = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-theme--dimension-light);
+    border-color: var(--malloy-theme--dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-theme--dimension-light);
+      border-color: var(--malloy-theme--dimension-medium);
     `
       : ''}
 `;
@@ -634,15 +634,15 @@ const Year = styled.div<{
   border-radius: 5px;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-theme--dimension-light);
+    border-color: var(--malloy-theme--dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-theme--dimension-light);
+      border-color: var(--malloy-theme--dimension-medium);
     `
       : ''}
 `;
@@ -686,13 +686,13 @@ const WeekButton = styled.div<{
   ${({isSelected}) =>
     isSelected
       ? `
-    background-color: ${COLORS.dimension.fillLight};
-    color:  ${COLORS.dimension.fillStrong};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-theme--dimension-light);
+    color:  var(--malloy-theme--dimension-strong);
+    border-color: var(--malloy-theme--dimension-medium);
   `
       : `
     &:hover {
-      background-color: ${COLORS.dimension.fillLight};
+      background-color: var(--malloy-theme--dimension-light);
     }
   `}
 `;
@@ -737,13 +737,13 @@ const Day = styled(Cell)<{
     ${
       isSelected
         ? `
-      background-color: ${COLORS.dimension.fillLight};
-      color:  ${COLORS.dimension.fillStrong};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-theme--dimension-light);
+      color:  var(--malloy-theme--dimension-strong);
+      border-color: var(--malloy-theme--dimension-medium);
     `
         : `
       &:hover {
-        background-color: ${COLORS.dimension.fillLight};
+        background-color: var(--malloy-theme--dimension-light);
       }
     `
     }

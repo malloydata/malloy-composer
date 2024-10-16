@@ -206,7 +206,7 @@ const Pill = styled.div<{
   `}
 
   border-radius: 5px;
-  color: ${COLORS.dimension.fillStrong};
+  color: var(--malloy-theme--dimension-strong);
   display: flex;
   align-items: center;
   gap: 5px;
