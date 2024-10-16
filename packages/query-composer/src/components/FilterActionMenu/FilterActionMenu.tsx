@@ -28,7 +28,7 @@ import {
   StructDef,
 } from '@malloydata/malloy';
 import {Filter} from '../../types';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
 import {EditFilter} from '../EditFilter';
 
@@ -67,7 +67,7 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
           iconColor: 'filter',
           kind: 'sub_menu',
           closeOnComplete: true,
-          Component: ({onComplete}) =>
+          Component: ({onComplete}: ActionSubmenuComponentProps) =>
             filterField && parsedFilter ? (
               <AddFilter
                 model={model}

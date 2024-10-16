@@ -63,7 +63,6 @@ export const commonAppConfig = (development = false): BuildOptions => {
     define: {
       'process.env.NODE_DEBUG': 'false', // TODO this is a hack because some package we include assumed process.env exists :(
     },
-    inject: ['./react-shim.js'], // This shim elimanites needing to have "require React from 'react'" in every file
   };
 };
 

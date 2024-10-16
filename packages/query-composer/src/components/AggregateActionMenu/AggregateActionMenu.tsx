@@ -31,7 +31,7 @@ import {
 import {OrderByField, RendererName, StagePath} from '../../types';
 import {FilterContextBar} from '../FilterContextBar';
 import {RenameField} from '../RenameField';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {AddNewMeasure} from '../AddNewMeasure';
 import {EditOrderBy} from '../EditOrderBy';
@@ -99,7 +99,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           isEnabled: definition === undefined,
           label: 'Filter',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
               model={model}
               modelPath={modelPath}
@@ -118,7 +118,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: 'other',
           label: 'Rename',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },
@@ -129,7 +129,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           label: 'Order By',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
@@ -146,7 +146,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconName: 'style',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={renderName =>
                 setRenderer(stagePath, fieldIndex, renderName)
@@ -173,7 +173,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: 'other',
           isEnabled: isEditable,
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddNewMeasure
               source={source}
               addMeasure={code => editMeasure(fieldIndex, code)}

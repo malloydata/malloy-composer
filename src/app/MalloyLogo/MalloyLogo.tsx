@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as React from 'react';
 import {Link} from 'react-router-dom';
 import logoSrc from '../assets/img/logo.png';
 

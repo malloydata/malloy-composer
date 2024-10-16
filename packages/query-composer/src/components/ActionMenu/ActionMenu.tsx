@@ -59,10 +59,14 @@ interface OneClickAction extends ActionBase {
   onClick: () => void;
 }
 
+export interface ActionSubmenuComponentProps {
+  onComplete: () => void;
+}
+
 interface SubMenuAction extends ActionBase {
   kind: 'sub_menu';
   closeOnComplete: boolean;
-  Component: (props: {onComplete: () => void}) => ReactElement;
+  Component: (props: ActionSubmenuComponentProps) => ReactElement;
 }
 
 export type Action = OneClickAction | SubMenuAction;

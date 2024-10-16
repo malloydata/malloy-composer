@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 import {OrderByField} from '../../types';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {EditOrderBy} from '../EditOrderBy';
 
 interface OrderByActionMenuProps {
@@ -51,7 +51,7 @@ export const OrderByActionMenu: React.FC<OrderByActionMenuProps> = ({
           iconColor: 'other',
           label: 'Edit Order By',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <EditOrderBy
               addOrderBy={(byField, direction) => editOrderBy(direction)}
               onComplete={onComplete}

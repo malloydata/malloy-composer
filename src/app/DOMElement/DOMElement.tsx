@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as React from 'react';
 import {useEffect, useRef} from 'react';
 
 export const DOMElement: React.FC<{element: HTMLElement}> = ({element}) => {

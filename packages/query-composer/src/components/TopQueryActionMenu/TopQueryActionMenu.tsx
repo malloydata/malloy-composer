@@ -29,7 +29,7 @@ import {NestContextBar} from '../NestContextBar';
 import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {SearchValueMapResult, SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
@@ -80,7 +80,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: 'filter',
           iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
               modelPath={modelPath}
               model={model}
@@ -102,7 +102,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconColor: 'query',
           closeOnComplete: true,
           divider: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
               source={source}
               selectField={fieldPath =>
@@ -122,7 +122,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: 'group_by',
           iconColor: 'dimension',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               topValues={topValues}
               source={source}
@@ -143,7 +143,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconColor: 'measure',
           iconName: 'aggregate',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
               selectField={fieldPath =>
@@ -163,7 +163,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: 'limit',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
               addLimit={limit => queryModifiers.addLimit(stagePath, limit)}
               onComplete={onComplete}
@@ -177,7 +177,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: 'order_by',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
                 queryModifiers.addOrderBy(stagePath, byField, direction)
@@ -194,7 +194,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           iconName: 'style',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={renderName =>
                 queryModifiers.setRenderer(stagePath, undefined, renderName)

@@ -20,7 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {useEffect, useRef, useState} from 'react';
+import * as React from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {AppInfo, ModelInfo} from '../../types';
 import {useDatasets} from '../data/use_datasets';
@@ -68,13 +69,13 @@ export const Explore: React.FC = () => {
   const params = useRef('');
   const [loading, setLoading] = useState(0);
 
-  const setParams = (
-    newUrlParams: URLSearchParams,
-    options?: {replace: boolean}
-  ) => {
-    params.current = newUrlParams.toString();
-    _setParams(newUrlParams, options);
-  };
+  const setParams = useCallback(
+    (newUrlParams: URLSearchParams, options?: {replace: boolean}) => {
+      params.current = newUrlParams.toString();
+      _setParams(newUrlParams, options);
+    },
+    [_setParams]
+  );
 
   useEffect(() => {
     if (appInfo) {
@@ -222,7 +223,18 @@ export const Explore: React.FC = () => {
       }
     };
     loadDataset();
-  }, [urlParams, appInfo]);
+  }, [
+    urlParams,
+    appInfo,
+    modelInfo,
+    registerNewSource,
+    clearResult,
+    queryModifiers,
+    runQuery,
+    clearQuery,
+    setError,
+    setParams,
+  ]);
 
   const findModelByMarkdownId = (model: string) => {
     const urlBase = window.location.href;
