@@ -90,7 +90,7 @@ export const useSearchList = ({
             />
           );
         } else {
-          return <div />;
+          return <div key={item.key} />;
         }
       })}
       {rankedItems.length === 0 && <EmptyMessage>No results</EmptyMessage>}

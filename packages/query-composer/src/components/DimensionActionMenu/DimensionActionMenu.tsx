@@ -29,7 +29,7 @@ import {
   ModelDef,
 } from '@malloydata/malloy';
 import {OrderByField, RendererName, StagePath, StageSummary} from '../../types';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
 import {AddNewDimension} from '../AddNewDimension';
 import {DataStyleContextBar} from '../DataStyleContextBar';
@@ -95,7 +95,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           label: 'Rename',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },
@@ -106,7 +106,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           label: 'Filter By',
           iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({onComplete}) =>
+          Component: ({onComplete}: ActionSubmenuComponentProps) =>
             filterField && filterFieldPath ? (
               <AddFilter
                 model={model}
@@ -129,7 +129,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           label: 'Order By',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
@@ -146,7 +146,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           iconName: 'style',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={setRenderer}
               onComplete={onComplete}
@@ -185,7 +185,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           isEnabled: isEditable,
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddNewDimension
               source={source}
               addDimension={code => editDimension(fieldIndex, code)}

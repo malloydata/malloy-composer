@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddLimit} from '../AddLimit';
 
 interface LimitActionMenuProps {
@@ -47,7 +47,7 @@ export const LimitActionMenu: React.FC<LimitActionMenuProps> = ({
           iconColor: 'other',
           kind: 'sub_menu',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
               addLimit={editLimit}
               onComplete={onComplete}

@@ -22,4 +22,7 @@
  */
 
 export {ActionMenu} from './ActionMenu';
-export type {Action as ActionMenuAction} from './ActionMenu';
+export type {
+  Action as ActionMenuAction,
+  ActionSubmenuComponentProps,
+} from './ActionMenu';

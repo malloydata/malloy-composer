@@ -28,7 +28,7 @@ import {NestContextBar} from '../NestContextBar';
 import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {
   FilterCondition,
   QueryFieldDef,
@@ -108,7 +108,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'filter',
           iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
               model={model}
               modelPath={modelPath}
@@ -128,7 +128,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconColor: 'query',
           closeOnComplete: true,
           divider: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
               source={source}
               selectField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -144,7 +144,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'group_by',
           iconColor: 'dimension',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               source={source}
               toggleField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -161,7 +161,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'aggregate',
           iconColor: 'measure',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
               selectField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -177,7 +177,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'limit',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
               addLimit={limit => addLimit(stagePath, limit)}
               onComplete={onComplete}
@@ -191,7 +191,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'order_by',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
                 addOrderBy(stagePath, byField, direction)
@@ -209,7 +209,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconColor: 'other',
           closeOnComplete: true,
           isEnabled: isLastStage,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={renderName =>
                 setRenderer(stagePath, undefined, renderName)

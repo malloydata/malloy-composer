@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as React from 'react';
 import {ReactComponent as ChannelIconAbout} from '../assets/img/channel_icons/channel_about.svg';
 import {ReactComponent as ChannelIconFeedback} from '../assets/img/channel_icons/channel_feedback.svg';
 import {ReactComponent as ChannelIconHelp} from '../assets/img/channel_icons/channel_help.svg';

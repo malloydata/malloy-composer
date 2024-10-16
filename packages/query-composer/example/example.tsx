@@ -33,7 +33,7 @@ const App = () => {
 
   useEffect(() => {
     registerNewSource(source);
-  }, [source]);
+  }, [registerNewSource]);
 
   return (
     <div>

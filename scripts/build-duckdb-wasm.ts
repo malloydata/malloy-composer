@@ -59,7 +59,6 @@ export async function doBuild(): Promise<void> {
       ['.svg']: 'dataurl',
       ['.png']: 'dataurl',
     },
-    inject: ['./react-shim.js'],
   };
 
   if (port) {

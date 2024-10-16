@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as React from 'react';
 import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Markdown, parseMarkdown} from '../../core/markdown';

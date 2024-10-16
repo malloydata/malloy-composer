@@ -28,7 +28,7 @@ import {NestContextBar} from '../NestContextBar';
 import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
-import {ActionMenu} from '../ActionMenu';
+import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {
   FilterCondition,
   QueryFieldDef,
@@ -117,7 +117,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'filter',
           iconColor: 'filter',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
               modelPath={modelPath}
               model={model}
@@ -137,7 +137,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: 'query',
           closeOnComplete: true,
           divider: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
               source={source}
               selectField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -153,7 +153,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: 'dimension',
           iconName: 'group_by',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               source={source}
               toggleField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -170,7 +170,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'aggregate',
           iconColor: 'measure',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
               selectField={fieldPath => toggleField(stagePath, fieldPath)}
@@ -186,7 +186,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'limit',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
               addLimit={limit => addLimit(stagePath, limit)}
               onComplete={onComplete}
@@ -200,7 +200,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'order_by',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
                 addOrderBy(stagePath, byField, direction)
@@ -217,7 +217,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'style',
           iconColor: 'other',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={setRenderer}
               onComplete={onComplete}
@@ -245,7 +245,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: 'other',
           label: 'Rename',
           closeOnComplete: true,
-          Component: ({onComplete}) => (
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <RenameField rename={rename} onComplete={onComplete} />
           ),
         },

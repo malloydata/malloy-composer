@@ -133,7 +133,7 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [result, malloy, model]);
+  }, [result, malloy, model, dummyCompiler]);
 
   useEffect(() => {
     if (result === previousResult) {
@@ -184,7 +184,7 @@ export const Result: React.FC<ResultProps> = ({
         }, 0);
       }, 0);
     });
-  }, [result, previousResult]);
+  }, [result, previousResult, dummyCompiler, onDrill, source]);
 
   return (
     <OuterDiv>
