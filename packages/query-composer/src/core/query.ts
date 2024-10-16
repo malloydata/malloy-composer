@@ -52,7 +52,7 @@ import {
   Tag,
   DocumentLocation,
 } from '@malloydata/malloy';
-import {snakeToTitle} from '../utils';
+import {expressionIsAnalytic, snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
 import {maybeQuoteIdentifier} from './utils';
 
@@ -1072,6 +1072,8 @@ ${malloy}
         const property =
           fieldDef.type === 'turtle'
             ? 'nest'
+            : expressionIsAnalytic(fieldDef.expressionType)
+            ? 'calculate'
             : expressionIsCalculation(fieldDef.expressionType)
             ? 'aggregate'
             : stage.type === 'project'
@@ -1089,7 +1091,9 @@ ${malloy}
           malloy,
         };
       } else if (isRenamedField(field)) {
-        const property = expressionIsCalculation(field.expressionType)
+        const property = expressionIsAnalytic(field.expressionType)
+          ? 'calculate'
+          : expressionIsCalculation(field.expressionType)
           ? 'aggregate'
           : stage.type === 'project'
           ? 'select'
@@ -1113,6 +1117,8 @@ ${malloy}
         const property =
           fieldDef.type === 'turtle'
             ? 'nest'
+            : expressionIsAnalytic(fieldDef.expressionType)
+            ? 'calculate'
             : expressionIsCalculation(fieldDef.expressionType)
             ? 'aggregate'
             : stage.type === 'project'
@@ -1156,7 +1162,9 @@ ${malloy}
           malloy,
         };
       } else {
-        const property = expressionIsCalculation(field.expressionType)
+        const property = expressionIsAnalytic(field.expressionType)
+          ? 'calculate'
+          : expressionIsCalculation(field.expressionType)
           ? 'aggregate'
           : stage.type === 'project'
           ? 'select'
@@ -1235,7 +1243,8 @@ ${malloy}
         if (
           (currentProperty !== undefined &&
             info.property !== currentProperty) ||
-          JSON.stringify(currentBlockNotes) !== JSON.stringify(info.blockNotes)
+          JSON.stringify(currentBlockNotes) !==
+            JSON.stringify(info.blockNotes ?? [])
         ) {
           currentBlockNotes.forEach(blockNote =>
             malloy.push(blockNote, NEWLINE)
