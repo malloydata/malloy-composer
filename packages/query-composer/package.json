@@ -1,6 +1,6 @@
 {
   "name": "@malloydata/query-composer",
-  "version": "0.0.201-dev2",
+  "version": "0.0.201-dev3",
   "description": "A query composer component for Malloy",
   "main": "dist/cjs/index.cjs",
   "type": "module",
