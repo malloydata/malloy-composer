@@ -78,7 +78,7 @@ interface ActionMenuProps {
   searchItems?: SearchItem[];
   addFilter?: (filter: FilterCondition) => void;
   topValues?: SearchValueMapResult[] | undefined;
-  model?: ModelDef | undefined;
+  model?: ModelDef;
   modelPath?: string;
 }
 
@@ -222,10 +222,9 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                             />
                           );
                         })}
-                      {stringSearchResults !== undefined &&
-                        stringSearchResults.length === 0 && (
-                          <EmptyMessage>No value results</EmptyMessage>
-                        )}
+                      {stringSearchResults?.length === 0 && (
+                        <EmptyMessage>No value results</EmptyMessage>
+                      )}
                       {isLoading && (
                         <EmptyMessage>
                           <LoadingSpinner text="Loading value results..." />

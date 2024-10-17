@@ -46,12 +46,12 @@ interface TopQueryActionMenuProps {
   orderByFields: OrderByField[];
   closeMenu: () => void;
   topValues: SearchValueMapResult[] | undefined;
-  stageSummary: StageSummary;
+  stageSummary: StageSummary | undefined;
   queryName: string;
   isOnlyStage: boolean;
   queryModifiers: QueryModifiers;
-  model: ModelDef | undefined;
-  modelPath: string | undefined;
+  model: ModelDef;
+  modelPath: string;
 }
 
 export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
@@ -197,7 +197,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={renderName =>
-                queryModifiers.setRenderer(stagePath, undefined, renderName)
+                queryModifiers.setRenderer(stagePath, 0, renderName)
               }
               onComplete={onComplete}
               allowedRenderers={[

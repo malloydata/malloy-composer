@@ -62,7 +62,7 @@ interface AggregateActionMenuProps {
   ) => void;
   orderByField: OrderByField;
   stagePath: StagePath;
-  model: ModelDef | undefined;
+  model: ModelDef;
   modelPath: string;
 }
 

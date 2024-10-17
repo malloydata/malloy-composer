@@ -61,7 +61,7 @@ interface DimensionActionMenuProps {
     direction?: 'asc' | 'desc'
   ) => void;
   orderByField: OrderByField;
-  modelPath: string | undefined;
+  modelPath: string;
 }
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({

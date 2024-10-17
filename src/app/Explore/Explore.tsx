@@ -302,8 +302,6 @@ export const Explore: React.FC = () => {
     source,
   });
 
-  console.info('SECTION', section);
-
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
       <Header>
@@ -366,7 +364,7 @@ export const Explore: React.FC = () => {
           </Channel>
           <Page>
             <PageContainer>
-              {section === 'query' && (
+              {section === 'query' && sourceDef && modelDef && modelPath && (
                 <ExploreQueryEditor
                   model={modelDef}
                   modelPath={modelPath}

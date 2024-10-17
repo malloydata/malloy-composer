@@ -73,8 +73,8 @@ interface NestQueryActionMenuProps {
   beginReorderingField: () => void;
   topValues: SearchValueMapResult[] | undefined;
   rename: (newName: string) => void;
-  model: ModelDef | undefined;
-  modelPath: string | undefined;
+  model: ModelDef;
+  modelPath: string;
   isExpanded: boolean;
   replaceWithDefinition: () => void;
 }

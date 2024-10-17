@@ -21,7 +21,7 @@ import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 import {DummyCompile} from '../../core/dummy-compile';
 
 interface ExploreQueryEditorProps {
-  source: SourceDef | undefined;
+  source: SourceDef;
   topValues: SearchValueMapResult[] | undefined;
   queryName: string;
   querySummary: QuerySummary | undefined;
@@ -36,8 +36,8 @@ interface ExploreQueryEditorProps {
   runQuery: (query: string, queryName: string) => void;
   isRunning: boolean;
   result: MalloyResult | Error | undefined;
-  model: ModelDef | undefined;
-  modelPath: string | undefined;
+  model: ModelDef;
+  modelPath: string;
 }
 
 const composerOptions = {
@@ -142,7 +142,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     <LoadTopQueryContextBar
                       model={model}
                       source={source}
-                      selectField={replaceQuery}
+                      selectField={field => replaceQuery(field as TurtleDef)}
                       onComplete={() => setLoadOpen(false)}
                     />
                   </Popover>

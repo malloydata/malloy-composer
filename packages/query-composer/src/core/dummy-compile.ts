@@ -111,7 +111,7 @@ export class DummyCompile {
   async compileGroupBy(
     source: StructDef,
     name: string,
-    expression: string
+    expression: string | undefined
   ): Promise<QueryFieldDef> {
     const quotedName = maybeQuoteIdentifier(name);
     const groupBy = expression ? `${quotedName} is ${expression}` : quotedName;

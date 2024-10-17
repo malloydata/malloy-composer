@@ -147,6 +147,7 @@ export function useQueryBuilder(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
       const backup = JSON.parse(JSON.stringify(queryBuilder.getQuery()));
       modify(queryBuilder);
+      setVersion(version => ++version);
       if (queryBuilder.canRun()) {
         try {
           const queryString = queryBuilder.getQueryStringForNotebook();
@@ -156,7 +157,6 @@ export function useQueryBuilder(
               query: queryString,
             });
           }
-          setVersion(version => ++version);
         } catch (error) {
           queryBuilder.setQuery(backup);
           // eslint-disable-next-line no-console
