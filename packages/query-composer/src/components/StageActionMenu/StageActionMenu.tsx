@@ -67,7 +67,7 @@ interface StageActionMenuProps {
   closeMenu: () => void;
   setRenderer: (
     stagePath: StagePath,
-    fieldIndex: number | undefined,
+    fieldIndex: number,
     rendererName: RendererName
   ) => void;
   stageSummary: StageSummary;
@@ -75,7 +75,7 @@ interface StageActionMenuProps {
   topValues: SearchValueMapResult[] | undefined;
   isLastStage: boolean;
   model: ModelDef;
-  modelPath: string | undefined;
+  modelPath: string;
 }
 
 export const StageActionMenu: React.FC<StageActionMenuProps> = ({
@@ -211,9 +211,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           isEnabled: isLastStage,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
-              setRenderer={renderName =>
-                setRenderer(stagePath, undefined, renderName)
-              }
+              setRenderer={renderName => setRenderer(stagePath, 0, renderName)}
               onComplete={onComplete}
               allowedRenderers={[
                 'table',

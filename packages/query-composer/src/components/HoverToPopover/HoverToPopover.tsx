@@ -30,7 +30,10 @@ interface HoverToPopoverProps {
     setOpen: (open: boolean) => void;
     closeMenu: () => void;
   }) => ReactElement | null;
-  content: (props: {isOpen: boolean; closeMenu: () => void}) => ReactElement;
+  content: (props: {
+    isOpen: boolean;
+    closeMenu: () => void;
+  }) => ReactElement | null;
   width: number;
   enabled?: boolean;
   zIndex?: number;

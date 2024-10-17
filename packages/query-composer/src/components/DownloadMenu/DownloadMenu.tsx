@@ -39,7 +39,7 @@ export const DownloadMenu: React.FC<DownloadMenuProps> = ({
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<HTMLInputElement>(null);
 
   const andClose = (fun: (newTab: boolean) => void) => {
     return (event: React.MouseEvent) => {

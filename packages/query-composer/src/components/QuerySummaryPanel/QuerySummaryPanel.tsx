@@ -61,7 +61,7 @@ interface QuerySummaryPanelProps {
   stagePath: StagePath | undefined;
   topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
-  modelPath: string | undefined;
+  modelPath: string;
 }
 
 export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
@@ -163,7 +163,7 @@ interface SummaryStageProps {
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
-  modelPath: string | undefined;
+  modelPath: string;
 }
 
 const StageSummaryUI: React.FC<SummaryStageProps> = ({
@@ -245,7 +245,7 @@ interface ClickToPopoverProps {
   popoverContent: (props: {
     setOpen: (open: boolean) => void;
     closeMenu: () => void;
-  }) => ReactElement;
+  }) => ReactElement | null;
   content: (props: {isOpen: boolean; closeMenu: () => void}) => ReactElement;
 }
 
@@ -296,7 +296,7 @@ interface SummaryItemProps {
   topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
-  modelPath: string | undefined;
+  modelPath: string;
 }
 
 const SummaryItem: React.FC<SummaryItemProps> = ({
@@ -458,7 +458,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 source={source}
                 filterSource={item.filterSource}
                 filterField={item.field}
-                fieldPath={item.fieldPath}
+                fieldPath={item.fieldPath as string}
                 parsedFilter={item.parsed}
                 removeFilter={() =>
                   queryModifiers.removeFilter(stagePath, item.filterIndex)
@@ -718,7 +718,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 active={isOpen || isSelected}
               />
             );
-          } else if (item.type === 'data_style') {
+          } else if (item.type === 'data_style' && item.renderer) {
             return (
               <FieldButton
                 icon={<VisIcon renderer={item.renderer} />}
@@ -726,7 +726,11 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 color="other"
                 canRemove={item.canRemove}
                 onRemove={() => {
-                  queryModifiers.setRenderer(stagePath, fieldIndex, undefined);
+                  queryModifiers.setRenderer(
+                    stagePath,
+                    item.fieldIndex,
+                    undefined
+                  );
                   closeMenu();
                 }}
                 active={isOpen || isSelected}

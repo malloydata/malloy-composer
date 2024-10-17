@@ -66,13 +66,36 @@ interface AddMeasureProps {
 }
 
 const VALID_MEASURES: Record<
-  'string' | 'number' | 'date' | 'timestamp',
+  | 'string'
+  | 'number'
+  | 'date'
+  | 'timestamp'
+  | 'boolean'
+  | 'json'
+  | 'sql native'
+  | 'record'
+  | 'array'
+  | 'table'
+  | 'sql_select'
+  | 'error'
+  | 'query_source'
+  | 'turtle',
   MeasureType[]
 > = {
   string: ['count_distinct'],
   number: ['count_distinct', 'avg', 'sum', 'min', 'max'],
   date: ['count_distinct', 'min', 'max'],
   timestamp: ['count_distinct', 'min', 'max'],
+  boolean: ['count_distinct'],
+  json: ['count_distinct'],
+  'sql native': ['count_distinct'],
+  record: [],
+  array: [],
+  table: [],
+  error: [],
+  sql_select: [],
+  query_source: [],
+  turtle: [],
 };
 
 const MEASURE_OPTIONS: {
@@ -111,8 +134,8 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 }) => {
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   let initialMode = Mode.FIELD;
-  let initialField: FlatField;
-  let initialType: MeasureType;
+  let initialField: FlatField | undefined;
+  let initialType: MeasureType | undefined;
   if (initialCode) {
     const {measureType, field, path} = degenerateMeasure(source, initialCode);
     initialMode =
@@ -129,8 +152,12 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   const [mode, setMode] = useState(initialMode);
   const [measure, setMeasure] = useState(initialCode || '');
   const [newName, setNewName] = useState(initialName || '');
-  const [measureType, setMeasureType] = useState<MeasureType>(initialType);
-  const [flatField, setFlatField] = useState<FlatField>(initialField);
+  const [measureType, setMeasureType] = useState<MeasureType | undefined>(
+    initialType
+  );
+  const [flatField, setFlatField] = useState<FlatField | undefined>(
+    initialField
+  );
 
   const [error, setError] = useState<Error>();
 

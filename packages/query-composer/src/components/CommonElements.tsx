@@ -257,7 +257,7 @@ const StyledFormError = styled.div`
 `;
 
 export interface FormErrorProps {
-  error: Error;
+  error: unknown;
 }
 
 export const FormError: React.FC<FormErrorProps> = ({error}) => {

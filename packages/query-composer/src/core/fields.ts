@@ -82,7 +82,10 @@ function findField(
     source: SourceDef
   ): SourceDef => Segment.nextStructDef(source, stage);
 
-  const _findField = (fields: FieldDef[], parts: string[]) => {
+  const _findField = (
+    fields: FieldDef[],
+    parts: string[]
+  ): FieldDef | undefined => {
     const field = fields.find(field => (field.as || field.name) === parts[0]);
     if (field) {
       if (parts.length > 1) {
@@ -126,7 +129,7 @@ export function degenerateMeasure(
   path: string;
   field: FieldDef | undefined;
 } {
-  let parts: RegExpExecArray;
+  let parts: RegExpExecArray | null;
 
   parts = MEASURE_COUNT.exec(measure);
   if (parts) {

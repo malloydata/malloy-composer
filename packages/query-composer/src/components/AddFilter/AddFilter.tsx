@@ -69,7 +69,7 @@ interface AddFilterProps {
   addFilter: (filter: FilterCondition, as?: string) => void;
   needsRename: boolean;
   onComplete: () => void;
-  modelPath: string | undefined;
+  modelPath: string;
   initial?: Filter;
 }
 
@@ -87,38 +87,54 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   const type = typeOfField(field);
   const kind = kindOfField(field);
-  const [stringFilter, setStringFilter] = useState<StringFilter>(
-    (type === 'string' && (initial as StringFilter)) ?? {
-      type: 'is_equal_to',
-      values: [],
-    }
+  const [stringFilter, setStringFilter] = useState<StringFilter | undefined>(
+    type === 'string'
+      ? initial
+        ? (initial as StringFilter)
+        : {
+            type: 'is_equal_to',
+            values: [],
+          }
+      : undefined
   );
-  const [numberFilter, setNumberFilter] = useState<NumberFilter>(
-    (type === 'number' && (initial as NumberFilter)) ?? {
-      type: 'is_equal_to',
-      values: [],
-    }
+  const [numberFilter, setNumberFilter] = useState<NumberFilter | undefined>(
+    type === 'number'
+      ? initial
+        ? (initial as NumberFilter)
+        : {
+            type: 'is_equal_to',
+            values: [],
+          }
+      : undefined
   );
-  const [timeFilter, setTimeFilter] = useState<TimeFilter>(
-    ((type === 'date' || type === 'timestamp') && (initial as TimeFilter)) ?? {
-      type: 'is_on',
-      date: new Date(),
-      granularity: 'day',
-    }
+  const [timeFilter, setTimeFilter] = useState<TimeFilter | undefined>(
+    type === 'date' || type === 'timestamp'
+      ? initial
+        ? (initial as TimeFilter)
+        : {
+            type: 'is_on',
+            date: new Date(),
+            granularity: 'day',
+          }
+      : undefined
   );
-  const [booleanFilter, setBooleanFilter] = useState<BooleanFilter>(
-    (type === 'boolean' && (initial as BooleanFilter)) ?? {
-      type: 'is_true',
-    }
+  const [booleanFilter, setBooleanFilter] = useState<BooleanFilter | undefined>(
+    type === 'boolean'
+      ? initial
+        ? (initial as BooleanFilter)
+        : {
+            type: 'is_true',
+          }
+      : undefined
   );
   const [filter, setFilter] = useState(
-    type === 'string'
+    stringFilter
       ? stringFilterToString(fieldPath, stringFilter)
-      : type === 'number'
+      : numberFilter
       ? numberFilterToString(fieldPath, numberFilter)
-      : type === 'date' || type === 'timestamp'
+      : timeFilter
       ? timeFilterToString(fieldPath, timeFilter)
-      : type === 'boolean'
+      : booleanFilter
       ? booleanFilterToString(fieldPath, booleanFilter)
       : ''
   );
@@ -150,7 +166,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
             </FormFieldList>
           </RenameBox>
         )}
-        {type === 'string' && (
+        {stringFilter && (
           <StringFilterBuilder
             modelPath={modelPath}
             model={model}
@@ -163,7 +179,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
             }}
           />
         )}
-        {type === 'boolean' && (
+        {booleanFilter && (
           <BooleanFilterBuilder
             filter={booleanFilter}
             setFilter={f => {
@@ -172,7 +188,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
             }}
           />
         )}
-        {type === 'number' && (
+        {numberFilter && (
           <NumberFilterBuilder
             filter={numberFilter}
             setFilter={f => {
@@ -181,7 +197,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
             }}
           />
         )}
-        {(type === 'date' || type === 'timestamp') && (
+        {(type === 'date' || type === 'timestamp') && timeFilter && (
           <TimeFilterBuilder
             type={type}
             filter={timeFilter}

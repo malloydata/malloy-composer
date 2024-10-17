@@ -631,7 +631,7 @@ function hackyTerribleStringToBooleanFilter(
 }
 
 function hackyTerribleStringToAnyFilter(
-  filterString
+  filterString: string
 ): HackyFilterParserResult<Filter> {
   const isNullMatch = filterString.match(NULL_FILTER);
   if (isNullMatch) {

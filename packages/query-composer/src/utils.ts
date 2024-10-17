@@ -29,7 +29,7 @@ import {
   isJoined,
   isLeafAtomic,
 } from '@malloydata/malloy';
-import {Highlighter, LanguageRegistration} from 'shiki';
+import {HighlighterCore, LanguageRegistration} from 'shiki';
 // `shiki/core` entry does not include any themes or languages or the wasm binary.
 import {getHighlighterCore} from 'shiki/core';
 // `shiki/wasm` contains the wasm binary inlined as base64 string.
@@ -49,7 +49,7 @@ export function snakeToTitle(snake: string): string {
     .join(' ');
 }
 
-let HIGHLIGHTER: Promise<Highlighter>;
+let HIGHLIGHTER: Promise<HighlighterCore>;
 function getHighlighter() {
   if (HIGHLIGHTER !== undefined) {
     return HIGHLIGHTER;
@@ -62,7 +62,6 @@ function getHighlighter() {
       md,
       {
         name: 'malloy',
-        scopeName: 'source.malloy',
         embeddedLangs: ['sql'],
         ...MALLOY_GRAMMAR,
       } as unknown as LanguageRegistration,
@@ -179,7 +178,10 @@ export function isAggregate(field: FieldDef): boolean {
 }
 
 export function isDimension(field: FieldDef): boolean {
-  return isLeafAtomic(field) && field.expressionType === 'scalar';
+  return (
+    isLeafAtomic(field) &&
+    (!field.expressionType || field.expressionType === 'scalar')
+  );
 }
 
 export function isQuery(field: FieldDef): boolean {
@@ -280,9 +282,9 @@ const ERROR_RE =
  * @param error Caught error object
  * @returns Cleaned up error message
  */
-export function extractErrorMessage(error: Error): string {
-  let message = error.toString();
-  if (error.message) {
+export function extractErrorMessage(error: unknown): string {
+  let message = `${error}`;
+  if (error instanceof Error) {
     message = error.message;
     const matches = message.match(ERROR_RE);
     if (matches) {
