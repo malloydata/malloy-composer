@@ -34,7 +34,7 @@ import {ReactComponent as ViewIcon} from '../assets/img/dataset_view.svg';
 
 interface MarkdownDocumentProps {
   content: string;
-  loadQueryLink?: (
+  loadQueryLink: (
     model: string,
     query: string,
     name?: string,
@@ -159,7 +159,9 @@ export const MarkdownNode: React.FC<{
       return (
         <QueryLink
           onClick={() => {
-            loadQueryLink(node.model, node.query, node.name, node.renderer);
+            if (node.model && node.query) {
+              loadQueryLink(node.model, node.query, node.name, node.renderer);
+            }
           }}
         >
           <QueryLinkInfo>
@@ -173,7 +175,9 @@ export const MarkdownNode: React.FC<{
       return (
         <QueryLink
           onClick={() => {
-            loadApp(node.appId);
+            if (loadApp && node.appId) {
+              loadApp(node.appId);
+            }
           }}
         >
           <QueryLinkInfo>
@@ -187,7 +191,9 @@ export const MarkdownNode: React.FC<{
       return (
         <QueryLink
           onClick={() => {
-            loadSource(node.model, node.source);
+            if (loadSource && node.model && node.source) {
+              loadSource(node.model, node.source);
+            }
           }}
         >
           <QueryLinkInfo>
@@ -207,7 +213,7 @@ export const MarkdownNodes: React.FC<{
   loadQueryLink: (
     modelPath: string,
     sourceName: string,
-    queryName: string
+    queryName?: string
   ) => void;
   loadApp?: (appId: string) => void;
   loadSource?: (model: string, source: string) => void;

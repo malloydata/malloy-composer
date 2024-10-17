@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as malloy from '@malloydata/malloy';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 
 export type RunQuery = (
   query: string,
@@ -32,42 +32,54 @@ export type RunQuery = (
 
 export interface UseRunQueryResult {
   result: malloy.Result | undefined;
+  error: Error | undefined;
   runQuery: (query: string, queryName: string) => void;
+  reset: () => void;
   isRunning: boolean;
-  clearResult: () => void;
 }
 
 export function useRunQuery(
-  onError: (error: Error) => void,
-  model: malloy.ModelDef,
-  modelPath: string,
-  runQuery: RunQuery
+  model: malloy.ModelDef | undefined,
+  modelPath: string | undefined,
+  runQueryImp: RunQuery
 ): UseRunQueryResult {
-  const [data, setData] = useState<malloy.Result | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<malloy.Result>();
+  const [error, setError] = useState<Error>();
+  const [isRunning, setIsRunning] = useState(false);
 
-  const reset = () => {
-    setData(undefined);
-    setIsLoading(false);
-  };
+  const reset = useCallback(() => {
+    setResult(undefined);
+    setError(undefined);
+    setIsRunning(false);
+  }, []);
 
-  const runQueryRet = (query: string, queryName: string) => {
-    reset();
-    setIsLoading(true);
-    runQuery(query, model, modelPath, queryName)
-      .then(result => {
-        setData(result);
-      })
-      .catch(onError)
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  const runQuery = useCallback(
+    (query: string, queryName: string) => {
+      reset();
+      if (!model || !modelPath) {
+        setError(new Error('No model'));
+        return;
+      }
+      setIsRunning(true);
+      runQueryImp(query, model, modelPath, queryName)
+        .then(result => {
+          setResult(result);
+        })
+        .catch(error => {
+          setError(error);
+        })
+        .finally(() => {
+          setIsRunning(false);
+        });
+    },
+    [model, modelPath, reset, runQueryImp]
+  );
 
   return {
-    result: data,
-    runQuery: runQueryRet,
-    isRunning: isLoading,
-    clearResult: reset,
+    result,
+    error,
+    runQuery,
+    reset,
+    isRunning,
   };
 }

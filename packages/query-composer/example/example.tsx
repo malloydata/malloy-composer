@@ -1,44 +1,33 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   ExploreQueryEditor,
   QuerySummaryPanel,
   useQueryBuilder,
+  useRunQuery,
 } from '../src/index';
 
 import {model, modelPath, source} from './example_model';
 
 const updateQueryInURL = () => {};
-const runQueryExternal = () => {
+const runQueryAction = () => {
   throw new Error('Unimplemented');
 };
-const runQueryAction = () => {};
 const topValues = [];
 
 const App = () => {
-  const {
-    queryMalloy,
-    queryName,
-    isRunning,
-    queryModifiers,
-    querySummary,
-    result,
-    registerNewSource,
-    dirty,
-    canUndo,
-    undo,
-    isQueryEmpty,
-    canQueryRun,
-  } = useQueryBuilder(model, modelPath, updateQueryInURL, runQueryExternal);
+  const {queryMalloy, queryName, queryModifiers, querySummary} =
+    useQueryBuilder(model, 'names', modelPath, updateQueryInURL);
 
-  useEffect(() => {
-    registerNewSource(source);
-  }, [registerNewSource]);
+  const {result, isRunning, runQuery} = useRunQuery(
+    model,
+    modelPath,
+    runQueryAction
+  );
 
   return (
     <div>
       <ExploreQueryEditor
-        dirty={dirty}
         model={model}
         modelPath={modelPath}
         source={source}
@@ -47,13 +36,9 @@ const App = () => {
         queryName={queryName}
         querySummary={querySummary}
         queryMalloy={queryMalloy}
-        result={result}
+        runQuery={runQuery}
         isRunning={isRunning}
-        runQuery={runQueryAction}
-        canUndo={canUndo}
-        undo={undo}
-        isQueryEmpty={isQueryEmpty}
-        canQueryRun={canQueryRun}
+        result={result}
       />
       {querySummary && (
         <QuerySummaryPanel

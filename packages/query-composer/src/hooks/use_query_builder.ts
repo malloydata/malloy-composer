@@ -25,18 +25,16 @@ import {
   FilterCondition,
   QueryFieldDef,
   SourceDef,
-  Result as MalloyResult,
   ModelDef,
   NamedQuery,
   TurtleDef,
 } from '@malloydata/malloy';
-import {useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {QueryBuilder} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
-import {RunQuery, useRunQuery} from '../data/use_run_query';
 
 interface UseQueryBuilderResult {
-  queryBuilder: React.MutableRefObject<QueryBuilder | undefined>;
+  queryBuilder: QueryBuilder;
   queryMalloy: {
     model: string;
     source: string;
@@ -45,25 +43,9 @@ interface UseQueryBuilderResult {
     isRunnable: boolean;
   };
   queryName: string;
-  clearQuery: (noURLUpdate?: boolean) => void;
-  runQuery: () => void;
-  isRunning: boolean;
-  clearResult: () => void;
-  source: SourceDef | undefined;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
-  result: MalloyResult | undefined;
-  error: Error | undefined;
-  setError: (error: Error | undefined) => void;
-  registerNewSource: (source: SourceDef) => void;
-  dirty: boolean;
-  canUndo: boolean;
-  canRedo: boolean;
-  undo: () => void;
-  redo: () => void;
-  resetUndoHistory: () => void;
-  isQueryEmpty: boolean;
-  canQueryRun: boolean;
+  query: string;
 }
 
 export interface QueryModifiers {
@@ -141,288 +123,217 @@ export interface QueryModifiers {
 
 export function useQueryBuilder(
   modelDef?: ModelDef,
+  sourceName?: string,
   modelPath?: string,
-  updateQueryInURL?: (params: {
-    run: boolean;
-    query: string | undefined;
-  }) => void,
-  runQueryExternal?: RunQuery
+  updateQueryInURL?: (params: {run: boolean; query: string | undefined}) => void
 ): UseQueryBuilderResult {
-  const queryBuilder = useRef<QueryBuilder>(new QueryBuilder(undefined));
-  const [error, setError] = useState<Error | undefined>();
-  const [dirty, setDirty] = useState(false);
   const [, setVersion] = useState(0);
-  const history = useRef({size: 0, position: 0});
+  const sourceDef =
+    modelDef && sourceName
+      ? (modelDef.contents[sourceName] as SourceDef)
+      : undefined;
+  const queryBuilder = useMemo<QueryBuilder>(
+    () => new QueryBuilder(sourceDef),
+    [sourceDef]
+  );
 
-  const registerNewSource = (source: SourceDef) => {
-    queryBuilder.current.updateSource(source);
-  };
+  useEffect(() => {
+    console.info('> sourceDef changed');
+  }, [sourceDef]);
 
-  const queryName = queryBuilder.current.getQuery()?.name;
+  const queryName = queryBuilder.getQuery().name;
 
-  const {
-    result,
-    runQuery: runQueryRaw,
-    isRunning,
-    clearResult,
-  } = useRunQuery(setError, modelDef, modelPath, runQueryExternal);
-
-  const runQuery = () => {
-    const summary = queryBuilder.current.getQuerySummary();
-    const topLevel = {
-      stageIndex: summary ? summary.stages.length - 1 : 0,
-    };
-    setError(undefined);
-    if (!queryBuilder.current?.hasLimit(topLevel)) {
-      // TODO magic number here: we run the query before we set this limit,
-      //      and this limit just happens to be the default limit
-      modifyQuery(qb => qb.addLimit(topLevel, 10), true);
-    }
-    const query = queryBuilder.current.getQuery();
-    if (queryBuilder.current?.canRun()) {
-      const queryString = queryBuilder.current.getQueryStringForNotebook();
-      runQueryRaw(queryString, query.name);
-      setDirty(false);
-    }
-  };
-
-  const modifyQuery = (
-    modify: (queryBuilder: QueryBuilder) => void,
-    noURLUpdate = false
-  ) => {
-    const backup = JSON.parse(JSON.stringify(queryBuilder.current.getQuery()));
-    modify(queryBuilder.current);
-    // TODO this is hack to get the calling component to always rerender
-    // when the query changes. This used to be done by setting a query
-    // string state variable, but that was annoying to keep track of.
-    // So instead we have a useless `version` which we update.
-    setVersion(x => x + 1);
-    if (queryBuilder.current?.canRun()) {
-      try {
-        const queryString = queryBuilder.current.getQueryStringForModel();
-        if (!noURLUpdate) {
-          updateQueryInURL({
-            run: noURLUpdate,
-            query: queryString,
-          });
+  const modifyQuery = useCallback(
+    (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
+      const backup = JSON.parse(JSON.stringify(queryBuilder.getQuery()));
+      modify(queryBuilder);
+      if (queryBuilder.canRun()) {
+        try {
+          const queryString = queryBuilder.getQueryStringForNotebook();
+          if (!noURLUpdate) {
+            updateQueryInURL?.({
+              run: noURLUpdate,
+              query: queryString,
+            });
+          }
+          setVersion(version => ++version);
+        } catch (error) {
+          queryBuilder.setQuery(backup);
+          // eslint-disable-next-line no-console
+          console.error(error);
         }
-        setDirty(true);
-        setError(undefined);
-      } catch (error) {
-        queryBuilder.current.setQuery(backup);
-        // eslint-disable-next-line no-console
-        console.error(error);
-        setError(error);
       }
-    } else {
-      setDirty(true);
-    }
-    if (!noURLUpdate) {
-      const newPosition = history.current.position + 1;
-      history.current.position = newPosition;
-      history.current.size = newPosition;
-    }
-  };
+    },
+    [queryBuilder, updateQueryInURL]
+  );
 
-  const undo = () => {
-    if (history.current.position > 0) {
-      history.current.position--;
-      // navigate(-1);
-    }
-  };
+  const queryModifiers = useMemo(() => {
+    const clearQuery = (noURLUpdate = false) => {
+      if (queryBuilder.isEmpty()) return;
+      modifyQuery(qb => {
+        qb.clearQuery();
+      }, noURLUpdate);
+      updateQueryInURL?.({run: false, query: undefined});
+    };
 
-  const redo = () => {
-    if (history.current.position < history.current.size) {
-      history.current.position++;
-      // navigate(1);
-    }
-  };
+    const toggleField = (stagePath: StagePath, fieldPath: string) => {
+      modifyQuery(qb => qb.toggleField(stagePath, fieldPath));
+    };
 
-  const resetUndoHistory = () => {
-    history.current.position = 0;
-    history.current.size = 0;
-  };
+    const setRenderer = (
+      stagePath: StagePath,
+      fieldIndex: number,
+      renderer: RendererName | undefined
+    ) => {
+      modifyQuery(qb => qb.setRenderer(stagePath, fieldIndex, renderer));
+    };
 
-  const clearQuery = (noURLUpdate = false) => {
-    if (queryBuilder.current.isEmpty()) return;
-    modifyQuery(qb => {
-      qb.clearQuery();
-    }, noURLUpdate);
-    clearResult();
-    updateQueryInURL({run: false, query: undefined});
-  };
+    const removeField = (stagePath: StagePath, fieldIndex: number) => {
+      modifyQuery(qb => qb.removeField(stagePath, fieldIndex));
+    };
 
-  const toggleField = (stagePath: StagePath, fieldPath: string) => {
-    modifyQuery(qb => qb.toggleField(stagePath, fieldPath));
-  };
+    const addFilter = (stagePath: StagePath, filter: FilterCondition) => {
+      modifyQuery(qb => qb.addFilter(stagePath, filter));
+    };
 
-  const setRenderer = (
-    stagePath: StagePath,
-    fieldIndex: number,
-    renderer: RendererName | undefined
-  ) => {
-    modifyQuery(qb => qb.setRenderer(stagePath, fieldIndex, renderer));
-  };
+    const editFilter = (
+      stagePath: StagePath,
+      fieldIndex: number | undefined,
+      filterIndex: number,
+      filter: FilterCondition
+    ) => {
+      modifyQuery(qb =>
+        qb.editFilter(stagePath, fieldIndex, filterIndex, filter)
+      );
+    };
 
-  const removeField = (stagePath: StagePath, fieldIndex: number) => {
-    modifyQuery(qb => qb.removeField(stagePath, fieldIndex));
-  };
+    const removeFilter = (
+      stagePath: StagePath,
+      filterIndex: number,
+      fieldIndex?: number
+    ) => {
+      modifyQuery(qb => qb.removeFilter(stagePath, filterIndex, fieldIndex));
+    };
 
-  const addFilter = (stagePath: StagePath, filter: FilterCondition) => {
-    modifyQuery(qb => qb.addFilter(stagePath, filter));
-  };
+    const addLimit = (stagePath: StagePath, limit: number) => {
+      modifyQuery(qb => qb.addLimit(stagePath, limit));
+    };
 
-  const editFilter = (
-    stagePath: StagePath,
-    fieldIndex: number | undefined,
-    filterIndex: number,
-    filter: FilterCondition
-  ) => {
-    modifyQuery(qb =>
-      qb.editFilter(stagePath, fieldIndex, filterIndex, filter)
-    );
-  };
+    const addStage = (
+      stagePath: StagePath | undefined,
+      fieldIndex?: number
+    ) => {
+      modifyQuery(qb => qb.addStage(stagePath, fieldIndex));
+    };
 
-  const removeFilter = (
-    stagePath: StagePath,
-    filterIndex: number,
-    fieldIndex?: number
-  ) => {
-    modifyQuery(qb => qb.removeFilter(stagePath, filterIndex, fieldIndex));
-  };
+    const removeStage = (stagePath: StagePath) => {
+      modifyQuery(qb => qb.removeStage(stagePath));
+    };
 
-  const addLimit = (stagePath: StagePath, limit: number) => {
-    modifyQuery(qb => qb.addLimit(stagePath, limit));
-  };
+    const addOrderBy = (
+      stagePath: StagePath,
+      byFieldIndex: number,
+      direction?: 'asc' | 'desc'
+    ) => {
+      modifyQuery(qb => qb.addOrderBy(stagePath, byFieldIndex, direction));
+    };
 
-  const addStage = (stagePath: StagePath | undefined, fieldIndex?: number) => {
-    modifyQuery(qb => qb.addStage(stagePath, fieldIndex));
-  };
+    const editOrderBy = (
+      stagePath: StagePath,
+      orderByIndex: number,
+      direction: 'asc' | 'desc' | undefined
+    ) => {
+      modifyQuery(qb => qb.editOrderBy(stagePath, orderByIndex, direction));
+    };
 
-  const removeStage = (stagePath: StagePath) => {
-    modifyQuery(qb => qb.removeStage(stagePath));
-  };
+    const removeOrderBy = (stagePath: StagePath, orderByIndex: number) => {
+      modifyQuery(qb => qb.removeOrderBy(stagePath, orderByIndex));
+    };
 
-  const addOrderBy = (
-    stagePath: StagePath,
-    byFieldIndex: number,
-    direction?: 'asc' | 'desc'
-  ) => {
-    modifyQuery(qb => qb.addOrderBy(stagePath, byFieldIndex, direction));
-  };
+    const removeLimit = (stagePath: StagePath) => {
+      modifyQuery(qb => qb.removeLimit(stagePath));
+    };
 
-  const editOrderBy = (
-    stagePath: StagePath,
-    orderByIndex: number,
-    direction: 'asc' | 'desc' | undefined
-  ) => {
-    modifyQuery(qb => qb.editOrderBy(stagePath, orderByIndex, direction));
-  };
+    const renameField = (
+      stagePath: StagePath,
+      fieldIndex: number,
+      newName: string
+    ) => {
+      modifyQuery(qb => qb.renameField(stagePath, fieldIndex, newName));
+    };
 
-  const removeOrderBy = (stagePath: StagePath, orderByIndex: number) => {
-    modifyQuery(qb => qb.removeOrderBy(stagePath, orderByIndex));
-  };
+    const addFilterToField = (
+      stagePath: StagePath,
+      fieldIndex: number,
+      filter: FilterCondition,
+      as?: string
+    ) => {
+      modifyQuery(qb => qb.addFilterToField(stagePath, fieldIndex, filter, as));
+    };
 
-  const removeLimit = (stagePath: StagePath) => {
-    modifyQuery(qb => qb.removeLimit(stagePath));
-  };
+    const addNewNestedQuery = (stagePath: StagePath, name: string) => {
+      modifyQuery(qb => qb.addNewNestedQuery(stagePath, name));
+    };
 
-  const renameField = (
-    stagePath: StagePath,
-    fieldIndex: number,
-    newName: string
-  ) => {
-    modifyQuery(qb => qb.renameField(stagePath, fieldIndex, newName));
-  };
+    const addNewDimension = (
+      stagePath: StagePath,
+      dimension: QueryFieldDef
+    ) => {
+      modifyQuery(qb => qb.addNewField(stagePath, dimension));
+    };
 
-  const addFilterToField = (
-    stagePath: StagePath,
-    fieldIndex: number,
-    filter: FilterCondition,
-    as?: string
-  ) => {
-    modifyQuery(qb => qb.addFilterToField(stagePath, fieldIndex, filter, as));
-  };
+    const setQuery = (query: NamedQuery, noURLUpdate = false) => {
+      modifyQuery(qb => qb.setQuery(query), noURLUpdate);
+    };
 
-  const addNewNestedQuery = (stagePath: StagePath, name: string) => {
-    modifyQuery(qb => qb.addNewNestedQuery(stagePath, name));
-  };
+    const editDimension = (
+      stagePath: StagePath,
+      fieldIndex: number,
+      dimension: QueryFieldDef
+    ) => {
+      modifyQuery(qb =>
+        qb.editFieldDefinition(stagePath, fieldIndex, dimension)
+      );
+    };
 
-  const addNewDimension = (stagePath: StagePath, dimension: QueryFieldDef) => {
-    modifyQuery(qb => qb.addNewField(stagePath, dimension));
-  };
+    const editMeasure = (
+      stagePath: StagePath,
+      fieldIndex: number,
+      measure: QueryFieldDef
+    ) => {
+      modifyQuery(qb => qb.editFieldDefinition(stagePath, fieldIndex, measure));
+    };
 
-  const setQuery = (query: NamedQuery, noURLUpdate = false) => {
-    modifyQuery(qb => qb.setQuery(query), noURLUpdate);
-  };
+    const updateFieldOrder = (stagePath: StagePath, order: number[]) => {
+      modifyQuery(qb => qb.reorderFields(stagePath, order));
+    };
 
-  const editDimension = (
-    stagePath: StagePath,
-    fieldIndex: number,
-    dimension: QueryFieldDef
-  ) => {
-    modifyQuery(qb => qb.editFieldDefinition(stagePath, fieldIndex, dimension));
-  };
+    const replaceWithDefinition = (
+      stagePath: StagePath,
+      fieldIndex: number
+    ) => {
+      modifyQuery(qb => qb.replaceWithDefinition(stagePath, fieldIndex));
+    };
 
-  const editMeasure = (
-    stagePath: StagePath,
-    fieldIndex: number,
-    measure: QueryFieldDef
-  ) => {
-    modifyQuery(qb => qb.editFieldDefinition(stagePath, fieldIndex, measure));
-  };
+    const loadQuery = (queryPath: string) => {
+      modifyQuery(qb => qb.loadQuery(queryPath));
+    };
 
-  const updateFieldOrder = (stagePath: StagePath, order: number[]) => {
-    modifyQuery(qb => qb.reorderFields(stagePath, order));
-  };
+    const replaceQuery = (field: TurtleDef) => {
+      modifyQuery(qb => qb.replaceQuery(field));
+    };
 
-  const replaceWithDefinition = (stagePath: StagePath, fieldIndex: number) => {
-    modifyQuery(qb => qb.replaceWithDefinition(stagePath, fieldIndex));
-  };
+    const addNewMeasure = addNewDimension;
 
-  const loadQuery = (queryPath: string) => {
-    modifyQuery(qb => qb.loadQuery(queryPath));
-  };
+    const onDrill = (filters: FilterCondition[]) => {
+      modifyQuery(qb => {
+        for (const filter of filters) {
+          qb.addFilter({stageIndex: 0}, filter);
+        }
+      });
+    };
 
-  const replaceQuery = (field: TurtleDef) => {
-    modifyQuery(qb => qb.replaceQuery(field));
-  };
-
-  const addNewMeasure = addNewDimension;
-
-  const onDrill = (filters: FilterCondition[]) => {
-    modifyQuery(qb => {
-      for (const filter of filters) {
-        qb.addFilter({stageIndex: 0}, filter);
-      }
-    });
-  };
-
-  const querySummary = queryBuilder.current.getQuerySummary();
-
-  return {
-    dirty,
-    queryBuilder,
-    queryMalloy: queryBuilder.current.getQueryStrings(undefined, modelPath),
-    queryName,
-    clearQuery,
-    runQuery,
-    isRunning,
-    clearResult,
-    source: queryBuilder.current.getSource(),
-    querySummary,
-    result,
-    error,
-    canUndo: history.current.position > 0,
-    canRedo: history.current.position < history.current.size,
-    setError,
-    registerNewSource,
-    undo,
-    redo,
-    resetUndoHistory,
-    isQueryEmpty: queryBuilder.current.isEmpty(),
-    canQueryRun: queryBuilder.current.canRun(),
-    queryModifiers: {
+    return {
       setQuery,
       addFilter,
       toggleField,
@@ -451,6 +362,35 @@ export function useQueryBuilder(
       removeStage,
       clearQuery,
       onDrill,
-    },
+    };
+  }, [modifyQuery, queryBuilder, updateQueryInURL]);
+
+  useEffect(() => {
+    console.info('> modifyQuery changed');
+  }, [modifyQuery]);
+
+  useEffect(() => {
+    console.info('> queryBuilder changed');
+  }, [queryBuilder]);
+
+  useEffect(() => {
+    console.info('> updateQueryInURL changed');
+  }, [updateQueryInURL]);
+
+  const querySummary = queryBuilder.getQuerySummary();
+
+  useEffect(() => {
+    console.info('> querySummary changed');
+  }, [querySummary]);
+
+  const queryMalloy = queryBuilder.getQueryStrings(modelPath);
+
+  return {
+    queryBuilder,
+    queryMalloy,
+    queryName,
+    querySummary,
+    queryModifiers,
+    query: queryMalloy.notebook,
   };
 }

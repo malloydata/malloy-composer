@@ -96,8 +96,8 @@ export async function getDatasets(
     })
   );
   return {
-    readme,
-    linkedReadmes: app.linkedReadmes,
+    readme: readme || '',
+    linkedReadmes: app.linkedReadmes || [],
     title,
     models,
   };

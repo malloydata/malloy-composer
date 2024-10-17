@@ -43,6 +43,8 @@ import {SelectDropdown} from '../SelectDropdown';
 import {ActionIcon} from '../ActionIcon';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
+type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
+
 interface ResultProps {
   model: malloy.ModelDef;
   source: malloy.StructDef;
@@ -80,7 +82,7 @@ export const Result: React.FC<ResultProps> = ({
   const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
-  const [malloyType, setMalloyType] = useState('notebook');
+  const [malloyType, setMalloyType] = useState<MalloyType>('notebook');
   const [displaying, setDisplaying] = useState(false);
   const resultId = useRef(0);
   const previousResult = usePrevious(result);
@@ -88,20 +90,16 @@ export const Result: React.FC<ResultProps> = ({
   useEffect(() => {
     highlightPre(malloy.markdown, 'md')
       .then(setHighlightedMarkdownMalloy)
-      // eslint-disable-next-line no-console
-      .catch(console.log);
+      .catch(console.error);
     highlightPre(indentCode(malloy.source), 'malloy')
       .then(setHighlightedSourceMalloy)
-      // eslint-disable-next-line no-console
-      .catch(console.log);
+      .catch(console.error);
     highlightPre(malloy.model, 'malloy')
       .then(setHighlightedModelMalloy)
-      // eslint-disable-next-line no-console
-      .catch(console.log);
+      .catch(console.error);
     highlightPre(indentCode(malloy.notebook), 'malloy')
       .then(setHighlightedNotebookMalloy)
-      // eslint-disable-next-line no-console
-      .catch(console.log);
+      .catch(console.error);
   }, [malloy]);
 
   useEffect(() => {
@@ -147,8 +145,6 @@ export const Result: React.FC<ResultProps> = ({
     }
     setTimeout(async () => {
       setRendering(true);
-      // eslint-disable-next-line no-console
-      console.log(result.sql);
       const currentResultId = ++resultId.current;
       const rendered = await new render.HTMLView(document).render(result, {
         dataStyles: {},
@@ -157,8 +153,7 @@ export const Result: React.FC<ResultProps> = ({
           Promise.all(
             drillFilters.map(filter =>
               dummyCompiler.compileFilter(source, filter).catch(error => {
-                // eslint-disable-next-line no-console
-                console.log(error);
+                console.error(error);
                 return undefined;
               })
             )
@@ -275,7 +270,7 @@ export const Result: React.FC<ResultProps> = ({
               <SelectDropdown
                 value={malloyType}
                 onChange={type => {
-                  setMalloyType(type);
+                  setMalloyType(type as MalloyType);
                   setCopiedMalloy(false);
                 }}
                 options={[

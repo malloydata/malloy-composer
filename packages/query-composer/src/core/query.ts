@@ -173,7 +173,7 @@ class NotAStageError extends Error {
 
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
-  constructor(source: SourceDef) {
+  constructor(source: SourceDef | undefined) {
     super(source);
     this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
   }
@@ -202,13 +202,10 @@ export class QueryBuilder extends SourceUtils {
     return writer.getQueryStringForSource(name);
   }
 
-  public getQueryStringForMarkdown(
-    renderer: string | undefined,
-    modelPath: string
-  ): string | undefined {
+  public getQueryStringForMarkdown(modelPath: string): string | undefined {
     if (this._source === undefined) return undefined;
     const writer = this.getWriter();
-    return writer.getQueryStringForMarkdown(renderer, modelPath);
+    return writer.getQueryStringForMarkdown(modelPath);
   }
 
   public getQueryStringForNotebook(): string | undefined {
@@ -217,10 +214,7 @@ export class QueryBuilder extends SourceUtils {
     return writer.getQueryStringForNotebook();
   }
 
-  public getQueryStrings(
-    renderer: string | undefined,
-    modelPath: string
-  ): {
+  public getQueryStrings(modelPath: string | undefined): {
     model: string;
     markdown: string;
     source: string;
@@ -231,7 +225,7 @@ export class QueryBuilder extends SourceUtils {
     return {
       model: writer.getQueryStringForModel(),
       source: writer.getQueryStringForSource(this.query.name),
-      markdown: writer.getQueryStringForMarkdown(renderer, modelPath),
+      markdown: writer.getQueryStringForMarkdown(modelPath),
       notebook: writer.getQueryStringForNotebook(),
       isRunnable: this.canRun(),
     };
@@ -966,25 +960,17 @@ export class QueryBuilder extends SourceUtils {
 export class QueryWriter extends SourceUtils {
   constructor(
     private readonly query: TurtleDef,
-    source: SourceDef
+    source: SourceDef | undefined
   ) {
     super(source);
   }
 
-  getQueryStringForMarkdown(
-    renderer: string | undefined,
-    modelPath: string
-  ): string {
+  getQueryStringForMarkdown(modelPath: string | undefined): string {
     const malloy = this.getMalloyString('run', this.query.name);
     return `<!-- malloy-query
   name="${snakeToTitle(this.query.name)}"
-  description="Add a description here." ${
-    renderer
-      ? `
-  renderer="${renderer}"`
-      : ''
-  }
-  model="${modelPath}"
+  description="Add a description here."
+  model="${modelPath || ''}"
 -->
 \`\`\`malloy
 ${malloy}

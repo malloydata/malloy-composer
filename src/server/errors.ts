@@ -26,6 +26,6 @@ export async function wrapErrors<T>(fn: () => T): Promise<T | {error: string}> {
     return await fn();
   } catch (error) {
     console.error(error);
-    return {error: error.message};
+    return {error: error instanceof Error ? error.message : `${error}`};
   }
 }
