@@ -105,10 +105,10 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
   const title = app.title;
   const readme =
     app.readme && (await URL_READER.readURL(new URL(app.readme, samplesURL)));
-  const registeredTables = {};
+  const registeredTables: Record<string, boolean> = {};
 
   const models: explore.ModelInfo[] = await Promise.all(
-    app.models.map(async (sample: explore.ModelConfig) => {
+    (app.models ?? []).map(async (sample: explore.ModelConfig) => {
       const connection = await DUCKDB_WASM.lookupConnection('duckdb');
 
       // Manually map table names to URLs
@@ -166,8 +166,8 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
     })
   );
   return {
-    readme,
-    linkedReadmes: app.linkedReadmes,
+    readme: readme || '',
+    linkedReadmes: app.linkedReadmes || [],
     title,
     models,
   };

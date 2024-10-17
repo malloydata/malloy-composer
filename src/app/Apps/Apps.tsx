@@ -34,6 +34,7 @@ export const Apps: React.FC = () => {
     <MarkdownDocument
       content={config?.readme ? generateReadme(config) : ''}
       loadApp={appId => navigate(`/${appId}`)}
+      loadQueryLink={() => {}}
     />
   );
 };

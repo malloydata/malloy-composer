@@ -201,7 +201,7 @@ function getMarkerParameter(marker: Marker, param: string): string | undefined {
 
 const applyMalloyQueryLinkCommentsPlugin: Plugin<[], Node, Markdown> = () => {
   let linkMarker: Marker | undefined = undefined;
-  let savedModel = undefined;
+  let savedModel: string | undefined = undefined;
   function transformer(tree: Node) {
     function transformNode(node: Node): Markdown {
       const markdownNode = node as Markdown;
