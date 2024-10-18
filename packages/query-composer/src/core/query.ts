@@ -676,6 +676,7 @@ export class QueryBuilder extends SourceUtils {
     stage.orderBy = stage.orderBy || [];
     const field = stage.queryFields[byFieldIndex];
     const name = this.nameOf(field);
+    stage.orderBy = stage.orderBy.filter(orderBy => orderBy.field !== name);
     stage.orderBy.push({
       field: name,
       dir: direction,
@@ -1660,6 +1661,9 @@ ${malloy}
             theField = this.getField(source, this.nameOf(byFieldQueryDef));
           } else {
             theField = byFieldQueryDef;
+          }
+          if (theField.type === 'fieldref') {
+            theField = this.getField(source, dottify(theField.path));
           }
           if (!isLeafAtomic(theField) || theField.type === 'error') {
             continue;
