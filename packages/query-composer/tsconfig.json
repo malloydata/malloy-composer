@@ -8,8 +8,9 @@
     "noEmit": false,
     "outDir": "dist/types",
     "resolveJsonModule": true,
+    "rootDir": "src",
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src", "tests"]
+  "include": ["src"]
 }

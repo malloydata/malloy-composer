@@ -1,5 +1,5 @@
 {
-  "plugins": ["@typescript-eslint", "prettier", "react", "react-hooks"],
+  "plugins": ["@typescript-eslint", "jest", "prettier", "react", "react-hooks"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -81,7 +81,7 @@
     {
       "files": ["**/*.spec.ts"],
       "env": {
-        "jest/globals": true
+        "jest": true
       }
     }
   ]

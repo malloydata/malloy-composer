@@ -12,7 +12,9 @@ module.exports = {
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
-      {tsconfig: './tsconfig.json', transformIgnorePatterns: ['**/shikijs/**']},
+      {
+        tsconfig: './tests/tsconfig.tests.json',
+      },
     ],
   },
   testTimeout: 100000,
