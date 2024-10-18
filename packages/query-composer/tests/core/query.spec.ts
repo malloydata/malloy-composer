@@ -17,6 +17,18 @@ describe('QueryBuilder', () => {
     expect(qb.isEmpty()).toBe(true);
   });
 
+  describe('addNest', () => {
+    it('Adds a nest', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addNewNestedQuery({stageIndex: 0}, 'eyrie');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  nest: eyrie is {\n  }\n}'
+      );
+    });
+  });
+
   describe('addField', () => {
     it('Adds a dimension', () => {
       const qb = new QueryBuilder(source);
@@ -102,6 +114,47 @@ describe('QueryBuilder', () => {
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0, 'desc');
       expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name desc\n}'
+      );
+    });
+
+    it('adds multiple order_bys', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+      qb.addOrderBy({stageIndex: 0}, 0, 'desc');
+      qb.addOrderBy({stageIndex: 0}, 1);
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: \n    name\n    state\n  order_by: name desc, state\n}'
+      );
+    });
+
+    it("doesn't add redundant order_by", () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0, 'desc');
+      qb.addOrderBy({stageIndex: 0}, 0, 'asc');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name asc\n}'
+      );
+    });
+  });
+
+  describe('editOrderBy', () => {
+    it('updates an order_by', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name\n}'
+      );
+      qb.editOrderBy({stageIndex: 0}, 0, 'desc');
       expect(qb.getQueryStringForNotebook()).toEqual(
         'run: names -> {\n  group_by: name\n  order_by: name desc\n}'
       );
