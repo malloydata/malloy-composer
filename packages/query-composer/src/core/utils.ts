@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import {ExpressionType} from '@malloydata/malloy';
 import {RESERVED_WORDS} from './reserved_words';
 
 export const unquoteIdentifier = (identifier: string): string =>
@@ -43,4 +44,9 @@ export function maybeQuoteIdentifier(name: string): string {
     }
   }
   return path.join('.');
+}
+
+// TODO(whscullin) export from Malloy
+export function expressionIsAnalytic(e: ExpressionType | undefined): boolean {
+  return e === 'aggregate_analytic' || e === 'scalar_analytic';
 }

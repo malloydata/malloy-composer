@@ -1,5 +1,5 @@
 {
-  "plugins": ["@typescript-eslint", "prettier", "react", "react-hooks"],
+  "plugins": ["@typescript-eslint", "jest", "prettier", "react", "react-hooks"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -76,6 +76,12 @@
         "node/no-unpublished-import": "off",
         "no-console": "off",
         "no-process-exit": "off"
+      }
+    },
+    {
+      "files": ["**/*.spec.ts"],
+      "env": {
+        "jest": true
       }
     }
   ]

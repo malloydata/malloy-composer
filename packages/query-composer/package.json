@@ -19,13 +19,14 @@
     "./example/example_model": "./example/example_model.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tsc --noEmit && eslint .",
     "build": "npm run build-bundle && npm run build-types",
     "build-bundle": "vite build --outDir 'dist' --config vite.config.ts",
     "build-types": "tsc --declaration --emitDeclarationOnly",
     "dev": "vite dev --config vite.config.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepack": "npm run build",
+    "test": "jest --runInBand --config=tests/jest.config.ts"
   },
   "author": "",
   "license": "ISC",
@@ -39,6 +40,8 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.25",
     "@vitejs/plugin-react": "^4.3.1",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.5",
     "typescript": "5.3.3",
     "vite": "^5.3.4",
     "vite-plugin-svgr": "^4.2.0"
