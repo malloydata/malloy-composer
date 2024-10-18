@@ -26,7 +26,7 @@
     "dev": "vite dev --config vite.config.ts",
     "prepublishOnly": "npm run build",
     "prepack": "npm run build",
-    "test": "jest --runInBand --config=tests/jest.config.ts"
+    "test": "jest --runInBand --config=./jest.config.ts"
   },
   "author": "",
   "license": "ISC",

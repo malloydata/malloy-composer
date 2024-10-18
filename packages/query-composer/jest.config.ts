@@ -8,7 +8,7 @@
 module.exports = {
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testMatch: ['**/?(*.)spec.(ts|js)?(x)'],
-  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/out/'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
@@ -20,4 +20,8 @@ module.exports = {
   testTimeout: 100000,
   verbose: true,
   testEnvironment: 'node',
+  collectCoverage: true,
+  coverageReporters: ['json', 'html'],
+  collectCoverageFrom: ['src/core/*.ts'],
+  preset: 'ts-jest',
 };
