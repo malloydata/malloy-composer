@@ -8,6 +8,7 @@
 import {QueryBuilder} from '../../src/core/query';
 
 import {source} from '../../example/example_model';
+import {FilterCondition} from '@malloydata/malloy';
 
 describe('QueryBuilder', () => {
   it('constructs', () => {
@@ -37,4 +38,111 @@ describe('QueryBuilder', () => {
       );
     });
   });
+
+  describe('addFilter', () => {
+    it('Adds a scalar filter', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addFilter({stageIndex: 0}, SCALAR_FILTER);
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  where: name = "lloyd"\n}'
+      );
+    });
+
+    it('Adds an aggregate filter', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addFilter({stageIndex: 0}, AGGREGATE_FILTER);
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  having: population > 100\n}'
+      );
+    });
+  });
+
+  describe('addLimit', () => {
+    it('adds a limit', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addLimit({stageIndex: 0}, 10);
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  limit: 10\n}'
+      );
+    });
+  });
+
+  describe('addOrderBy', () => {
+    it('adds an order_by', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0);
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name\n}'
+      );
+    });
+
+    it('adds an ascending order_by', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0, 'asc');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name asc\n}'
+      );
+    });
+
+    it('adds an descending order_by', () => {
+      const qb = new QueryBuilder(source);
+      expect(qb.isEmpty()).toBe(true);
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0, 'desc');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name desc\n}'
+      );
+    });
+  });
 });
+
+const SCALAR_FILTER: FilterCondition = {
+  node: 'filterCondition',
+  code: 'name = "lloyd"',
+  expressionType: 'scalar',
+  e: {
+    node: '=',
+    kids: {
+      left: {
+        node: 'field',
+        path: ['name'],
+      },
+      right: {
+        node: 'stringLiteral',
+        literal: 'lloyd',
+      },
+    },
+  },
+};
+
+const AGGREGATE_FILTER: FilterCondition = {
+  node: 'filterCondition',
+  code: 'population > 100',
+  expressionType: 'aggregate',
+  e: {
+    node: '=',
+    kids: {
+      left: {
+        node: 'field',
+        path: ['population'],
+      },
+      right: {
+        node: 'numberLiteral',
+        literal: '100',
+      },
+    },
+  },
+};

@@ -7,8 +7,6 @@
 
 import * as utils from '../../src/core/utils';
 
-// import {source} from '../../example/example_model';
-
 describe('Utils', () => {
   describe('unquoteIdentifier', () => {
     it('removes quotes', () => {
