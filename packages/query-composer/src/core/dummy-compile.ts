@@ -60,7 +60,10 @@ class DummyConnection extends BaseConnection {
 }
 
 export class DummyCompile {
-  async _compileModel(modelDef: ModelDef, malloy: string): Promise<Model> {
+  private async _compileModel(
+    modelDef: ModelDef,
+    malloy: string
+  ): Promise<Model> {
     const runtime = new Runtime(new DummyFiles(), new DummyConnection());
     const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
@@ -76,11 +79,14 @@ export class DummyCompile {
     return model;
   }
 
-  async compileModel(modelDef: ModelDef, malloy: string): Promise<ModelDef> {
+  public async compileModel(
+    modelDef: ModelDef,
+    malloy: string
+  ): Promise<ModelDef> {
     return (await this._compileModel(modelDef, malloy))._modelDef;
   }
 
-  modelDefForSource(source: StructDef): ModelDef {
+  private modelDefForSource(source: StructDef): ModelDef {
     return {
       name: 'model',
       exports: [],
@@ -88,15 +94,22 @@ export class DummyCompile {
     };
   }
 
-  async compileFilter(
+  public async compileFilter(
     source: StructDef,
     filter: string
   ): Promise<FilterCondition> {
-    const malloy = `query: the_query is ${
-      source.as || source.name
-    } -> { group_by: one is 1; where: ${filter}}`;
+    const name = source.as || source.name;
+    const whereMalloy = `query: the_query is ${name} -> { group_by: one is 1; where: ${filter}}`;
+    const havingMalloy = `query: the_query is ${name} -> { group_by: one is 1; having: ${filter}}`;
     const modelDef = this.modelDefForSource(source);
-    const model = await this.compileModel(modelDef, malloy);
+    let model;
+    try {
+      // Try first as scalar
+      model = await this.compileModel(modelDef, whereMalloy);
+    } catch (_e) {
+      // Retry as aggregate
+      model = await this.compileModel(modelDef, havingMalloy);
+    }
     const theQuery = model.contents['the_query'];
     if (theQuery.type !== 'query') {
       throw new Error('Expected the_query to be a query');
@@ -108,7 +121,7 @@ export class DummyCompile {
     return filterList[0];
   }
 
-  async compileGroupBy(
+  public async compileGroupBy(
     source: StructDef,
     name: string,
     expression: string | undefined
@@ -135,7 +148,7 @@ export class DummyCompile {
     return fieldList[0];
   }
 
-  async compileDimension(
+  public async compileDimension(
     source: StructDef,
     name: string,
     dimension: string
@@ -162,7 +175,7 @@ export class DummyCompile {
     return field;
   }
 
-  async compileMeasure(
+  public async compileMeasure(
     source: StructDef,
     name: string,
     measure: string
@@ -182,14 +195,14 @@ export class DummyCompile {
     }
     const field = segment.queryFields[0];
     if (typeof field === 'string') {
-      throw new Error('Expected field definiton, not reference');
+      throw new Error('Expected field definition, not reference');
     } else if (field.type === 'fieldref') {
       throw new Error('Expected field definition, not field reference');
     }
     return field;
   }
 
-  async _compileQuery(
+  private async _compileQuery(
     modelDef: ModelDef,
     query: string
   ): Promise<PreparedQuery> {
@@ -202,12 +215,18 @@ export class DummyCompile {
     return preparedQuery;
   }
 
-  async compileQueryToSQL(modelDef: ModelDef, query: string): Promise<string> {
+  public async compileQueryToSQL(
+    modelDef: ModelDef,
+    query: string
+  ): Promise<string> {
     const preparedQuery = await this._compileQuery(modelDef, query);
     return preparedQuery.preparedResult.sql;
   }
 
-  async compileQuery(modelDef: ModelDef, query: string): Promise<NamedQuery> {
+  public async compileQuery(
+    modelDef: ModelDef,
+    query: string
+  ): Promise<NamedQuery> {
     const preparedQuery = await this._compileQuery(modelDef, query);
     const name =
       'as' in preparedQuery._query
@@ -220,7 +239,7 @@ export class DummyCompile {
     };
   }
 
-  async getSourceNameForQuery(
+  public async getSourceNameForQuery(
     modelDef: ModelDef,
     query: string
   ): Promise<string> {
