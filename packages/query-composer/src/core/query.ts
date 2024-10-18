@@ -52,9 +52,9 @@ import {
   Tag,
   DocumentLocation,
 } from '@malloydata/malloy';
-import {expressionIsAnalytic, snakeToTitle} from '../utils';
+import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
-import {maybeQuoteIdentifier} from './utils';
+import {expressionIsAnalytic, maybeQuoteIdentifier} from './utils';
 
 // TODO this is a hack to turn `string[]` paths (the new way dotted)
 // paths are stored in the struct def back to the old way (just a

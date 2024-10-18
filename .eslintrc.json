@@ -77,6 +77,12 @@
         "no-console": "off",
         "no-process-exit": "off"
       }
+    },
+    {
+      "files": ["**/*.spec.ts"],
+      "env": {
+        "jest/globals": true
+      }
     }
   ]
 }

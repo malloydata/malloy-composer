@@ -31,7 +31,6 @@ import {usePrevious} from '../../hooks';
 import {
   copyToClipboard,
   downloadFile,
-  highlightPre,
   indentCode,
   notUndefined,
   wrapHtml,
@@ -42,6 +41,7 @@ import {PageContent, PageHeader} from '../CommonElements';
 import {SelectDropdown} from '../SelectDropdown';
 import {ActionIcon} from '../ActionIcon';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {highlightPre} from '../../highlight';
 
 type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
 
