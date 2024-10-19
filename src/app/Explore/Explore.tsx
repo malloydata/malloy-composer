@@ -30,11 +30,11 @@ import {ChannelButton} from '../ChannelButton';
 import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
 import {
+  DummyCompile,
   ExploreQueryEditor,
   useQueryBuilder,
   useRunQuery,
 } from '@malloydata/query-composer';
-import {compileQuery, getSourceNameForQuery} from '../../core/compile';
 import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
 import {MarkdownDocument} from '../MarkdownDocument';
@@ -53,6 +53,8 @@ const KEY_MAP = {
   REMOVE_FIELDS: 'command+k',
   RUN_QUERY: 'command+enter',
 };
+
+const compiler = new DummyCompile();
 
 export const Explore: React.FC = () => {
   const config = useApps();
@@ -178,7 +180,10 @@ export const Explore: React.FC = () => {
           setLoading(loading => ++loading);
           if (query) {
             if (page !== 'query') return;
-            const compiledQuery = await compileQuery(newModelInfo.model, query);
+            const compiledQuery = await compiler.compileQuery(
+              newModelInfo.model,
+              query
+            );
             queryModifiers.setQuery(compiledQuery, true);
             if (run === 'true' && page === 'query') {
               runQuery(query, name || 'unnamed');
@@ -261,7 +266,10 @@ export const Explore: React.FC = () => {
       if (!modelInfo) {
         return;
       }
-      const sourceName = await getSourceNameForQuery(modelInfo.model, query);
+      const sourceName = await compiler.getSourceNameForQuery(
+        modelInfo.model,
+        query
+      );
       urlParams.set('model', modelInfo.id);
       urlParams.set('source', sourceName);
       urlParams.set('query', query);
