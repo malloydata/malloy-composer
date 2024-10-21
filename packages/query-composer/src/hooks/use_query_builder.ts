@@ -66,7 +66,7 @@ export interface QueryModifiers {
   addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   setRenderer: (
     stagePath: StagePath,
-    fieldIndex: number,
+    fieldIndex: number | undefined,
     renderer: RendererName | undefined
   ) => void;
   addStage: (stagePath: StagePath | undefined, fieldIndex?: number) => void;
@@ -182,7 +182,7 @@ export function useQueryBuilder(
 
     const setRenderer = (
       stagePath: StagePath,
-      fieldIndex: number,
+      fieldIndex: number | undefined,
       renderer: RendererName | undefined
     ) => {
       modifyQuery(qb => qb.setRenderer(stagePath, fieldIndex, renderer));

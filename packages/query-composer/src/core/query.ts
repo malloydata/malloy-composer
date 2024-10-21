@@ -709,12 +709,20 @@ export class QueryBuilder extends SourceUtils {
 
   setRenderer(
     stagePath: StagePath,
-    fieldIndex: number,
+    fieldIndex: number | undefined,
     renderer: RendererName | undefined
   ): void {
     const stage = this.stageAtPath(stagePath);
     if (!(stage.type === 'reduce' || stage.type === 'project')) {
       throw new Error(`Unhandled stage type ${stage.type}`);
+    }
+    if (!fieldIndex) {
+      const at: DocumentLocation = {
+        url: 'internal://internal.malloy',
+        range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
+      };
+      this.query.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+      return;
     }
     const fields = getFields(stage);
     const field = fields[fieldIndex];
