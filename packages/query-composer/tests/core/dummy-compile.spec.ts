@@ -5,9 +5,50 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import {DummyCompile} from '../../src/core/dummy-compile';
+import {
+  DummyCompile,
+  DummyConnection,
+  DummyReader,
+} from '../../src/core/dummy-compile';
 
 import {model, source} from '../../example/example_model';
+import {SQLSourceDef} from '@malloydata/malloy';
+
+describe('DummyReader', () => {
+  let dummyReader: DummyReader;
+
+  beforeEach(() => {
+    dummyReader = new DummyReader();
+  });
+
+  it('throws when asked to read a URL', async () => {
+    await expect(() =>
+      dummyReader.readURL(new URL('file:///foo/bar'))
+    ).rejects.toThrow();
+  });
+});
+
+describe('DummyConnection', () => {
+  let dummyConnection: DummyConnection;
+
+  beforeEach(() => {
+    dummyConnection = new DummyConnection();
+  });
+
+  it('throws when asked to run sql', () => {
+    expect(() => dummyConnection.runSQL()).toThrow();
+  });
+
+  it('throws when asked to fetch sql schema', () => {
+    expect(() =>
+      dummyConnection.fetchSelectSchema({} as SQLSourceDef)
+    ).toThrow();
+  });
+
+  it('throws when asked to fetch stable schema', () => {
+    expect(() => dummyConnection.fetchTableSchema('foo', 'bar')).toThrow();
+  });
+});
 
 describe('DummyCompile', () => {
   let dummyCompile: DummyCompile;

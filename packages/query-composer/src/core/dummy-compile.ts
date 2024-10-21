@@ -9,7 +9,6 @@ import {
   NamedQuery,
   PreparedQuery,
   QueryFieldDef,
-  QueryRunStats,
   Runtime,
   SQLSourceDef,
   StructDef,
@@ -21,30 +20,19 @@ import {BaseConnection} from '@malloydata/malloy/connection';
 
 const DEFAULT_NAME = 'new_query';
 
-class DummyFiles implements URLReader {
-  async readURL(): Promise<string> {
-    return '';
+export class DummyReader implements URLReader {
+  async readURL(_url: URL): Promise<string> {
+    throw new Error('Dummy reader cannot read files');
   }
 }
 
-class DummyConnection extends BaseConnection {
+export class DummyConnection extends BaseConnection {
   name = 'dummy';
 
   dialectName = 'duckdb';
 
-  estimateQueryCost(_sqlCommand: string): Promise<QueryRunStats> {
-    throw new Error('Dummy connection cannot estimate query cost');
-  }
-
   runSQL(): Promise<MalloyQueryData> {
     throw new Error('Dummy connection cannot run SQL.');
-  }
-
-  runSQLBlockAndFetchResultSchema(): Promise<{
-    data: MalloyQueryData;
-    schema: StructDef;
-  }> {
-    throw new Error('Dummy connection cannot run SQL blocks.');
   }
 
   fetchSelectSchema(_sqlSource: SQLSourceDef): Promise<SQLSourceDef | string> {
@@ -64,11 +52,11 @@ export class DummyCompile {
     modelDef: ModelDef,
     malloy: string
   ): Promise<Model> {
-    const runtime = new Runtime(new DummyFiles(), new DummyConnection());
+    const runtime = new Runtime(new DummyReader(), new DummyConnection());
     const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
     const model = await Malloy.compile({
-      urlReader: new DummyFiles(),
+      urlReader: new DummyReader(),
       connections: new FixedConnectionMap(
         new Map([['dummy', new DummyConnection()]]),
         'dummy'
