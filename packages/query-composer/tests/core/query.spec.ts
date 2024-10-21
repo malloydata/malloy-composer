@@ -11,16 +11,19 @@ import {source} from '../../example/example_model';
 import {FilterCondition} from '@malloydata/malloy';
 
 describe('QueryBuilder', () => {
+  let qb: QueryBuilder;
+
+  beforeEach(() => {
+    qb = new QueryBuilder(source);
+  });
+
   it('constructs', () => {
-    const qb = new QueryBuilder(source);
     expect(qb).not.toBeNull();
     expect(qb.isEmpty()).toBe(true);
   });
 
   describe('addNest', () => {
     it('Adds a nest', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addNewNestedQuery({stageIndex: 0}, 'eyrie');
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -31,8 +34,6 @@ describe('QueryBuilder', () => {
 
   describe('addField', () => {
     it('Adds a dimension', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -40,21 +41,45 @@ describe('QueryBuilder', () => {
       );
     });
 
+    it('Adds multiple dimensions', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+      qb.addField({stageIndex: 0}, 'gender');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: 
+    name
+    state
+    gender
+}`);
+    });
+
     it('Adds a measure', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'population');
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
         'run: names -> {\n  aggregate: population\n}'
       );
     });
+
+    it('Adds a dimension and a measure', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+      qb.addField({stageIndex: 0}, 'population');
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: 
+    name
+    state
+  aggregate: population
+}`);
+    });
   });
 
   describe('addFilter', () => {
     it('Adds a scalar filter', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addFilter({stageIndex: 0}, SCALAR_FILTER);
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -63,8 +88,6 @@ describe('QueryBuilder', () => {
     });
 
     it('Adds an aggregate filter', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addFilter({stageIndex: 0}, AGGREGATE_FILTER);
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -75,8 +98,6 @@ describe('QueryBuilder', () => {
 
   describe('addLimit', () => {
     it('adds a limit', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addLimit({stageIndex: 0}, 10);
       expect(qb.isEmpty()).toBe(false);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -87,8 +108,6 @@ describe('QueryBuilder', () => {
 
   describe('addOrderBy', () => {
     it('adds an order_by', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0);
       expect(qb.isEmpty()).toBe(false);
@@ -98,8 +117,6 @@ describe('QueryBuilder', () => {
     });
 
     it('adds an ascending order_by', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0, 'asc');
       expect(qb.isEmpty()).toBe(false);
@@ -109,8 +126,6 @@ describe('QueryBuilder', () => {
     });
 
     it('adds an descending order_by', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0, 'desc');
       expect(qb.isEmpty()).toBe(false);
@@ -120,8 +135,6 @@ describe('QueryBuilder', () => {
     });
 
     it('adds multiple order_bys', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addField({stageIndex: 0}, 'state');
       qb.addOrderBy({stageIndex: 0}, 0, 'desc');
@@ -133,8 +146,6 @@ describe('QueryBuilder', () => {
     });
 
     it("doesn't add redundant order_by", () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0, 'desc');
       qb.addOrderBy({stageIndex: 0}, 0, 'asc');
@@ -147,8 +158,6 @@ describe('QueryBuilder', () => {
 
   describe('editOrderBy', () => {
     it('updates an order_by', () => {
-      const qb = new QueryBuilder(source);
-      expect(qb.isEmpty()).toBe(true);
       qb.addField({stageIndex: 0}, 'name');
       qb.addOrderBy({stageIndex: 0}, 0);
       expect(qb.getQueryStringForNotebook()).toEqual(
@@ -158,6 +167,60 @@ describe('QueryBuilder', () => {
       expect(qb.getQueryStringForNotebook()).toEqual(
         'run: names -> {\n  group_by: name\n  order_by: name desc\n}'
       );
+    });
+  });
+
+  describe('renderers', () => {
+    it('can add a renderer to a query', () => {
+      qb.loadQuery('by_gender');
+      qb.setRenderer({stageIndex: 0}, undefined, 'bar_chart');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+# bar_chart
+run: names -> {
+  group_by: gender
+  aggregate: population
+}`);
+    });
+  });
+
+  describe('loadQuery', () => {
+    it('can load a query by name', () => {
+      qb.loadQuery('by_gender');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: gender
+  aggregate: population
+}`);
+      expect(qb.getName()).toEqual('by_gender');
+    });
+  });
+
+  describe('clearQuery', () => {
+    it('can clear the query', () => {
+      qb.loadQuery('by_gender');
+      expect(qb.isEmpty()).toBe(false);
+      qb.clearQuery();
+      expect(qb.isEmpty()).toBe(true);
+    });
+  });
+
+  describe('nested queries', () => {
+    beforeEach(() => {
+      qb.addNewNestedQuery({stageIndex: 0}, 'eyrie');
+    });
+
+    it('Adds a dimension', () => {
+      qb.addField(
+        {stageIndex: 0, parts: [{stageIndex: 0, fieldIndex: 0}]},
+        'name'
+      );
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: eyrie is {
+    group_by: name
+  }
+}`);
     });
   });
 });
