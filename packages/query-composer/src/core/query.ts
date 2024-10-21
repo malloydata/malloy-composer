@@ -55,6 +55,7 @@ import {
 import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
 import {expressionIsAnalytic, maybeQuoteIdentifier} from './utils';
+import {sortFieldOrder} from './fields';
 
 // TODO this is a hack to turn `string[]` paths (the new way dotted)
 // paths are stored in the struct def back to the old way (just a
@@ -352,18 +353,6 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
-  private sortOrder(field: FieldDef) {
-    if (isJoined(field)) {
-      return 3;
-    } else if (field.type === 'turtle') {
-      return 2;
-    } else if (expressionIsCalculation(field.expressionType)) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
   private getIndexToInsertNewField(
     stagePath: StagePath,
     queryFieldDef: QueryFieldDef
@@ -374,7 +363,7 @@ export class QueryBuilder extends SourceUtils {
       throw new Error(`Missing source for ${stagePath}`);
     }
     const fieldDef = this.fieldDefForQueryFieldDef(queryFieldDef, stageSource);
-    const sortOrder = this.sortOrder(fieldDef);
+    const sortOrder = sortFieldOrder(fieldDef);
     const fields = getFields(stage);
     for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
       const existingField = fields[fieldIndex];
@@ -383,7 +372,7 @@ export class QueryBuilder extends SourceUtils {
           existingField,
           stageSource
         );
-        const existingSortOrder = this.sortOrder(existingFieldDef);
+        const existingSortOrder = sortFieldOrder(existingFieldDef);
         if (existingSortOrder > sortOrder) {
           return fieldIndex;
         }

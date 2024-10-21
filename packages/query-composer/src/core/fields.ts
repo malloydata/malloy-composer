@@ -114,7 +114,7 @@ function findField(
 }
 
 const MEASURE_COUNT = /^count\(\)$/;
-const MEASURE_COUNT_DISTINCT = /^count\(distinct (.*)\)$/;
+const MEASURE_COUNT_DISTINCT = /^count\((.*)\)$/;
 const MEASURE_AVG = /^(.*)\.avg\(\)$/;
 const MEASURE_SUM = /^(.*)\.sum\(\)$/;
 const MEASURE_MIN = /^min\((.*)\)/;

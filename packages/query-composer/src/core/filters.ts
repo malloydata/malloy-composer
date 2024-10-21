@@ -546,8 +546,8 @@ const NUM_BET_FILTER = new RegExp(
 );
 const NUM_GT_FILTER = new RegExp(`^(${FIELD})\\s*>\\s*(${NUMBER})$`);
 const NUM_LT_FILTER = new RegExp(`^(${FIELD})\\s*<\\s*(${NUMBER})$`);
-const NUM_LTE_FILTER = new RegExp(`^(${FIELD})\\s*>=\\s*(${NUMBER})$`);
-const NUM_GTE_FILTER = new RegExp(`^(${FIELD})\\s*<=\\s*(${NUMBER})$`);
+const NUM_LTE_FILTER = new RegExp(`^(${FIELD})\\s*<=\\s*(${NUMBER})$`);
+const NUM_GTE_FILTER = new RegExp(`^(${FIELD})\\s*>=\\s*(${NUMBER})$`);
 
 const TIME_UNIT = `(?:year|quarter|month|week|day|hour|minute|second)`;
 const TIME_PAST_FILTER = new RegExp(
