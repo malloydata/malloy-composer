@@ -29,14 +29,14 @@ import {extractErrorMessage} from '../utils';
 
 export const PanelTitle = styled.div`
   text-transform: uppercase;
-  color: #939393;
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--malloy-composer-color, #939393);
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   display: flex;
   justify-content: space-between;
   align-items: center;
   min-height: 22px;
   padding: 7px 10px 6px 20px;
-  border-bottom: 1px solid #efefef;
+  border-bottom: 1px solid var(--malloy-composer-border, #efefef);
   font-size: 11pt;
   font-weight: 500;
 `;
@@ -44,7 +44,7 @@ export const PanelTitle = styled.div`
 export const FieldLabel = styled.div`
   display: flex;
   font-weight: normal;
-  font-family: Courier, Menlo, monspace;
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
   gap: 5px;
   margin-top: -3px;
   align-items: center;
@@ -53,11 +53,9 @@ export const FieldLabel = styled.div`
 
 export const FormInputLabel = styled.label`
   font-size: 12px;
-  color: #505050;
-  font-family: Roboto;
-  font-family: Roboto;
+  color: var(--malloy-composer-form-foreground, #505050);
+  font-family: var(--malloy-composer-form-fontFamily, monospace);
   text-transform: none;
-  color: #9aa0a6;
   font-weight: normal;
 `;
 
@@ -66,7 +64,7 @@ export const Button = styled.button<{
   outline?: boolean;
 }>`
   padding: 5.5px 10px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--malloy-composer-form-fontFamily, sans-serif);
   border-radius: 5px;
   cursor: pointer;
   min-width: 80px;
@@ -161,16 +159,16 @@ export const EmptyMessage = styled.div`
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
-  font-family: Roboto;
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
   text-transform: none;
   font-size: 16px;
   font-weight: normal;
 `;
 
 export const ContextMenuTitle = styled.div`
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  color: #505050;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
+  font-size: var(--malloy-composer-fontSize, 14px);
+  color: var(--malloy-composer-menu-title, #505050);
   text-transform: none;
   margin-bottom: 15px;
   user-select: none;
@@ -213,7 +211,7 @@ export const ScrollMain = styled.div`
 export const FieldName = styled.div`
   text-overflow: ellipsis;
   text-transform: none;
-  color: #505050;
+  color: var(--malloy-composer-foreground, #505050);
   overflow: hidden;
   white-space: nowrap;
 `;
@@ -249,7 +247,7 @@ export const FormItem = styled.div`
 `;
 
 const StyledFormError = styled.div`
-  background: #ffdddd;
+  background: var(--malloy-composer-error-background, #ffdddd);
   display: flex;
   padding: 6px;
   margin-top: 10px;
@@ -276,13 +274,16 @@ export const PageHeader = styled.div`
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  background-color: var(--malloy-theme--header-background, rgb(247, 249, 252));
+  background-color: var(
+    --malloy-composer-header-background,
+    rgb(247, 249, 252)
+  );
   flex-shrink: 0;
 `;
 
 export const PageContent = styled.div`
   overflow: hidden;
-  background-color: var(--malloy-theme--background, white);
+  background-color: var(--malloy-composer-background, white);
   border-radius: 5px;
   width: 100%;
   height: 100%;

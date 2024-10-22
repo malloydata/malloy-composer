@@ -125,8 +125,8 @@ export const DateInput: React.FC<DateInputProps> = ({
 const StyledInput = styled.input<{
   isActive?: boolean;
 }>`
-  font-family: Roboto;
-  font-size: 14px;
+  font-family: var(--malloy-composer-form-fontFamily, monospace);
+  font-size: var(--malloy-composer-form-fontSize, 14px);
   border-radius: 5px;
   padding: 5.75px 10px;
   outline: none;
@@ -140,6 +140,6 @@ const StyledInput = styled.input<{
 
   &:focus {
     border-color: #4285f4;
-    background-color: var(--malloy-theme--dimension-light);
+    background-color: var(--malloy-composer-dimension-light, #ffffff);
   }
 `;

@@ -67,7 +67,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({
 
 const StyledInput = styled.input`
   font-family: Courier, Menlo, monspace;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   padding: 5px 10px;
@@ -126,7 +126,7 @@ export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
 
 const StyledTextArea = styled.textarea`
   font-family: Courier, Menlo, monspace;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   min-height: calc(1em + 5px);

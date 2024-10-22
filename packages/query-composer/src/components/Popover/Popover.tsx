@@ -44,12 +44,12 @@ export const PopoverBox = styled.div<{
   width: number;
   zIndex: number;
 }>`
-  border: 1px solid #ececed;
+  border: 1px solid var(--malloy-composer-menu-border, #ececed);
   border-radius: 4px;
   position: fixed;
   box-shadow: 0px 1px 5px 1px #0000001a;
-  background-color: white;
-  font-size: 14px;
+  background-color: var(--malloy-composer-menu-background, white);
+  font-size: var(--malloy-composer-menu-fontSize, 14px);
   ${({width, zIndex}) => `
     width: ${width}px;
     z-index: ${zIndex};

@@ -303,8 +303,8 @@ const MalloyTypeSwitcher = styled.div`
 `;
 
 const ResultWrapper = styled.div`
-  font-size: 14px;
-  font-family: Courier, Menlo, monspace;
+  font-size: var(--malloy-composer-fontSize, 14px);
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
 `;
 
 const OuterDiv = styled.div`
@@ -344,8 +344,8 @@ const ViewTab = styled.div<{
 
 const PreWrapper = styled.div`
   padding: 0 15px;
-  font-family: Courier, Menlo, monspace;
-  font-size: 14px;
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
+  font-size: var(--malloy-composer-fontSize, 14px);
   position: relative;
   width: 100%;
 `;

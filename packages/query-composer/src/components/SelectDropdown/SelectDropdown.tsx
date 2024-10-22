@@ -46,7 +46,7 @@ const Wrapper = styled.div`
 
 const InputBox = styled.button`
   background-color: transparent;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   border: 1px solid #efefef;
   border-radius: 4px;
   padding: 3px 10px;
@@ -83,7 +83,7 @@ const OptionDiv = styled.label`
   display: flex;
   align-items: center;
   &:hover {
-    background-color: var(--malloy-theme--dimension-light);
+    background-color: var(--malloy-composer-dimension-light);
   }
 `;
 
@@ -231,7 +231,7 @@ const OptionRadio = styled.input`
 `;
 
 const SelectListDiv = styled.div`
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   font-family: Roboto;
   text-transform: none;
   font-weight: normal;
