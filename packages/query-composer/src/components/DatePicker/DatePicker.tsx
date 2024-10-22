@@ -24,7 +24,6 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import {COLORS} from '../../colors';
 import {
   ChevronLeftButton,
   ChevronRightButton,

@@ -27,7 +27,6 @@ import {useClickOutside} from '../../hooks';
 import {Popover} from '../Popover';
 import ChevronDown from '../../assets/img/chevrons/chevron_down.svg?react';
 import Checkmark from '../../assets/img/checkmark.svg?react';
-import {COLORS} from '../../colors';
 
 interface SelectDropdownProps<T> {
   autoFocus?: boolean;
