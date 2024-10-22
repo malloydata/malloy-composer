@@ -705,12 +705,16 @@ export class QueryBuilder extends SourceUtils {
     if (!(stage.type === 'reduce' || stage.type === 'project')) {
       throw new Error(`Unhandled stage type ${stage.type}`);
     }
-    if (!fieldIndex) {
-      const at: DocumentLocation = {
-        url: 'internal://internal.malloy',
-        range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
-      };
-      this.query.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+    if (fieldIndex === undefined) {
+      if (renderer) {
+        const at: DocumentLocation = {
+          url: 'internal://internal.malloy',
+          range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
+        };
+        this.query.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+      } else {
+        delete this.query.annotation;
+      }
       return;
     }
     const fields = getFields(stage);
@@ -1373,12 +1377,18 @@ ${malloy}
 
   getQuerySummary(): QuerySummary {
     let stageSource = this.getSource();
-    const stages = this.query.pipeline.map(stage => {
+    const stages = this.query.pipeline.map((stage, index) => {
       if (stageSource === undefined) {
         throw new Error('Invalid source');
       }
       const summary = this.getStageSummary(stage, stageSource);
       stageSource = this.modifySourceForStage(stage, stageSource);
+      if (index === this.query.pipeline.length - 1) {
+        const styleItems = this.stylesForField(this.query, undefined);
+        if (styleItems) {
+          summary.items.push(...styleItems);
+        }
+      }
       return summary;
     });
     return {stages};
@@ -1427,7 +1437,7 @@ ${malloy}
 
   private stylesForField(
     field: QueryFieldDef,
-    fieldIndex: number
+    fieldIndex: number | undefined
   ): QuerySummaryItemDataStyle[] {
     const result: QuerySummaryItemDataStyle[] = [];
     const tagProps = Tag.annotationToTag(field.annotation).tag.getProperties();
