@@ -181,6 +181,17 @@ run: names -> {
   aggregate: population
 }`);
     });
+
+    it('can add a renderer to a field', () => {
+      qb.loadQuery('by_gender');
+      qb.setRenderer({stageIndex: 0}, 1, 'percent');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: gender
+  # percent
+  aggregate: population
+}`);
+    });
   });
 
   describe('loadQuery', () => {
