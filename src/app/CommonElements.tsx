@@ -23,7 +23,7 @@
 import styled from 'styled-components';
 
 export const EmptyMessage = styled.div`
-  color: #969696;
+  color: var(--malloy-composer-foreground, #969696);
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -35,7 +35,7 @@ export const EmptyMessage = styled.div`
 
 export const PageContent = styled.div`
   overflow: hidden;
-  background-color: white;
+  background-color: var(--malloy-composer-background, white);
   border-radius: 5px;
   width: 100%;
   height: 100%;
