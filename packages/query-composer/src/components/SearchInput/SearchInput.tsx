@@ -82,7 +82,7 @@ const SearchIcon = styled.div`
 
 const StyledInput = styled.input`
   font-family: Courier, Menlo, monspace;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: none;
   padding: 3px 10px 1px 38px;

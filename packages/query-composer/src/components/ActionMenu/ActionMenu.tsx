@@ -276,19 +276,22 @@ const ActionButton = styled.button<{
   border-radius: 50px;
   padding: 4px 7px;
   text-align: left;
-  font-size: 14px;
+  font-size: var(--malloy-composer-menu-fontSize, 14px);
   cursor: pointer;
   width: 100%;
   display: flex;
   justify-content: flex-start;
   gap: 10px;
   align-items: center;
-  font-family: Courier, Menlo, monspace;
-  color: #353535;
+  font-family: var(--malloy-composer-menu-fontFamily, monospace);
+  color: var(--malloy-composer-menu-foreground, #353535);
 
   ${({color}) => `
     &:hover {
-      background-color: ${COLORS[color].fillLight};
+      background-color: ${
+        COLORS[color].fillMedium ??
+        `var(--malloy-composer-menu-background, #e0e0e0)`
+      };
     }
   `}
 `;

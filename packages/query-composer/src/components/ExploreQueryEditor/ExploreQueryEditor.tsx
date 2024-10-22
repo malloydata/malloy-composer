@@ -205,6 +205,7 @@ const Outer = styled.div`
   flex-direction: row;
   overflow: hidden;
   gap: 10px;
+  background-color: var(--malloy-background-color);
 `;
 
 const SidebarOuter = styled.div`

@@ -179,7 +179,7 @@ const OuterInput = styled.div<{
   isFocused: boolean;
 }>`
   font-family: Roboto;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   font-weight: normal;
   border-radius: 5px;
   border: 1px solid #efefef;
@@ -206,7 +206,7 @@ const Pill = styled.div<{
   `}
 
   border-radius: 5px;
-  color: ${COLORS.dimension.fillStrong};
+  color: var(--malloy-composer-dimension-strong);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -220,7 +220,7 @@ const StyledInput = styled.input`
   border: none;
   outline: none;
   font-family: Roboto;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   min-width: 95px;
   padding: 3.75px 7px;
   flex-grow: 1;

@@ -24,7 +24,6 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import {COLORS} from '../../colors';
 import {
   ChevronLeftButton,
   ChevronRightButton,
@@ -463,7 +462,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
 const Outer = styled.div`
   user-select: none;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   font-family: Roboto;
 `;
 
@@ -557,15 +556,15 @@ const Quarter = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-composer-dimension-light);
+    border-color: var(--malloy-composer-dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-composer-dimension-light);
+      border-color: var(--malloy-composer-dimension-medium);
     `
       : ''}
 `;
@@ -588,15 +587,15 @@ const Month = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-composer-dimension-light);
+    border-color: var(--malloy-composer-dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-composer-dimension-light);
+      border-color: var(--malloy-composer-dimension-medium);
     `
       : ''}
 `;
@@ -634,15 +633,15 @@ const Year = styled.div<{
   border-radius: 5px;
 
   &:hover {
-    background-color: ${COLORS.dimension.fillLight};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-composer-dimension-light);
+    border-color: var(--malloy-composer-dimension-medium);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: ${COLORS.dimension.fillLight};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-composer-dimension-light);
+      border-color: var(--malloy-composer-dimension-medium);
     `
       : ''}
 `;
@@ -686,13 +685,13 @@ const WeekButton = styled.div<{
   ${({isSelected}) =>
     isSelected
       ? `
-    background-color: ${COLORS.dimension.fillLight};
-    color:  ${COLORS.dimension.fillStrong};
-    border-color: ${COLORS.dimension.fillMedium};
+    background-color: var(--malloy-composer-dimension-light);
+    color:  var(--malloy-composer-dimension-strong);
+    border-color: var(--malloy-composer-dimension-medium);
   `
       : `
     &:hover {
-      background-color: ${COLORS.dimension.fillLight};
+      background-color: var(--malloy-composer-dimension-light);
     }
   `}
 `;
@@ -737,13 +736,13 @@ const Day = styled(Cell)<{
     ${
       isSelected
         ? `
-      background-color: ${COLORS.dimension.fillLight};
-      color:  ${COLORS.dimension.fillStrong};
-      border-color: ${COLORS.dimension.fillMedium};
+      background-color: var(--malloy-composer-dimension-light);
+      color:  var(--malloy-composer-dimension-strong);
+      border-color: var(--malloy-composer-dimension-medium);
     `
         : `
       &:hover {
-        background-color: ${COLORS.dimension.fillLight};
+        background-color: var(--malloy-composer-dimension-light);
       }
     `
     }

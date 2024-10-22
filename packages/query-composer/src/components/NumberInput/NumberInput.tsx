@@ -23,7 +23,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import {useEffect, useState} from 'react';
-import {COLORS} from '../../colors';
 import {FormItem, FormInputLabel} from '../CommonElements';
 
 interface NumberInputProps {
@@ -71,7 +70,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
 
 const StyledInput = styled.input`
   font-family: Roboto;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   padding: 5.75px 10px;
@@ -80,6 +79,6 @@ const StyledInput = styled.input`
 
   &:focus {
     border-color: #4285f4;
-    background-color: ${COLORS.dimension.fillLight};
+    background-color: var(--malloy-composer-dimension-light);
   }
 `;

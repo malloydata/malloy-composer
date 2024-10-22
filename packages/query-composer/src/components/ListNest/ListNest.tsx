@@ -46,7 +46,7 @@ const NestBar = styled.div`
   min-width: 6px;
   padding: 5px 0px;
   margin: 0 1px;
-  background-color: #efefef;
+  background-color: var(--malloy-composer-ruler, #efefef);
   border-radius: 100px;
 `;
 

@@ -222,7 +222,9 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
           stageSummary={stageSummary}
           beginReorderingField={beginReorderingField}
           isSelected={
-            'fieldIndex' in item && item.fieldIndex === selectedFieldIndex
+            'fieldIndex' in item &&
+            item.fieldIndex !== undefined &&
+            item.fieldIndex === selectedFieldIndex
           }
           deselect={() => setSelectedFieldIndex(undefined)}
           topValues={topValues}

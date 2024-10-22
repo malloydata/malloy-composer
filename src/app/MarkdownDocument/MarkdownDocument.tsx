@@ -325,14 +325,14 @@ const MarkdownHeading4 = styled.h4`
 `;
 
 const MarkdownHeading5 = styled.h5`
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   font-weight: 500;
   margin-block-end: 8px;
   margin-block-start: 16px;
 `;
 
 const MarkdownHeading6 = styled.h6`
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   font-weight: 500;
   margin-block-end: 8px;
   margin-block-start: 16px;
@@ -354,14 +354,14 @@ const MarkdownLink = styled.a`
 `;
 
 const MarkdownParagraph = styled.p`
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   margin-block-start: 8px;
   color: #4b4c50;
 `;
 
 const MarkdownPreWrapper = styled.div`
   pre {
-    font-size: 14px;
+    font-size: var(--malloy-composer-fontSize, 14px);
     border: 1px solid #efefef;
     border-radius: 5px;
     padding: 10px;
@@ -406,5 +406,5 @@ const QueryLinkTitleRow = styled.div`
 
 const QueryLinkDescription = styled.div`
   color: #929292;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
 `;

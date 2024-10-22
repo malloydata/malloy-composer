@@ -100,17 +100,19 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
 
 const ContextMenuDetail = styled(ContextMenuMain)`
   padding: 20px;
-  background-color: rgb(248, 248, 248);
+  font-family: var(--malloy-composer-font-family, sans-serif);
+  background-color: var(--malloy-composer-menu-background, rgb(248, 248, 248));
+  color: var(--malloy-composer-menu-foreground, #505050);
 `;
 
 const NullSymbol = styled.span``;
 
 const FieldPath = styled.div`
-  color: #505050;
+  color: var(--malloy-composer-foreground, #505050);
   font-weight: normal;
-  font-family: Courier, Menlo, monspace;
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
   font-weight: normal;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   text-transform: none;
   overflow-wrap: break-word;
   padding: 4px 0px;
@@ -156,7 +158,7 @@ export const TopValuesValue = styled.div`
   align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #505050;
+  color: var(--malloy-composer-foreground, #505050);
 `;
 
 export const TopValuesWeight = styled.div`
@@ -172,7 +174,7 @@ export const TopValuesWeight = styled.div`
 export const TopValuesWeightInner = styled.div`
   text-overflow: ellipsis;
   text-transform: none;
-  color: #505050;
+  color: var(--malloy-composer-foreground, #505050);
   overflow: hidden;
   white-space: nowrap;
 `;
@@ -184,12 +186,12 @@ export const TopValuesRow = styled.div`
   padding: 4px 0px;
   text-align: left;
   display: flex;
-  color: #353535;
+  color: var(--malloy-composer-foreground, #353535);
   user-select: none;
-  font-size: 14px;
+  font-size: var(--malloy-composer-code-fontSize, 14px);
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: 'Roboto';
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
   font-weight: normal;
 `;

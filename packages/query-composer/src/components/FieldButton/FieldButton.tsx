@@ -152,18 +152,23 @@ export const FieldButtonRaw = styled.div<{
   text-align: left;
   cursor: pointer;
   display: flex;
-  color: #353535;
+  color: var(--malloy-composer-foreground, #353535);
   user-select: none;
-  font-size: 14px;
+  font-size: var(--malloy-composer-fontSize, 14px);
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: Courier, Menlo, monspace;
+  font-family: var(
+    --malloy-composer-code-fontFamily,
+    Courier,
+    Menlo,
+    monospace
+  );
 
   ${({active, color}) => {
     if (active) {
       return `
-        background-color: ${COLORS[color].fillLight};
+        background-color: ${COLORS[color].fillMedium};
         .back {
           display: flex;
         }
@@ -187,7 +192,7 @@ export const FieldButtonRaw = styled.div<{
     if (!disableHover) {
       return `
         &:hover {
-          background-color: ${COLORS[color].fillLight};
+          background-color: ${COLORS[color].fillMedium};
         }
       `;
     }
