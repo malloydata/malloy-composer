@@ -451,6 +451,9 @@ export class QueryBuilder extends SourceUtils {
           );
       }
     });
+    if (definition.annotation) {
+      this.query.annotation = JSON.parse(JSON.stringify(definition.annotation));
+    }
     this.query.name = definition.as || definition.name;
   }
 
