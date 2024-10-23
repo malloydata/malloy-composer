@@ -7,8 +7,8 @@
 
 import {QueryBuilder} from '../../src/core/query';
 
-import {source} from '../../example/example_model';
-import {FilterCondition} from '@malloydata/malloy';
+import {model, source} from '../../example/example_model';
+import {FilterCondition, SourceDef} from '@malloydata/malloy';
 
 describe('QueryBuilder', () => {
   let qb: QueryBuilder;
@@ -26,9 +26,27 @@ describe('QueryBuilder', () => {
     it('Adds a nest', () => {
       qb.addNewNestedQuery({stageIndex: 0}, 'eyrie');
       expect(qb.isEmpty()).toBe(false);
-      expect(qb.getQueryStringForNotebook()).toEqual(
-        'run: names -> {\n  nest: eyrie is {\n  }\n}'
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: eyrie is {
+  }
+}`);
+    });
+
+    it('Adds a nested nest', () => {
+      qb.addNewNestedQuery({stageIndex: 0}, 'eyrie');
+      qb.addNewNestedQuery(
+        {stageIndex: 0, parts: [{stageIndex: 0, fieldIndex: 0}]},
+        'coop'
       );
+      expect(qb.isEmpty()).toBe(false);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: eyrie is {
+    nest: coop is {
+    }
+  }
+}`);
     });
   });
 
@@ -78,21 +96,74 @@ run: names -> {
     });
   });
 
+  describe('removeField', () => {
+    beforeEach(() => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+      qb.addField({stageIndex: 0}, 'population');
+    });
+
+    it('can remove a field', () => {
+      qb.removeField({stageIndex: 0}, 1);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: name
+  aggregate: population
+}`);
+    });
+  });
+
+  describe('reorderFields', () => {
+    beforeEach(() => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+      qb.addField({stageIndex: 0}, 'population');
+    });
+
+    it('can reorder fields', () => {
+      qb.reorderFields({stageIndex: 0}, [2, 0, 1]);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  aggregate: population
+  group_by: 
+    name
+    state
+}`);
+    });
+  });
+
   describe('addFilter', () => {
     it('Adds a scalar filter', () => {
       qb.addFilter({stageIndex: 0}, SCALAR_FILTER);
       expect(qb.isEmpty()).toBe(false);
-      expect(qb.getQueryStringForNotebook()).toEqual(
-        'run: names -> {\n  where: name = "lloyd"\n}'
-      );
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  where: name = "lloyd"
+}`);
     });
 
     it('Adds an aggregate filter', () => {
       qb.addFilter({stageIndex: 0}, AGGREGATE_FILTER);
       expect(qb.isEmpty()).toBe(false);
-      expect(qb.getQueryStringForNotebook()).toEqual(
-        'run: names -> {\n  having: population > 100\n}'
-      );
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  having: population > 100
+}`);
+    });
+  });
+
+  describe('removeFilter', () => {
+    beforeEach(() => {
+      qb.addFilter({stageIndex: 0}, SCALAR_FILTER);
+      qb.addFilter({stageIndex: 0}, AGGREGATE_FILTER);
+    });
+
+    it('can remove a filter', () => {
+      qb.removeFilter({stageIndex: 0}, 0);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  having: population > 100
+}`);
     });
   });
 
@@ -232,6 +303,14 @@ run: names -> {
     group_by: name
   }
 }`);
+    });
+  });
+
+  describe('updateSource', () => {
+    it('updates the source', () => {
+      expect(qb.getSource()?.as).toEqual('names');
+      qb.updateSource(model.contents['names2'] as SourceDef);
+      expect(qb.getSource()?.as).toEqual('names2');
     });
   });
 });
