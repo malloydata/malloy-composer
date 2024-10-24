@@ -76,7 +76,7 @@ function doDependencies(nodeModulesPath: string, packageJson: any): void {
         const packageFiles = fs.readdirSync(
           path.join(nodeModulesPath, dependency)
         );
-        packageFiles.find(fileName => {
+        packageFiles.forEach(fileName => {
           const base = fileName.split('.')[0].toLowerCase();
 
           if (base === 'notice' || base === 'notices') {
