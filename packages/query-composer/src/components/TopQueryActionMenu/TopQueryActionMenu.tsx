@@ -30,7 +30,7 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
-import {SearchValueMapResult, SourceDef, ModelDef} from '@malloydata/malloy';
+import {SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,

@@ -29,8 +29,6 @@ import {FieldDetailPanel} from '../FieldDetailPanel';
 import {HoverToPopover} from '../HoverToPopover';
 import {TypeIcon} from '../TypeIcon';
 import {typeOfField} from '../../utils';
-import {SearchContext} from '../../contexts/search_context';
-import {useContext} from 'react';
 
 export interface SearchItem {
   select: () => void;
@@ -54,7 +52,6 @@ export const useSearchList = ({
   searchTerm,
   items,
 }: SearchListProps): UseSearchListResult => {
-  const {topValues} = useContext(SearchContext);
   const rankedItems = items
     .map(item => {
       return {item, rank: rank(item.terms, searchTerm)};

@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  isJoined,
-  SearchValueMapResult,
-  StructDef,
-} from '@malloydata/malloy';
+import {FieldDef, isJoined, StructDef} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {ActionIcon} from '../ActionIcon';

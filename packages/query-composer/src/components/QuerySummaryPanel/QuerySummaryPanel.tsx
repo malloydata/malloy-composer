@@ -40,7 +40,7 @@ import {ListNest} from '../ListNest';
 import {NestQueryActionMenu} from '../NestQueryActionMenu';
 import styled from 'styled-components';
 import {FilterActionMenu} from '../FilterActionMenu';
-import {ModelDef, SearchValueMapResult, SourceDef} from '@malloydata/malloy';
+import {ModelDef, SourceDef} from '@malloydata/malloy';
 import {OrderByActionMenu} from '../OrderByActionMenu';
 import {EmptyMessage} from '../CommonElements';
 import {DataStyleActionMenu} from '../DataStyleActionMenu';
