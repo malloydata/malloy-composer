@@ -150,7 +150,9 @@ run: names -> {
   having: population > 100
 }`);
     });
+  });
 
+  describe('addFilterToField', () => {
     it('Adds a filter to a field', () => {
       qb.addField({stageIndex: 0}, 'population');
       expect(qb.getQueryStringForNotebook()).toEqual(`\
