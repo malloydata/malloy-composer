@@ -26,7 +26,6 @@ import {
   FieldDef,
   isLeafAtomic,
   QueryFieldDef,
-  SearchValueMapResult,
   SourceDef,
 } from '@malloydata/malloy';
 import {useCallback, useContext, useState} from 'react';
@@ -57,7 +56,6 @@ interface GroupByContextBarProps {
   toggleField: (fieldPath: string) => void;
   addNewDimension: (dimension: QueryFieldDef) => void;
   onComplete: () => void;
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
@@ -65,7 +63,6 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
   toggleField,
   addNewDimension,
   onComplete,
-  topValues,
 }) => {
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [isAddingNewField, setIsAddingNewField] = useState(false);
@@ -118,14 +115,12 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                     }
                     showNested={true}
                     selectField={maybeSelectField}
-                    topValues={topValues}
                   />
                 </>
               )}
               {searchTerm !== '' && (
                 <>
                   <SearchList
-                    topValues={topValues}
                     searchTerm={searchTerm}
                     items={flatFields(source)
                       .filter(({field}) => isDimension(field))

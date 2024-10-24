@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  isJoined,
-  SearchValueMapResult,
-  StructDef,
-} from '@malloydata/malloy';
+import {FieldDef, isJoined, StructDef} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {ActionIcon} from '../ActionIcon';
@@ -43,7 +38,6 @@ interface FieldListProps {
   filter: (field: FieldDef) => boolean;
   showNested: boolean;
   selectField: (fieldPath: string, field: FieldDef) => void;
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 export const FieldList: React.FC<FieldListProps> = ({
@@ -52,7 +46,6 @@ export const FieldList: React.FC<FieldListProps> = ({
   filter,
   showNested,
   path = [],
-  topValues,
 }) => {
   return (
     <ListDiv>
@@ -76,12 +69,7 @@ export const FieldList: React.FC<FieldListProps> = ({
                   />
                 )}
                 popoverContent={() => {
-                  return (
-                    <FieldDetailPanel
-                      fieldPath={fieldPath}
-                      topValues={topValues}
-                    />
-                  );
+                  return <FieldDetailPanel fieldPath={fieldPath} />;
                 }}
               />
             );
@@ -93,7 +81,6 @@ export const FieldList: React.FC<FieldListProps> = ({
                 filter={filter}
                 selectField={selectField}
                 path={[...path, field.as || field.name]}
-                topValues={topValues}
               />
             );
           } else {
@@ -125,7 +112,6 @@ interface CollapsibleSourceProps {
   source: StructDef;
   filter: (field: FieldDef) => boolean;
   selectField: (fieldPath: string, field: FieldDef) => void;
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 const CollapsibleSource: React.FC<CollapsibleSourceProps> = ({
@@ -133,7 +119,6 @@ const CollapsibleSource: React.FC<CollapsibleSourceProps> = ({
   filter,
   selectField,
   path,
-  topValues,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -158,7 +143,6 @@ const CollapsibleSource: React.FC<CollapsibleSourceProps> = ({
             fields={source.fields}
             showNested={true}
             path={path}
-            topValues={topValues}
           />
         </ListNest>
       )}

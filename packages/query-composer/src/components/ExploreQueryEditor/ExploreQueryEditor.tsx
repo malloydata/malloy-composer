@@ -130,7 +130,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                         queryName={queryName}
                         stageSummary={querySummary?.stages[0]}
                         isOnlyStage={querySummary?.stages.length === 1}
-                        topValues={topValues}
                       />
                     </Popover>
                   </div>
@@ -180,7 +179,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     querySummary={querySummary}
                     queryModifiers={queryModifiers}
                     stagePath={undefined}
-                    topValues={topValues}
                   />
                 )}
               </QueryBarInner>

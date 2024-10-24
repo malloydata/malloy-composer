@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FilterCondition,
-  SearchValueMapResult,
-  StructDef,
-  ModelDef,
-} from '@malloydata/malloy';
+import {FilterCondition, StructDef, ModelDef} from '@malloydata/malloy';
 import {ReactElement, useContext, useState} from 'react';
 import styled from 'styled-components';
 import {stringFilterToString} from '../../core/filters';
@@ -77,7 +72,6 @@ interface ActionMenuProps {
   closeMenu: () => void;
   searchItems?: SearchItem[];
   addFilter?: (filter: FilterCondition) => void;
-  topValues?: SearchValueMapResult[] | undefined;
   model?: ModelDef;
   modelPath?: string;
 }
@@ -89,7 +83,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   closeMenu,
   searchItems,
   valueSearchSource,
-  topValues,
   addFilter,
 }) => {
   const [activeAction, setActiveAction] = useState<SubMenuAction | undefined>(
@@ -113,7 +106,6 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   const {searchList, count: resultCount} = useSearchList({
     searchTerm,
     items: searchItems || [],
-    topValues,
   });
 
   const valueResultCount = stringSearchResults?.length || 0;

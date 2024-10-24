@@ -25,7 +25,6 @@ import {
   FilterCondition,
   ModelDef,
   QueryFieldDef,
-  SearchValueMapResult,
   SourceDef,
 } from '@malloydata/malloy';
 import {OrderByField, RendererName, StagePath} from '../../types';
@@ -54,7 +53,6 @@ interface AggregateActionMenuProps {
   name: string;
   definition: string | undefined;
   editMeasure: (fieldIndex: number, measure: QueryFieldDef) => void;
-  topValues: SearchValueMapResult[] | undefined;
   addOrderBy: (
     stagePath: StagePath,
     fieldIndex: number,
@@ -81,7 +79,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   definition,
   isEditable,
   fieldIndex,
-  topValues,
   addOrderBy,
   orderByField,
   stagePath,
@@ -107,7 +104,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
               addFilter={addFilter}
               onComplete={onComplete}
               needsRename={!isRenamed}
-              topValues={topValues}
             />
           ),
         },

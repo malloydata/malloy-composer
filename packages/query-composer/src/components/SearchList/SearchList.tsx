@@ -21,7 +21,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {SearchValueMapResult} from '@malloydata/malloy';
 import styled from 'styled-components';
 import {QuerySummaryItem, QuerySummaryItemField} from '../../types';
 import {EmptyMessage} from '../CommonElements';
@@ -42,7 +41,6 @@ export interface SearchItem {
 interface SearchListProps {
   searchTerm: string;
   items: SearchItem[];
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 interface UseSearchListResult {
@@ -53,7 +51,6 @@ interface UseSearchListResult {
 export const useSearchList = ({
   searchTerm,
   items,
-  topValues,
 }: SearchListProps): UseSearchListResult => {
   const rankedItems = items
     .map(item => {
@@ -81,12 +78,7 @@ export const useSearchList = ({
                   detail={item.detail}
                 />
               )}
-              popoverContent={() => (
-                <FieldDetailPanel
-                  fieldPath={field.path}
-                  topValues={topValues}
-                />
-              )}
+              popoverContent={() => <FieldDetailPanel fieldPath={field.path} />}
             />
           );
         } else {

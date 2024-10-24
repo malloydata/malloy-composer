@@ -32,7 +32,6 @@ import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {
   FilterCondition,
   QueryFieldDef,
-  SearchValueMapResult,
   SourceDef,
   ModelDef,
 } from '@malloydata/malloy';
@@ -72,7 +71,6 @@ interface StageActionMenuProps {
   ) => void;
   stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
-  topValues: SearchValueMapResult[] | undefined;
   isLastStage: boolean;
   model: ModelDef;
   modelPath: string;
@@ -92,13 +90,11 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   closeMenu,
   setRenderer,
   isLastStage,
-  topValues,
   model,
   modelPath,
 }) => {
   return (
     <ActionMenu
-      topValues={topValues}
       closeMenu={closeMenu}
       actions={[
         {
@@ -116,7 +112,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}
               needsRename={false}
-              topValues={topValues}
             />
           ),
         },
@@ -150,7 +145,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
               toggleField={fieldPath => toggleField(stagePath, fieldPath)}
               addNewDimension={def => addNewDimension(stagePath, def)}
               onComplete={onComplete}
-              topValues={topValues}
             />
           ),
         },

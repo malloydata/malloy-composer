@@ -32,7 +32,6 @@ import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {
   FilterCondition,
   QueryFieldDef,
-  SearchValueMapResult,
   SourceDef,
   ModelDef,
 } from '@malloydata/malloy';
@@ -71,7 +70,6 @@ interface NestQueryActionMenuProps {
   stageSummary: StageSummary;
   updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   beginReorderingField: () => void;
-  topValues: SearchValueMapResult[] | undefined;
   rename: (newName: string) => void;
   model: ModelDef;
   modelPath: string;
@@ -96,14 +94,12 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   setRenderer,
   beginReorderingField,
   addStage,
-  topValues,
   rename,
   isExpanded,
   replaceWithDefinition,
 }) => {
   return (
     <ActionMenu
-      topValues={topValues}
       model={model}
       modelPath={modelPath}
       valueSearchSource={source}
@@ -125,7 +121,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
               addFilter={(filter, as) => addFilter(stagePath, filter, as)}
               onComplete={onComplete}
               needsRename={false}
-              topValues={topValues}
             />
           ),
         },
@@ -159,7 +154,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
               toggleField={fieldPath => toggleField(stagePath, fieldPath)}
               addNewDimension={def => addNewDimension(stagePath, def)}
               onComplete={onComplete}
-              topValues={topValues}
             />
           ),
         },
