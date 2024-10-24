@@ -150,6 +150,21 @@ run: names -> {
   having: population > 100
 }`);
     });
+
+    it('Adds a filter to a field', () => {
+      qb.addField({stageIndex: 0}, 'population');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  aggregate: population
+}`);
+      qb.addFilterToField({stageIndex: 0}, 0, FIELD_FILTER, 'lloyd_count');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  aggregate: lloyd_count is population {
+    where: name = "lloyd"
+  }
+}`);
+    });
   });
 
   describe('removeFilter', () => {
@@ -339,7 +354,7 @@ const AGGREGATE_FILTER: FilterCondition = {
   code: 'population > 100',
   expressionType: 'aggregate',
   e: {
-    node: '=',
+    node: '>',
     kids: {
       left: {
         node: 'field',
@@ -349,6 +364,41 @@ const AGGREGATE_FILTER: FilterCondition = {
         node: 'numberLiteral',
         literal: '100',
       },
+    },
+  },
+};
+
+const FIELD_FILTER: FilterCondition = {
+  node: 'filterCondition',
+  code: 'name = "lloyd"',
+  expressionType: 'aggregate',
+  e: {
+    node: 'filteredExpr',
+    kids: {
+      e: {
+        node: 'field',
+        path: ['population'],
+      },
+      filterList: [
+        {
+          node: 'filterCondition',
+          code: 'name = "lloyd"',
+          e: {
+            node: '=',
+            kids: {
+              left: {
+                node: 'field',
+                path: ['name'],
+              },
+              right: {
+                node: 'stringLiteral',
+                literal: 'lloyd',
+              },
+            },
+          },
+          expressionType: 'scalar',
+        },
+      ],
     },
   },
 };

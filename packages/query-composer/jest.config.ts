@@ -21,7 +21,7 @@ module.exports = {
   verbose: true,
   testEnvironment: 'node',
   collectCoverage: true,
-  coverageReporters: ['json', 'html'],
+  coverageReporters: ['lcov', 'html'],
   collectCoverageFrom: ['src/core/*.ts'],
   preset: 'ts-jest',
 };

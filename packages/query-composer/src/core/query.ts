@@ -586,10 +586,10 @@ export class QueryBuilder extends SourceUtils {
       if (!isFilteredField(field)) {
         throw new Error('Cannot edit filter on non-filtered field.');
       }
-      if (field.e.filterList === undefined) {
+      if (field.e.kids.filterList === undefined) {
         throw new Error('Field has no filters');
       }
-      field.e.filterList[filterIndex] = filter;
+      field.e.kids.filterList[filterIndex] = filter;
     }
   }
 
@@ -617,13 +617,13 @@ export class QueryBuilder extends SourceUtils {
       if (!isFilteredField(field)) {
         throw new Error('Cannot edit filter on non-filtered field.');
       }
-      if (field.e.filterList === undefined) {
+      if (field.e.kids.filterList === undefined) {
         throw new Error('Field has no filters');
       }
       // TODO just changed this to "filterIndex" rather than "fieldIndex"...
       // seems like it must have been broken before? Unless somewhere I passed the
       // args in the wrong order...
-      field.e.filterList.splice(filterIndex, 1);
+      field.e.kids.filterList.splice(filterIndex, 1);
     }
   }
 
@@ -910,7 +910,7 @@ export class QueryBuilder extends SourceUtils {
         expressionType: def.expressionType,
       };
     } else if (isFilteredField(field)) {
-      field.e.filterList = [...(field.e.filterList || []), filter];
+      field.e.kids.filterList = [...(field.e.kids.filterList || []), filter];
     } else if (isRenamedField(field)) {
       if (!isLeafAtomic(field)) {
         throw new Error('Invalid field');
@@ -1125,7 +1125,7 @@ ${malloy}
           malloy,
         };
       } else if (isFilteredField(field)) {
-        const fieldDef = this.getField(source, dottify(field.e.e.path));
+        const fieldDef = this.getField(source, dottify(field.e.kids.e.path));
         if (isJoined(fieldDef)) {
           throw new Error("Don't know how to deal with this");
         }
@@ -1142,11 +1142,11 @@ ${malloy}
         const malloy: Fragment[] = [];
         const newNameIs = `${maybeQuoteIdentifier(field.name)} is `;
         malloy.push(
-          `${newNameIs}${maybeQuoteIdentifier(dottify(field.e.e.path))}`
+          `${newNameIs}${maybeQuoteIdentifier(dottify(field.e.kids.e.path))}`
         );
-        if (field.e.filterList && field.e.filterList.length > 0) {
+        if (field.e.kids.filterList && field.e.kids.filterList.length > 0) {
           malloy.push(' {', NEWLINE, INDENT, 'where:');
-          malloy.push(...this.getFiltersString(field.e.filterList));
+          malloy.push(...this.getFiltersString(field.e.kids.filterList));
           malloy.push(OUTDENT, '}');
         }
         return {
@@ -1588,7 +1588,7 @@ ${malloy}
             fieldIndex,
             filters: this.getSummaryItemsForFilterList(
               source,
-              field.e.filterList || []
+              field.e.kids.filterList || []
             ),
             styles: [],
             isRefined: true,
@@ -1695,10 +1695,10 @@ ${malloy}
   }
 
   fanToDef(fan: FilteredField, def: AtomicFieldDef): FieldDef {
-    const malloy: Fragment[] = [dottify(fan.e.e.path)];
-    if (fan.e.filterList && fan.e.filterList.length > 0) {
+    const malloy: Fragment[] = [dottify(fan.e.kids.e.path)];
+    if (fan.e.kids.filterList && fan.e.kids.filterList.length > 0) {
       malloy.push(' {', NEWLINE, INDENT, 'where:');
-      malloy.push(...this.getFiltersString(fan.e.filterList));
+      malloy.push(...this.getFiltersString(fan.e.kids.filterList));
       malloy.push(OUTDENT, '}');
     }
     const code = codeFromFragments(malloy);
@@ -1745,11 +1745,13 @@ function codeFromFragments(fragments: Fragment[]) {
 
 type FilteredField = QueryFieldDef & {
   e: {
-    type: 'filterExpression';
-    filterList: FilterCondition[];
-    e: {
-      type: 'field';
-      path: string[];
+    node: 'filteredExpr';
+    kids: {
+      filterList: FilterCondition[];
+      e: {
+        node: 'field';
+        path: string[];
+      };
     };
   };
 };
