@@ -6,9 +6,9 @@ export function useSearch(
   _source: StructDef | undefined,
   _searchTerm: string,
   _fieldPath?: string
-) {
+): {searchResults: SearchIndexResult[] | undefined; isLoading: boolean} {
   return {
-    searchResults: [] as SearchIndexResult[],
+    searchResults: undefined,
     isLoading: false,
   };
 }

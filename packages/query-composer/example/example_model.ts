@@ -1,4 +1,5 @@
-import {ModelDef, SourceDef} from '@malloydata/malloy';
+import {ModelDef} from '@malloydata/malloy';
+import {getSourceDef} from '../src/core/models';
 
 export const modelPath = '/names/names.malloy';
 
@@ -5657,4 +5658,4 @@ export const model: ModelDef = {
   },
 };
 
-export const source: SourceDef = model.contents['names'] as SourceDef;
+export const source = getSourceDef(model, 'names');

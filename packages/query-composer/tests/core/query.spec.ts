@@ -8,7 +8,8 @@
 import {QueryBuilder} from '../../src/core/query';
 
 import {model, source} from '../../example/example_model';
-import {FilterCondition, SourceDef} from '@malloydata/malloy';
+import {FilterCondition} from '@malloydata/malloy';
+import {getSourceDef} from '../../src/core/models';
 
 describe('QueryBuilder', () => {
   let qb: QueryBuilder;
@@ -326,7 +327,7 @@ run: names -> {
   describe('updateSource', () => {
     it('updates the source', () => {
       expect(qb.getSource()?.as).toEqual('names');
-      qb.updateSource(model.contents['names2'] as SourceDef);
+      qb.updateSource(getSourceDef(model, 'names2'));
       expect(qb.getSource()?.as).toEqual('names2');
     });
   });
