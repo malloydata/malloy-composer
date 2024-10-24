@@ -59,7 +59,6 @@ interface QuerySummaryPanelProps {
   source: SourceDef;
   querySummary: QuerySummary;
   stagePath: StagePath | undefined;
-  topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
   modelPath: string;
 }
@@ -69,7 +68,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
   modelPath,
   querySummary,
   stagePath,
-  topValues,
   queryModifiers,
 }) => {
   if (
@@ -117,7 +115,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     setRenderer={queryModifiers.setRenderer}
                     stageSummary={stageSummary}
                     updateFieldOrder={queryModifiers.updateFieldOrder}
-                    topValues={topValues}
                   />
                 )}
                 content={({isOpen}) => (
@@ -146,7 +143,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               stagePath={nestStagePath}
               key={'stage/' + stageIndex}
               source={stageSummary.inputSource}
-              topValues={topValues}
             />
           </div>
         );
@@ -159,7 +155,6 @@ interface SummaryStageProps {
   stageSummary: StageSummary;
   stagePath: StagePath;
   source: SourceDef;
-  topValues: SearchValueMapResult[] | undefined;
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
@@ -170,7 +165,6 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
   model,
   modelPath,
   stageSummary,
-  topValues,
   queryModifiers,
   source,
   stagePath,
@@ -227,7 +221,6 @@ const StageSummaryUI: React.FC<SummaryStageProps> = ({
             item.fieldIndex === selectedFieldIndex
           }
           deselect={() => setSelectedFieldIndex(undefined)}
-          topValues={topValues}
           queryModifiers={queryModifiers}
           source={source}
           stagePath={stagePath}
@@ -295,7 +288,6 @@ interface SummaryItemProps {
   fieldIndex?: number | undefined;
   isSelected: boolean;
   deselect: () => void;
-  topValues: SearchValueMapResult[] | undefined;
   queryModifiers: QueryModifiers;
   model: ModelDef;
   modelPath: string;
@@ -312,7 +304,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
   isSelected,
   beginReorderingField,
   deselect,
-  topValues,
   queryModifiers,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -442,7 +433,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   editMeasure={(fieldIndex, dimension) =>
                     queryModifiers.editMeasure(stagePath, fieldIndex, dimension)
                   }
-                  topValues={topValues}
                   addOrderBy={queryModifiers.addOrderBy}
                   orderByField={{
                     name: item.name,
@@ -556,7 +546,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 }
                 stageSummary={item.stages[0]}
                 updateFieldOrder={queryModifiers.updateFieldOrder}
-                topValues={topValues}
                 rename={newName => {
                   queryModifiers.renameField(
                     stagePath,
@@ -653,7 +642,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                       definition={
                         item.type !== 'field' ? item.source : undefined
                       }
-                      topValues={undefined}
                     />
                   );
                 }}
@@ -684,10 +672,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 )}
                 popoverContent={() => {
                   return (
-                    <FieldDetailPanel
-                      filterExpression={item.filterSource}
-                      topValues={undefined}
-                    />
+                    <FieldDetailPanel filterExpression={item.filterSource} />
                   );
                 }}
               />
@@ -804,7 +789,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                       isLastStage={stageIndex === item.stages.length - 1}
                       stageSummary={stageSummary}
                       updateFieldOrder={queryModifiers.updateFieldOrder}
-                      topValues={topValues}
                     />
                   )}
                   content={({isOpen}) => (
@@ -831,7 +815,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                 stageSummary={stageSummary}
                 stagePath={nestStagePath}
                 source={source}
-                topValues={topValues}
                 queryModifiers={queryModifiers}
               />
             </ListNest>
@@ -858,7 +841,6 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
                   deselect={() => {
                     // Only used for filters, reordering not needed
                   }}
-                  topValues={topValues}
                   queryModifiers={queryModifiers}
                 />
               );

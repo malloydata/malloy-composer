@@ -21,24 +21,24 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {SearchValueMapResult} from '@malloydata/malloy';
+import {useContext} from 'react';
 import styled from 'styled-components';
 import {ContextMenuMain, ScrollMain} from '../CommonElements';
 import {largeNumberLabel} from '../../utils';
+import {SearchContext} from '../../contexts/search_context';
 
 interface FieldDetailPanelProps {
   fieldPath?: string;
   filterExpression?: string;
   definition?: string;
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
   fieldPath,
-  topValues,
   filterExpression,
   definition,
 }) => {
+  const {topValues} = useContext(SearchContext);
   const fieldTopValues = topValues?.find(
     entry => entry.fieldName === fieldPath
   );

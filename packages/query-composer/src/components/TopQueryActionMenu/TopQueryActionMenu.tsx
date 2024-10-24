@@ -45,7 +45,6 @@ interface TopQueryActionMenuProps {
   stagePath: StagePath;
   orderByFields: OrderByField[];
   closeMenu: () => void;
-  topValues: SearchValueMapResult[] | undefined;
   stageSummary: StageSummary | undefined;
   queryName: string;
   isOnlyStage: boolean;
@@ -59,14 +58,12 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
   stagePath,
   orderByFields,
   closeMenu,
-  topValues,
   queryModifiers,
   model,
   modelPath,
 }) => {
   return (
     <ActionMenu
-      topValues={topValues}
       valueSearchSource={source}
       addFilter={filter => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
@@ -84,7 +81,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
             <FilterContextBar
               modelPath={modelPath}
               model={model}
-              topValues={topValues}
               source={source}
               addFilter={(filter, as) =>
                 queryModifiers.addFilter(stagePath, filter, as)
@@ -124,7 +120,6 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
-              topValues={topValues}
               source={source}
               addNewDimension={dim =>
                 queryModifiers.addNewDimension(stagePath, dim)

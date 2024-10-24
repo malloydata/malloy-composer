@@ -85,14 +85,12 @@ export const AggregateContextBar: React.FC<AggregateContextBarProps> = ({
                     filter={isAggregate}
                     showNested={true}
                     selectField={selectField}
-                    topValues={undefined}
                   />
                 </>
               )}
               {searchTerm !== '' && (
                 <>
                   <SearchList
-                    topValues={undefined}
                     searchTerm={searchTerm}
                     items={flatFields(source)
                       .filter(({field}) => isAggregate(field))

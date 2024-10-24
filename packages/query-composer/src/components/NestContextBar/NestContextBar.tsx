@@ -85,14 +85,12 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
                     filter={field => field.type === 'turtle'}
                     showNested={true}
                     selectField={selectField}
-                    topValues={undefined}
                   />
                 </>
               )}
               {searchTerm !== '' && (
                 <>
                   <SearchList
-                    topValues={undefined}
                     searchTerm={searchTerm}
                     items={flatFields(source)
                       .filter(({field}) => isQuery(field))

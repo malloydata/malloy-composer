@@ -85,13 +85,11 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
                 selectField(fieldDef);
                 onComplete();
               }}
-              topValues={undefined}
             />
           )}
           {searchTerm !== '' && (
             <>
               <SearchList
-                topValues={undefined}
                 searchTerm={searchTerm}
                 items={fields
                   .map(field => ({field, path: field.as || field.name}))

@@ -21,7 +21,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {SearchValueMapResult} from '@malloydata/malloy';
 import styled from 'styled-components';
 import {QuerySummaryItem, QuerySummaryItemField} from '../../types';
 import {EmptyMessage} from '../CommonElements';
@@ -30,6 +29,8 @@ import {FieldDetailPanel} from '../FieldDetailPanel';
 import {HoverToPopover} from '../HoverToPopover';
 import {TypeIcon} from '../TypeIcon';
 import {typeOfField} from '../../utils';
+import {SearchContext} from '../../contexts/search_context';
+import {useContext} from 'react';
 
 export interface SearchItem {
   select: () => void;
@@ -42,7 +43,6 @@ export interface SearchItem {
 interface SearchListProps {
   searchTerm: string;
   items: SearchItem[];
-  topValues: SearchValueMapResult[] | undefined;
 }
 
 interface UseSearchListResult {
@@ -53,8 +53,8 @@ interface UseSearchListResult {
 export const useSearchList = ({
   searchTerm,
   items,
-  topValues,
 }: SearchListProps): UseSearchListResult => {
+  const {topValues} = useContext(SearchContext);
   const rankedItems = items
     .map(item => {
       return {item, rank: rank(item.terms, searchTerm)};
@@ -81,12 +81,7 @@ export const useSearchList = ({
                   detail={item.detail}
                 />
               )}
-              popoverContent={() => (
-                <FieldDetailPanel
-                  fieldPath={field.path}
-                  topValues={topValues}
-                />
-              )}
+              popoverContent={() => <FieldDetailPanel fieldPath={field.path} />}
             />
           );
         } else {

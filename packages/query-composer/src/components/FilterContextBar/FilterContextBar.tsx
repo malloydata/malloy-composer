@@ -25,7 +25,6 @@ import {
   FieldDef,
   FilterCondition,
   ModelDef,
-  SearchValueMapResult,
   StructDef,
 } from '@malloydata/malloy';
 import {useContext, useState} from 'react';
@@ -57,7 +56,6 @@ interface FilterContextBarProps {
   addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;
-  topValues: SearchValueMapResult[] | undefined;
   model: ModelDef;
   modelPath: string;
 }
@@ -69,7 +67,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   addFilter,
   onComplete,
   needsRename,
-  topValues,
 }) => {
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,7 +93,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   const {searchList, count: resultCount} = useSearchList({
     searchTerm,
     items: searchItems || [],
-    topValues,
   });
 
   const valueResultCount = stringSearchResults?.length || 0;
@@ -139,7 +135,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                     filter={isDimension}
                     showNested={true}
                     selectField={(path, def) => setField({path, def})}
-                    topValues={topValues}
                   />
                 </ContextMenuContent>
               </ScrollMain>
