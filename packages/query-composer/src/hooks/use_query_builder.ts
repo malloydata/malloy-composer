@@ -24,7 +24,6 @@
 import {
   FilterCondition,
   QueryFieldDef,
-  SourceDef,
   ModelDef,
   NamedQuery,
   TurtleDef,
@@ -32,6 +31,7 @@ import {
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {QueryBuilder} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
+import {getSourceDef} from '../core/models';
 
 interface UseQueryBuilderResult {
   queryBuilder: QueryBuilder;
@@ -129,9 +129,7 @@ export function useQueryBuilder(
 ): UseQueryBuilderResult {
   const [, setVersion] = useState(0);
   const sourceDef =
-    modelDef && sourceName
-      ? (modelDef.contents[sourceName] as SourceDef)
-      : undefined;
+    modelDef && sourceName ? getSourceDef(modelDef, sourceName) : undefined;
   const queryBuilder = useMemo<QueryBuilder>(
     () => new QueryBuilder(sourceDef),
     [sourceDef]

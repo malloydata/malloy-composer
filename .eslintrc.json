@@ -23,6 +23,7 @@
     }
   },
   "rules": {
+    "array-callback-return": "error",
     "consistent-return": "error",
     "no-console": [
       "error",

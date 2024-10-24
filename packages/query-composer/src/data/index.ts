@@ -1,14 +1,9 @@
-import {ModelDef, SearchIndexResult, StructDef} from '@malloydata/malloy';
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ *  LICENSE file in the root directory of this source tree.
+ */
 
-export function useSearch(
-  _model: ModelDef | undefined,
-  _modelPath: string | undefined,
-  _source: StructDef | undefined,
-  _searchTerm: string,
-  _fieldPath?: string
-) {
-  return {
-    searchResults: [] as SearchIndexResult[],
-    isLoading: false,
-  };
-}
+export * from './use_run_query';
+export * from './use_search';
