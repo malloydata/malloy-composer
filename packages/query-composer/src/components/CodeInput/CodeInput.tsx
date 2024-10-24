@@ -66,8 +66,8 @@ export const CodeInput: React.FC<CodeInputProps> = ({
 };
 
 const StyledInput = styled.input`
-  font-family: Courier, Menlo, monspace;
-  font-size: var(--malloy-composer-fontSize, 14px);
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
+  font-size: var(--malloy-composer--code-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   padding: 5px 10px;

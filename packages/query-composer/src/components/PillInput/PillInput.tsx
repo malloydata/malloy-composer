@@ -93,8 +93,9 @@ export const PillInput: React.FC<PillInputProps> = ({
         inp.current?.focus();
       }
     };
-    window.addEventListener('keyup', handler);
-    return () => window.removeEventListener('keyup', handler);
+    const {current} = ref;
+    current?.addEventListener('keyup', handler);
+    return () => current?.removeEventListener('keyup', handler);
   });
 
   const commitValue = () => {
@@ -118,6 +119,7 @@ export const PillInput: React.FC<PillInputProps> = ({
       {values.map((value, index) => (
         <Pill
           key={index}
+          tabIndex={0}
           isSelected={selectedPill === index}
           onClick={event => {
             setSelectedPill(index);
