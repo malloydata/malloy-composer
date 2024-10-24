@@ -21,9 +21,9 @@ export function useSearch(
     let searchValues = topValues;
 
     if (fieldPath) {
-      const fieldValues = topValues.find(value => {
-        value.fieldName === fieldPath;
-      });
+      const fieldValues = topValues.find(
+        value => value.fieldName === fieldPath
+      );
       if (fieldValues) {
         searchValues = [fieldValues];
       } else {
