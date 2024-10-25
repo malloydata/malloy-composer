@@ -76,7 +76,6 @@ export const useSearchList = ({
                   name={field.name}
                   color={field.kind}
                   detail={item.detail}
-                  trapMouseDown={true}
                 />
               )}
               popoverContent={() => <FieldDetailPanel fieldPath={field.path} />}

@@ -208,6 +208,7 @@ function useStringEqualToOrNotBuilder(
                   setSearchValue('');
                 }}
                 fullDetail={true}
+                trapMouseDown={true}
               />
             );
           })}
