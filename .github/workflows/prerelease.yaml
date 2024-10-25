@@ -1,0 +1,29 @@
+name: npmjs.com Pre-release
+
+on: [workflow_dispatch]
+
+jobs:
+  main:
+    uses: './.github/workflows/test.yaml'
+
+  npm-prerelease:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: npm install, build, and publish
+        run: |
+          npm ci --loglevel error
+          PRERELEASE=$(date +%y%m%d%H%M%S)
+          VERSION=$(jq -r .version ./packages/query-composer/package.json)-dev$PRERELEASE
+          npm publish -w packages/query-composer --access=public --dry-run
+        env:
+          CI: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
