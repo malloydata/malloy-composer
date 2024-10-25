@@ -69,7 +69,8 @@ export const EditFilter: React.FC<EditFilterProps> = ({
                 .then(filterExpression => {
                   editFilter(filterExpression);
                   onComplete();
-                });
+                })
+                .catch(console.error);
             }}
           >
             Save

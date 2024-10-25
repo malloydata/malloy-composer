@@ -219,8 +219,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
                   addFilter(filterExpression, newName || undefined);
                   onComplete();
                 })
-                // eslint-disable-next-line no-console
-                .catch(console.log);
+                .catch(console.error);
               event.stopPropagation();
               event.preventDefault();
             }}

@@ -209,7 +209,8 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                                   .then(expression => {
                                     addFilter && addFilter(expression);
                                     closeMenu();
-                                  });
+                                  })
+                                  .catch(console.error);
                               }}
                             />
                           );
