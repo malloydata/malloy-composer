@@ -73,42 +73,42 @@ export const Button = styled.button<{
     ${
       color === 'primary' && !outline
         ? `
-        border: 1px solid #4285F4;
-        background-color: #4285F4;
-        color: white;
+        border: 1px solid var(--malloy-composer-form-primary, #4285F4);
+        background-color: var(--malloy-composer-form-primary, #4285F4);
+        color: var(--malloy-composer-form-background, white);
 
         &:active {
-          background-color: #175cb7;
+          background-color: var(--malloy-composer-form-primaryActive, #175cb7);
         }
       `
         : color === 'primary' && outline
         ? `
-        border: 1px solid #d8dade;
-        background-color: white;
-        color: #4285F4;
+        border: 1px solid var(--malloy-composer-form-border, #d8dade);
+        background-color: var(--malloy-composer-form-background, white);
+        color: var(--malloy-composer-form-primary, #4285F4);
 
         &:active {
-          background-color: #efefef;
+          background-color: var(--malloy-composer-form-active, #efefef);
         }
       `
         : color === 'secondary' && !outline
         ? `
         border: 0;
-        background-color: transparent;
-        color: #343434;
+        background-color: var(--malloy-composer-form-secondary, transparent);
+        color: var(--malloy-composer-form-foreground, #343434);
 
         &:active {
-          background-color: #adadad;
+          background-color: var(--malloy-composer-form-secondaryActive, #adadad);
         }
       `
         : `
-        border: 1px solid #343434;
-        background-color: white;
-        color: #343434;
+        border: 1px solid color: var(--malloy-composer-form-foreground,#343434);
+        background-color: var(--malloy-composer-form-background, white);
+        color: var(--malloy-composer-form-foreground, #343434);
 
         &:active {
-          background-color: #343434;
-          color: white;
+          background-color: var(--malloy-composer-form-foreground, #343434);
+          color: var(--malloy-composer-form-background, white);
         }
       `
     }

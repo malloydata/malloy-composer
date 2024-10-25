@@ -180,11 +180,12 @@ export const PillInput: React.FC<PillInputProps> = ({
 const OuterInput = styled.div<{
   isFocused: boolean;
 }>`
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   font-size: var(--malloy-composer-fontSize, 14px);
   font-weight: normal;
   border-radius: 5px;
-  border: 1px solid #efefef;
+  border: 1px solid var(--malloy-composer-form-border, #efefef);
+  background-color: var(--malloy-composer-form-background, #efefef);
   padding: 2px 3px;
   outline: none;
   display: flex;
@@ -221,8 +222,10 @@ const Pill = styled.div<{
 const StyledInput = styled.input`
   border: none;
   outline: none;
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   font-size: var(--malloy-composer-fontSize, 14px);
+  color: var(--malloy-composer-form-foreground);
+  background-color: var(--malloy-composer-form-background);
   min-width: 95px;
   padding: 3.75px 7px;
   flex-grow: 1;

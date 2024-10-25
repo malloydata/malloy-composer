@@ -78,7 +78,7 @@ const StyledInput = styled.input`
   width: calc(100% - 22px);
 
   &:focus {
-    border-color: #4285f4;
-    background-color: var(--malloy-composer-dimension-light);
+    border-color: var(--malloy-composer-form-focus, #4285f4);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
   }
 `;

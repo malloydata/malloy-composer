@@ -5659,3 +5659,112 @@ export const model: ModelDef = {
 };
 
 export const source = getSourceDef(model, 'names');
+
+export const topValues = [
+  {
+    fieldName: 'name',
+    cardinality: 32403,
+    values: [
+      {
+        fieldValue: 'James',
+        weight: 7409,
+      },
+      {
+        fieldValue: 'Leslie',
+        weight: 7407,
+      },
+      {
+        fieldValue: 'Lee',
+        weight: 7313,
+      },
+      {
+        fieldValue: 'John',
+        weight: 7221,
+      },
+      {
+        fieldValue: 'Robert',
+        weight: 7174,
+      },
+      {
+        fieldValue: 'Jessie',
+        weight: 6922,
+      },
+      {
+        fieldValue: 'William',
+        weight: 6880,
+      },
+      {
+        fieldValue: 'Michael',
+        weight: 6756,
+      },
+      {
+        fieldValue: 'Mary',
+        weight: 6699,
+      },
+      {
+        fieldValue: 'Charles',
+        weight: 6624,
+      },
+    ],
+  },
+  {
+    fieldName: 'state',
+    cardinality: 51,
+    values: [
+      {
+        fieldValue: 'CA',
+        weight: 400762,
+      },
+      {
+        fieldValue: 'TX',
+        weight: 368987,
+      },
+      {
+        fieldValue: 'NY',
+        weight: 309532,
+      },
+      {
+        fieldValue: 'IL',
+        weight: 237839,
+      },
+      {
+        fieldValue: 'FL',
+        weight: 218192,
+      },
+      {
+        fieldValue: 'PA',
+        weight: 206944,
+      },
+      {
+        fieldValue: 'OH',
+        weight: 204165,
+      },
+      {
+        fieldValue: 'GA',
+        weight: 191367,
+      },
+      {
+        fieldValue: 'MI',
+        weight: 190023,
+      },
+      {
+        fieldValue: 'NC',
+        weight: 181647,
+      },
+    ],
+  },
+  {
+    fieldName: 'gender',
+    cardinality: 2,
+    values: [
+      {
+        fieldValue: 'F',
+        weight: 3510324,
+      },
+      {
+        fieldValue: 'M',
+        weight: 2801180,
+      },
+    ],
+  },
+];

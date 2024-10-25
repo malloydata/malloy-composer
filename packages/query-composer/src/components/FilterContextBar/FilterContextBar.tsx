@@ -184,7 +184,8 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                                   .then(expression => {
                                     addFilter && addFilter(expression);
                                     onComplete();
-                                  });
+                                  })
+                                  .catch(console.error);
                               }}
                             />
                           );

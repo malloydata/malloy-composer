@@ -39,6 +39,7 @@ interface FieldButtonProps {
   disableHover?: boolean;
   detail?: string;
   fullDetail?: boolean;
+  trapMouseDown?: boolean;
 }
 
 export const FieldButton: React.FC<FieldButtonProps> = ({
@@ -53,6 +54,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
   disableHover = false,
   detail,
   fullDetail = false,
+  trapMouseDown = false,
 }) => {
   return (
     <FieldButtonRaw
@@ -60,6 +62,13 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
       color={color}
       active={active}
       disableHover={disableHover}
+      onMouseDown={e => {
+        if (trapMouseDown) {
+          // Allows PillInputs to accept a search value
+          // without losing focus
+          e.stopPropagation();
+        }
+      }}
     >
       <FrontPart>
         <FieldIcon color={color}>{icon}</FieldIcon>

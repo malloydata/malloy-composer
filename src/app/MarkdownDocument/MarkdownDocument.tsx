@@ -377,10 +377,10 @@ const QueryLinkInfo = styled.div`
 `;
 
 const QueryLink = styled.div`
-  border: 1px solid #d7d7d7;
+  border: 1px solid var(--malloy-form-border-color, #d7d7d7);
   border-radius: 7px;
   padding: 15px;
-  background-color: white;
+  background-color: var(--malloy-form-background-color, white);
   display: flex;
   flex-direction: row;
   gap: 2px;

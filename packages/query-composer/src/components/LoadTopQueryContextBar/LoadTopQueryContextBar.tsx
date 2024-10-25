@@ -42,6 +42,7 @@ import {SearchInput} from '../SearchInput';
 import {SearchList} from '../SearchList';
 import {
   fieldToSummaryItem,
+  isNotIndexQuery,
   isQuery,
   pathParent,
   termsForField,
@@ -63,7 +64,10 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const modelQueries =
     model && source ? queriesForSourceInModel(model, source) : [];
-  const fields = [...source.fields, ...modelQueries];
+  const fields = [...source.fields, ...modelQueries]
+    .filter(isQuery)
+    .filter(isNotIndexQuery);
+
   return (
     <ContextMenuOuter>
       <ContextMenuSearchHeader>
@@ -93,7 +97,6 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
                 searchTerm={searchTerm}
                 items={fields
                   .map(field => ({field, path: field.as || field.name}))
-                  .filter(({field}) => isQuery(field))
                   .map(({field, path}) => ({
                     item: fieldToSummaryItem(field, path),
                     terms: [...termsForField(field, path), 'query'],
@@ -121,12 +124,17 @@ function itemIsQuery(item: NamedModelObject): item is NamedQuery {
   return item.type === 'query';
 }
 
+function itemIsNotIndex(item: NamedQuery): boolean {
+  return item.pipeline[0]?.type !== 'index';
+}
+
 export function queriesForSourceInModel(
   modelDef: ModelDef,
   source: StructDef
 ): TurtleDef[] {
   return Object.values(modelDef.contents)
     .filter(itemIsQuery)
+    .filter(itemIsNotIndex)
     .filter(item => item.structRef === (source.as || source.name))
     .map(item => {
       const turtle: TurtleDef = {

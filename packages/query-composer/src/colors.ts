@@ -32,7 +32,7 @@ export type ColorKey =
 
 export const COLORS = {
   dimension: {
-    fillLight: 'var(--malloy-composer-dimension-light, rgb(240,246,255))',
+    fillLight: 'var(--malloy-composer-dimension-light, #f0f6ff)',
     fillMedium: 'var(--malloy-composer-dimension-medium, #c3d7f7)',
     fillStrong: 'var(--malloy-composer-dimension-strong, #4285f4)',
   },

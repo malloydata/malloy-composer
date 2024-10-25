@@ -46,27 +46,27 @@ const Wrapper = styled.div`
 const InputBox = styled.button`
   background-color: transparent;
   font-size: var(--malloy-composer-fontSize, 14px);
-  border: 1px solid #efefef;
+  border: 1px solid var(--malloy-composer-form-background, #efefef);
   border-radius: 4px;
   padding: 3px 10px;
   cursor: pointer;
-  color: #5f6368;
+  color: var(--malloy-composer-form-foreground, #5f6368);
   display: flex;
   justify-content: space-between;
   text-transform: none;
   align-items: center;
-  font-family: Arial;
+  font-family: var(--malloy-composer-fontFamily, san-serif);
   &:hover {
-    border: 1px solid #ececed;
+    border: 1px solid var(--malloy-composer-form-border, #ececed);
   }
   :focus {
     box-shadow: none;
-    border: 1px solid #4285f4;
+    border: 1px solid var(--malloy-composer-form-focus, #4285f4);
     outline: none;
   }
   &[disabled] {
     cursor: default;
-    background-color: #f6f6f6;
+    background-color: var(--malloy-composer-form-disabledBackground, #f6f6f6);
   }
   width: 100%;
 `;
@@ -78,11 +78,11 @@ const OptionDiv = styled.label`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: #5f6368;
+  color: var(--malloy-composer-form-foreground, #5f6368);
   display: flex;
   align-items: center;
   &:hover {
-    background-color: var(--malloy-composer-dimension-light);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
   }
 `;
 
@@ -96,6 +96,7 @@ const CheckIcon = styled(Checkmark)`
   min-width: 20px;
   opacity: 70%;
   visibility: hidden;
+  color: var(--malloy-composer-form-foreground, #5f6368);
 
   &.selected {
     visibility: visible;
@@ -231,7 +232,7 @@ const OptionRadio = styled.input`
 
 const SelectListDiv = styled.div`
   font-size: var(--malloy-composer-fontSize, 14px);
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   text-transform: none;
   font-weight: normal;
   width: 100%;
@@ -241,7 +242,7 @@ const SelectListDiv = styled.div`
 `;
 
 const OptionDivider = styled.div`
-  border-top: 1px solid #ececec;
+  border-top: 1px solid var(--malloy-composer-form-border, #ececec);
   width: 100%;
   margin: 0 10px;
   margin: 5px 0;
