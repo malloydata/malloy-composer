@@ -24,6 +24,7 @@
 import {
   FieldDef,
   StructDef,
+  TurtleDef,
   expressionIsCalculation,
   isJoined,
   isLeafAtomic,
@@ -126,8 +127,12 @@ export function isDimension(field: FieldDef): boolean {
   );
 }
 
-export function isQuery(field: FieldDef): boolean {
+export function isQuery(field: FieldDef): field is TurtleDef {
   return field.type === 'turtle';
+}
+
+export function isNotIndexQuery(item: TurtleDef): boolean {
+  return item.pipeline[0]?.type !== 'index';
 }
 
 export function flatFields(
