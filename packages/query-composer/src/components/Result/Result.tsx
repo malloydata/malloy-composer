@@ -295,7 +295,7 @@ const MalloyTypeSwitcher = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  background-color: white;
+  background-color: var(--malloy-composer-form-background, white);
   border-radius: 4px;
   width: 140px;
   justify-content: flex-end;

@@ -140,6 +140,6 @@ const StyledInput = styled.input<{
 
   &:focus {
     border-color: #4285f4;
-    background-color: var(--malloy-composer-dimension-light, #ffffff);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
   }
 `;

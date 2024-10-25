@@ -39,7 +39,7 @@ import ActionItemDuplicate from '../../assets/img/insert_icons/item_duplicate.sv
 import VisIconScatterChart from '../../assets/img/vis_icons/viz_scatter.svg?react';
 import ActionIconError from '../../assets/img/insert_icons/alert_outline.svg?react';
 import ActionIconPipeline from '../../assets/img/insert_icons/pipeline.svg?react';
-import ActionIconLoad from '../../assets/img/type_icons/type-icon-projection.svg?react';
+import ActionIconLoad from '../../assets/img/query_load_hover.svg?react';
 import ActionIconMove from '../../assets/img/insert_icons/move_icon_outline.svg?react';
 import ActionIconSearch from '../../assets/img/insert_icons/search.svg?react';
 import ActionIconOpen from '../../assets/img/insert_icons/header_folder.svg?react';
@@ -180,7 +180,7 @@ export const IconWrapper = styled.div<{
         doHover &&
         `
         svg:hover .hoverfill {
-          fill: ${COLORS[color].fillLight};
+          fill: var(--malloy-composer-form-focusBackground, ${COLORS[color].fillLight});
         }
       `
       }

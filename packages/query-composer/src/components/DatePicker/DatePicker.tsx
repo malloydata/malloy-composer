@@ -556,15 +556,15 @@ const Quarter = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: var(--malloy-composer-dimension-light);
-    border-color: var(--malloy-composer-dimension-medium);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+    border-color: var(--malloy-composer-focus, #c3d7f7);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: var(--malloy-composer-dimension-light);
-      border-color: var(--malloy-composer-dimension-medium);
+      background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+      border-color: var(--malloy-composer-focus, #c3d7f7);
     `
       : ''}
 `;
@@ -587,15 +587,15 @@ const Month = styled.div<{
   font-weight: normal;
 
   &:hover {
-    background-color: var(--malloy-composer-dimension-light);
-    border-color: var(--malloy-composer-dimension-medium);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+    border-color: var(--malloy-composer-focus, #c3d7f7);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: var(--malloy-composer-dimension-light);
-      border-color: var(--malloy-composer-dimension-medium);
+      background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+      border-color: var(--malloy-composer-focus, #c3d7f7);
     `
       : ''}
 `;
@@ -633,15 +633,15 @@ const Year = styled.div<{
   border-radius: 5px;
 
   &:hover {
-    background-color: var(--malloy-composer-dimension-light);
-    border-color: var(--malloy-composer-dimension-medium);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+    border-color: var(--malloy-composer-focus, #c3d7f7);
   }
 
   ${({isSelected}) =>
     isSelected
       ? `
-      background-color: var(--malloy-composer-dimension-light);
-      border-color: var(--malloy-composer-dimension-medium);
+      background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+      border-color: var(--malloy-composer-focus, #c3d7f7);
     `
       : ''}
 `;
@@ -685,13 +685,13 @@ const WeekButton = styled.div<{
   ${({isSelected}) =>
     isSelected
       ? `
-    background-color: var(--malloy-composer-dimension-light);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
     color:  var(--malloy-composer-dimension-strong);
-    border-color: var(--malloy-composer-dimension-medium);
+    border-color: var(--malloy-composer-focus, #c3d7f7);
   `
       : `
     &:hover {
-      background-color: var(--malloy-composer-dimension-light);
+      background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
     }
   `}
 `;
@@ -736,13 +736,13 @@ const Day = styled(Cell)<{
     ${
       isSelected
         ? `
-      background-color: var(--malloy-composer-dimension-light);
+      background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
       color:  var(--malloy-composer-dimension-strong);
-      border-color: var(--malloy-composer-dimension-medium);
+      border-color: var(--malloy-composer-focus, #c3d7f7);
     `
         : `
       &:hover {
-        background-color: var(--malloy-composer-dimension-light);
+        background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
       }
     `
     }

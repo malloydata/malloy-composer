@@ -23,12 +23,17 @@ const CssVariables = styled.div`
 
   --malloy-composer-form-background: #000000;
   --malloy-composer-form-foreground: #eeeeee;
+  --malloy-composer-form-border: #ececed;
   --malloy-composer-form-fontFamily: Arial, sans-serif;
+  --malloy-composer-form-fontSize: 13px;
+  --malloy-composer-form-focus: #b0b0ff;
+  --malloy-composer-form-focusBackground: #5050ff;
   --malloy-composer-form-fontSize: 13px;
 
   --malloy-composer-menu-background: #000000;
   --malloy-composer-menu-foreground: #eeeeee;
   --malloy-composer-menu-border: #bbbbbb;
+  --malloy-composer-menu-title: #bbbbbb;
   --malloy-composer-menu-fontFamily: Courier, monospace;
   --malloy-composer-menu-fontSize: 13px;
 `;
@@ -47,19 +52,26 @@ const App = () => {
     <div className="dark">
       <GlobalStyle />
       <CssVariables>
-        <ExploreQueryEditor
-          model={model}
-          modelPath={modelPath}
-          source={source}
-          queryModifiers={queryModifiers}
-          topValues={topValues}
-          queryName={queryName}
-          querySummary={querySummary}
-          queryMalloy={queryMalloy}
-          runQuery={runQuery}
-          isRunning={isRunning}
-          result={result}
-        />
+        <div
+          style={{
+            backgroundColor: 'var(--malloy-composer-background)',
+            padding: 8,
+          }}
+        >
+          <ExploreQueryEditor
+            model={model}
+            modelPath={modelPath}
+            source={source}
+            queryModifiers={queryModifiers}
+            topValues={topValues}
+            queryName={queryName}
+            querySummary={querySummary}
+            queryMalloy={queryMalloy}
+            runQuery={runQuery}
+            isRunning={isRunning}
+            result={result}
+          />
+        </div>
       </CssVariables>
     </div>
   );
@@ -77,6 +89,10 @@ const GlobalStyle = createGlobalStyle`
   }
   .shiki code {
     background-color: var(--malloy-composer-background);
+  }
+
+  body {
+    margin: 0;
   }
 `;
 
