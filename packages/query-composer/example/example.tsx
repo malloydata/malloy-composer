@@ -2,14 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {ExploreQueryEditor, useQueryBuilder, useRunQuery} from '../src/index';
 
-import {model, modelPath, source} from './example_model';
+import {model, modelPath, source, topValues} from './example_model';
 import styled, {createGlobalStyle} from 'styled-components';
 
 const updateQueryInURL = () => {};
 const runQueryAction = () => {
   throw new Error('Unimplemented');
 };
-const topValues = [];
 
 const CssVariables = styled.div`
   --malloy-composer-fontSize: 13px;
