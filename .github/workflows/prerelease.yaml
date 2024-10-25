@@ -23,7 +23,7 @@ jobs:
           npm ci --loglevel error
           PRERELEASE=$(date +%y%m%d%H%M%S)
           VERSION=$(jq -r .version ./packages/query-composer/package.json)-dev$PRERELEASE
-          npm publish -w packages/query-composer --access=public --dry-run
+          npm publish -w packages/query-composer --access=public
         env:
           CI: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
