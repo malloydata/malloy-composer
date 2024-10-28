@@ -1048,36 +1048,15 @@ ${malloy}
     | {
         property: string;
         malloy: Fragment[];
-        blockNotes?: string[];
-        notes?: string[];
+        tagLines?: string[];
       }
     | undefined {
     try {
-      let blockNotes: string[] | undefined;
-      let notes: string[] | undefined;
+      let tagLines: string[] | undefined;
       if (field.annotation) {
-        blockNotes = field.annotation.blockNotes?.map(({text}) =>
-          text.replace('\n', '')
+        tagLines = Tag.annotationToTaglines(field.annotation).map(tagLine =>
+          tagLine.replace(/\n$/, '')
         );
-        notes = field.annotation.notes?.map(({text}) => text.replace('\n', ''));
-        if (field.annotation.inherits) {
-          if (field.annotation.inherits.blockNotes) {
-            blockNotes ??= [];
-            blockNotes.push(
-              ...field.annotation.inherits.blockNotes.map(({text}) =>
-                text.replace('\n', '')
-              )
-            );
-          }
-          if (field.annotation.inherits.notes) {
-            notes ??= [];
-            notes.push(
-              ...field.annotation.inherits.notes.map(({text}) =>
-                text.replace('\n', '')
-              )
-            );
-          }
-        }
       }
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
@@ -1095,13 +1074,12 @@ ${malloy}
             ? 'select'
             : 'group_by';
         const malloy: Fragment[] = [];
-        if (notes) {
-          notes.forEach(note => malloy.push(note, NEWLINE));
-        }
+        // if (tagLines) {
+        //   tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
+        // }
         malloy.push(maybeQuoteIdentifier(dottify(field.path)));
         return {
-          blockNotes,
-          notes,
+          tagLines,
           property,
           malloy,
         };
@@ -1119,8 +1097,7 @@ ${malloy}
           )}`,
         ];
         return {
-          blockNotes,
-          notes,
+          tagLines,
           property,
           malloy,
         };
@@ -1150,8 +1127,7 @@ ${malloy}
           malloy.push(OUTDENT, '}');
         }
         return {
-          blockNotes,
-          notes,
+          tagLines,
           property,
           malloy,
         };
@@ -1171,8 +1147,7 @@ ${malloy}
           head = false;
         }
         return {
-          blockNotes,
-          notes,
+          tagLines,
           property: 'nest',
           malloy,
         };
@@ -1188,8 +1163,7 @@ ${malloy}
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
         return {
-          blockNotes,
-          notes,
+          tagLines,
           property,
           malloy,
         };
@@ -1250,7 +1224,7 @@ ${malloy}
     }
     let currentProperty: string | undefined;
     let currentMalloys: Fragment[][] = [];
-    let currentBlockNotes: string[] = [];
+    let currentTagLines: string[] = [];
     const fields = getFields(stage);
     for (const field of fields) {
       const info = this.codeInfoForField(stage, field, source, indent);
@@ -1258,12 +1232,10 @@ ${malloy}
         if (
           (currentProperty !== undefined &&
             info.property !== currentProperty) ||
-          JSON.stringify(currentBlockNotes) !==
-            JSON.stringify(info.blockNotes ?? [])
+          JSON.stringify(currentTagLines) !==
+            JSON.stringify(info.tagLines ?? [])
         ) {
-          currentBlockNotes.forEach(blockNote =>
-            malloy.push(blockNote, NEWLINE)
-          );
+          currentTagLines.forEach(blockNote => malloy.push(blockNote, NEWLINE));
           if (currentProperty) {
             malloy.push(
               ...this.writeMalloyForPropertyValues(
@@ -1272,16 +1244,16 @@ ${malloy}
               )
             );
           }
-          currentBlockNotes = [];
+          currentTagLines = [];
           currentMalloys = [];
         }
-        currentBlockNotes = info.blockNotes ?? [];
+        currentTagLines = info.tagLines ?? [];
         currentProperty = info.property;
         currentMalloys.push(info.malloy);
       }
     }
     if (currentProperty) {
-      currentBlockNotes.forEach(blockNote => malloy.push(blockNote, NEWLINE));
+      currentTagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
       malloy.push(
         ...this.writeMalloyForPropertyValues(currentProperty, currentMalloys)
       );
@@ -1321,13 +1293,11 @@ ${malloy}
     if (source === undefined) return '';
     const malloy: Fragment[] = [];
     let stageSource = this.getSource();
-    if (this.query.annotation?.inherits?.blockNotes) {
-      malloy.push(
-        ...this.query.annotation.inherits.blockNotes.map(({text}) => text)
+    if (this.query.annotation) {
+      const tagLines = Tag.annotationToTaglines(this.query.annotation).map(
+        tagLine => tagLine.replace(/\n$/, '')
       );
-    }
-    if (this.query.annotation?.blockNotes) {
-      malloy.push(...this.query.annotation.blockNotes.map(({text}) => text));
+      tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
     }
     const initParts = [];
     initParts.push(`${forUse}:`);
