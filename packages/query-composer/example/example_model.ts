@@ -152,7 +152,7 @@ export const model: ModelDef = {
                 node: 'function_call',
                 overload: {
                   returnType: {
-                    dataType: 'number',
+                    type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
                   },
@@ -161,7 +161,7 @@ export const model: ModelDef = {
                       name: 'value',
                       allowedTypes: [
                         {
-                          dataType: 'number',
+                          type: 'number',
                           expressionType: undefined,
                           evalSpace: 'input',
                         },
@@ -344,7 +344,7 @@ export const model: ModelDef = {
             node: 'function_call',
             overload: {
               returnType: {
-                dataType: 'number',
+                type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
               },
@@ -353,7 +353,7 @@ export const model: ModelDef = {
                   name: 'value',
                   allowedTypes: [
                     {
-                      dataType: 'number',
+                      type: 'number',
                       expressionType: undefined,
                       evalSpace: 'input',
                     },
@@ -692,7 +692,7 @@ export const model: ModelDef = {
     },
     cohort: {
       type: 'query_source',
-      name: 'QuerySource-5331d762-e26e-4831-88e0-fa45d5b45352',
+      name: 'QuerySource-b3b63624-76c1-4040-88d8-8b29f34d1802',
       fields: [
         {
           name: 'gender',
@@ -701,7 +701,7 @@ export const model: ModelDef = {
             sourceField: 'gender',
             sourceExpression: undefined,
             sourceClasses: ['gender'],
-            referenceId: '2991e50b-1cdf-4961-a9f8-df740ee0d4cd',
+            referenceId: '78d989f2-ef9b-4775-b7e6-8b7d123da103',
             filterList: undefined,
             fieldKind: 'dimension',
           },
@@ -727,7 +727,7 @@ export const model: ModelDef = {
             sourceField: 'state',
             sourceExpression: undefined,
             sourceClasses: ['state'],
-            referenceId: '116ab0a0-32b6-4639-9e1d-5661e44966c2',
+            referenceId: '532fb076-890d-4356-953b-cebd825304f6',
             filterList: undefined,
             fieldKind: 'dimension',
           },
@@ -754,7 +754,7 @@ export const model: ModelDef = {
             sourceField: 'year',
             sourceExpression: undefined,
             sourceClasses: ['year'],
-            referenceId: '0170c5ad-818d-43b9-8f63-5e88db8604f9',
+            referenceId: 'd5641b42-6ace-430b-9721-2bc9e5b644da',
             filterList: undefined,
             fieldKind: 'dimension',
           },
@@ -781,7 +781,7 @@ export const model: ModelDef = {
             sourceField: 'cohort_size',
             sourceExpression: 'population',
             sourceClasses: ['cohort_size'],
-            referenceId: '91279434-d1e1-4ff7-a1e9-931ba39cf46f',
+            referenceId: '21d605e0-6d9d-481c-8942-a5beb52f9f42',
             filterList: [],
             fieldKind: 'measure',
           },
@@ -987,7 +987,7 @@ export const model: ModelDef = {
                     node: 'function_call',
                     overload: {
                       returnType: {
-                        dataType: 'number',
+                        type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
                       },
@@ -996,7 +996,7 @@ export const model: ModelDef = {
                           name: 'value',
                           allowedTypes: [
                             {
-                              dataType: 'number',
+                              type: 'number',
                               expressionType: undefined,
                               evalSpace: 'input',
                             },
@@ -1179,7 +1179,7 @@ export const model: ModelDef = {
                 node: 'function_call',
                 overload: {
                   returnType: {
-                    dataType: 'number',
+                    type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
                   },
@@ -1188,7 +1188,7 @@ export const model: ModelDef = {
                       name: 'value',
                       allowedTypes: [
                         {
-                          dataType: 'number',
+                          type: 'number',
                           expressionType: undefined,
                           evalSpace: 'input',
                         },
@@ -1746,7 +1746,7 @@ export const model: ModelDef = {
                 node: 'function_call',
                 overload: {
                   returnType: {
-                    dataType: 'number',
+                    type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
                   },
@@ -1755,7 +1755,7 @@ export const model: ModelDef = {
                       name: 'value',
                       allowedTypes: [
                         {
-                          dataType: 'number',
+                          type: 'number',
                           expressionType: undefined,
                           evalSpace: 'input',
                         },
@@ -1938,7 +1938,7 @@ export const model: ModelDef = {
             node: 'function_call',
             overload: {
               returnType: {
-                dataType: 'number',
+                type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
               },
@@ -1947,7 +1947,7 @@ export const model: ModelDef = {
                   name: 'value',
                   allowedTypes: [
                     {
-                      dataType: 'number',
+                      type: 'number',
                       expressionType: undefined,
                       evalSpace: 'input',
                     },
@@ -2127,7 +2127,7 @@ export const model: ModelDef = {
                 sourceField: 'gender',
                 sourceExpression: undefined,
                 sourceClasses: ['gender'],
-                referenceId: '2991e50b-1cdf-4961-a9f8-df740ee0d4cd',
+                referenceId: '78d989f2-ef9b-4775-b7e6-8b7d123da103',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
@@ -2153,7 +2153,7 @@ export const model: ModelDef = {
                 sourceField: 'state',
                 sourceExpression: undefined,
                 sourceClasses: ['state'],
-                referenceId: '116ab0a0-32b6-4639-9e1d-5661e44966c2',
+                referenceId: '532fb076-890d-4356-953b-cebd825304f6',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
@@ -2180,7 +2180,7 @@ export const model: ModelDef = {
                 sourceField: 'year',
                 sourceExpression: undefined,
                 sourceClasses: ['year'],
-                referenceId: '0170c5ad-818d-43b9-8f63-5e88db8604f9',
+                referenceId: 'd5641b42-6ace-430b-9721-2bc9e5b644da',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
@@ -2207,7 +2207,7 @@ export const model: ModelDef = {
                 sourceField: 'cohort_size',
                 sourceExpression: 'population',
                 sourceClasses: ['cohort_size'],
-                referenceId: '91279434-d1e1-4ff7-a1e9-931ba39cf46f',
+                referenceId: '21d605e0-6d9d-481c-8942-a5beb52f9f42',
                 filterList: [],
                 fieldKind: 'measure',
               },
@@ -2413,7 +2413,7 @@ export const model: ModelDef = {
                         node: 'function_call',
                         overload: {
                           returnType: {
-                            dataType: 'number',
+                            type: 'number',
                             expressionType: 'scalar',
                             evalSpace: 'input',
                           },
@@ -2422,7 +2422,7 @@ export const model: ModelDef = {
                               name: 'value',
                               allowedTypes: [
                                 {
-                                  dataType: 'number',
+                                  type: 'number',
                                   expressionType: undefined,
                                   evalSpace: 'input',
                                 },
@@ -2605,7 +2605,7 @@ export const model: ModelDef = {
                     node: 'function_call',
                     overload: {
                       returnType: {
-                        dataType: 'number',
+                        type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
                       },
@@ -2614,7 +2614,7 @@ export const model: ModelDef = {
                           name: 'value',
                           allowedTypes: [
                             {
-                              dataType: 'number',
+                              type: 'number',
                               expressionType: undefined,
                               evalSpace: 'input',
                             },
