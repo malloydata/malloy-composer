@@ -3,12 +3,12 @@ name: npmjs.com Pre-release
 on: [workflow_dispatch]
 
 jobs:
-  main:
+  test:
     uses: './.github/workflows/test.yaml'
 
   npm-prerelease:
     needs:
-      - main
+      - test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
