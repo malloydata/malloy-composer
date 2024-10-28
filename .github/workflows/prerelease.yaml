@@ -8,7 +8,7 @@ jobs:
 
   npm-prerelease:
     needs:
-      - test
+      - main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
