@@ -33,6 +33,7 @@ import {
 } from '../CommonElements';
 import {isLeafAtomic, QueryFieldDef, StructDef} from '@malloydata/malloy';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {maybeQuoteIdentifier} from '../../core/utils';
 
 interface AddFilterProps {
   source: StructDef;
@@ -87,7 +88,11 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
               event.stopPropagation();
               event.preventDefault();
               dummyCompiler
-                .compileDimension(source, newName, dimension)
+                .compileDimension(
+                  source,
+                  maybeQuoteIdentifier(newName),
+                  dimension
+                )
                 .then(dimension => {
                   if (isLeafAtomic(dimension)) {
                     addDimension(dimension);

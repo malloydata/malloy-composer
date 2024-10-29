@@ -56,6 +56,7 @@ import {
   typeOfField,
 } from '../../utils';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {maybeQuoteIdentifier} from '../../core/utils';
 
 interface AddMeasureProps {
   source: SourceDef;
@@ -290,7 +291,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                 }
               }
               dummyCompiler
-                .compileMeasure(source, newName, measure)
+                .compileMeasure(source, maybeQuoteIdentifier(newName), measure)
                 .then(measure => {
                   if (isLeafAtomic(measure)) {
                     addMeasure(measure);
