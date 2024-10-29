@@ -67,7 +67,7 @@ export const Popover: React.FC<PopoverProps> = ({
   width = 350,
   placement = 'right-start',
   referenceDiv,
-  zIndex = 101,
+  zIndex = 10,
   xOffset = 0,
   yOffset = 10,
   disabled = false,

@@ -55,7 +55,7 @@ const InputBox = styled.button`
   justify-content: space-between;
   text-transform: none;
   align-items: center;
-  font-family: var(--malloy-composer-fontFamily, san-serif);
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   &:hover {
     border: 1px solid var(--malloy-composer-form-border, #ececed);
   }
