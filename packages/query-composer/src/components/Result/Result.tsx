@@ -21,13 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {useContext, useEffect, useRef, useState} from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import * as malloy from '@malloydata/malloy';
 import * as render from '@malloydata/render';
 import '@malloydata/render/webcomponent';
 import styled from 'styled-components';
 import {LoadingSpinner} from '../Spinner';
-import {usePrevious} from '../../hooks';
 import {
   copyToClipboard,
   downloadFile,
@@ -70,116 +69,133 @@ export const Result: React.FC<ResultProps> = ({
 }) => {
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [html, setHTML] = useState<HTMLElement>();
-  const [highlightedSourceMalloy, setHighlightedSourceMalloy] =
-    useState<HTMLElement>();
-  const [highlightedModelMalloy, setHighlightedModelMalloy] =
-    useState<HTMLElement>();
-  const [highlightedMarkdownMalloy, setHighlightedMarkdownMalloy] =
-    useState<HTMLElement>();
-  const [highlightedNotebookMalloy, setHighlightedNotebookMalloy] =
-    useState<HTMLElement>();
+  const [highlightedSource, setHighlightedSource] = useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
   const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [malloyType, setMalloyType] = useState<MalloyType>('notebook');
   const [displaying, setDisplaying] = useState(false);
-  const resultId = useRef(0);
-  const previousResult = usePrevious(result);
-
-  useEffect(() => {
-    highlightPre(malloy.markdown, 'md')
-      .then(setHighlightedMarkdownMalloy)
-      .catch(console.error);
-    highlightPre(indentCode(malloy.source), 'malloy')
-      .then(setHighlightedSourceMalloy)
-      .catch(console.error);
-    highlightPre(malloy.model, 'malloy')
-      .then(setHighlightedModelMalloy)
-      .catch(console.error);
-    highlightPre(indentCode(malloy.notebook), 'malloy')
-      .then(setHighlightedNotebookMalloy)
-      .catch(console.error);
-  }, [malloy]);
 
   useEffect(() => {
     let canceled = false;
+
+    const updateMalloy = async () => {
+      try {
+        const highlighter = malloyType === 'markdown' ? 'md' : 'malloy';
+        const source: string = malloy[malloyType];
+
+        const html = await highlightPre(source, highlighter);
+        if (!canceled) {
+          setHighlightedSource(html);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    updateMalloy();
+
+    return () => {
+      canceled = true;
+    };
+  }, [malloy, malloyType]);
+
+  useEffect(() => {
+    let canceled = false;
+
     const updateSQL = async () => {
-      let sql = result?.sql;
-      if (sql === undefined) {
-        if (
-          model === undefined ||
-          malloy.model === undefined ||
-          malloy.model === '' ||
-          !malloy.isRunnable
-        ) {
+      try {
+        const getSQL = async (): Promise<string | undefined> => {
+          if (result?.sql) {
+            return result?.sql;
+          } else if (model && malloy.model && malloy.isRunnable) {
+            return dummyCompiler.compileQueryToSQL(model, malloy.model);
+          } else {
+            return undefined;
+          }
+        };
+
+        const sql = await getSQL();
+        if (canceled) {
           return;
         }
-        try {
-          sql = await dummyCompiler.compileQueryToSQL(model, malloy.model);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(error);
+        if (sql) {
+          const html = await highlightPre(sql, 'sql');
+          if (canceled) {
+            return;
+          }
+          setSQL(html);
+        } else {
+          setSQL(undefined);
         }
+      } catch (err) {
+        console.error(err);
       }
-      if (sql === undefined) return;
-      const highlighted = await highlightPre(sql, 'sql');
-      if (canceled) return;
-      setSQL(highlighted);
     };
+
     updateSQL();
+
     return () => {
       canceled = true;
     };
   }, [result, malloy, model, dummyCompiler]);
 
+  const drillCallback = useCallback(
+    (_drillQuery: string, _target: HTMLElement, drillFilters: string[]) => {
+      Promise.all(
+        drillFilters.map(filter =>
+          dummyCompiler.compileFilter(source, filter).catch(error => {
+            console.error(error);
+            return undefined;
+          })
+        )
+      ).then(filters => {
+        const validFilters = filters.filter(notUndefined);
+        if (validFilters.length > 0) {
+          onDrill(validFilters);
+        }
+      });
+    },
+    [dummyCompiler, onDrill, source]
+  );
+
   useEffect(() => {
-    if (result === previousResult) {
-      return;
-    }
-    setRendering(false);
+    let canceled = false;
+
     setDisplaying(false);
     setHTML(undefined);
     if (result === undefined) {
-      return;
+      return () => {};
     }
-    setTimeout(async () => {
-      setRendering(true);
-      const currentResultId = ++resultId.current;
-      const rendered = await new render.HTMLView(document).render(result, {
-        dataStyles: {},
-        isDrillingEnabled: true,
-        onDrill: (_1, _2, drillFilters) => {
-          Promise.all(
-            drillFilters.map(filter =>
-              dummyCompiler.compileFilter(source, filter).catch(error => {
-                console.error(error);
-                return undefined;
-              })
-            )
-          ).then(filters => {
-            const validFilters = filters.filter(notUndefined);
-            if (validFilters.length > 0) {
-              onDrill(validFilters);
-            }
-          });
-        },
-      });
-      setTimeout(() => {
-        if (resultId.current !== currentResultId) {
+    setView('html');
+    setRendering(true);
+
+    const updateResults = async () => {
+      try {
+        const renderer = new render.HTMLView(document);
+        const html = await renderer.render(result, {
+          dataStyles: {},
+          isDrillingEnabled: true,
+          onDrill: drillCallback,
+        });
+        if (canceled) {
           return;
         }
         setRendering(false);
         setDisplaying(true);
-        setTimeout(() => {
-          if (resultId.current !== currentResultId) {
-            return;
-          }
-          setHTML(rendered);
-        }, 0);
-      }, 0);
-    });
-  }, [result, previousResult, dummyCompiler, onDrill, source]);
+        setHTML(html);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    updateResults();
+
+    return () => {
+      canceled = true;
+    };
+  }, [result, drillCallback]);
 
   return (
     <OuterDiv>
@@ -235,25 +251,14 @@ export const Result: React.FC<ResultProps> = ({
             )}
           </>
         )}
-        {sql !== undefined && view === 'sql' && (
+        {view === 'sql' && (
           <PreWrapper>{sql && <DOMElement element={sql} />}</PreWrapper>
         )}
         {view === 'malloy' && (
           <PreWrapper
             style={{marginLeft: malloyType === 'source' ? '-2ch' : ''}}
           >
-            {malloyType === 'source' && highlightedSourceMalloy && (
-              <DOMElement element={highlightedSourceMalloy} />
-            )}
-            {malloyType === 'model' && highlightedModelMalloy && (
-              <DOMElement element={highlightedModelMalloy} />
-            )}
-            {malloyType === 'markdown' && highlightedMarkdownMalloy && (
-              <DOMElement element={highlightedMarkdownMalloy} />
-            )}
-            {malloyType === 'notebook' && highlightedNotebookMalloy && (
-              <DOMElement element={highlightedNotebookMalloy} />
-            )}{' '}
+            {highlightedSource && <DOMElement element={highlightedSource} />}
             <MalloyTypeSwitcher>
               <ActionIcon
                 action="copy"
