@@ -127,12 +127,14 @@ export function useQueryBuilder(
   modelPath?: string,
   updateQueryInURL?: (params: {run: boolean; query: string | undefined}) => void
 ): UseQueryBuilderResult {
-  const [, setVersion] = useState(0);
   const sourceDef =
     modelDef && sourceName ? getSourceDef(modelDef, sourceName) : undefined;
   const queryBuilder = useMemo<QueryBuilder>(
     () => new QueryBuilder(sourceDef),
     [sourceDef]
+  );
+  const [querySummary, setQuerySummary] = useState(
+    queryBuilder.getQuerySummary()
   );
 
   useEffect(() => {
@@ -145,7 +147,6 @@ export function useQueryBuilder(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
       const backup = JSON.parse(JSON.stringify(queryBuilder.getQuery()));
       modify(queryBuilder);
-      setVersion(version => ++version);
       if (queryBuilder.canRun()) {
         try {
           const queryString = queryBuilder.getQueryStringForNotebook();
@@ -161,6 +162,7 @@ export function useQueryBuilder(
           console.error(error);
         }
       }
+      setQuerySummary(queryBuilder.getQuerySummary());
     },
     [queryBuilder, updateQueryInURL]
   );
@@ -374,8 +376,6 @@ export function useQueryBuilder(
   useEffect(() => {
     console.info('> updateQueryInURL changed');
   }, [updateQueryInURL]);
-
-  const querySummary = queryBuilder.getQuerySummary();
 
   useEffect(() => {
     console.info('> querySummary changed');
