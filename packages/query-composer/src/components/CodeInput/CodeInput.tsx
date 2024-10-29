@@ -125,8 +125,8 @@ export const CodeTextArea: React.FC<CodeTextAreaProps> = ({
 };
 
 const StyledTextArea = styled.textarea`
-  font-family: Courier, Menlo, monspace;
-  font-size: var(--malloy-composer-fontSize, 14px);
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
+  font-size: var(--malloy-composer-code-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   min-height: calc(1em + 5px);

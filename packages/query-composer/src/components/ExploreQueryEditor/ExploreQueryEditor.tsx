@@ -215,6 +215,7 @@ const SidebarOuter = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  z-index: 101;
 `;
 
 const QueryBar = styled(PageContent)`

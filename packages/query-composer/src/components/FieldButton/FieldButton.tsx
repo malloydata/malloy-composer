@@ -167,12 +167,7 @@ export const FieldButtonRaw = styled.div<{
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  font-family: var(
-    --malloy-composer-code-fontFamily,
-    Courier,
-    Menlo,
-    monospace
-  );
+  font-family: var(--malloy-composer-code-fontFamily, monospace);
 
   ${({active, color}) => {
     if (active) {
@@ -216,15 +211,9 @@ export const CloseIconStyled = styled(CloseIcon)<{
   ${({color}) => {
     return `
       .cross {
-        fill: ${COLORS[color].fillMedium};
-      }
-      .circle {
-        fill: transparent;
-      }
-      &:hover .cross {
         fill: ${COLORS[color].fillStrong};
       }
-      &:hover .circle {
+      .circle {
         fill: ${COLORS[color].fillMedium};
       }
     `;
