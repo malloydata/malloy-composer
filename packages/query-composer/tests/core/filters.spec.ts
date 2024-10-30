@@ -39,7 +39,7 @@ const NUMBER_FILTER_TO_STRING_NON_EMPTY: [NumberFilter, string][] = [
   [{type: 'is_greater_than_or_equal_to', value: 1}, 'a >= 1'],
   [{type: 'is_less_than_or_equal_to', value: 1}, 'a <= 1'],
 
-  [{type: 'is_between', lowerBound: 0, upperBound: 1}, 'a: 0 to 1'],
+  [{type: 'is_between', lowerBound: 0, upperBound: 1}, 'a ? 0 to 1'],
 
   [{type: 'is_null'}, 'a = null'],
   [{type: 'is_not_null'}, 'a != null'],
@@ -106,7 +106,7 @@ const TIME_FILTER_TO_STRING: [TimeFilter, string][] = [
   [{type: 'is_before', granularity: 'day', date}, 'a.day < @2012-12-12'],
   [
     {type: 'is_between', granularity: 'day', start: date, end: date},
-    'a.day: @2012-12-12 to @2012-12-12',
+    'a.day ? @2012-12-12 to @2012-12-12',
   ],
   [
     {type: 'is_in_the_past', amount: 1, unit: 'days'},

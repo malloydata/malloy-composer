@@ -68,7 +68,7 @@ export function numberFilterToString(
       )}`;
     }
     case 'is_between':
-      return `${quotedField}: ${filter.lowerBound} to ${filter.upperBound}`;
+      return `${quotedField} ? ${filter.lowerBound} to ${filter.upperBound}`;
     case 'is_greater_than':
       return `${quotedField} > ${filter.value}`;
     case 'is_less_than':
@@ -249,7 +249,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
       )}`;
     }
     case 'is_between': {
-      return `${quotedField}.${filter.granularity}: ${timeToString(
+      return `${quotedField}.${filter.granularity} ? ${timeToString(
         filter.start,
         filter.granularity
       )} to ${timeToString(filter.end, filter.granularity)}`;
@@ -542,7 +542,7 @@ const NUM_NEQ_FILTER = new RegExp(
   `^(${FIELD})\\s*!=\\s*(${ALTERNATION('&', NUMBER)})$`
 );
 const NUM_BET_FILTER = new RegExp(
-  `^(${FIELD})\\s*:\\s*(${NUMBER})\\s*to\\s*(${NUMBER})$`
+  `^(${FIELD})\\s*\\?\\s*(${NUMBER})\\s*to\\s*(${NUMBER})$`
 );
 const NUM_GT_FILTER = new RegExp(`^(${FIELD})\\s*>\\s*(${NUMBER})$`);
 const NUM_LT_FILTER = new RegExp(`^(${FIELD})\\s*<\\s*(${NUMBER})$`);
@@ -577,7 +577,7 @@ const TIME_BEF_FILTER = new RegExp(
   `^(${FIELD})\\.(${TIME_UNIT})\\s*<\\s*(${DATE})$`
 );
 const TIME_BET_FILTER = new RegExp(
-  `^(${FIELD})\\.(${TIME_UNIT})\\s*:\\s*(${DATE})\\s*to\\s*(${DATE})$`
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*\\?\\s*(${DATE})\\s*to\\s*(${DATE})$`
 );
 
 function extractField(fieldSyntax: string) {
