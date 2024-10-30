@@ -20,6 +20,7 @@ import RunIcon from '../../assets/img/query_run_wide.svg?react';
 import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 import {DummyCompile} from '../../core/dummy-compile';
 import {SearchContext} from '../../contexts/search_context';
+import {ErrorMessage} from '../ErrorMessage';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
@@ -65,13 +66,14 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [result, setResult] = useState<MalloyResult>();
-  const [_error, setError] = useState<Error>();
+  const [error, setError] = useState<Error>();
   const [lastRunQuery, setLastRunQuery] = useState<string>();
 
   const {notebook: query, isRunnable} = queryMalloy;
 
   const runQueryCallback = React.useCallback(() => {
     setResult(undefined);
+    setError(undefined);
     setLastRunQuery(query);
     runQuery(query, queryName);
   }, [query, queryName, runQuery]);
@@ -85,8 +87,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
     }
   }, [currentResult]);
 
-  // TODO
-  const isQueryEmpty = false;
+  const isQueryEmpty = !querySummary || querySummary.stages.length === 0;
 
   const clearQuery = () => {
     queryModifiers.clearQuery();
@@ -193,6 +194,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
             isRunning={isRunning}
           />
         </Outer>
+        <ErrorMessage error={error} />
       </SearchContext.Provider>
     </ComposerOptionsContext.Provider>
   );
@@ -215,7 +217,7 @@ const SidebarOuter = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  z-index: 101;
+  z-index: 1000;
 `;
 
 const QueryBar = styled(PageContent)`
