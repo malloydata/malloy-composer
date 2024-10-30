@@ -56,6 +56,7 @@ const KEY_MAP = {
 const compiler = new DummyCompile();
 
 export const Explore: React.FC = () => {
+  const [error, setError] = useState<Error>();
   const config = useApps();
   const {appId} = useParams();
   const onlyDefaultDataset =
@@ -119,14 +120,31 @@ export const Explore: React.FC = () => {
           .pathname
       : undefined;
 
-  const {queryMalloy, queryName, queryModifiers, querySummary} =
-    useQueryBuilder(modelDef, sourceName, modelPath, updateQueryInURL);
+  const {
+    error: builderError,
+    queryMalloy,
+    queryName,
+    queryModifiers,
+    querySummary,
+  } = useQueryBuilder(modelDef, sourceName, modelPath, updateQueryInURL);
 
-  const {error, result, runQuery, reset, isRunning} = useRunQuery(
-    modelDef,
-    modelPath,
-    runQueryExt
-  );
+  const {
+    error: runnerError,
+    result,
+    runQuery,
+    reset,
+    isRunning,
+  } = useRunQuery(modelDef, modelPath, runQueryExt);
+
+  useEffect(() => {
+    if (builderError) {
+      setError(builderError);
+    } else if (runnerError) {
+      setError(runnerError);
+    } else {
+      setError(undefined);
+    }
+  }, [builderError, runnerError]);
 
   useEffect(() => {
     if (loading > 0) {
