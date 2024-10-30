@@ -68,7 +68,7 @@ export function numberFilterToString(
       )}`;
     }
     case 'is_between':
-      return `${quotedField}: ${filter.lowerBound} to ${filter.upperBound}`;
+      return `${quotedField} ? ${filter.lowerBound} to ${filter.upperBound}`;
     case 'is_greater_than':
       return `${quotedField} > ${filter.value}`;
     case 'is_less_than':
@@ -249,7 +249,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
       )}`;
     }
     case 'is_between': {
-      return `${quotedField}.${filter.granularity}: ${timeToString(
+      return `${quotedField}.${filter.granularity} ? ${timeToString(
         filter.start,
         filter.granularity
       )} to ${timeToString(filter.end, filter.granularity)}`;
