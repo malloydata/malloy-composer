@@ -46,6 +46,7 @@ interface UseQueryBuilderResult {
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
   query: string;
+  error: Error | undefined;
 }
 
 export interface QueryModifiers {
@@ -136,6 +137,7 @@ export function useQueryBuilder(
   const [querySummary, setQuerySummary] = useState(
     queryBuilder.getQuerySummary()
   );
+  const [error, setError] = useState<Error>();
 
   useEffect(() => {
     console.info('> sourceDef changed');
@@ -146,6 +148,7 @@ export function useQueryBuilder(
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
       const backup = JSON.parse(JSON.stringify(queryBuilder.getQuery()));
+      setError(undefined);
       modify(queryBuilder);
       if (queryBuilder.canRun()) {
         try {
@@ -158,11 +161,17 @@ export function useQueryBuilder(
           }
         } catch (error) {
           queryBuilder.setQuery(backup);
-          // eslint-disable-next-line no-console
           console.error(error);
+          setError(error as Error);
         }
       }
-      setQuerySummary(queryBuilder.getQuerySummary());
+      try {
+        setQuerySummary(queryBuilder.getQuerySummary());
+      } catch (error) {
+        queryBuilder.setQuery(backup);
+        console.error(error);
+        setError(error as Error);
+      }
     },
     [queryBuilder, updateQueryInURL]
   );
@@ -390,5 +399,6 @@ export function useQueryBuilder(
     querySummary,
     queryModifiers,
     query: queryMalloy.notebook,
+    error,
   };
 }
