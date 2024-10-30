@@ -542,7 +542,7 @@ const NUM_NEQ_FILTER = new RegExp(
   `^(${FIELD})\\s*!=\\s*(${ALTERNATION('&', NUMBER)})$`
 );
 const NUM_BET_FILTER = new RegExp(
-  `^(${FIELD})\\s*:\\s*(${NUMBER})\\s*to\\s*(${NUMBER})$`
+  `^(${FIELD})\\s*\\?\\s*(${NUMBER})\\s*to\\s*(${NUMBER})$`
 );
 const NUM_GT_FILTER = new RegExp(`^(${FIELD})\\s*>\\s*(${NUMBER})$`);
 const NUM_LT_FILTER = new RegExp(`^(${FIELD})\\s*<\\s*(${NUMBER})$`);
@@ -577,7 +577,7 @@ const TIME_BEF_FILTER = new RegExp(
   `^(${FIELD})\\.(${TIME_UNIT})\\s*<\\s*(${DATE})$`
 );
 const TIME_BET_FILTER = new RegExp(
-  `^(${FIELD})\\.(${TIME_UNIT})\\s*:\\s*(${DATE})\\s*to\\s*(${DATE})$`
+  `^(${FIELD})\\.(${TIME_UNIT})\\s*\\?\\s*(${DATE})\\s*to\\s*(${DATE})$`
 );
 
 function extractField(fieldSyntax: string) {
