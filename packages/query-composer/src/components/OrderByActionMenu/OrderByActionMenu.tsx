@@ -21,24 +21,26 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {OrderByField} from '../../types';
+import {OrderByField, StagePath} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {EditOrderBy} from '../EditOrderBy';
+import {QueryModifiers} from '../../hooks';
 
 interface OrderByActionMenuProps {
-  removeOrderBy: () => void;
-  editOrderBy: (direction: 'asc' | 'desc' | undefined) => void;
+  stagePath: StagePath;
   closeMenu: () => void;
   orderByField: OrderByField;
   existingDirection: 'asc' | 'desc' | undefined;
   orderByIndex: number;
+  queryModifiers: QueryModifiers;
 }
 
 export const OrderByActionMenu: React.FC<OrderByActionMenuProps> = ({
+  stagePath,
   closeMenu,
-  editOrderBy,
   orderByField,
   existingDirection,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
@@ -53,7 +55,9 @@ export const OrderByActionMenu: React.FC<OrderByActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <EditOrderBy
-              addOrderBy={(byField, direction) => editOrderBy(direction)}
+              addOrderBy={(fieldIndex, direction) =>
+                queryModifiers.editOrderBy(stagePath, fieldIndex, direction)
+              }
               onComplete={onComplete}
               byField={orderByField}
               initialDirection={existingDirection}

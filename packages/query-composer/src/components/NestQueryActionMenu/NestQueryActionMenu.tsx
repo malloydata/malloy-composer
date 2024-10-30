@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {OrderByField, RendererName, StagePath, StageSummary} from '../../types';
+import {OrderByField, StagePath} from '../../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -29,12 +29,7 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
-import {
-  FilterCondition,
-  QueryFieldDef,
-  SourceDef,
-  ModelDef,
-} from '@malloydata/malloy';
+import {SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
@@ -43,67 +38,39 @@ import {
   termsForField,
 } from '../../utils';
 import {RenameField} from '../RenameField';
+import {QueryModifiers} from '../../hooks';
 
 interface NestQueryActionMenuProps {
   source: SourceDef;
-  toggleField: (stagePath: StagePath, fieldPath: string) => void;
-  addFilter: (
-    stagePath: StagePath,
-    filter: FilterCondition,
-    as?: string
-  ) => void;
-  addLimit: (stagePath: StagePath, limit: number) => void;
-  addOrderBy: (
-    stagePath: StagePath,
-    byFieldIndex: number,
-    direction?: 'asc' | 'desc'
-  ) => void;
-  addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   stagePath: StagePath;
-  remove: () => void;
+  fieldIndex: number;
   orderByFields: OrderByField[];
-  addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
-  addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   closeMenu: () => void;
-  setRenderer: (rendererName: RendererName) => void;
-  addStage: () => void;
-  stageSummary: StageSummary;
-  updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   beginReorderingField: () => void;
-  rename: (newName: string) => void;
   model: ModelDef;
   modelPath: string;
   isExpanded: boolean;
-  replaceWithDefinition: () => void;
+  queryModifiers: QueryModifiers;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
   model,
   modelPath,
   source,
-  toggleField,
-  addFilter,
-  addLimit,
-  addOrderBy,
-  addNewNestedQuery,
   stagePath,
+  fieldIndex,
   orderByFields,
-  addNewDimension,
-  addNewMeasure,
   closeMenu,
-  setRenderer,
   beginReorderingField,
-  addStage,
-  rename,
   isExpanded,
-  replaceWithDefinition,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
       model={model}
       modelPath={modelPath}
       valueSearchSource={source}
-      addFilter={filter => addFilter(stagePath, filter)}
+      addFilter={filter => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
       actions={[
         {
@@ -118,7 +85,9 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
               modelPath={modelPath}
               model={model}
               source={source}
-              addFilter={(filter, as) => addFilter(stagePath, filter, as)}
+              addFilter={(filter, as) =>
+                queryModifiers.addFilter(stagePath, filter, as)
+              }
               onComplete={onComplete}
               needsRename={false}
             />
@@ -135,8 +104,12 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
               source={source}
-              selectField={fieldPath => toggleField(stagePath, fieldPath)}
-              selectNewNest={name => addNewNestedQuery(stagePath, name)}
+              selectField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              selectNewNest={name =>
+                queryModifiers.addNewNestedQuery(stagePath, name)
+              }
               onComplete={onComplete}
             />
           ),
@@ -151,8 +124,12 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               source={source}
-              toggleField={fieldPath => toggleField(stagePath, fieldPath)}
-              addNewDimension={def => addNewDimension(stagePath, def)}
+              toggleField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              addNewDimension={def =>
+                queryModifiers.addNewDimension(stagePath, def)
+              }
               onComplete={onComplete}
             />
           ),
@@ -167,8 +144,12 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
-              selectField={fieldPath => toggleField(stagePath, fieldPath)}
-              addNewMeasure={def => addNewMeasure(stagePath, def)}
+              selectField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              addNewMeasure={def =>
+                queryModifiers.addNewMeasure(stagePath, def)
+              }
               onComplete={onComplete}
             />
           ),
@@ -182,7 +163,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
-              addLimit={limit => addLimit(stagePath, limit)}
+              addLimit={limit => queryModifiers.addLimit(stagePath, limit)}
               onComplete={onComplete}
             />
           ),
@@ -197,7 +178,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
-                addOrderBy(stagePath, byField, direction)
+                queryModifiers.addOrderBy(stagePath, byField, direction)
               }
               orderByFields={orderByFields}
               onComplete={onComplete}
@@ -213,7 +194,9 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
-              setRenderer={setRenderer}
+              setRenderer={renderer =>
+                queryModifiers.setRenderer(stagePath, fieldIndex, renderer)
+              }
               onComplete={onComplete}
               allowedRenderers={[
                 'table',
@@ -240,7 +223,12 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           label: 'Rename',
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
-            <RenameField rename={rename} onComplete={onComplete} />
+            <RenameField
+              rename={name =>
+                queryModifiers.renameField(stagePath, fieldIndex, name)
+              }
+              onComplete={onComplete}
+            />
           ),
         },
         {
@@ -249,7 +237,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           label: 'Add stage',
           iconName: 'stage',
           iconColor: 'other',
-          onClick: addStage,
+          onClick: () => queryModifiers.addStage(stagePath, fieldIndex),
         },
         {
           kind: 'one_click',
@@ -258,7 +246,8 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'duplicate',
           iconColor: 'other',
           isEnabled: !isExpanded,
-          onClick: replaceWithDefinition,
+          onClick: () =>
+            queryModifiers.replaceWithDefinition(stagePath, fieldIndex),
         },
         {
           kind: 'one_click',
@@ -274,7 +263,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
         terms: termsForField(field, path),
         detail: pathParent(path),
         key: path,
-        select: () => toggleField(stagePath, path),
+        select: () => queryModifiers.toggleField(stagePath, path),
       }))}
     />
   );

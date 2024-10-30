@@ -38,7 +38,7 @@ import {
   pathParent,
   termsForField,
 } from '../../utils';
-import {QueryModifiers} from '../../hooks/use_query_builder';
+import {QueryModifiers} from '../../hooks';
 
 interface TopQueryActionMenuProps {
   source: SourceDef;

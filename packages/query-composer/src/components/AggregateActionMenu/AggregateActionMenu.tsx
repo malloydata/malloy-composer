@@ -21,67 +21,46 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FilterCondition,
-  ModelDef,
-  QueryFieldDef,
-  SourceDef,
-} from '@malloydata/malloy';
-import {OrderByField, RendererName, StagePath} from '../../types';
+import {ModelDef, SourceDef} from '@malloydata/malloy';
+import {OrderByField, StagePath} from '../../types';
 import {FilterContextBar} from '../FilterContextBar';
 import {RenameField} from '../RenameField';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {AddNewMeasure} from '../AddNewMeasure';
 import {EditOrderBy} from '../EditOrderBy';
+import {QueryModifiers} from '../../hooks';
 
 interface AggregateActionMenuProps {
   source: SourceDef;
-  removeField: () => void;
-  addFilter: (filter: FilterCondition, as?: string) => void;
-  rename: (newName: string) => void;
   closeMenu: () => void;
-  setRenderer: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    renderer: RendererName
-  ) => void;
   isRenamed: boolean;
   fieldIndex: number;
   beginReorderingField: () => void;
   isEditable: boolean;
   name: string;
   definition: string | undefined;
-  editMeasure: (fieldIndex: number, measure: QueryFieldDef) => void;
-  addOrderBy: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    direction?: 'asc' | 'desc'
-  ) => void;
   orderByField: OrderByField;
   stagePath: StagePath;
   model: ModelDef;
   modelPath: string;
+  queryModifiers: QueryModifiers;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   model,
   modelPath,
   source,
-  addFilter,
-  rename,
   closeMenu,
-  setRenderer,
   beginReorderingField,
   isRenamed,
-  editMeasure,
   name,
   definition,
   isEditable,
   fieldIndex,
-  addOrderBy,
   orderByField,
   stagePath,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
@@ -101,7 +80,14 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
               model={model}
               modelPath={modelPath}
               source={source}
-              addFilter={addFilter}
+              addFilter={(filter, as) =>
+                queryModifiers.addFilterToField(
+                  stagePath,
+                  fieldIndex,
+                  filter,
+                  as
+                )
+              }
               onComplete={onComplete}
               needsRename={!isRenamed}
             />
@@ -115,7 +101,12 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           label: 'Rename',
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
-            <RenameField rename={rename} onComplete={onComplete} />
+            <RenameField
+              rename={name =>
+                queryModifiers.renameField(stagePath, fieldIndex, name)
+              }
+              onComplete={onComplete}
+            />
           ),
         },
         {
@@ -129,7 +120,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
-                addOrderBy(stagePath, fieldIndex, direction)
+                queryModifiers.addOrderBy(stagePath, fieldIndex, direction)
               }
               onComplete={onComplete}
             />
@@ -145,7 +136,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
               setRenderer={renderName =>
-                setRenderer(stagePath, fieldIndex, renderName)
+                queryModifiers.setRenderer(stagePath, fieldIndex, renderName)
               }
               onComplete={onComplete}
               allowedRenderers={[
@@ -172,7 +163,9 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddNewMeasure
               source={source}
-              addMeasure={code => editMeasure(fieldIndex, code)}
+              addMeasure={code =>
+                queryModifiers.editMeasure(stagePath, fieldIndex, code)
+              }
               onComplete={onComplete}
               initialCode={definition}
               initialName={name}

@@ -22,4 +22,4 @@
  */
 
 export {useClickOutside} from './use_click_outside';
-export {useQueryBuilder} from './use_query_builder';
+export {useQueryBuilder, QueryModifiers} from './use_query_builder';
