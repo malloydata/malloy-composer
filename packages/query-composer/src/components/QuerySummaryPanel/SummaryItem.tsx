@@ -86,39 +86,42 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
     <div ref={ref}>
       <ClickToPopover
         popoverContent={({closeMenu}) => {
+          const baseMenuProps = {
+            closeMenu,
+            model,
+            modelPath,
+            source,
+            stagePath,
+            stageSummary,
+            queryModifiers,
+          };
           if (
             (item.type === 'field' || item.type === 'field_definition') &&
             item.kind !== 'query'
           ) {
+            const {fieldIndex, name} = item;
+            const menuProps = {fieldIndex, name, ...baseMenuProps};
             if (item.kind === 'dimension') {
               return (
                 <DimensionActionMenu
-                  model={model}
-                  modelPath={modelPath}
-                  source={source}
-                  closeMenu={closeMenu}
-                  stagePath={stagePath}
-                  stageSummary={stageSummary}
-                  fieldIndex={item.fieldIndex}
                   beginReorderingField={() => {
-                    beginReorderingField(item.fieldIndex);
+                    beginReorderingField(fieldIndex);
                     closeMenu();
                   }}
                   filterField={item.type === 'field' ? item.field : undefined}
                   filterFieldPath={
                     item.type === 'field' ? item.path : undefined
                   }
-                  name={item.name}
                   isEditable={item.type === 'field_definition'}
                   definition={
                     item.type === 'field_definition' ? item.source : undefined
                   }
                   orderByField={{
-                    name: item.name,
-                    fieldIndex: item.fieldIndex,
+                    name,
+                    fieldIndex,
                     type: scalarTypeOfField(item.field),
                   }}
-                  queryModifiers={queryModifiers}
+                  {...menuProps}
                 />
               );
             } else if (item.kind === 'measure') {
@@ -126,76 +129,54 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                 item.type === 'field_definition' || item.isRenamed;
               return (
                 <AggregateActionMenu
-                  model={model}
-                  modelPath={modelPath}
-                  stagePath={stagePath}
-                  source={source}
-                  closeMenu={closeMenu}
                   isRenamed={isRenamed}
                   beginReorderingField={() => {
-                    beginReorderingField(item.fieldIndex);
+                    beginReorderingField(fieldIndex);
                     closeMenu();
                   }}
-                  fieldIndex={item.fieldIndex}
-                  name={item.name}
                   isEditable={item.type === 'field_definition'}
                   definition={
                     item.type === 'field_definition' ? item.source : undefined
                   }
                   orderByField={{
-                    name: item.name,
-                    fieldIndex: item.fieldIndex,
+                    name,
+                    fieldIndex,
                     type: scalarTypeOfField(item.field),
                   }}
-                  queryModifiers={queryModifiers}
+                  {...menuProps}
                 />
               );
             }
           } else if (item.type === 'filter') {
             return (
               <FilterActionMenu
-                model={model}
-                modelPath={modelPath}
-                stagePath={stagePath}
-                source={source}
                 filterSource={item.filterSource}
                 filterField={item.field}
                 fieldPath={item.fieldPath as string}
                 fieldIndex={fieldIndex}
                 filterIndex={item.filterIndex}
                 parsedFilter={item.parsed}
-                closeMenu={closeMenu}
-                queryModifiers={queryModifiers}
+                {...baseMenuProps}
               />
             );
           } else if (item.type === 'limit') {
-            return (
-              <LimitActionMenu
-                stagePath={stagePath}
-                closeMenu={closeMenu}
-                limit={item.limit}
-                queryModifiers={queryModifiers}
-              />
-            );
+            return <LimitActionMenu limit={item.limit} {...baseMenuProps} />;
           } else if (item.type === 'order_by') {
             return (
               <OrderByActionMenu
-                stagePath={stagePath}
-                closeMenu={closeMenu}
                 orderByField={item.byField}
                 orderByIndex={item.orderByIndex}
                 existingDirection={item.direction}
-                queryModifiers={queryModifiers}
+                {...baseMenuProps}
               />
             );
           } else if (item.type === 'data_style') {
             return (
               <DataStyleActionMenu
-                stagePath={stagePath}
                 fieldIndex={item.fieldIndex}
                 onComplete={closeMenu}
                 allowedRenderers={item.allowedRenderers}
-                queryModifiers={queryModifiers}
+                {...baseMenuProps}
               />
             );
           } else if (
@@ -208,19 +189,15 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             });
             return (
               <NestQueryActionMenu
-                model={model}
-                modelPath={modelPath}
-                source={source}
-                stagePath={nestStagePath}
                 fieldIndex={item.fieldIndex}
                 orderByFields={item.stages[0].orderByFields}
-                closeMenu={closeMenu}
                 beginReorderingField={() => {
                   beginReorderingField(item.fieldIndex);
                   closeMenu();
                 }}
                 isExpanded={item.type === 'nested_query_definition'}
-                queryModifiers={queryModifiers}
+                {...baseMenuProps}
+                stagePath={nestStagePath}
               />
             );
           } else if (item.type === 'error_field') {
@@ -239,50 +216,40 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
         }}
         content={({isOpen, closeMenu}) => {
           if (item.type === 'field' || item.type === 'field_definition') {
+            const active = isOpen || isSelected;
+            const {name} = item;
+            const canRemove = true;
+            const onRemove = () => {
+              queryModifiers.removeField(stagePath, item.fieldIndex);
+              closeMenu();
+            };
+            const fieldButtonProps = {active, canRemove, name, onRemove};
             const isSaved = item.type === 'field' && !item.isRefined;
             let button: ReactElement;
             if (item.kind === 'dimension') {
               button = (
                 <FieldButton
                   icon={<ActionIcon action="group_by" />}
-                  name={item.name}
                   unsaved={!isSaved}
-                  canRemove={true}
-                  onRemove={() => {
-                    queryModifiers.removeField(stagePath, item.fieldIndex);
-                    closeMenu();
-                  }}
                   color="dimension"
-                  active={isOpen || isSelected}
+                  {...fieldButtonProps}
                 />
               );
             } else if (item.kind === 'measure') {
               button = (
                 <FieldButton
                   icon={<ActionIcon action="aggregate" />}
-                  name={item.name}
-                  canRemove={true}
                   unsaved={!isSaved}
-                  onRemove={() => {
-                    queryModifiers.removeField(stagePath, item.fieldIndex);
-                    closeMenu();
-                  }}
                   color="measure"
-                  active={isOpen || isSelected}
+                  {...fieldButtonProps}
                 />
               );
             } else {
               button = (
                 <FieldButton
                   icon={<ActionIcon action="nest" />}
-                  name={item.name}
-                  canRemove={true}
-                  onRemove={() => {
-                    queryModifiers.removeField(stagePath, item.fieldIndex);
-                    closeMenu();
-                  }}
                   color="query"
-                  active={isOpen || isSelected}
+                  {...fieldButtonProps}
                 />
               );
             }
@@ -422,21 +389,24 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             fieldIndex: item.fieldIndex,
             stageIndex,
           });
+          const baseProps = {
+            model,
+            modelPath,
+            source: stageSummary.inputSource,
+            stagePath: nestStagePath,
+            stageSummary,
+            queryModifiers,
+          };
           return (
             <ListNest key={'stage/' + stageIndex}>
               {item.stages.length > 1 && (
                 <ClickToPopover
                   popoverContent={({closeMenu}) => (
                     <StageActionMenu
-                      model={model}
-                      modelPath={modelPath}
-                      source={stageSummary.inputSource}
-                      stagePath={nestStagePath}
                       orderByFields={stageSummary.orderByFields}
                       closeMenu={closeMenu}
                       isLastStage={stageIndex === item.stages.length - 1}
-                      stageSummary={stageSummary}
-                      queryModifiers={queryModifiers}
+                      {...baseProps}
                     />
                   )}
                   content={({isOpen}) => (
@@ -457,14 +427,7 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                   )}
                 />
               )}
-              <StageSummaryUI
-                model={model}
-                modelPath={modelPath}
-                stageSummary={stageSummary}
-                stagePath={nestStagePath}
-                source={source}
-                queryModifiers={queryModifiers}
-              />
+              <StageSummaryUI {...baseProps} />
             </ListNest>
           );
         })}
