@@ -27,7 +27,6 @@ import {AppInfo, ModelInfo} from '../../types';
 import {useDatasets} from '../data/use_datasets';
 import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
-import {ErrorMessage} from '../ErrorMessage';
 import {HotKeys} from 'react-hotkeys';
 import {
   DummyCompile,
@@ -382,7 +381,7 @@ export const Explore: React.FC = () => {
                   queryName={queryName}
                   querySummary={querySummary}
                   queryMalloy={queryMalloy}
-                  result={result}
+                  result={result || error}
                   runQuery={runQueryAction}
                   isRunning={isRunning}
                 />
@@ -403,7 +402,6 @@ export const Explore: React.FC = () => {
                   <Apps />
                 </PageContent>
               )}
-              <ErrorMessage error={error} />
               {section === 'loading' && (
                 <EmptyMessage>
                   <LoadingSpinner text="Loading Data..." />
