@@ -51,6 +51,7 @@ import {
   StructDef,
   Tag,
   DocumentLocation,
+  Annotation,
 } from '@malloydata/malloy';
 import {snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
@@ -815,10 +816,26 @@ export class QueryBuilder extends SourceUtils {
   }
 
   canRun(): boolean {
-    // TODO check that all nested stages can run, too
-    const stage = this.query.pipeline[0];
-    const fields = getFields(stage);
-    return fields.length > 0;
+    const canRunPipeline = (stages: PipeSegment[]) => {
+      if (stages.length === 0) {
+        return false;
+      }
+      for (const stage of stages) {
+        const fields = getFields(stage);
+        if (fields.length === 0) {
+          return false;
+        }
+        for (const field of fields) {
+          if (field.type === 'turtle') {
+            if (!canRunPipeline(field.pipeline)) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    };
+    return canRunPipeline(this.query.pipeline);
   }
 
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
@@ -1054,7 +1071,11 @@ ${malloy}
     try {
       let tagLines: string[] | undefined;
       if (field.annotation) {
-        tagLines = Tag.annotationToTaglines(field.annotation).map(tagLine =>
+        const copy = JSON.parse(JSON.stringify(field.annotation)) as Annotation;
+        // TODO(whscullin) - better understand inheritance in cloned
+        // views
+        // delete copy.inherits;
+        tagLines = Tag.annotationToTaglines(copy).map(tagLine =>
           tagLine.replace(/\n$/, '')
         );
       }

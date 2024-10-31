@@ -331,6 +331,29 @@ run: names -> {
       expect(qb.getSource()?.as).toEqual('names2');
     });
   });
+
+  describe('canRun', () => {
+    it('is false for an empty query', () => {
+      expect(qb.canRun()).toBe(false);
+    });
+
+    it('is true for a valid query', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      expect(qb.canRun()).toBe(true);
+    });
+
+    it('is false for an empty nest', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addNewNestedQuery({stageIndex: 0}, 'nest');
+      expect(qb.canRun()).toBe(false);
+    });
+
+    it('is false for an empty stage', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addStage(undefined);
+      expect(qb.canRun()).toBe(false);
+    });
+  });
 });
 
 const SCALAR_FILTER: FilterCondition = {
