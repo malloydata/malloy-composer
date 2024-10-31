@@ -817,6 +817,9 @@ export class QueryBuilder extends SourceUtils {
 
   canRun(): boolean {
     const canRunPipeline = (stages: PipeSegment[]) => {
+      if (stages.length === 0) {
+        return false;
+      }
       for (const stage of stages) {
         const fields = getFields(stage);
         if (fields.length === 0) {
