@@ -71,7 +71,9 @@ export const Result: React.FC<ResultProps> = ({
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedSource, setHighlightedSource] = useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
-  const [view, setView] = useState<'sql' | 'malloy' | 'html'>('html');
+  const [view, setView] = useState<'sql' | 'malloy' | 'html'>(
+    result ? 'html' : 'malloy'
+  );
   const [copiedMalloy, setCopiedMalloy] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [malloyType, setMalloyType] = useState<MalloyType>('notebook');
