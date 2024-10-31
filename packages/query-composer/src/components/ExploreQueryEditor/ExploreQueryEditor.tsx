@@ -72,11 +72,14 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   const {notebook: query, isRunnable} = queryMalloy;
 
   const runQueryCallback = React.useCallback(() => {
+    if (!isRunnable) {
+      return;
+    }
     setResult(undefined);
     setError(undefined);
     setLastRunQuery(query);
     runQuery(query, queryName);
-  }, [query, queryName, runQuery]);
+  }, [isRunnable, query, queryName, runQuery]);
 
   useEffect(() => {
     if (currentResult instanceof Error) {
