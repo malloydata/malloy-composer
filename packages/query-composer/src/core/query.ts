@@ -53,10 +53,11 @@ import {
   DocumentLocation,
   Annotation,
 } from '@malloydata/malloy';
-import {snakeToTitle} from '../utils';
+import {computeKind, computeProperty, snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
-import {expressionIsAnalytic, maybeQuoteIdentifier} from './utils';
+import {maybeQuoteIdentifier} from './utils';
 import {sortFieldOrder} from './fields';
+import {IndexSegment, QuerySegment} from '@malloydata/malloy/dist/model';
 
 // TODO this is a hack to turn `string[]` paths (the new way dotted)
 // paths are stored in the struct def back to the old way (just a
@@ -1057,7 +1058,7 @@ ${malloy}
   }
 
   private codeInfoForField(
-    stage: PipeSegment,
+    stage: QuerySegment | IndexSegment,
     field: QueryFieldDef,
     source: SourceDef,
     indent: string
@@ -1079,25 +1080,14 @@ ${malloy}
           tagLine.replace(/\n$/, '')
         );
       }
+
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
         if (isJoined(fieldDef)) {
           throw new Error("Don't know how to deal with this");
         }
-        const property =
-          fieldDef.type === 'turtle'
-            ? 'nest'
-            : expressionIsAnalytic(fieldDef.expressionType)
-            ? 'calculate'
-            : expressionIsCalculation(fieldDef.expressionType)
-            ? 'aggregate'
-            : stage.type === 'project'
-            ? 'select'
-            : 'group_by';
+        const property = computeProperty(stage, fieldDef);
         const malloy: Fragment[] = [];
-        // if (tagLines) {
-        //   tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
-        // }
         malloy.push(maybeQuoteIdentifier(dottify(field.path)));
         return {
           tagLines,
@@ -1105,13 +1095,7 @@ ${malloy}
           malloy,
         };
       } else if (isRenamedField(field)) {
-        const property = expressionIsAnalytic(field.expressionType)
-          ? 'calculate'
-          : expressionIsCalculation(field.expressionType)
-          ? 'aggregate'
-          : stage.type === 'project'
-          ? 'select'
-          : 'group_by';
+        const property = computeProperty(stage, field);
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${dottify(
             field.e.path
@@ -1127,16 +1111,7 @@ ${malloy}
         if (isJoined(fieldDef)) {
           throw new Error("Don't know how to deal with this");
         }
-        const property =
-          fieldDef.type === 'turtle'
-            ? 'nest'
-            : expressionIsAnalytic(fieldDef.expressionType)
-            ? 'calculate'
-            : expressionIsCalculation(fieldDef.expressionType)
-            ? 'aggregate'
-            : stage.type === 'project'
-            ? 'select'
-            : 'group_by';
+        const property = computeProperty(stage, fieldDef);
         const malloy: Fragment[] = [];
         const newNameIs = `${maybeQuoteIdentifier(field.name)} is `;
         malloy.push(
@@ -1173,13 +1148,7 @@ ${malloy}
           malloy,
         };
       } else {
-        const property = expressionIsAnalytic(field.expressionType)
-          ? 'calculate'
-          : expressionIsCalculation(field.expressionType)
-          ? 'aggregate'
-          : stage.type === 'project'
-          ? 'select'
-          : 'group_by';
+        const property = computeProperty(stage, field);
         const malloy: Fragment[] = [
           `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
         ];
@@ -1513,13 +1482,10 @@ ${malloy}
             isRefined: false,
             isRenamed: false,
             path: dottify(field.path),
-            kind:
-              fieldDef.type === 'turtle'
-                ? 'query'
-                : expressionIsCalculation(fieldDef.expressionType)
-                ? 'measure'
-                : 'dimension',
+            kind: computeKind(fieldDef),
+            property: computeProperty(stage, fieldDef),
             name: fieldDef.as || fieldDef.name,
+            styles: this.stylesForField(fieldDef, fieldIndex),
             stages,
           });
           if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
@@ -1545,17 +1511,13 @@ ${malloy}
             field: fieldDef,
             saveDefinition: undefined, // TODO
             fieldIndex,
-            styles: [],
+            styles: this.stylesForField(field, fieldIndex),
             isRefined: true,
             path: field.name,
             isRenamed: true,
             name: field.as || field.name,
-            kind:
-              fieldDef.type === 'turtle'
-                ? 'query'
-                : expressionIsCalculation(fieldDef.expressionType)
-                ? 'measure'
-                : 'dimension',
+            kind: computeKind(fieldDef),
+            property: computeProperty(stage, fieldDef),
             stages,
           });
         } else if (isFilteredField(field)) {
@@ -1581,17 +1543,13 @@ ${malloy}
               source,
               field.e.kids.filterList || []
             ),
-            styles: [],
+            styles: this.stylesForField(field, fieldIndex),
             isRefined: true,
             path: field.name,
             isRenamed: field.as !== undefined,
             name: field.as || field.name,
-            kind:
-              fieldDef.type === 'turtle'
-                ? 'query'
-                : expressionIsCalculation(fieldDef.expressionType)
-                ? 'measure'
-                : 'dimension',
+            kind: computeKind(fieldDef),
+            property: computeProperty(stage, fieldDef),
             stages,
           });
         } else if (field.type === 'turtle') {
@@ -1614,7 +1572,7 @@ ${malloy}
             kind: expressionIsCalculation(field.expressionType)
               ? 'measure'
               : 'dimension',
-            styles: [],
+            styles: this.stylesForField(field, fieldIndex),
           });
           // mtoy to will: This is stripping more things from order by
           if (field.type !== 'error' && isLeafAtomic(field)) {

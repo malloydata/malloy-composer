@@ -102,6 +102,7 @@ export interface QuerySummaryItemFieldScalar {
   kind: 'dimension' | 'measure';
   name: string;
   path: string;
+  property: string;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
 }
@@ -189,11 +190,12 @@ export type QuerySummaryItem =
   | QuerySummaryItemDataStyle
   | QuerySummaryItemErrorField;
 
+export type StageType = 'reduce' | 'project' | 'index';
 export interface StageSummary {
   items: QuerySummaryItem[];
   orderByFields: OrderByField[];
   inputSource: SourceDef;
-  type: 'reduce' | 'project' | 'index';
+  type: StageType;
 }
 
 export interface QuerySummary {

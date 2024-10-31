@@ -22,9 +22,12 @@
  */
 
 import {
+  AtomicFieldDef,
   FieldDef,
+  PipeSegment,
   StructDef,
   TurtleDef,
+  expressionIsAnalytic,
   expressionIsCalculation,
   isJoined,
   isLeafAtomic,
@@ -89,6 +92,27 @@ export function kindOfField(fieldDef: FieldDef): FieldKind {
     ? 'measure'
     : 'dimension';
 }
+
+export const computeKind = (fieldDef: TurtleDef | AtomicFieldDef) =>
+  fieldDef.type === 'turtle'
+    ? 'query'
+    : expressionIsCalculation(fieldDef.expressionType)
+    ? 'measure'
+    : 'dimension';
+
+export const computeProperty = (
+  stage: PipeSegment,
+  fieldDef: TurtleDef | AtomicFieldDef
+) =>
+  fieldDef.type === 'turtle'
+    ? 'nest'
+    : expressionIsAnalytic(fieldDef.expressionType)
+    ? 'calculate'
+    : expressionIsCalculation(fieldDef.expressionType)
+    ? 'aggregate'
+    : stage.type === 'project'
+    ? 'select'
+    : 'group_by';
 
 export function notUndefined<T>(item: T | undefined): item is T {
   return item !== undefined;
