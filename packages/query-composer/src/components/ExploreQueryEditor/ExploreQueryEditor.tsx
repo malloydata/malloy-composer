@@ -239,7 +239,6 @@ const SidebarHeader = styled(PageHeader)`
 const StyledRunIcon = styled(RunIcon)`
   cursor: pointer;
   &.running,
-  &.clean,
   &.blank {
     .backgroundfill {
       fill: #e9e9e9;
@@ -249,6 +248,17 @@ const StyledRunIcon = styled(RunIcon)`
     }
     .foregroundfill {
       fill: #a7a7a7;
+    }
+  }
+  &.clean {
+    .backgroundfill {
+      fill: #ffffff;
+    }
+    .foregroundstroke {
+      stroke: #4285f4;
+    }
+    .foregroundfill {
+      fill: #4285f4;
     }
   }
 `;
