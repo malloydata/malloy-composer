@@ -147,7 +147,7 @@ export function useQueryBuilder(
 
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
-      const backup = JSON.parse(JSON.stringify(queryBuilder.getQuery()));
+      const backup = structuredClone(queryBuilder.getQuery());
       setError(undefined);
       modify(queryBuilder);
       if (queryBuilder.canRun()) {

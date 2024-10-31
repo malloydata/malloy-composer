@@ -181,7 +181,7 @@ export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
   constructor(source: SourceDef | undefined) {
     super(source);
-    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
+    this.query = structuredClone(BLANK_QUERY);
   }
 
   public getWriter(): QueryWriter {
@@ -246,13 +246,13 @@ export class QueryBuilder extends SourceUtils {
   }
 
   public clearQuery(): void {
-    this.query = JSON.parse(JSON.stringify(BLANK_QUERY));
+    this.query = structuredClone(BLANK_QUERY);
   }
 
-  public setQuery(query: NamedQuery): void {
+  public setQuery(query: TurtleDef | NamedQuery): void {
     let tag = {};
     if (query.annotation) {
-      tag = {annotation: JSON.parse(JSON.stringify(query.annotation))};
+      tag = {annotation: structuredClone(query.annotation)};
     }
     this.query = {
       ...tag,
@@ -411,7 +411,7 @@ export class QueryBuilder extends SourceUtils {
     }
     definition.pipeline.forEach((stage, stageIndex) => {
       if (this.query.pipeline[stageIndex] === undefined) {
-        this.query.pipeline[stageIndex] = JSON.parse(JSON.stringify(stage));
+        this.query.pipeline[stageIndex] = structuredClone(stage);
       } else {
         const existingStage = this.query.pipeline[stageIndex];
         if (
@@ -443,7 +443,7 @@ export class QueryBuilder extends SourceUtils {
           existingStage.by = undefined;
         }
         existingStage.queryFields = stage.queryFields
-          .map(field => JSON.parse(JSON.stringify(field)))
+          .map(field => structuredClone(field))
           .concat(
             existingStage.queryFields.filter(field => {
               return !stage.queryFields.find(
@@ -454,7 +454,7 @@ export class QueryBuilder extends SourceUtils {
       }
     });
     if (definition.annotation) {
-      this.query.annotation = JSON.parse(JSON.stringify(definition.annotation));
+      this.query.annotation = structuredClone(definition.annotation);
     }
     this.query.name = definition.as || definition.name;
   }
@@ -468,11 +468,11 @@ export class QueryBuilder extends SourceUtils {
       this.query.pipeline.length === 1 && stage.queryFields.length === 0
         ? stage.filterList || []
         : [];
-    const pipeline = JSON.parse(JSON.stringify(field.pipeline));
+    const pipeline = structuredClone(field.pipeline);
     pipeline[0].filterList = [...filters, ...(pipeline[0].filterList || [])];
     let tag = {};
     if (field.annotation) {
-      tag = {annotation: JSON.parse(JSON.stringify(field.annotation))};
+      tag = {annotation: structuredClone(field.annotation)};
     }
     this.query = {
       ...tag,
@@ -996,7 +996,14 @@ export class QueryBuilder extends SourceUtils {
     if (definition === undefined) {
       throw new Error('Field is not defined..');
     }
-    stage.queryFields[fieldIndex] = JSON.parse(JSON.stringify(definition));
+    if (
+      definition.type === 'table' ||
+      definition.type === 'sql_select' ||
+      definition.type === 'query_source'
+    ) {
+      throw new Error(`Unhandled definition type: ${definition.type}`);
+    }
+    stage.queryFields[fieldIndex] = structuredClone(definition);
   }
 
   setName(name: string): void {
@@ -1072,7 +1079,7 @@ ${malloy}
     try {
       let tagLines: string[] | undefined;
       if (field.annotation) {
-        const copy = JSON.parse(JSON.stringify(field.annotation)) as Annotation;
+        const copy = structuredClone(field.annotation) as Annotation;
         // TODO(whscullin) - better understand inheritance in cloned
         // views
         // delete copy.inherits;
