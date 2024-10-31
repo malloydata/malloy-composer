@@ -27,35 +27,43 @@ import {
   ModelDef,
   StructDef,
 } from '@malloydata/malloy';
-import {Filter} from '../../types';
+import {Filter, StagePath} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
 import {EditFilter} from '../EditFilter';
+import {QueryModifiers} from '../../hooks';
 
 interface FilterActionMenuProps {
   model: ModelDef;
   modelPath: string;
+  stagePath: StagePath;
   source: StructDef;
   filterSource: string;
-  removeFilter: () => void;
-  editFilter: (filter: FilterCondition) => void;
   closeMenu: () => void;
   filterField: FieldDef | undefined;
   parsedFilter: Filter | undefined;
   fieldPath: string;
+  fieldIndex: number | undefined;
+  filterIndex: number;
+  queryModifiers: QueryModifiers;
 }
 
 export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
   filterSource,
-  editFilter,
   closeMenu,
   source,
   filterField,
   parsedFilter,
   model,
   modelPath,
+  stagePath,
   fieldPath,
+  fieldIndex,
+  filterIndex,
+  queryModifiers,
 }) => {
+  const editFilter = (filter: FilterCondition) =>
+    queryModifiers.editFilter(stagePath, fieldIndex, filterIndex, filter);
   return (
     <ActionMenu
       closeMenu={closeMenu}

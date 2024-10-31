@@ -23,18 +23,21 @@
 import * as React from 'react';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddLimit} from '../AddLimit';
+import {StagePath} from '../../types';
+import {QueryModifiers} from '../../hooks';
 
 interface LimitActionMenuProps {
+  stagePath: StagePath;
   limit: number;
-  removeLimit: () => void;
-  editLimit: (limit: number) => void;
   closeMenu: () => void;
+  queryModifiers: QueryModifiers;
 }
 
 export const LimitActionMenu: React.FC<LimitActionMenuProps> = ({
+  stagePath,
   limit,
-  editLimit,
   closeMenu,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
@@ -49,7 +52,7 @@ export const LimitActionMenu: React.FC<LimitActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
-              addLimit={editLimit}
+              addLimit={limit => queryModifiers.addLimit(stagePath, limit)}
               onComplete={onComplete}
               existing={limit}
             />

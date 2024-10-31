@@ -21,24 +21,31 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {RendererName} from '../../types';
+import {RendererName, StagePath} from '../../types';
 import {DataStyleContextBar} from '../DataStyleContextBar';
+import {QueryModifiers} from '../../hooks';
 
 interface DataStyleActionMenuProps {
-  setRenderer: (rendererName: RendererName) => void;
+  stagePath: StagePath;
+  fieldIndex: number | undefined;
   onComplete: () => void;
   allowedRenderers: RendererName[];
+  queryModifiers: QueryModifiers;
 }
 
 export const DataStyleActionMenu: React.FC<DataStyleActionMenuProps> = ({
+  stagePath,
+  fieldIndex,
   onComplete,
-  setRenderer,
   allowedRenderers,
+  queryModifiers,
 }) => {
   return (
     <DataStyleContextBar
       onComplete={onComplete}
-      setRenderer={setRenderer}
+      setRenderer={renderer =>
+        queryModifiers.setRenderer(stagePath, fieldIndex, renderer)
+      }
       allowedRenderers={allowedRenderers}
     />
   );

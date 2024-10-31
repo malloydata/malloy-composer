@@ -21,28 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  FilterCondition,
-  QueryFieldDef,
-  StructDef,
-  ModelDef,
-} from '@malloydata/malloy';
-import {OrderByField, RendererName, StagePath, StageSummary} from '../../types';
+import {FieldDef, StructDef, ModelDef} from '@malloydata/malloy';
+import {OrderByField, StagePath, StageSummary} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
 import {AddNewDimension} from '../AddNewDimension';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {EditOrderBy} from '../EditOrderBy';
 import {RenameField} from '../RenameField';
+import {QueryModifiers} from '../../hooks';
 
 interface DimensionActionMenuProps {
   model: ModelDef;
-  removeField: () => void;
-  rename: (name: string) => void;
   closeMenu: () => void;
-  setRenderer: (renderer: RendererName) => void;
-  updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   stagePath: StagePath;
   fieldIndex: number;
   stageSummary: StageSummary;
@@ -50,39 +41,29 @@ interface DimensionActionMenuProps {
   isEditable: boolean;
   name: string;
   definition: string | undefined;
-  editDimension: (fieldIndex: number, dimension: QueryFieldDef) => void;
   source: StructDef;
   filterField?: FieldDef;
   filterFieldPath?: string;
-  addFilter: (stagePath: StagePath, filterExpression: FilterCondition) => void;
-  addOrderBy: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    direction?: 'asc' | 'desc'
-  ) => void;
   orderByField: OrderByField;
   modelPath: string;
+  queryModifiers: QueryModifiers;
 }
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   source,
   model,
   modelPath,
-  rename,
   name,
   closeMenu,
-  setRenderer,
   fieldIndex,
   beginReorderingField,
   isEditable,
-  editDimension,
   definition,
   filterField,
   filterFieldPath,
-  addFilter,
   stagePath,
-  addOrderBy,
   orderByField,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
@@ -96,7 +77,12 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           iconColor: 'other',
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
-            <RenameField rename={rename} onComplete={onComplete} />
+            <RenameField
+              rename={name =>
+                queryModifiers.renameField(stagePath, fieldIndex, name)
+              }
+              onComplete={onComplete}
+            />
           ),
         },
         {
@@ -116,7 +102,9 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
                 field={filterField}
                 fieldPath={filterFieldPath}
                 needsRename={false}
-                addFilter={filter => addFilter(stagePath, filter)}
+                addFilter={filter =>
+                  queryModifiers.addFilter(stagePath, filter)
+                }
               />
             ) : (
               <div />
@@ -133,7 +121,7 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
             <EditOrderBy
               byField={orderByField}
               addOrderBy={(fieldIndex, direction) =>
-                addOrderBy(stagePath, fieldIndex, direction)
+                queryModifiers.addOrderBy(stagePath, fieldIndex, direction)
               }
               onComplete={onComplete}
             />
@@ -148,7 +136,9 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
-              setRenderer={setRenderer}
+              setRenderer={renderer =>
+                queryModifiers.setRenderer(stagePath, fieldIndex, renderer)
+              }
               onComplete={onComplete}
               allowedRenderers={[
                 'number',
@@ -188,7 +178,9 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddNewDimension
               source={source}
-              addDimension={code => editDimension(fieldIndex, code)}
+              addDimension={code =>
+                queryModifiers.editDimension(stagePath, fieldIndex, code)
+              }
               onComplete={onComplete}
               initialCode={definition}
               initialName={name}

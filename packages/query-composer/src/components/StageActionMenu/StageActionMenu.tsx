@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {OrderByField, RendererName, StagePath, StageSummary} from '../../types';
+import {OrderByField, StagePath, StageSummary} from '../../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -29,12 +29,7 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
-import {
-  FilterCondition,
-  QueryFieldDef,
-  SourceDef,
-  ModelDef,
-} from '@malloydata/malloy';
+import {SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
@@ -42,56 +37,29 @@ import {
   pathParent,
   termsForField,
 } from '../../utils';
+import {QueryModifiers} from '../../hooks';
 
 interface StageActionMenuProps {
   source: SourceDef;
-  toggleField: (stagePath: StagePath, fieldPath: string) => void;
-  addFilter: (
-    stagePath: StagePath,
-    filter: FilterCondition,
-    as?: string
-  ) => void;
-  addLimit: (stagePath: StagePath, limit: number) => void;
-  addOrderBy: (
-    stagePath: StagePath,
-    byFieldIndex: number,
-    direction?: 'asc' | 'desc'
-  ) => void;
-  addNewNestedQuery: (stagePath: StagePath, name: string) => void;
   stagePath: StagePath;
-  remove: () => void;
   orderByFields: OrderByField[];
-  addNewDimension: (stagePath: StagePath, dimension: QueryFieldDef) => void;
-  addNewMeasure: (stagePath: StagePath, measure: QueryFieldDef) => void;
   closeMenu: () => void;
-  setRenderer: (
-    stagePath: StagePath,
-    fieldIndex: number,
-    rendererName: RendererName
-  ) => void;
   stageSummary: StageSummary;
-  updateFieldOrder: (stagePath: StagePath, ordering: number[]) => void;
   isLastStage: boolean;
   model: ModelDef;
   modelPath: string;
+  queryModifiers: QueryModifiers;
 }
 
 export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   source,
-  toggleField,
-  addFilter,
-  addLimit,
-  addOrderBy,
-  addNewNestedQuery,
   stagePath,
   orderByFields,
-  addNewDimension,
-  addNewMeasure,
   closeMenu,
-  setRenderer,
   isLastStage,
   model,
   modelPath,
+  queryModifiers,
 }) => {
   return (
     <ActionMenu
@@ -109,7 +77,9 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
               model={model}
               modelPath={modelPath}
               source={source}
-              addFilter={(filter, as) => addFilter(stagePath, filter, as)}
+              addFilter={(filter, as) =>
+                queryModifiers.addFilter(stagePath, filter, as)
+              }
               onComplete={onComplete}
               needsRename={false}
             />
@@ -126,8 +96,12 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
               source={source}
-              selectField={fieldPath => toggleField(stagePath, fieldPath)}
-              selectNewNest={name => addNewNestedQuery(stagePath, name)}
+              selectField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              selectNewNest={name =>
+                queryModifiers.addNewNestedQuery(stagePath, name)
+              }
               onComplete={onComplete}
             />
           ),
@@ -142,8 +116,12 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               source={source}
-              toggleField={fieldPath => toggleField(stagePath, fieldPath)}
-              addNewDimension={def => addNewDimension(stagePath, def)}
+              toggleField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              addNewDimension={def =>
+                queryModifiers.addNewDimension(stagePath, def)
+              }
               onComplete={onComplete}
             />
           ),
@@ -158,8 +136,12 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
-              selectField={fieldPath => toggleField(stagePath, fieldPath)}
-              addNewMeasure={def => addNewMeasure(stagePath, def)}
+              selectField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              addNewMeasure={def =>
+                queryModifiers.addNewMeasure(stagePath, def)
+              }
               onComplete={onComplete}
             />
           ),
@@ -173,7 +155,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AddLimit
-              addLimit={limit => addLimit(stagePath, limit)}
+              addLimit={limit => queryModifiers.addLimit(stagePath, limit)}
               onComplete={onComplete}
             />
           ),
@@ -188,7 +170,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <OrderByContextBar
               addOrderBy={(byField, direction) =>
-                addOrderBy(stagePath, byField, direction)
+                queryModifiers.addOrderBy(stagePath, byField, direction)
               }
               orderByFields={orderByFields}
               onComplete={onComplete}
@@ -205,7 +187,9 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           isEnabled: isLastStage,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <DataStyleContextBar
-              setRenderer={renderName => setRenderer(stagePath, 0, renderName)}
+              setRenderer={renderName =>
+                queryModifiers.setRenderer(stagePath, 0, renderName)
+              }
               onComplete={onComplete}
               allowedRenderers={[
                 'table',
@@ -230,7 +214,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
         terms: termsForField(field, path),
         detail: pathParent(path),
         key: path,
-        select: () => toggleField(stagePath, path),
+        select: () => queryModifiers.toggleField(stagePath, path),
       }))}
     />
   );

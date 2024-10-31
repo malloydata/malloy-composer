@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import {QuerySummary} from '../../types';
 import {ActionIcon} from '../ActionIcon';
 import {PageContent, PageHeader} from '../CommonElements';
-import {QueryModifiers} from '../../hooks/use_query_builder';
+import {QueryModifiers} from '../../hooks';
 import {Popover} from '../Popover';
 import {QuerySummaryPanel} from '../QuerySummaryPanel';
 import {Result} from '../Result';
