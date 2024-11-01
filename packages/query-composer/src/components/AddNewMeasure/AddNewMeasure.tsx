@@ -41,9 +41,12 @@ import {
   SourceDef,
 } from '@malloydata/malloy';
 import {
-  degenerateMeasure,
-  generateMeasure,
-  MeasureType,
+  degenerateAggregate,
+  degenerateCalculate,
+  generateAggregate,
+  generateCalculate,
+  AggregateType,
+  CalculateType,
   sortFlatFields,
 } from '../../core/fields';
 import {FieldButton} from '../FieldButton';
@@ -57,6 +60,7 @@ import {
 } from '../../utils';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 import {maybeQuoteIdentifier} from '../../core/utils';
+import {PropertyType} from '../../types';
 
 interface AddMeasureProps {
   source: SourceDef;
@@ -64,9 +68,10 @@ interface AddMeasureProps {
   onComplete: () => void;
   initialCode?: string;
   initialName?: string;
+  initialProperty?: PropertyType;
 }
 
-const VALID_MEASURES: Record<
+type FieldTypes =
   | 'string'
   | 'number'
   | 'date'
@@ -80,16 +85,36 @@ const VALID_MEASURES: Record<
   | 'sql_select'
   | 'error'
   | 'query_source'
-  | 'turtle',
-  MeasureType[]
+  | 'turtle';
+
+const VALID_MEASURES: Record<
+  FieldTypes,
+  Array<AggregateType | CalculateType>
 > = {
-  string: ['count_distinct'],
-  number: ['count_distinct', 'avg', 'sum', 'min', 'max'],
-  date: ['count_distinct', 'min', 'max'],
-  timestamp: ['count_distinct', 'min', 'max'],
-  boolean: ['count_distinct'],
-  json: ['count_distinct'],
-  'sql native': ['count_distinct'],
+  string: ['count_distinct', 'first_value', 'last_value'],
+  number: [
+    'count_distinct',
+    'avg',
+    'sum',
+    'min',
+    'max',
+    'first_value',
+    'last_value',
+    'avg_moving',
+    'max_cumulative',
+    'max_window',
+    'min_cumulative',
+    'min_window',
+    'row_number',
+    'sum_cumulative',
+    'sum_moving',
+    'sum_window',
+  ],
+  date: ['count_distinct', 'min', 'max', 'first_value', 'last_value'],
+  timestamp: ['count_distinct', 'min', 'max', 'first_value', 'last_value'],
+  boolean: ['count_distinct', 'first_value', 'last_value'],
+  json: ['count_distinct', 'first_value', 'last_value'],
+  'sql native': ['count_distinct', 'first_value', 'last_value'],
   record: [],
   array: [],
   table: [],
@@ -101,20 +126,70 @@ const VALID_MEASURES: Record<
 
 const MEASURE_OPTIONS: {
   label: string;
-  value: MeasureType;
+  value: {measureType: AggregateType | CalculateType; property: PropertyType};
   divider?: boolean;
 }[] = [
   {
     label: 'Count Distinct',
-    value: 'count_distinct',
+    value: {measureType: 'count_distinct', property: 'aggregate'},
   },
-  {label: 'Sum', value: 'sum'},
-  {label: 'Average', value: 'avg'},
-  {label: 'Max', value: 'max'},
-  {label: 'Min', value: 'min'},
+  {label: 'Sum', value: {measureType: 'sum', property: 'aggregate'}},
+  {label: 'Average', value: {measureType: 'avg', property: 'aggregate'}},
+  {label: 'Max', value: {measureType: 'max', property: 'aggregate'}},
+  {label: 'Min', value: {measureType: 'min', property: 'aggregate'}},
   {
     label: 'Percent of All',
-    value: 'percent',
+    value: {measureType: 'percent', property: 'aggregate'},
+  },
+  {
+    label: 'Row Number',
+    value: {measureType: 'row_number', property: 'calculate'},
+  },
+  {label: 'Rank', value: {measureType: 'rank', property: 'calculate'}},
+  {
+    label: 'First Value',
+    value: {measureType: 'first_value', property: 'calculate'},
+    divider: true,
+  },
+  {
+    label: 'Last Value',
+    value: {measureType: 'last_value', property: 'calculate'},
+  },
+  {
+    label: 'Max Cumulative',
+    value: {measureType: 'max_cumulative', property: 'calculate'},
+    divider: true,
+  },
+  {
+    label: 'Sum Cumulative',
+    value: {measureType: 'sum_cumulative', property: 'calculate'},
+  },
+  {
+    label: 'Max Window',
+    value: {measureType: 'max_window', property: 'calculate'},
+  },
+  {
+    label: 'Min Window',
+    value: {measureType: 'min_window', property: 'calculate'},
+  },
+  {
+    label: 'Sum Window',
+    value: {measureType: 'sum_window', property: 'calculate'},
+  },
+  {
+    label: 'Lag',
+    value: {measureType: 'lag', property: 'calculate'},
+    divider: true,
+  },
+  {label: 'Lead', value: {measureType: 'lead', property: 'calculate'}},
+  {
+    label: 'Average Moving',
+    value: {measureType: 'avg_moving', property: 'calculate'},
+    divider: true,
+  },
+  {
+    label: 'Sum Moving',
+    value: {measureType: 'sum_moving', property: 'calculate'},
   },
 ];
 
@@ -123,6 +198,8 @@ type FlatField = {field: FieldDef; path: string};
 enum Mode {
   FIELD,
   COUNT,
+  ROW_NUMBER,
+  RANK,
   CUSTOM,
 }
 
@@ -132,18 +209,26 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   onComplete,
   initialCode,
   initialName,
+  initialProperty,
 }) => {
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   let initialMode = Mode.FIELD;
   let initialField: FlatField | undefined;
-  let initialType: MeasureType | undefined;
+  let initialType: AggregateType | CalculateType | undefined;
   if (initialCode) {
-    const {measureType, field, path} = degenerateMeasure(source, initialCode);
+    const {measureType, field, path} =
+      initialProperty === 'aggregate'
+        ? degenerateAggregate(source, initialCode)
+        : degenerateCalculate(source, initialCode);
     initialMode =
       measureType === 'custom'
         ? Mode.CUSTOM
         : measureType === 'count'
         ? Mode.COUNT
+        : measureType === 'row_number'
+        ? Mode.ROW_NUMBER
+        : measureType === 'rank'
+        ? Mode.RANK
         : Mode.FIELD;
     if (field) {
       initialField = {field, path};
@@ -153,8 +238,11 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   const [mode, setMode] = useState(initialMode);
   const [measure, setMeasure] = useState(initialCode || '');
   const [newName, setNewName] = useState(initialName || '');
-  const [measureType, setMeasureType] = useState<MeasureType | undefined>(
-    initialType
+  const [measureType, setMeasureType] = useState<
+    AggregateType | CalculateType | undefined
+  >(initialType);
+  const [property, setProperty] = useState<PropertyType>(
+    initialProperty || 'aggregate'
   );
   const [flatField, setFlatField] = useState<FlatField | undefined>(
     initialField
@@ -164,14 +252,21 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
 
   useEffect(() => {
     if (mode === Mode.FIELD && flatField && measureType) {
-      const newMeasure = generateMeasure(measureType, flatField.path);
+      const newMeasure =
+        property === 'aggregate'
+          ? generateAggregate(measureType as AggregateType, flatField.path)
+          : generateCalculate(measureType as CalculateType, flatField.path);
       if (newMeasure) {
         setMeasure(newMeasure);
       }
     } else if (mode === Mode.COUNT) {
       setMeasure('count()');
+    } else if (mode === Mode.ROW_NUMBER) {
+      setMeasure('row_number()');
+    } else if (mode === Mode.RANK) {
+      setMeasure('rank()');
     }
-  }, [mode, measureType, flatField]);
+  }, [mode, measureType, flatField, property]);
 
   const flattened = useMemo(
     () =>
@@ -212,8 +307,10 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               value={mode}
               options={[
                 {label: 'From a field', value: Mode.FIELD},
-                {label: 'Count', value: Mode.COUNT},
-                {label: 'Custom', value: Mode.CUSTOM},
+                {label: 'Count', value: Mode.COUNT, divider: true},
+                {label: 'Row Number', value: Mode.ROW_NUMBER},
+                {label: 'Rank', value: Mode.RANK},
+                {label: 'Custom', value: Mode.CUSTOM, divider: true},
               ]}
               onChange={value => setMode(value)}
               width={300}
@@ -235,17 +332,22 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
             <FormItem>
               <FormInputLabel>Type</FormInputLabel>
               <SelectDropdown
-                value={measureType}
+                value={{measureType, property}}
                 options={
                   flatField
                     ? MEASURE_OPTIONS.filter(({value}) =>
-                        isAggregate(flatField.field)
-                          ? value === 'percent'
-                          : VALID_MEASURES[flatField.field.type].includes(value)
+                        isAggregate(flatField.field) && property === 'aggregate'
+                          ? value.measureType === 'percent'
+                          : VALID_MEASURES[flatField.field.type].includes(
+                              value.measureType
+                            )
                       )
                     : []
                 }
-                onChange={value => setMeasureType(value)}
+                onChange={({measureType, property}) => {
+                  setMeasureType(measureType);
+                  setProperty(property);
+                }}
                 width={300}
               />
             </FormItem>

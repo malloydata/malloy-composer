@@ -127,6 +127,7 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             } else if (item.kind === 'measure') {
               const isRenamed =
                 item.type === 'field_definition' || item.isRenamed;
+              const {property} = item;
               return (
                 <AggregateActionMenu
                   isRenamed={isRenamed}
@@ -143,6 +144,7 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                     fieldIndex,
                     type: scalarTypeOfField(item.field),
                   }}
+                  property={property}
                   {...menuProps}
                 />
               );
@@ -226,29 +228,20 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             const fieldButtonProps = {active, canRemove, name, onRemove};
             const isSaved = item.type === 'field' && !item.isRefined;
             let button: ReactElement;
-            if (item.kind === 'dimension') {
+            if (item.kind !== 'query') {
               button = (
                 <FieldButton
-                  icon={<ActionIcon action="group_by" />}
+                  icon={<ActionIcon action={item.property} />}
                   unsaved={!isSaved}
-                  color="dimension"
-                  {...fieldButtonProps}
-                />
-              );
-            } else if (item.kind === 'measure') {
-              button = (
-                <FieldButton
-                  icon={<ActionIcon action="aggregate" />}
-                  unsaved={!isSaved}
-                  color="measure"
+                  color={item.kind}
                   {...fieldButtonProps}
                 />
               );
             } else {
               button = (
                 <FieldButton
-                  icon={<ActionIcon action="nest" />}
-                  color="query"
+                  icon={<ActionIcon action={item.property} />}
+                  color={item.kind}
                   {...fieldButtonProps}
                 />
               );

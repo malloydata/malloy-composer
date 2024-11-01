@@ -48,10 +48,13 @@ import RedoIcon from '../../assets/img/query_redo_hover.svg?react';
 import UndoIcon from '../../assets/img/query_undo_hover.svg?react';
 import {ColorKey, COLORS} from '../../colors';
 import styled from 'styled-components';
+import {FunctionComponent, SVGProps} from 'react';
 
 export type ActionIconName =
   | 'group_by'
+  | 'calculate'
   | 'aggregate'
+  | 'select'
   | 'filter'
   | 'limit'
   | 'nest'
@@ -83,6 +86,40 @@ interface ActionIconProps {
   color?: ColorKey;
 }
 
+const iconMap: Record<
+  ActionIconName,
+  FunctionComponent<SVGProps<SVGSVGElement> & {title?: string | undefined}>
+> = {
+  group_by: ActionIconGroupBy,
+  aggregate: ActionIconAggregate,
+  calculate: ActionIconAggregate,
+  select: ActionIconAggregate,
+  filter: InsertFilter,
+  limit: InsertLimit,
+  nest: InsertNest,
+  order_by: ActionIconOrderBy,
+  remove: ActionItemRemove,
+  rename: ActionItemRename,
+  add: ActionItemAdd,
+  save: ActionItemSave,
+  'container-closed': ActionItemContainerClosed,
+  'container-open': ActionItemContainerOpen,
+  duplicate: ActionItemDuplicate,
+  style: VisIconScatterChart,
+  stage: ActionIconPipeline,
+  error: ActionIconError,
+  load: ActionIconLoad,
+  move: ActionIconMove,
+  edit: ActionIconEdit,
+  search: ActionIconSearch,
+  analysis: AnalysisIcon,
+  'open-directory': ActionIconOpen,
+  run: ActionItemRun,
+  undo: UndoIcon,
+  redo: RedoIcon,
+  copy: ActionItemDuplicate,
+};
+
 export const ActionIcon: React.FC<ActionIconProps> = ({
   action,
   onClick,
@@ -94,61 +131,11 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
     style: {cursor: onClick ? 'pointer' : 'unset'},
   };
   const props = {...sizeProps, ...otherProps};
+  const Icon = iconMap[action];
+
   return (
     <IconWrapper color={color} doHover={onClick !== undefined}>
-      {action === 'group_by' ? (
-        <ActionIconGroupBy {...props} />
-      ) : action === 'aggregate' ? (
-        <ActionIconAggregate {...props} />
-      ) : action === 'filter' ? (
-        <InsertFilter {...props} />
-      ) : action === 'limit' ? (
-        <InsertLimit {...props} />
-      ) : action === 'nest' ? (
-        <InsertNest {...props} />
-      ) : action === 'order_by' ? (
-        <ActionIconOrderBy {...props} />
-      ) : action === 'remove' ? (
-        <ActionItemRemove {...props} />
-      ) : action === 'rename' ? (
-        <ActionItemRename {...props} />
-      ) : action === 'add' ? (
-        <ActionItemAdd {...props} />
-      ) : action === 'save' ? (
-        <ActionItemSave {...props} />
-      ) : action === 'container-open' ? (
-        <ActionItemContainerOpen {...props} />
-      ) : action === 'container-closed' ? (
-        <ActionItemContainerClosed {...props} />
-      ) : action === 'duplicate' ? (
-        <ActionItemDuplicate {...props} />
-      ) : action === 'copy' ? (
-        <ActionItemDuplicate {...props} />
-      ) : action === 'style' ? (
-        <VisIconScatterChart {...props} />
-      ) : action === 'stage' ? (
-        <ActionIconPipeline {...props} />
-      ) : action === 'error' ? (
-        <ActionIconError {...props} />
-      ) : action === 'load' ? (
-        <ActionIconLoad {...props} />
-      ) : action === 'move' ? (
-        <ActionIconMove {...props} />
-      ) : action === 'edit' ? (
-        <ActionIconEdit {...props} />
-      ) : action === 'search' ? (
-        <ActionIconSearch {...props} />
-      ) : action === 'open-directory' ? (
-        <ActionIconOpen {...props} />
-      ) : action === 'run' ? (
-        <ActionItemRun {...props} />
-      ) : action === 'analysis' ? (
-        <AnalysisIcon {...props} />
-      ) : action === 'undo' ? (
-        <UndoIcon {...props} />
-      ) : action === 'redo' ? (
-        <RedoIcon {...props} />
-      ) : null}
+      <Icon {...props} />
     </IconWrapper>
   );
 };

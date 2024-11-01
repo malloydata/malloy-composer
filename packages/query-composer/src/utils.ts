@@ -32,7 +32,7 @@ import {
   isJoined,
   isLeafAtomic,
 } from '@malloydata/malloy';
-import {QuerySummaryItem} from './types';
+import {PropertyType, QuerySummaryItem} from './types';
 
 export function snakeToTitle(snake: string): string {
   return snake
@@ -103,7 +103,7 @@ export const computeKind = (fieldDef: TurtleDef | AtomicFieldDef) =>
 export const computeProperty = (
   stage: PipeSegment,
   fieldDef: TurtleDef | AtomicFieldDef
-) =>
+): PropertyType =>
   fieldDef.type === 'turtle'
     ? 'nest'
     : expressionIsAnalytic(fieldDef.expressionType)

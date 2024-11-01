@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 import {ModelDef, SourceDef} from '@malloydata/malloy';
-import {OrderByField, StagePath} from '../../types';
+import {OrderByField, PropertyType, StagePath} from '../../types';
 import {FilterContextBar} from '../FilterContextBar';
 import {RenameField} from '../RenameField';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
@@ -45,6 +45,7 @@ interface AggregateActionMenuProps {
   model: ModelDef;
   modelPath: string;
   queryModifiers: QueryModifiers;
+  property: PropertyType;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
@@ -61,6 +62,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   orderByField,
   stagePath,
   queryModifiers,
+  property,
 }) => {
   return (
     <ActionMenu
@@ -169,6 +171,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
               onComplete={onComplete}
               initialCode={definition}
               initialName={name}
+              initialProperty={property}
             />
           ),
         },

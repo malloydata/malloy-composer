@@ -84,6 +84,13 @@ export type RendererName =
   | 'vega'
   | 'url';
 
+export type PropertyType =
+  | 'aggregate'
+  | 'calculate'
+  | 'group_by'
+  | 'nest'
+  | 'select';
+
 export interface Schema {
   fields: SchemaField[];
 }
@@ -102,7 +109,7 @@ export interface QuerySummaryItemFieldScalar {
   kind: 'dimension' | 'measure';
   name: string;
   path: string;
-  property: string;
+  property: PropertyType;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
 }
@@ -117,6 +124,7 @@ export interface QuerySummaryItemFieldQuery {
   kind: 'query';
   name: string;
   path: string;
+  property: PropertyType;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
   stages: StageSummary[];
@@ -139,6 +147,7 @@ export interface QuerySummaryItemFieldDefinition {
   source?: string;
   saveDefinition: FieldDef | undefined;
   kind: 'dimension' | 'measure';
+  property: PropertyType;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
 }
