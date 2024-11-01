@@ -6,7 +6,6 @@
  */
 
 import {
-  FieldDef,
   FilterCondition,
   FixedConnectionMap,
   Malloy,
@@ -24,6 +23,7 @@ import {
 } from '@malloydata/malloy';
 import {maybeQuoteIdentifier} from './utils';
 import {BaseConnection} from '@malloydata/malloy/connection';
+import {QuerySegment} from '@malloydata/malloy/dist/model';
 
 const DEFAULT_NAME = 'new_query';
 
@@ -89,6 +89,23 @@ export class DummyCompile {
     };
   }
 
+  private async compile(
+    source: StructDef,
+    malloy: string
+  ): Promise<QuerySegment> {
+    const modelDef = this.modelDefForSource(source);
+    const model = await this.compileModel(modelDef, malloy);
+    const theQuery = model.contents['the_query'];
+    if (theQuery.type !== 'query') {
+      throw new Error('Expected the_query to be a query');
+    }
+    const segment = theQuery.pipeline[0];
+    if (segment.type !== 'reduce') {
+      throw new Error('Expected the query to be a reduce query');
+    }
+    return segment;
+  }
+
   public async compileFilter(
     source: StructDef,
     filter: string
@@ -96,24 +113,37 @@ export class DummyCompile {
     const name = source.as || source.name;
     const whereMalloy = `query: the_query is ${name} -> { group_by: one is 1; where: ${filter}}`;
     const havingMalloy = `query: the_query is ${name} -> { group_by: one is 1; having: ${filter}}`;
-    const modelDef = this.modelDefForSource(source);
-    let model;
+    let segment: QuerySegment;
     try {
       // Try first as scalar
-      model = await this.compileModel(modelDef, whereMalloy);
+      segment = await this.compile(source, whereMalloy);
     } catch (_e) {
       // Retry as aggregate
-      model = await this.compileModel(modelDef, havingMalloy);
+      segment = await this.compile(source, havingMalloy);
     }
-    const theQuery = model.contents['the_query'];
-    if (theQuery.type !== 'query') {
-      throw new Error('Expected the_query to be a query');
-    }
-    const filterList = theQuery.pipeline[0].filterList;
+    const filterList = segment.filterList;
     if (filterList === undefined) {
       throw new Error('Expected a filter list');
     }
     return filterList[0];
+  }
+
+  private async compileToField(
+    source: StructDef,
+    malloy: string
+  ): Promise<QueryFieldDef> {
+    const segment = await this.compile(source, malloy);
+    const fieldList = segment.queryFields;
+    if (fieldList === undefined) {
+      throw new Error('Expected a field list');
+    }
+    const field = segment.queryFields[0];
+    if (typeof field === 'string') {
+      throw new Error('Expected field definition, not reference');
+    } else if (field.type === 'fieldref') {
+      throw new Error('Expected field definition, not field reference');
+    }
+    return field;
   }
 
   public async compileGroupBy(
@@ -126,75 +156,40 @@ export class DummyCompile {
     const malloy = `query: the_query is ${maybeQuoteIdentifier(
       source.as || source.name
     )} -> { group_by: ${groupBy} }`;
-    const modelDef = this.modelDefForSource(source);
-    const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents['the_query'];
-    if (theQuery.type !== 'query') {
-      throw new Error('Expected the_query to be a query');
-    }
-    const segment = theQuery.pipeline[0];
-    if (segment.type !== 'reduce') {
-      throw new Error('Expected the query to be a reduce query');
-    }
-    const fieldList = segment.queryFields;
-    if (fieldList === undefined) {
-      throw new Error('Expected a field list');
-    }
-    return fieldList[0];
+    return this.compileToField(source, malloy);
   }
 
   public async compileDimension(
     source: StructDef,
     name: string,
     dimension: string
-  ): Promise<FieldDef> {
+  ): Promise<QueryFieldDef> {
     const malloy = `query: the_query is ${
       source.as || source.name
     } -> { group_by: ${name} is ${dimension} }`;
-    const modelDef = this.modelDefForSource(source);
-    const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents['the_query'];
-    if (theQuery.type !== 'query') {
-      throw new Error('Expected the_query to be a query');
-    }
-    const segment = theQuery.pipeline[0];
-    if (segment.type !== 'reduce') {
-      throw new Error('Expected query to be a reduce query');
-    }
-    const field = segment.queryFields[0];
-    if (typeof field === 'string') {
-      throw new Error('Expected field definition, not reference');
-    } else if (field.type === 'fieldref') {
-      throw new Error('Expected field definition, not field reference');
-    }
-    return field;
+    return this.compileToField(source, malloy);
   }
 
   public async compileMeasure(
     source: StructDef,
     name: string,
     measure: string
-  ): Promise<FieldDef> {
+  ): Promise<QueryFieldDef> {
     const malloy = `query: the_query is ${
       source.as || source.name
     } -> { aggregate: ${name} is ${measure} }`;
-    const modelDef = this.modelDefForSource(source);
-    const model = await this.compileModel(modelDef, malloy);
-    const theQuery = model.contents['the_query'];
-    if (theQuery.type !== 'query') {
-      throw new Error('Expected the_query to be a query');
-    }
-    const segment = theQuery.pipeline[0];
-    if (segment.type !== 'reduce') {
-      throw new Error('Expected query to be a reduce query');
-    }
-    const field = segment.queryFields[0];
-    if (typeof field === 'string') {
-      throw new Error('Expected field definition, not reference');
-    } else if (field.type === 'fieldref') {
-      throw new Error('Expected field definition, not field reference');
-    }
-    return field;
+    return this.compileToField(source, malloy);
+  }
+
+  public async compileCalculate(
+    source: StructDef,
+    name: string,
+    measure: string
+  ): Promise<QueryFieldDef> {
+    const malloy = `query: the_query is ${
+      source.as || source.name
+    } -> { calculate: ${name} is ${measure} }`;
+    return this.compileToField(source, malloy);
   }
 
   private async _compileQuery(
