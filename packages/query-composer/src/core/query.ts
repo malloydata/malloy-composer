@@ -51,7 +51,6 @@ import {
   StructDef,
   Tag,
   DocumentLocation,
-  Annotation,
 } from '@malloydata/malloy';
 import {computeKind, computeProperty, snakeToTitle} from '../utils';
 import {hackyTerribleStringToFilter} from './filters';
@@ -1079,7 +1078,7 @@ ${malloy}
     try {
       let tagLines: string[] | undefined;
       if (field.annotation) {
-        const copy = structuredClone(field.annotation) as Annotation;
+        const copy = structuredClone(field.annotation);
         // TODO(whscullin) - better understand inheritance in cloned
         // views
         // delete copy.inherits;
@@ -1579,6 +1578,7 @@ ${malloy}
             kind: expressionIsCalculation(field.expressionType)
               ? 'measure'
               : 'dimension',
+            property: computeProperty(stage, field),
             styles: this.stylesForField(field, fieldIndex),
           });
           // mtoy to will: This is stripping more things from order by

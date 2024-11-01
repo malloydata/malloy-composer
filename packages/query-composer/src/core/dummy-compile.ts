@@ -188,7 +188,7 @@ export class DummyCompile {
   ): Promise<QueryFieldDef> {
     const malloy = `query: the_query is ${
       source.as || source.name
-    } -> { calculate: ${name} is ${measure} }`;
+    } -> { calculate: ${name} is ${measure}; group_by: one is 1 }`;
     return this.compileToField(source, malloy);
   }
 

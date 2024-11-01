@@ -22,7 +22,7 @@
  */
 import * as React from 'react';
 import {ModelDef, SourceDef} from '@malloydata/malloy';
-import {OrderByField, StagePath} from '../../types';
+import {OrderByField, PropertyType, StagePath} from '../../types';
 import {FilterContextBar} from '../FilterContextBar';
 import {RenameField} from '../RenameField';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
@@ -30,6 +30,7 @@ import {DataStyleContextBar} from '../DataStyleContextBar';
 import {AddNewMeasure} from '../AddNewMeasure';
 import {EditOrderBy} from '../EditOrderBy';
 import {QueryModifiers} from '../../hooks';
+import {AddNewCalculate} from '../AddNewCalculate';
 
 interface AggregateActionMenuProps {
   source: SourceDef;
@@ -45,6 +46,7 @@ interface AggregateActionMenuProps {
   model: ModelDef;
   modelPath: string;
   queryModifiers: QueryModifiers;
+  property: PropertyType;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
@@ -61,6 +63,7 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
   orderByField,
   stagePath,
   queryModifiers,
+  property,
 }) => {
   return (
     <ActionMenu
@@ -160,17 +163,34 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: 'other',
           isEnabled: isEditable,
           closeOnComplete: true,
-          Component: ({onComplete}: ActionSubmenuComponentProps) => (
-            <AddNewMeasure
-              source={source}
-              addMeasure={code =>
-                queryModifiers.editMeasure(stagePath, fieldIndex, code)
-              }
-              onComplete={onComplete}
-              initialCode={definition}
-              initialName={name}
-            />
-          ),
+          Component: ({onComplete}: ActionSubmenuComponentProps) => {
+            if (property === 'aggregate') {
+              return (
+                <AddNewMeasure
+                  source={source}
+                  addMeasure={code =>
+                    queryModifiers.editMeasure(stagePath, fieldIndex, code)
+                  }
+                  onComplete={onComplete}
+                  initialCode={definition}
+                  initialName={name}
+                />
+              );
+            } else if (property === 'calculate') {
+              return (
+                <AddNewCalculate
+                  source={source}
+                  addCalculate={code =>
+                    queryModifiers.editMeasure(stagePath, fieldIndex, code)
+                  }
+                  onComplete={onComplete}
+                  initialCode={definition}
+                  initialName={name}
+                />
+              );
+            }
+            return <div />;
+          },
         },
         {
           kind: 'one_click',

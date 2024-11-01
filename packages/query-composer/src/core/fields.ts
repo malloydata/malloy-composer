@@ -73,6 +73,62 @@ export function generateMeasure(
   return undefined;
 }
 
+/**
+ * Pre-defined types for new calculations.
+ */
+export type CalculateType =
+  | 'avg_moving'
+  | 'first_value'
+  | 'lag'
+  | 'last_value'
+  | 'lead'
+  | 'max_cumulative'
+  | 'max_window'
+  | 'min_cumulative'
+  | 'min_window'
+  | 'rank'
+  | 'row_number'
+  | 'sum_cumulative'
+  | 'sum_moving'
+  | 'sum_window'
+  | 'custom';
+
+/**
+ * Generates a new calculate string based on a pre-defined type, and
+ * a field name, if needed.
+ *
+ * @param measureType One of the pre-defined measure values
+ * @param fieldName Name of the field to incorporate
+ * @returns New measure string or undefined if measureType is "custom"
+ */
+export function generateCalculate(
+  calculateType: CalculateType,
+  fieldName: string
+): string | undefined {
+  const quotedFieldName = maybeQuoteIdentifier(fieldName);
+  switch (calculateType) {
+    case 'row_number':
+    case 'rank':
+      return `${calculateType}()`;
+    case 'first_value':
+    case 'last_value':
+    case 'max_cumulative':
+    case 'max_window':
+    case 'min_window':
+    case 'sum_cumulative':
+    case 'sum_window':
+      return `${calculateType}(${quotedFieldName})`;
+    // TODO(whscullin: handle offset)
+    case 'lag':
+    case 'lead':
+      return `${calculateType}(${quotedFieldName})`;
+    // TODO(whscullin: handle preceding, following)
+    case 'avg_moving':
+    case 'sum_moving':
+  }
+  return undefined;
+}
+
 function findField(
   source: SourceDef,
   identifier: string
@@ -189,6 +245,125 @@ export function degenerateMeasure(
   }
   return {
     measureType: 'custom',
+    path: '',
+    field: undefined,
+  };
+}
+
+const CALCULATE_ROW_NUMBER = /^row_number\(\)$/;
+const CALCULATE_RANK = /^rank\(\)$/;
+const CALCULATE_FIRST_VALUE = /^first_value\((.*)\)$/;
+const CALCULATE_LAST_VALUE = /^last_value\((.*)\)$/;
+const CALCULATE_MAX_CUMULATIVE = /^max_cumulative\((.*)\)$/;
+const CALCULATE_MAX_WINDOW = /^max_window\((.*)\)$/;
+const CALCULATE_MIN_WINDOW = /^min_window\((.*)\)$/;
+const CALCULATE_SUM_CUMULATIVE = /^sum_cumulative\((.*)\)$/;
+const CALCULATE_SUM_WINDOW = /^sum_window\((.*)\)$/;
+const CALCULATE_LAG = /^lag\((.*)\)$/;
+const CALCULATE_LEAD = /^lead\((.*)\)$/;
+// const CALCULATE_AVG_MOVING = /^avg_moving\((.*)\)$/;
+// const CALCULATE_SUM_MOVING = /^'sum_moving\((.*)\)$/;
+
+export function degenerateCalculate(
+  source: SourceDef,
+  measure: string
+): {
+  calculateType: CalculateType;
+  path: string;
+  field: FieldDef | undefined;
+} {
+  let parts: RegExpExecArray | null;
+
+  parts = CALCULATE_ROW_NUMBER.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'row_number',
+      path: '',
+      field: undefined,
+    };
+  }
+  parts = CALCULATE_RANK.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'rank',
+      path: '',
+      field: undefined,
+    };
+  }
+  parts = CALCULATE_FIRST_VALUE.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'row_number',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_LAST_VALUE.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'last_value',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_MAX_CUMULATIVE.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'max_cumulative',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_MAX_WINDOW.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'max_window',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_MIN_WINDOW.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'min_window',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_SUM_CUMULATIVE.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'sum_cumulative',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_SUM_WINDOW.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'sum_window',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_LAG.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'lag',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  parts = CALCULATE_LEAD.exec(measure);
+  if (parts) {
+    return {
+      calculateType: 'lead',
+      path: unquoteIdentifier(parts[1]),
+      field: findField(source, parts[1]),
+    };
+  }
+  return {
+    calculateType: 'custom',
     path: '',
     field: undefined,
   };
