@@ -42,7 +42,6 @@ import {
   pathParent,
   termsForField,
 } from '../../utils';
-import {AddNewCalculate} from '../AddNewCalculate';
 
 interface AggregateContextBarProps {
   source: SourceDef;
@@ -57,7 +56,7 @@ export const AggregateContextBar: React.FC<AggregateContextBarProps> = ({
   addNewMeasure,
   onComplete,
 }) => {
-  const [isAddingNewField, setIsAddingNewField] = useState<string>();
+  const [isAddingNewField, setIsAddingNewField] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   return (
     <ContextMenuOuter>
@@ -77,14 +76,8 @@ export const AggregateContextBar: React.FC<AggregateContextBarProps> = ({
                 <>
                   <FieldButton
                     icon={<ActionIcon action="add" />}
-                    onClick={() => setIsAddingNewField('aggregate')}
+                    onClick={() => setIsAddingNewField(true)}
                     name="New Measure"
-                    color="other"
-                  />
-                  <FieldButton
-                    icon={<ActionIcon action="add" />}
-                    onClick={() => setIsAddingNewField('calculate')}
-                    name="New Window Function"
                     color="other"
                   />
                   <FieldList
@@ -115,16 +108,9 @@ export const AggregateContextBar: React.FC<AggregateContextBarProps> = ({
           </ScrollMain>
         </>
       )}
-      {isAddingNewField === 'aggregate' && (
+      {isAddingNewField && (
         <AddNewMeasure
           addMeasure={addNewMeasure}
-          source={source}
-          onComplete={onComplete}
-        />
-      )}
-      {isAddingNewField === 'calculate' && (
-        <AddNewCalculate
-          addCalculate={addNewMeasure}
           source={source}
           onComplete={onComplete}
         />

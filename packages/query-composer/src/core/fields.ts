@@ -35,7 +35,7 @@ import {maybeQuoteIdentifier, unquoteIdentifier} from './utils';
  * Pre-defined types for new measures.
  */
 
-export type MeasureType =
+export type AggregateType =
   | 'count'
   | 'count_distinct'
   | 'max'
@@ -53,8 +53,8 @@ export type MeasureType =
  * @param fieldName Name of the field to incorporate
  * @returns New measure string or undefined if measureType is "custom"
  */
-export function generateMeasure(
-  measureType: MeasureType,
+export function generateAggregate(
+  measureType: AggregateType,
   fieldName: string
 ): string | undefined {
   const quotedFieldName = maybeQuoteIdentifier(fieldName);
@@ -177,11 +177,11 @@ const MEASURE_MIN = /^min\((.*)\)/;
 const MEASURE_MAX = /^max\((.*)\)/;
 const MEASURE_PERCENT = /^100 \* (.*) \/ all\((.*)\)$/;
 
-export function degenerateMeasure(
+export function degenerateAggregate(
   source: SourceDef,
   measure: string
 ): {
-  measureType: MeasureType;
+  measureType: AggregateType;
   path: string;
   field: FieldDef | undefined;
 } {
@@ -268,7 +268,7 @@ export function degenerateCalculate(
   source: SourceDef,
   measure: string
 ): {
-  calculateType: CalculateType;
+  measureType: CalculateType;
   path: string;
   field: FieldDef | undefined;
 } {
@@ -277,7 +277,7 @@ export function degenerateCalculate(
   parts = CALCULATE_ROW_NUMBER.exec(measure);
   if (parts) {
     return {
-      calculateType: 'row_number',
+      measureType: 'row_number',
       path: '',
       field: undefined,
     };
@@ -285,7 +285,7 @@ export function degenerateCalculate(
   parts = CALCULATE_RANK.exec(measure);
   if (parts) {
     return {
-      calculateType: 'rank',
+      measureType: 'rank',
       path: '',
       field: undefined,
     };
@@ -293,7 +293,7 @@ export function degenerateCalculate(
   parts = CALCULATE_FIRST_VALUE.exec(measure);
   if (parts) {
     return {
-      calculateType: 'row_number',
+      measureType: 'row_number',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -301,7 +301,7 @@ export function degenerateCalculate(
   parts = CALCULATE_LAST_VALUE.exec(measure);
   if (parts) {
     return {
-      calculateType: 'last_value',
+      measureType: 'last_value',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -309,7 +309,7 @@ export function degenerateCalculate(
   parts = CALCULATE_MAX_CUMULATIVE.exec(measure);
   if (parts) {
     return {
-      calculateType: 'max_cumulative',
+      measureType: 'max_cumulative',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -317,7 +317,7 @@ export function degenerateCalculate(
   parts = CALCULATE_MAX_WINDOW.exec(measure);
   if (parts) {
     return {
-      calculateType: 'max_window',
+      measureType: 'max_window',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -325,7 +325,7 @@ export function degenerateCalculate(
   parts = CALCULATE_MIN_WINDOW.exec(measure);
   if (parts) {
     return {
-      calculateType: 'min_window',
+      measureType: 'min_window',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -333,7 +333,7 @@ export function degenerateCalculate(
   parts = CALCULATE_SUM_CUMULATIVE.exec(measure);
   if (parts) {
     return {
-      calculateType: 'sum_cumulative',
+      measureType: 'sum_cumulative',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -341,7 +341,7 @@ export function degenerateCalculate(
   parts = CALCULATE_SUM_WINDOW.exec(measure);
   if (parts) {
     return {
-      calculateType: 'sum_window',
+      measureType: 'sum_window',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -349,7 +349,7 @@ export function degenerateCalculate(
   parts = CALCULATE_LAG.exec(measure);
   if (parts) {
     return {
-      calculateType: 'lag',
+      measureType: 'lag',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
@@ -357,13 +357,13 @@ export function degenerateCalculate(
   parts = CALCULATE_LEAD.exec(measure);
   if (parts) {
     return {
-      calculateType: 'lead',
+      measureType: 'lead',
       path: unquoteIdentifier(parts[1]),
       field: findField(source, parts[1]),
     };
   }
   return {
-    calculateType: 'custom',
+    measureType: 'custom',
     path: '',
     field: undefined,
   };

@@ -815,6 +815,7 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
+  // TODO(whscullin) - segments with only window functions are not runnable
   canRun(): boolean {
     const canRunPipeline = (stages: PipeSegment[]) => {
       if (stages.length === 0) {

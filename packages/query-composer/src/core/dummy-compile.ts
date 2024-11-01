@@ -170,26 +170,42 @@ export class DummyCompile {
     return this.compileToField(source, malloy);
   }
 
-  public async compileMeasure(
+  public async compileAggregate(
     source: StructDef,
     name: string,
-    measure: string
+    aggregate: string
   ): Promise<QueryFieldDef> {
     const malloy = `query: the_query is ${
       source.as || source.name
-    } -> { aggregate: ${name} is ${measure} }`;
+    } -> { aggregate: ${name} is ${aggregate} }`;
     return this.compileToField(source, malloy);
   }
 
   public async compileCalculate(
     source: StructDef,
     name: string,
-    measure: string
+    calculate: string
   ): Promise<QueryFieldDef> {
     const malloy = `query: the_query is ${
       source.as || source.name
-    } -> { calculate: ${name} is ${measure}; group_by: one is 1 }`;
+    } -> { calculate: ${name} is ${calculate}; group_by: one is 1 }`;
     return this.compileToField(source, malloy);
+  }
+
+  public async compileMeasure(
+    source: StructDef,
+    name: string,
+    measure: string
+  ) {
+    let field: QueryFieldDef;
+    try {
+      // Try first as scalar
+      field = await this.compileAggregate(source, name, measure);
+    } catch (_e) {
+      // Retry as aggregate
+      field = await this.compileCalculate(source, name, measure);
+    }
+    return field;
   }
 
   private async _compileQuery(

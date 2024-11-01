@@ -30,7 +30,6 @@ import {DataStyleContextBar} from '../DataStyleContextBar';
 import {AddNewMeasure} from '../AddNewMeasure';
 import {EditOrderBy} from '../EditOrderBy';
 import {QueryModifiers} from '../../hooks';
-import {AddNewCalculate} from '../AddNewCalculate';
 
 interface AggregateActionMenuProps {
   source: SourceDef;
@@ -163,34 +162,18 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           iconColor: 'other',
           isEnabled: isEditable,
           closeOnComplete: true,
-          Component: ({onComplete}: ActionSubmenuComponentProps) => {
-            if (property === 'aggregate') {
-              return (
-                <AddNewMeasure
-                  source={source}
-                  addMeasure={code =>
-                    queryModifiers.editMeasure(stagePath, fieldIndex, code)
-                  }
-                  onComplete={onComplete}
-                  initialCode={definition}
-                  initialName={name}
-                />
-              );
-            } else if (property === 'calculate') {
-              return (
-                <AddNewCalculate
-                  source={source}
-                  addCalculate={code =>
-                    queryModifiers.editMeasure(stagePath, fieldIndex, code)
-                  }
-                  onComplete={onComplete}
-                  initialCode={definition}
-                  initialName={name}
-                />
-              );
-            }
-            return <div />;
-          },
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
+            <AddNewMeasure
+              source={source}
+              addMeasure={code =>
+                queryModifiers.editMeasure(stagePath, fieldIndex, code)
+              }
+              onComplete={onComplete}
+              initialCode={definition}
+              initialName={name}
+              initialProperty={property}
+            />
+          ),
         },
         {
           kind: 'one_click',
