@@ -158,6 +158,11 @@ const MEASURE_OPTIONS: {
   {
     label: 'Max Cumulative',
     value: {measureType: 'max_cumulative', property: 'calculate'},
+    divider: true,
+  },
+  {
+    label: 'Sum Cumulative',
+    value: {measureType: 'sum_cumulative', property: 'calculate'},
   },
   {
     label: 'Max Window',
@@ -166,10 +171,6 @@ const MEASURE_OPTIONS: {
   {
     label: 'Min Window',
     value: {measureType: 'min_window', property: 'calculate'},
-  },
-  {
-    label: 'Sum Cumulative',
-    value: {measureType: 'sum_cumulative', property: 'calculate'},
   },
   {
     label: 'Sum Window',
