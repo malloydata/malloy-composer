@@ -5,41 +5,41 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import {degenerateMeasure, generateMeasure} from '../../src/core/fields';
+import {degenerateAggregate, generateAggregate} from '../../src/core/fields';
 
 import {source} from '../../example/example_model';
 
-describe('generateMeasure', () => {
+describe('generateAggregate', () => {
   it('generates count', () => {
-    expect(generateMeasure('count_distinct', 'name')).toEqual('count(name)');
+    expect(generateAggregate('count_distinct', 'name')).toEqual('count(name)');
   });
 
   it('generates average', () => {
-    expect(generateMeasure('avg', 'population')).toEqual('population.avg()');
+    expect(generateAggregate('avg', 'population')).toEqual('population.avg()');
   });
 
   it('generates sum', () => {
-    expect(generateMeasure('sum', 'population')).toEqual('population.sum()');
+    expect(generateAggregate('sum', 'population')).toEqual('population.sum()');
   });
 
   it('generates min', () => {
-    expect(generateMeasure('min', 'population')).toEqual('min(population)');
+    expect(generateAggregate('min', 'population')).toEqual('min(population)');
   });
 
   it('generates max', () => {
-    expect(generateMeasure('max', 'population')).toEqual('max(population)');
+    expect(generateAggregate('max', 'population')).toEqual('max(population)');
   });
 
   it('generates percent', () => {
-    expect(generateMeasure('percent', 'found')).toEqual(
+    expect(generateAggregate('percent', 'found')).toEqual(
       '100 * found / all(found)'
     );
   });
 });
 
-describe('degenerateMeasure', () => {
+describe('degenerateAggregate', () => {
   it('degenerates count', () => {
-    expect(degenerateMeasure(source, 'count()')).toEqual({
+    expect(degenerateAggregate(source, 'count()')).toEqual({
       field: undefined,
       measureType: 'count',
       path: '',
@@ -47,7 +47,7 @@ describe('degenerateMeasure', () => {
   });
 
   it('degenerates count_distinct', () => {
-    expect(degenerateMeasure(source, 'count(name)')).toEqual({
+    expect(degenerateAggregate(source, 'count(name)')).toEqual({
       field: expect.objectContaining(NAME_FIELD_FRAGMENT),
       measureType: 'count_distinct',
       path: 'name',
@@ -55,7 +55,7 @@ describe('degenerateMeasure', () => {
   });
 
   it('degenerates average', () => {
-    expect(degenerateMeasure(source, 'population.avg()')).toEqual({
+    expect(degenerateAggregate(source, 'population.avg()')).toEqual({
       field: expect.objectContaining(POPULATION_FIELD_FRAGMENT),
       measureType: 'avg',
       path: 'population',
@@ -63,7 +63,7 @@ describe('degenerateMeasure', () => {
   });
 
   it('degenerates sum', () => {
-    expect(degenerateMeasure(source, 'population.sum()')).toEqual({
+    expect(degenerateAggregate(source, 'population.sum()')).toEqual({
       field: expect.objectContaining(POPULATION_FIELD_FRAGMENT),
       measureType: 'sum',
       path: 'population',
@@ -71,7 +71,7 @@ describe('degenerateMeasure', () => {
   });
 
   it('degenerates min', () => {
-    expect(degenerateMeasure(source, 'min(population)')).toEqual({
+    expect(degenerateAggregate(source, 'min(population)')).toEqual({
       field: expect.objectContaining(POPULATION_FIELD_FRAGMENT),
       measureType: 'min',
       path: 'population',
@@ -79,7 +79,7 @@ describe('degenerateMeasure', () => {
   });
 
   it('degenerates max', () => {
-    expect(degenerateMeasure(source, 'max(population)')).toEqual({
+    expect(degenerateAggregate(source, 'max(population)')).toEqual({
       field: expect.objectContaining(POPULATION_FIELD_FRAGMENT),
       measureType: 'max',
       path: 'population',
@@ -88,7 +88,7 @@ describe('degenerateMeasure', () => {
 
   it('degenerates percent', () => {
     expect(
-      degenerateMeasure(source, '100 * population / all(population)')
+      degenerateAggregate(source, '100 * population / all(population)')
     ).toEqual({
       field: expect.objectContaining(POPULATION_FIELD_FRAGMENT),
       measureType: 'percent',
