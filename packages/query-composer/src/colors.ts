@@ -30,7 +30,10 @@ export type ColorKey =
   | 'other'
   | 'error';
 
-export const COLORS = {
+export const COLORS: Record<
+  ColorKey,
+  {fillLight: string; fillMedium: string; fillStrong: string}
+> = {
   dimension: {
     fillLight: 'var(--malloy-composer-dimension-light, #f0f6ff)',
     fillMedium: 'var(--malloy-composer-dimension-medium, #c3d7f7)',
