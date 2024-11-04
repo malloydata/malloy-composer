@@ -89,7 +89,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                 )}
                 content={({isOpen}) => (
                   <StageButton active={isOpen}>
-                    Stage {stageIndex + 1}
+                    Stage {stageIndex + 1} - {stageSummary.type}
                     <BackPart className="back">
                       <CloseIconStyled
                         color="other"

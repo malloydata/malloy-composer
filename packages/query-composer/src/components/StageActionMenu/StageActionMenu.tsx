@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
+import {SourceDef, ModelDef} from '@malloydata/malloy';
 import {OrderByField, StagePath, StageSummary} from '../../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
@@ -29,8 +30,8 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
-import {SourceDef, ModelDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
+import {SelectContextBar} from '../SelectContextBar';
 import {
   fieldToSummaryItem,
   flatFields,
@@ -56,6 +57,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   stagePath,
   orderByFields,
   closeMenu,
+  stageSummary,
   isLastStage,
   model,
   modelPath,
@@ -72,6 +74,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'filter',
           iconColor: 'filter',
           closeOnComplete: true,
+          divider: stageSummary.type === 'project',
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
               model={model}
@@ -92,6 +95,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'nest',
           iconColor: 'query',
           closeOnComplete: true,
+          isEnabled: stageSummary.type === 'reduce',
           divider: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <NestContextBar
@@ -113,6 +117,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'group_by',
           iconColor: 'dimension',
           closeOnComplete: true,
+          isEnabled: stageSummary.type === 'reduce',
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <GroupByContextBar
               source={source}
@@ -133,6 +138,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           iconName: 'aggregate',
           iconColor: 'measure',
           closeOnComplete: true,
+          isEnabled: stageSummary.type === 'reduce',
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <AggregateContextBar
               source={source}
@@ -141,6 +147,27 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
               }
               addNewMeasure={def =>
                 queryModifiers.addNewMeasure(stagePath, def)
+              }
+              onComplete={onComplete}
+            />
+          ),
+        },
+        {
+          kind: 'sub_menu',
+          id: 'select',
+          label: 'Select',
+          iconName: 'aggregate',
+          iconColor: 'dimension',
+          closeOnComplete: true,
+          isEnabled: stageSummary.type === 'project',
+          Component: ({onComplete}: ActionSubmenuComponentProps) => (
+            <SelectContextBar
+              source={source}
+              toggleField={fieldPath =>
+                queryModifiers.toggleField(stagePath, fieldPath)
+              }
+              addNewDimension={def =>
+                queryModifiers.addNewDimension(stagePath, def)
               }
               onComplete={onComplete}
             />
