@@ -208,6 +208,19 @@ export class DummyCompile {
     return field;
   }
 
+  public async compileSelect(
+    source: StructDef,
+    name: string,
+    expression: string | undefined
+  ): Promise<QueryFieldDef> {
+    const quotedName = maybeQuoteIdentifier(name);
+    const select = expression ? `${quotedName} is ${expression}` : quotedName;
+    const malloy = `query: the_query is ${maybeQuoteIdentifier(
+      source.as || source.name
+    )} -> { select: ${select} }`;
+    return this.compileToField(source, malloy);
+  }
+
   private async _compileQuery(
     modelDef: ModelDef,
     query: string

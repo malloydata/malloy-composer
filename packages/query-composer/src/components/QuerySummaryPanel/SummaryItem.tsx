@@ -404,7 +404,7 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                   )}
                   content={({isOpen}) => (
                     <StageButton active={isOpen}>
-                      Stage {stageIndex + 1}
+                      Stage {stageIndex + 1} - {stageSummary.type}
                       <BackPart className="back">
                         <CloseIconStyled
                           color="other"
