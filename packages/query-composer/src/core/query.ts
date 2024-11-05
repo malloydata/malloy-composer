@@ -421,6 +421,7 @@ export class QueryBuilder extends SourceUtils {
         ) {
           throw new Error('Cannot load query with non-reduce stages');
         }
+        existingStage.type = stage.type;
         if (stage.by) {
           existingStage.by = {...stage.by};
           existingStage.orderBy = undefined;
