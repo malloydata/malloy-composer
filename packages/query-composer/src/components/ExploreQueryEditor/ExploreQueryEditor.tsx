@@ -50,6 +50,8 @@ export const ComposerOptionsContext = createContext<{
   dummyCompiler: DummyCompile;
 }>(composerOptions);
 
+const useLoad = true;
+
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   model,
   modelPath,
@@ -104,6 +106,12 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
     setError(undefined);
   };
 
+  const loadQuery = (name: string) => {
+    queryModifiers.loadQuery(name);
+    setResult(undefined);
+    setError(undefined);
+  };
+
   const dirty = query !== lastRunQuery;
 
   return (
@@ -147,7 +155,11 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                       <LoadTopQueryContextBar
                         model={model}
                         source={source}
-                        selectField={field => replaceQuery(field as TurtleDef)}
+                        selectField={field =>
+                          useLoad
+                            ? loadQuery(field.as || field.name)
+                            : replaceQuery(field as TurtleDef)
+                        }
                         onComplete={() => setLoadOpen(false)}
                       />
                     </Popover>
@@ -188,16 +200,18 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
               </QueryBarInner>
             </QueryBar>
           </SidebarOuter>
-          <Result
-            model={model}
-            source={source}
-            result={result}
-            malloy={queryMalloy}
-            onDrill={queryModifiers.onDrill}
-            isRunning={isRunning}
-          />
+          <ResultOuter>
+            <Result
+              model={model}
+              source={source}
+              result={result}
+              malloy={queryMalloy}
+              onDrill={queryModifiers.onDrill}
+              isRunning={isRunning}
+            />
+            <ErrorMessage error={error} />
+          </ResultOuter>
         </Outer>
-        <ErrorMessage error={error} />
       </SearchContext.Provider>
     </ComposerOptionsContext.Provider>
   );
@@ -221,6 +235,16 @@ const SidebarOuter = styled.div`
   display: flex;
   flex-direction: column;
   z-index: 1000;
+`;
+
+const ResultOuter = styled.div`
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 10px;
 `;
 
 const QueryBar = styled(PageContent)`
