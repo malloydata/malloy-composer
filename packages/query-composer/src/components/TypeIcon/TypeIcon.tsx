@@ -57,5 +57,6 @@ export const TypeIcon: React.FC<TypeIconProps> = ({type, kind}) => {
   } else if (type === 'source') {
     return <TypeIconSource {...sizeProps} />;
   }
-  throw new Error('Invalid icon type');
+  console.warn(`invalid type icon ${type} ${kind}`);
+  return <TypeIconNumber {...sizeProps} />;
 };
