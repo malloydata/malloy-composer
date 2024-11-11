@@ -97,18 +97,18 @@ export const DateInput: React.FC<DateInputProps> = ({
             granularity === 'year'
               ? /\d\d\d\d/
               : granularity === 'month'
-              ? /\d\d-\d\d\d\d/
+              ? /\d\d\d\d-\d\d/
               : granularity === 'quarter'
               ? /\d\d\d\d-Q\d/
               : granularity === 'week'
-              ? /WK\d\d-\d\d-\d\d\d\d/
+              ? /WK\d\d\d\d-\d\d-\d\d/
               : granularity === 'day'
-              ? /\d\d-\d\d-\d\d\d\d/
+              ? /\d\d\d\d-\d\d-\d\d/
               : granularity === 'hour'
-              ? /\d\d-\d\d-\d\d\d\d \d\d:00/
+              ? /\d\d\d\d-\d\d-\d\d \d\d:00/
               : granularity === 'minute'
-              ? /\d\d-\d\d-\d\d\d\d \d\d:\d\d/
-              : /\d\d-\d\d-\d\d\d\d \d\d:\d\d:\d\d/;
+              ? /\d\d\d\d-\d\d-\d\d \d\d:\d\d/
+              : /\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/;
           if (raw.match(regex)) {
             const m = moment(raw, format);
             if (m.isValid()) {
