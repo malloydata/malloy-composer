@@ -110,7 +110,7 @@ const TIME_FILTER_TO_STRING: [TimeFilter, string][] = [
   ],
   [
     {type: 'is_in_the_past', amount: 1, unit: 'days'},
-    'a: now - 1 days for 1 days',
+    'a ? now - 1 days for 1 days',
   ],
   [{type: 'is_last', period: 'day'}, 'a.day = now.day - 1 day'],
   [{type: 'is_null'}, 'a = null'],
