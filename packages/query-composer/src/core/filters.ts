@@ -225,7 +225,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
   const quotedField = maybeQuoteIdentifier(field);
   switch (filter.type) {
     case 'is_in_the_past':
-      return `${quotedField}: now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
+      return `${quotedField} ? now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
     case 'is_last':
       return `${quotedField}.${filter.period} = now.${filter.period} - 1 ${filter.period}`;
     case 'is_this':
@@ -260,7 +260,7 @@ export function timeFilterToString(field: string, filter: TimeFilter): string {
       return `${quotedField} != null`;
     case 'custom':
     default:
-      return `${quotedField}: ${filter.partial}`;
+      return `${quotedField} ? ${filter.partial}`;
   }
 }
 
@@ -551,7 +551,7 @@ const NUM_GTE_FILTER = new RegExp(`^(${FIELD})\\s*>=\\s*(${NUMBER})$`);
 
 const TIME_UNIT = `(?:year|quarter|month|week|day|hour|minute|second)`;
 const TIME_PAST_FILTER = new RegExp(
-  `^(${FIELD})\\s*:\\s*now\\s*-\\s*(${NUMBER})\\s*(${TIME_UNIT})s?\\s*for\\s*\\s*(${NUMBER})\\s*(${TIME_UNIT})s?$`
+  `^(${FIELD})\\s*\\?\\s*now\\s*-\\s*(${NUMBER})\\s*(${TIME_UNIT})s?\\s*for\\s*\\s*(${NUMBER})\\s*(${TIME_UNIT})s?$`
 );
 const TIME_LAST_FILTER = new RegExp(
   `^(${FIELD})\\.(${TIME_UNIT})\\s*=\\s*now\\.(${TIME_UNIT})\\s*-\\s*1\\s*(${TIME_UNIT})$`
