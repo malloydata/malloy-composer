@@ -46,6 +46,7 @@ import ActionIconOpen from '../../assets/img/insert_icons/header_folder.svg?reac
 import AnalysisIcon from '../../assets/img/source.svg?react';
 import RedoIcon from '../../assets/img/query_redo_hover.svg?react';
 import UndoIcon from '../../assets/img/query_undo_hover.svg?react';
+import RefreshIcon from '../../assets/img/refresh.svg?react';
 import {ColorKey, COLORS} from '../../colors';
 import styled from 'styled-components';
 import {FunctionComponent, SVGProps} from 'react';
@@ -78,7 +79,8 @@ export type ActionIconName =
   | 'run'
   | 'undo'
   | 'redo'
-  | 'copy';
+  | 'copy'
+  | 'refresh';
 
 interface ActionIconProps {
   action: ActionIconName;
@@ -118,6 +120,7 @@ const iconMap: Record<
   undo: UndoIcon,
   redo: RedoIcon,
   copy: ActionItemDuplicate,
+  refresh: RefreshIcon,
 };
 
 export const ActionIcon: React.FC<ActionIconProps> = ({

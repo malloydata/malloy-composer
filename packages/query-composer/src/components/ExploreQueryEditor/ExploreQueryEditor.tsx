@@ -36,6 +36,7 @@ interface ExploreQueryEditorProps {
   };
   queryModifiers: QueryModifiers;
   runQuery: (query: string, queryName: string) => void;
+  refreshModel?: () => void;
   isRunning: boolean;
   result: MalloyResult | Error | undefined;
   model: ModelDef;
@@ -59,6 +60,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   queryName,
   topValues,
   runQuery,
+  refreshModel,
   isRunning,
   result: currentResult,
   querySummary,
@@ -122,6 +124,15 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
             <SidebarHeader>
               {source && (
                 <>
+                  <div>
+                    {refreshModel && (
+                      <ActionIcon
+                        action="refresh"
+                        onClick={() => refreshModel()}
+                        color="dimension"
+                      />
+                    )}
+                  </div>
                   <div>
                     <ActionIcon
                       action="add"

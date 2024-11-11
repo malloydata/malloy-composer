@@ -64,7 +64,7 @@ export const Explore: React.FC = () => {
   const app = onlyDefaultDataset
     ? config.apps[0]
     : config?.apps?.find(app => app.id === appId);
-  const appInfo = useDatasets(app);
+  const {appInfo, refresh} = useDatasets(app);
 
   // URL Parameter values
   const [urlParams, setParams] = useSearchParams();
@@ -401,6 +401,7 @@ export const Explore: React.FC = () => {
                   queryMalloy={queryMalloy}
                   result={result || error}
                   runQuery={runQueryAction}
+                  refreshModel={refresh}
                   isRunning={isRunning}
                 />
               )}
