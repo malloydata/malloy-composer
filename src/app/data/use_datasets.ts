@@ -22,14 +22,18 @@
  */
 
 import {useQuery} from 'react-query';
+import {useCallback} from 'react';
 import * as explore from '../../types';
 import {isDuckDBWASM} from '../utils';
 import * as duckDBWASM from './duckdb_wasm';
 
 export function useDatasets(
   app: {path: string; id?: string | undefined} | undefined
-): explore.AppInfo | undefined {
-  const {data: directory} = useQuery(
+): {
+  appInfo: explore.AppInfo | undefined;
+  refresh: () => void;
+} {
+  const {data: appInfo, refetch} = useQuery(
     ['datasets', app ? app.id ?? 'default' : 'empty'],
     async () => {
       if (app === undefined) {
@@ -56,5 +60,9 @@ export function useDatasets(
     }
   );
 
-  return directory;
+  const refresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  return {appInfo, refresh};
 }
