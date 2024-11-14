@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import {ExploreQueryEditor, useQueryBuilder, useRunQuery} from '../src/index';
 
-import {model, modelPath, source, topValues} from './example_model';
+import {model as exampleModel, modelPath, topValues} from './example_model';
 import styled, {createGlobalStyle} from 'styled-components';
+import {SourceDef} from '@malloydata/malloy';
 
 const updateQueryInURL = () => {};
 const runQueryAction = () => {
@@ -39,14 +40,17 @@ const CssVariables = styled.div`
 `;
 
 const App = () => {
+  const [modelDef, setModeDef] = useState(exampleModel);
   const {queryMalloy, queryName, queryModifiers, querySummary} =
-    useQueryBuilder(model, 'names', modelPath, updateQueryInURL);
+    useQueryBuilder(modelDef, 'names', modelPath, updateQueryInURL);
 
   const {result, isRunning, runQuery} = useRunQuery(
-    model,
+    modelDef,
     modelPath,
     runQueryAction
   );
+
+  const source = modelDef.contents['names'] as SourceDef;
 
   return (
     <div className="dark">
@@ -59,7 +63,7 @@ const App = () => {
           }}
         >
           <ExploreQueryEditor
-            model={model}
+            model={modelDef}
             modelPath={modelPath}
             source={source}
             queryModifiers={queryModifiers}
@@ -70,6 +74,7 @@ const App = () => {
             runQuery={runQuery}
             isRunning={isRunning}
             result={result}
+            refreshModel={() => setModeDef(structuredClone(exampleModel))}
           />
         </div>
       </CssVariables>
