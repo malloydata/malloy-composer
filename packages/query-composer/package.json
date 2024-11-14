@@ -1,6 +1,6 @@
 {
   "name": "@malloydata/query-composer",
-  "version": "0.0.209",
+  "version": "0.0.214",
   "description": "A query composer component for Malloy",
   "main": "dist/cjs/index.cjs",
   "type": "module",
@@ -37,8 +37,8 @@
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
-    "@types/react": "^17.0.39",
-    "@types/react-dom": "^17.0.25",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.5",
@@ -49,8 +49,8 @@
   "peerDependencies": {
     "@malloydata/malloy": ">=0.0.209",
     "@malloydata/render": ">=0.0.209",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": ">=18",
+    "react-dom": ">=18",
     "styled-components": "^5.3.3"
   }
 }

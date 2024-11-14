@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {ExploreQueryEditor, useQueryBuilder, useRunQuery} from '../src/index';
 
 import {model as exampleModel, modelPath, topValues} from './example_model';
@@ -101,4 +101,5 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const root = createRoot(document.getElementById('app')!);
+root.render(<App />);
