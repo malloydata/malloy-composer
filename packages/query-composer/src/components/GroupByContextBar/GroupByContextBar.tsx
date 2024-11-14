@@ -73,7 +73,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
 
   const maybeSelectField = useCallback(
-    (path, field) => {
+    (path: string, field: FieldDef) => {
       if (field.type === 'date') {
         setSelectingGranularity({field, path});
       } else if (field.type === 'timestamp') {
