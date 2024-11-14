@@ -33,7 +33,7 @@ import {QueryBuilder} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
 import {getSourceDef} from '../core/models';
 
-interface UseQueryBuilderResult {
+export interface UseQueryBuilderResult {
   queryBuilder: QueryBuilder;
   queryMalloy: {
     model: string;
@@ -122,6 +122,14 @@ export interface QueryModifiers {
   setQuery: (query: NamedQuery, noURLUpdate?: boolean) => void;
 }
 
+const nullQueryMalloy = {
+  isRunnable: false,
+  notebook: '',
+  markdown: '',
+  source: '',
+  model: '',
+};
+
 export function useQueryBuilder(
   modelDef?: ModelDef,
   sourceName?: string,
@@ -129,6 +137,7 @@ export function useQueryBuilder(
   updateQueryInURL?: (params: {run: boolean; query: string | undefined}) => void
 ): UseQueryBuilderResult {
   const query = useRef<TurtleDef>();
+  const [error, setError] = useState<Error>();
   const sourceDef =
     modelDef && sourceName ? getSourceDef(modelDef, sourceName) : undefined;
   const queryBuilder = useMemo<QueryBuilder>(() => {
@@ -142,10 +151,14 @@ export function useQueryBuilder(
     }
     return qb;
   }, [sourceDef]);
-  const [querySummary, setQuerySummary] = useState(
-    queryBuilder.getQuerySummary()
-  );
-  const [error, setError] = useState<Error>();
+  const [querySummary, setQuerySummary] = useState(() => {
+    try {
+      return queryBuilder.getQuerySummary();
+    } catch (error) {
+      if (!error) setError(error as Error);
+      return undefined;
+    }
+  });
 
   useEffect(() => {
     console.info('> sourceDef changed');
@@ -399,7 +412,14 @@ export function useQueryBuilder(
     console.info('> querySummary changed');
   }, [querySummary]);
 
-  const queryMalloy = queryBuilder.getQueryStrings(modelPath);
+  const queryMalloy = (() => {
+    try {
+      return queryBuilder.getQueryStrings(modelPath);
+    } catch (error) {
+      if (!error) setError(error as Error);
+      return nullQueryMalloy;
+    }
+  })();
 
   return {
     queryBuilder,

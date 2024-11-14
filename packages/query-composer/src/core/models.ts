@@ -9,7 +9,7 @@ import {ModelDef, SourceDef, isSourceDef} from '@malloydata/malloy';
 
 export function getSourceDef(modelDef: ModelDef, name: string): SourceDef {
   const result = modelDef.contents[name];
-  if (isSourceDef(result)) {
+  if (result && isSourceDef(result)) {
     return result;
   }
   throw new Error(`Not a source: ${name}`);
