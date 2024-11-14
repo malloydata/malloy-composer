@@ -28,7 +28,7 @@ import {
   NamedQuery,
   TurtleDef,
 } from '@malloydata/malloy';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {QueryBuilder} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
 import {getSourceDef} from '../core/models';
@@ -128,12 +128,20 @@ export function useQueryBuilder(
   modelPath?: string,
   updateQueryInURL?: (params: {run: boolean; query: string | undefined}) => void
 ): UseQueryBuilderResult {
+  const query = useRef<TurtleDef>();
   const sourceDef =
     modelDef && sourceName ? getSourceDef(modelDef, sourceName) : undefined;
-  const queryBuilder = useMemo<QueryBuilder>(
-    () => new QueryBuilder(sourceDef),
-    [sourceDef]
-  );
+  const queryBuilder = useMemo<QueryBuilder>(() => {
+    const qb = new QueryBuilder(sourceDef);
+    if (query.current) {
+      try {
+        qb.setQuery(query.current);
+      } catch (error) {
+        console.warn('Discarding query', error);
+      }
+    }
+    return qb;
+  }, [sourceDef]);
   const [querySummary, setQuerySummary] = useState(
     queryBuilder.getQuerySummary()
   );
@@ -147,7 +155,7 @@ export function useQueryBuilder(
 
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
-      const backup = structuredClone(queryBuilder.getQuery());
+      query.current = structuredClone(queryBuilder.getQuery());
       setError(undefined);
       modify(queryBuilder);
       if (queryBuilder.canRun()) {
@@ -160,15 +168,16 @@ export function useQueryBuilder(
             });
           }
         } catch (error) {
-          queryBuilder.setQuery(backup);
+          queryBuilder.setQuery(query.current);
           console.error(error);
           setError(error as Error);
         }
       }
       try {
         setQuerySummary(queryBuilder.getQuerySummary());
+        query.current = structuredClone(queryBuilder.getQuery());
       } catch (error) {
-        queryBuilder.setQuery(backup);
+        queryBuilder.setQuery(query.current);
         console.error(error);
         setError(error as Error);
       }
