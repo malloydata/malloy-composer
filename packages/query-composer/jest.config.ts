@@ -6,10 +6,12 @@
  */
 
 module.exports = {
+  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.ts'],
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   testMatch: ['**/?(*.)spec.(ts|js)?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   transform: {
+    '^.+\\.js$': 'babel-jest',
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
@@ -22,6 +24,9 @@ module.exports = {
   testEnvironment: 'node',
   collectCoverage: true,
   coverageReporters: ['lcov', 'html'],
-  collectCoverageFrom: ['src/core/*.ts'],
+  collectCoverageFrom: ['src/core/*.ts', 'src/hooks/*.ts'],
   preset: 'ts-jest',
+  moduleNameMapper: {
+    uuid: require.resolve('uuid'),
+  },
 };

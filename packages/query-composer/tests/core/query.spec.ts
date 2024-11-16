@@ -8,7 +8,7 @@
 import {QueryBuilder} from '../../src/core/query';
 
 import {model, source} from '../../example/example_model';
-import {FilterCondition} from '@malloydata/malloy';
+import {FilterCondition, TurtleDef} from '@malloydata/malloy';
 import {getSourceDef} from '../../src/core/models';
 
 describe('QueryBuilder', () => {
@@ -102,6 +102,7 @@ run: names -> {
       qb.addField({stageIndex: 0}, 'name');
       qb.addField({stageIndex: 0}, 'state');
       qb.addField({stageIndex: 0}, 'population');
+      qb.addOrderBy({stageIndex: 0}, 2);
     });
 
     it('can remove a field', () => {
@@ -110,7 +111,59 @@ run: names -> {
 run: names -> {
   group_by: name
   aggregate: population
+  order_by: population
 }`);
+    });
+
+    it('can remove a field that is an order_by', () => {
+      qb.removeField({stageIndex: 0}, 2);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: 
+    name
+    state
+}`);
+    });
+  });
+
+  describe('toggleField', () => {
+    beforeEach(() => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+    });
+
+    it('can add a field', () => {
+      qb.toggleField({stageIndex: 0}, 'population');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: 
+    name
+    state
+  aggregate: population
+}`);
+    });
+
+    it('can remove a field', () => {
+      qb.toggleField({stageIndex: 0}, 'state');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: name
+}`);
+    });
+  });
+
+  describe('hasField', () => {
+    beforeEach(() => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addField({stageIndex: 0}, 'state');
+    });
+
+    it('can detect a field', () => {
+      expect(qb.hasField({stageIndex: 0}, 'name')).toBe(true);
+    });
+
+    it('can detect an absent field', () => {
+      expect(qb.hasField({stageIndex: 0}, 'population')).toBe(false);
     });
   });
 
@@ -195,6 +248,27 @@ run: names -> {
     });
   });
 
+  describe('removeLimit', () => {
+    it('removes a limit', () => {
+      qb.addLimit({stageIndex: 0}, 10);
+      expect(qb.isEmpty()).toBe(false);
+      qb.removeLimit({stageIndex: 0});
+      expect(qb.isEmpty()).toBe(true);
+      expect(qb.getQueryStringForNotebook()).toEqual('run: names -> {\n}');
+    });
+  });
+
+  describe('hasLimit', () => {
+    it('detects a limit', () => {
+      qb.addLimit({stageIndex: 0}, 10);
+      expect(qb.hasLimit({stageIndex: 0})).toBe(true);
+    });
+
+    it('detects no limit', () => {
+      expect(qb.hasLimit({stageIndex: 0})).toBe(false);
+    });
+  });
+
   describe('addOrderBy', () => {
     it('adds an order_by', () => {
       qb.addField({stageIndex: 0}, 'name');
@@ -259,6 +333,20 @@ run: names -> {
     });
   });
 
+  describe('removeOrderBy', () => {
+    it('removes an order_by', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addOrderBy({stageIndex: 0}, 0);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n  order_by: name\n}'
+      );
+      qb.removeOrderBy({stageIndex: 0}, 0);
+      expect(qb.getQueryStringForNotebook()).toEqual(
+        'run: names -> {\n  group_by: name\n}'
+      );
+    });
+  });
+
   describe('renderers', () => {
     it('can add a renderer to a query', () => {
       qb.loadQuery('by_gender');
@@ -295,6 +383,22 @@ run: names -> {
     });
   });
 
+  describe('replaceQuery', () => {
+    it('replaces a query', () => {
+      qb.loadQuery('by_gender');
+      const turtle = source.fields[8] as TurtleDef;
+      expect(turtle.type).toBe('turtle');
+      expect(turtle.name).toBe('by_name');
+      qb.replaceQuery(turtle);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: name
+  aggregate: population
+  limit: 10
+}`);
+    });
+  });
+
   describe('clearQuery', () => {
     it('can clear the query', () => {
       qb.loadQuery('by_gender');
@@ -319,6 +423,55 @@ run: names -> {
 run: names -> {
   nest: eyrie is {
     group_by: name
+  }
+}`);
+    });
+  });
+
+  describe('addStage', () => {
+    it('adds a stage', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addStage(undefined);
+      qb.addField({stageIndex: 1}, 'name');
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: name
+} -> {
+  group_by: name
+}`);
+    });
+
+    it('adds a nested stage', () => {
+      qb.addNewNestedQuery({stageIndex: 0}, 'crows');
+      qb.addStage({stageIndex: 0}, 0);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: crows is {
+  }-> {
+  }
+}`);
+    });
+  });
+
+  describe('removeStage', () => {
+    it('removes a stage', () => {
+      qb.addField({stageIndex: 0}, 'name');
+      qb.addStage(undefined);
+      qb.addField({stageIndex: 1}, 'name');
+      qb.removeStage({stageIndex: 0});
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: name
+}`);
+    });
+
+    it('removes a nested stage', () => {
+      qb.addNewNestedQuery({stageIndex: 0}, 'crows');
+      qb.addStage({stageIndex: 0}, 0);
+      qb.removeStage({stageIndex: 0, parts: [{stageIndex: 0, fieldIndex: 0}]});
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: crows is {
   }
 }`);
     });
