@@ -21,6 +21,7 @@ export default defineConfig({
         'react',
         'react-dom',
         'react/jsx-runtime',
+        'styled-components',
         '@malloydata/malloy',
         '@malloydata/render',
         '@malloydata/render/webcomponent',
