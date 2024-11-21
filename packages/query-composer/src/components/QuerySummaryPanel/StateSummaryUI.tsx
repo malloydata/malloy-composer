@@ -66,7 +66,7 @@ export const StageSummaryUI: React.FC<SummaryStageProps> = ({
     };
     window.addEventListener('keyup', handle);
     return () => window.removeEventListener('keyup', handle);
-  });
+  }, [currentFieldOrdering, queryModifiers, selectedFieldIndex, stagePath]);
 
   return (
     <FieldListDiv>

@@ -59,7 +59,6 @@ const App = () => {
         <div
           style={{
             backgroundColor: 'var(--malloy-composer-background)',
-            padding: 8,
           }}
         >
           <ExploreQueryEditor

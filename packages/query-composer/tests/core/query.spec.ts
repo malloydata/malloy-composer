@@ -184,6 +184,27 @@ run: names -> {
     state
 }`);
     });
+
+    it('preserves order_by', () => {
+      qb.addOrderBy({stageIndex: 0}, 1);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  group_by: 
+    name
+    state
+  aggregate: population
+  order_by: state
+}`);
+      qb.reorderFields({stageIndex: 0}, [2, 0, 1]);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  aggregate: population
+  group_by: 
+    name
+    state
+  order_by: state
+}`);
+    });
   });
 
   describe('addFilter', () => {
@@ -472,6 +493,49 @@ run: names -> {
       expect(qb.getQueryStringForNotebook()).toEqual(`\
 run: names -> {
   nest: crows is {
+  }
+}`);
+    });
+  });
+
+  describe('expanding stages', () => {
+    beforeEach(() => {
+      qb.addField({stageIndex: 0}, 'by_state');
+    });
+
+    it('auto expands when applying new properties', () => {
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: by_state
+}`);
+      qb.addLimit({stageIndex: 0, parts: [{stageIndex: 0, fieldIndex: 0}]}, 13);
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: by_state is {
+    group_by: state
+    aggregate: births_per_100k
+    limit: 13
+  }
+}`);
+    });
+
+    it('explicitly expands a stage', () => {
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: by_state
+}`);
+      qb.replaceWithDefinition(
+        {
+          stageIndex: 0,
+          parts: [],
+        },
+        0
+      );
+      expect(qb.getQueryStringForNotebook()).toEqual(`\
+run: names -> {
+  nest: by_state is {
+    group_by: state
+    aggregate: births_per_100k
   }
 }`);
     });

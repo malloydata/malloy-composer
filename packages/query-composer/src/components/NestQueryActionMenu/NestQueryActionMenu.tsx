@@ -246,8 +246,13 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconName: 'duplicate',
           iconColor: 'other',
           isEnabled: !isExpanded,
-          onClick: () =>
-            queryModifiers.replaceWithDefinition(stagePath, fieldIndex),
+          onClick: () => {
+            const {stageIndex, parts: oldParts} = stagePath;
+            const parts = oldParts ? [...oldParts] : [];
+            parts.pop();
+            const parentPath = {stageIndex, parts};
+            queryModifiers.replaceWithDefinition(parentPath, fieldIndex);
+          },
         },
         {
           kind: 'one_click',
