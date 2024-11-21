@@ -459,7 +459,7 @@ export class QueryBuilder extends SourceUtils {
     this.query.name = definition.as || definition.name;
   }
 
-  public replaceQuery(field: TurtleDef): void {
+  public replaceQuery(field: TurtleDef | NamedQuery): void {
     const stage = this.query.pipeline[0];
     if (!(stage.type === 'reduce' || stage.type === 'project')) {
       throw new Error(`Unhandled stage type ${stage.type}`);

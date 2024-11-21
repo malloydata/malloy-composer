@@ -31,6 +31,7 @@ import {
 } from '../CommonElements';
 import {NumberInput} from '../NumberInput';
 import {SelectDropdown} from '../SelectDropdown';
+import {COLORS} from '../../colors';
 
 interface DatePickerProps {
   value: Date;
@@ -686,7 +687,7 @@ const WeekButton = styled.div<{
     isSelected
       ? `
     background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
-    color:  var(--malloy-composer-dimension-strong);
+    color: ${COLORS.dimension.fillStrong};
     border-color: var(--malloy-composer-focus, #c3d7f7);
   `
       : `
@@ -737,7 +738,7 @@ const Day = styled(Cell)<{
       isSelected
         ? `
       background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
-      color:  var(--malloy-composer-dimension-strong);
+      color: ${COLORS.dimension.fillStrong};
       border-color: var(--malloy-composer-focus, #c3d7f7);
     `
         : `

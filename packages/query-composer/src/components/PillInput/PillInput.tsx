@@ -21,9 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {RefObject, useEffect, useRef, useState} from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styled from 'styled-components';
-import {ColorKey, COLORS} from '../../colors';
+import {COLORS} from '../../colors';
 import CloseIcon from '../../assets/img/query_clear_hover.svg?react';
 import {useClickOutside} from '../../hooks';
 
@@ -56,47 +65,82 @@ export const PillInput: React.FC<PillInputProps> = ({
   const [selectedPill, setSelectedPill] = useState<number | undefined>(
     undefined
   );
+  const pillRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   const value = controlledValue || uncontrolledValue;
   const setValue = setControlledValue || setUncontrolledValue;
 
-  useEffect(() => {
-    const handler = (event: KeyboardEvent) => {
-      if (event.key === 'Backspace') {
-        if (selectedPill !== undefined) {
-          const newValues = [...values];
-          newValues.splice(selectedPill, 1);
-          setValues(newValues);
-          if (selectedPill === 0) {
-            if (values.length === 1) {
-              setSelectedPill(undefined);
-              inp.current?.focus();
-            } else {
-              setSelectedPill(0);
-            }
-          } else {
-            setSelectedPill(selectedPill - 1);
-          }
-        }
-      } else if (event.key === 'ArrowRight') {
-        if (selectedPill === values.length - 1) {
+  console.info({selectedPill, activeElement: document.activeElement});
+
+  const deletePill = useCallback(
+    (idx: number) => {
+      const newValues = [...values];
+      newValues.splice(idx, 1);
+      setValues(newValues);
+      if (selectedPill === 0) {
+        if (values.length === 1) {
           setSelectedPill(undefined);
           inp.current?.focus();
-        } else if (selectedPill !== undefined) {
-          setSelectedPill(selectedPill + 1);
-        }
-      } else if (event.key === 'ArrowLeft') {
-        if (selectedPill !== undefined && selectedPill > 0) {
-          setSelectedPill(selectedPill - 1);
+        } else {
+          setSelectedPill(0);
         }
       } else {
-        inp.current?.focus();
+        setSelectedPill(idx - 1);
       }
-    };
-    const {current} = ref;
-    current?.addEventListener('keyup', handler);
-    return () => current?.removeEventListener('keyup', handler);
-  });
+    },
+    [selectedPill, setValues, values]
+  );
+
+  const pills = useMemo(() => {
+    pillRefs.current = new Array<HTMLDivElement>(values.length);
+    return values.map(
+      (value, index): ReactElement<PillProps> => (
+        <Pill
+          key={value}
+          isSelected={selectedPill === index}
+          onClick={event => {
+            setSelectedPill(index);
+            event.stopPropagation();
+          }}
+          onDelete={() => deletePill(index)}
+          forwardRef={ref => {
+            pillRefs.current[index] = ref;
+          }}
+        >
+          {value}
+        </Pill>
+      )
+    );
+  }, [deletePill, selectedPill, values]);
+
+  useEffect(() => {
+    if (selectedPill !== undefined) {
+      pillRefs.current[selectedPill]?.focus();
+    }
+  }, [pills, selectedPill]);
+
+  const onKeyUp = (event: React.KeyboardEvent) => {
+    console.info({event});
+
+    if (event.key === 'Backspace') {
+      if (selectedPill !== undefined) {
+        deletePill(selectedPill);
+      }
+    } else if (event.key === 'ArrowRight') {
+      if (selectedPill === values.length - 1) {
+        setSelectedPill(undefined);
+        inp.current?.focus();
+      } else if (selectedPill !== undefined) {
+        setSelectedPill(selectedPill + 1);
+      }
+    } else if (event.key === 'ArrowLeft') {
+      if (selectedPill !== undefined && selectedPill > 0) {
+        setSelectedPill(selectedPill - 1);
+      }
+    } else {
+      inp.current?.focus();
+    }
+  };
 
   const commitValue = () => {
     if (value.length > 0) {
@@ -112,23 +156,12 @@ export const PillInput: React.FC<PillInputProps> = ({
 
   return (
     <OuterInput
+      onKeyUp={onKeyUp}
       onClick={() => inp.current?.focus()}
       isFocused={focused || selectedPill !== undefined}
       ref={ref}
     >
-      {values.map((value, index) => (
-        <Pill
-          key={index}
-          tabIndex={0}
-          isSelected={selectedPill === index}
-          onClick={event => {
-            setSelectedPill(index);
-            event.stopPropagation();
-          }}
-        >
-          {value}
-        </Pill>
-      ))}
+      {pills}
       <StyledInput
         ref={inp}
         type={type}
@@ -177,6 +210,31 @@ export const PillInput: React.FC<PillInputProps> = ({
   );
 };
 
+interface PillProps {
+  onClick: (event: React.MouseEvent) => void;
+  onDelete: (event: React.MouseEvent) => void;
+  children: ReactNode;
+  className?: string;
+  forwardRef: (ref: HTMLDivElement | null) => void;
+}
+
+const PillInner = ({
+  children,
+  className,
+  forwardRef,
+  onClick,
+  onDelete,
+}: PillProps) => {
+  return (
+    <div className={className} onClick={onClick} tabIndex={0} ref={forwardRef}>
+      {children}
+      <div title="Remove">
+        <CloseIcon width={16} height={16} onClick={onDelete} title="Remove" />
+      </div>
+    </div>
+  );
+};
+
 const OuterInput = styled.div<{
   isFocused: boolean;
 }>`
@@ -196,7 +254,7 @@ const OuterInput = styled.div<{
   ${({isFocused}) => (isFocused ? `border-color: #4285F4;` : '')}
 `;
 
-const Pill = styled.div<{
+const Pill = styled(PillInner)<{
   isSelected: boolean;
 }>`
   ${({isSelected}) => `
@@ -209,7 +267,7 @@ const Pill = styled.div<{
   `}
 
   border-radius: 5px;
-  color: var(--malloy-composer-dimension-strong);
+  color: ${COLORS.dimension.fillStrong};
   display: flex;
   align-items: center;
   gap: 5px;
@@ -229,17 +287,4 @@ const StyledInput = styled.input`
   min-width: 95px;
   padding: 3.75px 7px;
   flex-grow: 1;
-`;
-
-export const CloseIconStyled = styled(CloseIcon)<{
-  color: ColorKey;
-}>`
-  cursor: pointer;
-  ${({color}) => {
-    return `
-      .cross {
-        fill: ${COLORS[color].fillStrong};
-      }
-    `;
-  }}
 `;

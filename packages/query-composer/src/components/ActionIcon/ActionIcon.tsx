@@ -86,6 +86,7 @@ interface ActionIconProps {
   action: ActionIconName;
   onClick?: () => void;
   color?: ColorKey;
+  title?: string;
 }
 
 const iconMap: Record<
@@ -127,6 +128,7 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
   action,
   onClick,
   color,
+  title,
 }) => {
   const sizeProps = {width: '22px', height: '22px'};
   const otherProps = {
@@ -137,7 +139,7 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
   const Icon = iconMap[action];
 
   return (
-    <IconWrapper color={color} doHover={onClick !== undefined}>
+    <IconWrapper color={color} doHover={onClick !== undefined} title={title}>
       <Icon {...props} />
     </IconWrapper>
   );
