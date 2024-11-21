@@ -99,6 +99,7 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
 };
 
 const ContextMenuDetail = styled(ContextMenuMain)`
+  border-radius: 4px;
   padding: 20px;
   font-family: var(--malloy-composer-font-family, sans-serif);
   background-color: var(--malloy-composer-menu-background, rgb(248, 248, 248));

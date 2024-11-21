@@ -76,7 +76,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
         {unsaved ? <UnsavedIndicator color={color} /> : ''}
       </FrontPart>
       {canRemove && (
-        <BackPart className="back">
+        <BackPart className="back" title="Remove">
           <CloseIconStyled
             color={color}
             width="20px"

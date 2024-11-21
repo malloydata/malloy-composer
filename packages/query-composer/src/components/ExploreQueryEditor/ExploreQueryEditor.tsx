@@ -179,6 +179,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
                     action="remove"
                     onClick={clearQuery}
                     color={isQueryEmpty ? 'other' : 'dimension'}
+                    title="Clear Query"
                   />
                   <StyledRunIcon
                     width="80px"
