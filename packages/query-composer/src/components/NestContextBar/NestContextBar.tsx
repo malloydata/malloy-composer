@@ -83,7 +83,7 @@ export const NestContextBar: React.FC<NestContextBarProps> = ({
                   <FieldList
                     fields={source.fields}
                     filter={field => field.type === 'turtle'}
-                    showNested={true}
+                    showNested={false}
                     selectField={selectField}
                   />
                 </>
