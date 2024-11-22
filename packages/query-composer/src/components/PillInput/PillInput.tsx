@@ -70,8 +70,6 @@ export const PillInput: React.FC<PillInputProps> = ({
   const value = controlledValue || uncontrolledValue;
   const setValue = setControlledValue || setUncontrolledValue;
 
-  console.info({selectedPill, activeElement: document.activeElement});
-
   const deletePill = useCallback(
     (idx: number) => {
       const newValues = [...values];
@@ -120,8 +118,6 @@ export const PillInput: React.FC<PillInputProps> = ({
   }, [pills, selectedPill]);
 
   const onKeyUp = (event: React.KeyboardEvent) => {
-    console.info({event});
-
     if (event.key === 'Backspace') {
       if (selectedPill !== undefined) {
         deletePill(selectedPill);
