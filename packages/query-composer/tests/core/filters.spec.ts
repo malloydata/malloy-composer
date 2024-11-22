@@ -22,8 +22,8 @@ import {
 const BOOLEAN_FILTER_TO_STRING: [BooleanFilter, string][] = [
   [{type: 'is_true'}, 'a'],
   [{type: 'is_false'}, 'not a'],
-  [{type: 'is_true_or_null'}, 'a: true | null'],
-  [{type: 'is_false_or_null'}, 'a: false | null'],
+  [{type: 'is_true_or_null'}, 'a = true | null'],
+  [{type: 'is_false_or_null'}, 'a = false | null'],
   [{type: 'is_null'}, 'a = null'],
   [{type: 'is_not_null'}, 'a != null'],
 ];

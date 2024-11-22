@@ -204,7 +204,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                 )}
               </>
             )}
-            {!showFieldResults && !showValueResults && (
+            {searchTerm && !showFieldResults && !showValueResults && (
               <EmptyMessage>No results</EmptyMessage>
             )}
           </>

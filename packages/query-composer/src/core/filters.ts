@@ -47,7 +47,7 @@ export function numberFilterToString(
   field: string,
   filter: NumberFilter
 ): string {
-  const quotedField = maybeQuoteIdentifier(field);
+  const quotedField = field ? maybeQuoteIdentifier(field) : '';
   switch (filter.type) {
     case 'is_equal_to': {
       if (filter.values.length === 0) {
@@ -83,7 +83,7 @@ export function numberFilterToString(
       return `${quotedField} != null`;
     case 'custom':
     default:
-      return `${quotedField}: ${filter.partial}`;
+      return `${quotedField} ${filter.partial}`;
   }
 }
 
@@ -91,7 +91,7 @@ export function stringFilterToString(
   field: string,
   filter: StringFilter
 ): string {
-  const quotedField = maybeQuoteIdentifier(field);
+  const quotedField = field ? maybeQuoteIdentifier(field) : '';
   switch (filter.type) {
     case 'is_equal_to': {
       if (filter.values.length === 0) {
@@ -193,7 +193,7 @@ export function stringFilterToString(
       return `${quotedField} != ''`;
     case 'custom':
     default:
-      return `${quotedField}: ${filter.partial}`;
+      return `${quotedField} ${filter.partial}`;
   }
 }
 
@@ -201,28 +201,28 @@ export function booleanFilterToString(
   field: string,
   filter: BooleanFilter
 ): string {
-  const quotedField = maybeQuoteIdentifier(field);
+  const quotedField = field ? maybeQuoteIdentifier(field) : '';
   switch (filter.type) {
     case 'is_false':
       return `not ${quotedField}`;
     case 'is_true':
       return `${quotedField}`;
     case 'is_true_or_null':
-      return `${quotedField}: true | null`;
+      return `${quotedField} = true | null`;
     case 'is_false_or_null':
-      return `${quotedField}: false | null`;
+      return `${quotedField} = false | null`;
     case 'is_null':
       return `${quotedField} = null`;
     case 'is_not_null':
       return `${quotedField} != null`;
     case 'custom':
     default:
-      return `${quotedField}: ${filter.partial}`;
+      return `${quotedField} ${filter.partial}`;
   }
 }
 
 export function timeFilterToString(field: string, filter: TimeFilter): string {
-  const quotedField = maybeQuoteIdentifier(field);
+  const quotedField = field ? maybeQuoteIdentifier(field) : '';
   switch (filter.type) {
     case 'is_in_the_past':
       return `${quotedField} ? now - ${filter.amount} ${filter.unit} for ${filter.amount} ${filter.unit}`;
@@ -365,8 +365,7 @@ export function stringFilterChangeType(
       return {type};
     case 'custom':
     default:
-      // TODO extract the partial and fill it in here
-      return {type, partial: ''};
+      return {type, partial: stringFilterToString('', filter).trim()};
   }
 }
 
@@ -418,7 +417,7 @@ export function numberFilterChangeType(
     case 'custom':
     default:
       // TODO extract the partial and fill it in here
-      return {type, partial: ''};
+      return {type, partial: numberFilterToString('', filter).trim()};
   }
 }
 
@@ -458,7 +457,7 @@ export function timeFilterChangeType(
     case 'custom':
     default:
       // TODO extract the partial and fill it in here
-      return {type, partial: ''};
+      return {type, partial: timeFilterToString('', filter).trim()};
   }
 }
 
@@ -469,7 +468,7 @@ export function booleanFilterChangeType(
   switch (type) {
     case 'custom':
       // TODO extract the partial and fill it in here
-      return {type, partial: ''};
+      return {type, partial: booleanFilterToString('', filter).trim()};
     default:
       return {type};
   }
@@ -491,9 +490,11 @@ const FIELD = `(?:${ID_WITH_DOTS})`;
 
 const FALSE_FILTER = new RegExp(`^not (${FIELD})$`);
 const TRUE_FILTER = new RegExp(`^(${FIELD})$`);
-const TRUE_OR_NULL_FILTER = new RegExp(`^(${FIELD}):\\s*true\\s*\\|\\s*null$`);
+const TRUE_OR_NULL_FILTER = new RegExp(
+  `^(${FIELD})\\s*=\\s*true\\s*\\|\\s*null$`
+);
 const FALSE_OR_NULL_FILTER = new RegExp(
-  `^(${FIELD}):\\s*false\\s*\\|\\s*null$`
+  `^(${FIELD})\\s*=\\s*false\\s*\\|\\s*null$`
 );
 const NULL_FILTER = new RegExp(`^(${FIELD})\\s*=\\s*null$`);
 const NOT_NULL_FILTER = new RegExp(`^(${FIELD})\\s*!=\\s*null$`);

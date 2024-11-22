@@ -187,6 +187,11 @@ function useStringEqualToOrNotBuilder(
       setValue={setSearchValue}
     />
   );
+
+  if (!searchResults && !isLoading) {
+    return {builder, util: null};
+  }
+
   const util = (
     <ScrollMain>
       <ContextMenuContent>
