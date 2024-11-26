@@ -11,7 +11,6 @@ import {QuerySummary} from '../../types';
 import {QueryModifiers} from '../../hooks';
 import {Result} from '../Result';
 import {DummyCompile} from '../../core/dummy-compile';
-import {SearchContext} from '../../contexts/search_context';
 import {ErrorMessage} from '../ErrorMessage';
 import {QueryEditor} from '../QueryEditor';
 
@@ -85,35 +84,34 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
 
   return (
     <ComposerOptionsContext.Provider value={composerOptions}>
-      <SearchContext.Provider value={{topValues}}>
-        <Outer>
-          <SidebarOuter>
-            <QueryEditor
-              isRunning={isRunning}
-              model={model}
-              modelPath={modelPath}
-              queryModifiers={queryModifiers}
-              queryName={queryName}
-              querySummary={querySummary}
-              source={source}
-              refreshModel={refreshModel}
-              runQuery={runQueryCallback}
-            />
-          </SidebarOuter>
-          <ResultOuter>
-            <Result
-              model={model}
-              source={source}
-              result={result}
-              malloy={queryMalloy}
-              querySummary={querySummary}
-              onDrill={queryModifiers.onDrill}
-              isRunning={isRunning}
-            />
-            <ErrorMessage error={error} />
-          </ResultOuter>
-        </Outer>
-      </SearchContext.Provider>
+      <Outer>
+        <SidebarOuter>
+          <QueryEditor
+            isRunning={isRunning}
+            model={model}
+            modelPath={modelPath}
+            queryModifiers={queryModifiers}
+            queryName={queryName}
+            querySummary={querySummary}
+            source={source}
+            refreshModel={refreshModel}
+            runQuery={runQueryCallback}
+            topValues={topValues}
+          />
+        </SidebarOuter>
+        <ResultOuter>
+          <Result
+            model={model}
+            source={source}
+            result={result}
+            malloy={queryMalloy}
+            querySummary={querySummary}
+            onDrill={queryModifiers.onDrill}
+            isRunning={isRunning}
+          />
+          <ErrorMessage error={error} />
+        </ResultOuter>
+      </Outer>
     </ComposerOptionsContext.Provider>
   );
 };

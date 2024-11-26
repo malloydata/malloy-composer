@@ -40,7 +40,6 @@ export interface UseQueryBuilderResult {
     source: string;
     markdown: string;
     notebook: string;
-    isRunnable: boolean;
   };
   queryName: string;
   queryModifiers: QueryModifiers;

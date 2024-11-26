@@ -814,6 +814,10 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
+  canRun() {
+    return this.getWriter().canRun();
+  }
+
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
     const stage = this.stageAtPath(stagePath);
     const fields = getFields(stage);

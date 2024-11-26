@@ -143,7 +143,7 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [result, malloy, model, dummyCompiler]);
+  }, [result, malloy, model, dummyCompiler, isRunnable]);
 
   const drillCallback = useCallback(
     (_drillQuery: string, _target: HTMLElement, drillFilters: string[]) => {

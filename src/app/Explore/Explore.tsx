@@ -137,6 +137,10 @@ export const Explore: React.FC = () => {
   } = useRunQuery(modelDef, modelPath, runQueryExt);
 
   useEffect(() => {
+    reset();
+  }, [querySummary, reset]);
+
+  useEffect(() => {
     if (builderError) {
       setError(builderError);
     } else if (runnerError) {
