@@ -41,6 +41,7 @@ import {SelectDropdown} from '../SelectDropdown';
 import {ActionIcon} from '../ActionIcon';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 import {highlightPre} from '../../highlight';
+import {QuerySummary} from '../../types';
 
 type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
 
@@ -53,14 +54,15 @@ interface ResultProps {
     model: string;
     markdown: string;
     notebook: string;
-    isRunnable: boolean;
   };
+  querySummary: QuerySummary | undefined;
   onDrill: (filters: malloy.FilterCondition[]) => void;
   isRunning: boolean;
 }
 
 export const Result: React.FC<ResultProps> = ({
   model,
+  querySummary,
   source,
   result,
   malloy,
@@ -76,6 +78,8 @@ export const Result: React.FC<ResultProps> = ({
   const [rendering, setRendering] = useState(false);
   const [malloyType, setMalloyType] = useState<MalloyType>('notebook');
   const [displaying, setDisplaying] = useState(false);
+
+  const {isRunnable} = querySummary ?? {isRunnable: false};
 
   useEffect(() => {
     let canceled = false;
@@ -109,7 +113,7 @@ export const Result: React.FC<ResultProps> = ({
         const getSQL = async (): Promise<string | undefined> => {
           if (result?.sql) {
             return result?.sql;
-          } else if (model && malloy.model && malloy.isRunnable) {
+          } else if (model && malloy.model && isRunnable) {
             return dummyCompiler.compileQueryToSQL(model, malloy.model);
           } else {
             return undefined;

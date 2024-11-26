@@ -224,7 +224,6 @@ export class QueryBuilder extends SourceUtils {
     markdown: string;
     source: string;
     notebook: string;
-    isRunnable: boolean;
   } {
     const writer = this.getWriter();
     return {
@@ -232,7 +231,6 @@ export class QueryBuilder extends SourceUtils {
       source: writer.getQueryStringForSource(this.query.name),
       markdown: writer.getQueryStringForMarkdown(modelPath),
       notebook: writer.getQueryStringForNotebook(),
-      isRunnable: this.canRun(),
     };
   }
 
@@ -816,30 +814,6 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
-  // TODO(whscullin) - segments with only window functions are not runnable
-  canRun(): boolean {
-    const canRunPipeline = (stages: PipeSegment[]) => {
-      if (stages.length === 0) {
-        return false;
-      }
-      for (const stage of stages) {
-        const fields = getFields(stage);
-        if (fields.length === 0) {
-          return false;
-        }
-        for (const field of fields) {
-          if (field.type === 'turtle') {
-            if (!canRunPipeline(field.pipeline)) {
-              return false;
-            }
-          }
-        }
-      }
-      return true;
-    };
-    return canRunPipeline(this.query.pipeline);
-  }
-
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
     const stage = this.stageAtPath(stagePath);
     const fields = getFields(stage);
@@ -1346,6 +1320,30 @@ ${malloy}
     return items;
   }
 
+  // TODO(whscullin) - segments with only window functions are not runnable
+  canRun(): boolean {
+    const canRunPipeline = (stages: PipeSegment[]) => {
+      if (stages.length === 0) {
+        return false;
+      }
+      for (const stage of stages) {
+        const fields = getFields(stage);
+        if (fields.length === 0) {
+          return false;
+        }
+        for (const field of fields) {
+          if (field.type === 'turtle') {
+            if (!canRunPipeline(field.pipeline)) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    };
+    return canRunPipeline(this.query.pipeline);
+  }
+
   getQuerySummary(): QuerySummary {
     let stageSource = this.getSource();
     const stages = this.query.pipeline.map((stage, index) => {
@@ -1362,7 +1360,8 @@ ${malloy}
       }
       return summary;
     });
-    return {stages};
+    const isRunnable = this.canRun();
+    return {stages, isRunnable};
   }
 
   private nameOf(field: QueryFieldDef) {
