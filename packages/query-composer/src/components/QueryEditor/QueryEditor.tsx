@@ -17,6 +17,7 @@ import {QueryModifiers} from '../../hooks';
 import {QuerySummary} from '../../types';
 import styled from 'styled-components';
 import {SearchContext} from '../../contexts/search_context';
+import {QueryWriter} from '../../core/query';
 
 const useLoad = true;
 
@@ -27,7 +28,8 @@ export interface QueryEditorProps {
   refreshModel?: () => void;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
-  runQuery: () => void;
+  queryWriter: QueryWriter;
+  runQuery: (query: string) => void;
   source: SourceDef;
   topValues: SearchValueMapResult[] | undefined;
 }
@@ -38,6 +40,7 @@ export const QueryEditor = ({
   modelPath,
   queryModifiers,
   querySummary,
+  queryWriter,
   refreshModel,
   runQuery,
   source,
@@ -45,9 +48,12 @@ export const QueryEditor = ({
 }: QueryEditorProps) => {
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
+  const [lastRunQuery, setLastRunQuery] = useState<string>('');
 
   const isQueryEmpty = !querySummary || querySummary.stages.length === 0;
   const {isRunnable} = querySummary ?? {isRunnable: false};
+
+  const query = queryWriter.getQueryStringForNotebook();
 
   const clearQuery = () => {
     queryModifiers.clearQuery();
@@ -61,7 +67,12 @@ export const QueryEditor = ({
     queryModifiers.loadQuery(name);
   };
 
-  const dirty = false; // query !== lastRunQuery;
+  const dirty = query !== lastRunQuery;
+
+  const onRun = () => {
+    setLastRunQuery(query);
+    runQuery(query);
+  };
 
   return (
     <SearchContext.Provider value={{topValues}}>
@@ -125,7 +136,7 @@ export const QueryEditor = ({
               />
               <StyledRunIcon
                 width="80px"
-                onClick={runQuery}
+                onClick={onRun}
                 className={
                   isRunning
                     ? 'running'

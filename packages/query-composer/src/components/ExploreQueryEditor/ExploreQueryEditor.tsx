@@ -52,20 +52,20 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
 }) => {
   const [result, setResult] = useState<MalloyResult>();
   const [error, setError] = useState<Error>();
-  const [_lastRunQuery, setLastRunQuery] = useState<string>();
 
-  const query = queryWriter.getQueryStringForNotebook();
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
-  const runQueryCallback = React.useCallback(() => {
-    if (!isRunnable || !query) {
-      return;
-    }
-    setResult(undefined);
-    setError(undefined);
-    setLastRunQuery(query);
-    runQuery(query);
-  }, [isRunnable, query, runQuery]);
+  const runQueryCallback = React.useCallback(
+    (query: string) => {
+      if (!isRunnable) {
+        return;
+      }
+      setResult(undefined);
+      setError(undefined);
+      runQuery(query);
+    },
+    [isRunnable, runQuery]
+  );
 
   useEffect(() => {
     if (currentResult instanceof Error) {
@@ -86,6 +86,7 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
             modelPath={modelPath}
             queryModifiers={queryModifiers}
             querySummary={querySummary}
+            queryWriter={queryWriter}
             source={source}
             refreshModel={refreshModel}
             runQuery={runQueryCallback}

@@ -136,10 +136,6 @@ export const Explore: React.FC = () => {
   } = useRunQuery(modelDef, modelPath, runQueryExt);
 
   useEffect(() => {
-    reset();
-  }, [querySummary, reset]);
-
-  useEffect(() => {
     if (builderError) {
       setError(builderError);
     } else if (runnerError) {
@@ -322,16 +318,6 @@ export const Explore: React.FC = () => {
   };
 
   const topValues = useTopValues(modelDef, modelPath, sourceDef);
-  if (loading || (appId && !appInfo)) {
-    section = 'loading';
-  }
-
-  // eslint-disable-next-line no-console
-  console.log({
-    model,
-    modelPath,
-    source,
-  });
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -427,10 +413,10 @@ export const Explore: React.FC = () => {
                   <Apps />
                 </PageContent>
               )}
-              {section === 'loading' && (
-                <EmptyMessage>
+              {loading && (
+                <LoadingOverlay>
                   <LoadingSpinner text="Loading Data..." />
-                </EmptyMessage>
+                </LoadingOverlay>
               )}
             </PageContainer>
           </Page>
@@ -519,6 +505,7 @@ const HeaderLeft = styled.div`
 const Page = styled(Content)`
   margin-top: 10px;
   height: unset;
+  position: relative;
 `;
 
 const RightChannel = styled.div`
@@ -537,6 +524,17 @@ const BottomChannel = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
+`;
+
+const LoadingOverlay = styled(EmptyMessage)`
+  background-color: ${COLORS.mainBackground};
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  margin: 0;
 `;
 
 function generateReadme(appInfo: AppInfo) {
