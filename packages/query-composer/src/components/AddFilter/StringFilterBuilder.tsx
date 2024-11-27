@@ -21,7 +21,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {ModelDef, StructDef} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {stringFilterChangeType} from '../../core/filters';
@@ -49,18 +48,12 @@ import {LoadingSpinner} from '../Spinner';
 import {largeNumberLabel} from '../../utils';
 
 interface StringFilterBuilderProps {
-  model: ModelDef;
-  modelPath: string;
-  source: StructDef;
   fieldPath: string;
   filter: StringFilter;
   setFilter: (filter: StringFilter) => void;
 }
 
 export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
-  model,
-  modelPath,
-  source,
   filter,
   setFilter,
   fieldPath,
@@ -69,14 +62,7 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
     setFilter(stringFilterChangeType(filter, type));
   };
 
-  const equalTo = useStringEqualToOrNotBuilder(
-    model,
-    modelPath,
-    source,
-    filter,
-    setFilter,
-    fieldPath
-  );
+  const equalTo = useStringEqualToOrNotBuilder(filter, setFilter, fieldPath);
   const startsWith = useStringContainsBuilder(filter, setFilter);
   const doesNotStartWith = useStringNotContainsBuilder(filter, setFilter);
   const contains = useStringStartsWithBuilder(filter, setFilter);
@@ -159,21 +145,12 @@ const UtilRow = styled.div`
 `;
 
 function useStringEqualToOrNotBuilder(
-  model: ModelDef,
-  modelPath: string,
-  source: StructDef,
   filter: StringFilter,
   setFilter: (filter: StringEqualToFilter | StringNotEqualToFilter) => void,
   fieldPath: string
 ) {
   const [searchValue, setSearchValue] = useState('');
-  const {searchResults, isLoading} = useSearch(
-    model,
-    modelPath,
-    source,
-    searchValue,
-    fieldPath
-  );
+  const {searchResults, isLoading} = useSearch(searchValue, fieldPath);
   if (filter.type !== 'is_equal_to' && filter.type !== 'is_not_equal_to') {
     return {builder: null, util: null};
   }

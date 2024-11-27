@@ -24,7 +24,6 @@ const useLoad = true;
 export interface QueryEditorProps {
   isRunning: boolean;
   model: ModelDef;
-  modelPath: string;
   refreshModel?: () => void;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
@@ -37,7 +36,6 @@ export interface QueryEditorProps {
 export const QueryEditor = ({
   isRunning,
   model,
-  modelPath,
   queryModifiers,
   querySummary,
   queryWriter,
@@ -97,8 +95,6 @@ export const QueryEditor = ({
                 />
                 <Popover open={insertOpen} setOpen={setInsertOpen}>
                   <TopQueryActionMenu
-                    model={model}
-                    modelPath={modelPath}
                     source={source}
                     queryModifiers={queryModifiers}
                     stagePath={{stageIndex: 0}}
@@ -154,9 +150,6 @@ export const QueryEditor = ({
           <QueryBarInner>
             {querySummary && (
               <QuerySummaryPanel
-                model={model}
-                modelPath={modelPath}
-                source={source}
                 querySummary={querySummary}
                 queryModifiers={queryModifiers}
                 stagePath={undefined}

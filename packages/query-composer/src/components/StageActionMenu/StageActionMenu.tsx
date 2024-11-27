@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {SourceDef, ModelDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {OrderByField, StagePath, StageSummary} from '../../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
@@ -47,8 +47,6 @@ interface StageActionMenuProps {
   closeMenu: () => void;
   stageSummary: StageSummary;
   isLastStage: boolean;
-  model: ModelDef;
-  modelPath: string;
   queryModifiers: QueryModifiers;
 }
 
@@ -59,8 +57,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
   closeMenu,
   stageSummary,
   isLastStage,
-  model,
-  modelPath,
   queryModifiers,
 }) => {
   return (
@@ -77,8 +73,6 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
           divider: stageSummary.type === 'project',
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
-              model={model}
-              modelPath={modelPath}
               source={source}
               addFilter={(filter, as) =>
                 queryModifiers.addFilter(stagePath, filter, as)

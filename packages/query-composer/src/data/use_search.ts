@@ -5,14 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {ModelDef, SearchIndexResult, StructDef} from '@malloydata/malloy';
+import {SearchIndexResult} from '@malloydata/malloy';
 import {SearchContext} from '../contexts/search_context';
 import {useContext} from 'react';
 
 export function useSearch(
-  _model: ModelDef | undefined,
-  _modelPath: string | undefined,
-  _source: StructDef | undefined,
   searchTerm: string,
   fieldPath?: string
 ): {searchResults: SearchIndexResult[] | undefined; isLoading: boolean} {

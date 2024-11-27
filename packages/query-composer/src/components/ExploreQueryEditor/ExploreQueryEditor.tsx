@@ -83,7 +83,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
           <QueryEditor
             isRunning={isRunning}
             model={model}
-            modelPath={modelPath}
             queryModifiers={queryModifiers}
             querySummary={querySummary}
             queryWriter={queryWriter}

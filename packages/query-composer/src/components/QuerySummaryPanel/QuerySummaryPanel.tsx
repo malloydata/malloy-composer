@@ -23,7 +23,6 @@
 import * as React from 'react';
 
 import {QuerySummary, StagePath, stagePathPush} from '../../types';
-import {ModelDef, SourceDef} from '@malloydata/malloy';
 import {EmptyMessage} from '../CommonElements';
 import {StageActionMenu} from '../StageActionMenu';
 import {BackPart, CloseIconStyled} from '../FieldButton/FieldButton';
@@ -34,17 +33,12 @@ import {ClickToPopover} from './ClickToPopover';
 import {StageButton} from './StageButton';
 
 export interface QuerySummaryPanelProps {
-  model: ModelDef;
-  source: SourceDef;
   querySummary: QuerySummary;
   stagePath: StagePath | undefined;
   queryModifiers: QueryModifiers;
-  modelPath: string;
 }
 
 export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
-  model,
-  modelPath,
   querySummary,
   stagePath,
   queryModifiers,
@@ -76,8 +70,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               <ClickToPopover
                 popoverContent={({closeMenu}) => (
                   <StageActionMenu
-                    model={model}
-                    modelPath={modelPath}
                     source={stageSummary.inputSource}
                     stagePath={nestStagePath}
                     orderByFields={stageSummary.orderByFields}
@@ -106,8 +98,6 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
               />
             )}
             <StageSummaryUI
-              model={model}
-              modelPath={modelPath}
               stageSummary={stageSummary}
               queryModifiers={queryModifiers}
               stagePath={nestStagePath}

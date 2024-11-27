@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {ModelDef, SourceDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {OrderByField, PropertyType, StagePath} from '../../types';
 import {FilterContextBar} from '../FilterContextBar';
 import {RenameField} from '../RenameField';
@@ -42,15 +42,11 @@ interface AggregateActionMenuProps {
   definition: string | undefined;
   orderByField: OrderByField;
   stagePath: StagePath;
-  model: ModelDef;
-  modelPath: string;
   queryModifiers: QueryModifiers;
   property: PropertyType;
 }
 
 export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
-  model,
-  modelPath,
   source,
   closeMenu,
   beginReorderingField,
@@ -79,8 +75,6 @@ export const AggregateActionMenu: React.FC<AggregateActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
-              model={model}
-              modelPath={modelPath}
               source={source}
               addFilter={(filter, as) =>
                 queryModifiers.addFilterToField(

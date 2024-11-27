@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  FilterCondition,
-  ModelDef,
-  StructDef,
-} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {CodeInput} from '../CodeInput';
 import {
@@ -62,20 +57,16 @@ import {kindOfField, typeOfField} from '../../utils';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 
 interface AddFilterProps {
-  model: ModelDef;
   source: StructDef;
   field: FieldDef;
   fieldPath: string;
   addFilter: (filter: FilterCondition, as?: string) => void;
   needsRename: boolean;
   onComplete: () => void;
-  modelPath: string;
   initial?: Filter;
 }
 
 export const AddFilter: React.FC<AddFilterProps> = ({
-  model,
-  modelPath,
   source,
   field,
   addFilter,
@@ -168,9 +159,6 @@ export const AddFilter: React.FC<AddFilterProps> = ({
         )}
         {stringFilter && (
           <StringFilterBuilder
-            modelPath={modelPath}
-            model={model}
-            source={source}
             fieldPath={fieldPath}
             filter={stringFilter}
             setFilter={f => {
