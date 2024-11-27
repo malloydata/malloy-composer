@@ -175,7 +175,6 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
 
 export async function runQuery(
   query: string,
-  queryName: string,
   model: malloy.ModelDef
 ): Promise<Error | malloy.Result> {
   const baseModel = await RUNTIME._loadModelFromModelDef(model).getModel();

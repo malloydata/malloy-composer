@@ -26,7 +26,6 @@ export interface QueryEditorProps {
   modelPath: string;
   refreshModel?: () => void;
   queryModifiers: QueryModifiers;
-  queryName: string;
   querySummary: QuerySummary | undefined;
   runQuery: () => void;
   source: SourceDef;
@@ -38,7 +37,6 @@ export const QueryEditor = ({
   model,
   modelPath,
   queryModifiers,
-  queryName,
   querySummary,
   refreshModel,
   runQuery,
@@ -95,7 +93,6 @@ export const QueryEditor = ({
                     stagePath={{stageIndex: 0}}
                     orderByFields={querySummary?.stages[0].orderByFields || []}
                     closeMenu={() => setInsertOpen(false)}
-                    queryName={queryName}
                     stageSummary={querySummary?.stages[0]}
                     isOnlyStage={querySummary?.stages.length === 1}
                   />

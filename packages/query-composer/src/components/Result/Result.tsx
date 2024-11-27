@@ -42,19 +42,16 @@ import {ActionIcon} from '../ActionIcon';
 import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
 import {highlightPre} from '../../highlight';
 import {QuerySummary} from '../../types';
+import {QueryWriter} from '../../core/query';
 
 type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
 
 interface ResultProps {
   model: malloy.ModelDef;
+  modelPath: string;
   source: malloy.StructDef;
   result?: malloy.Result;
-  malloy: {
-    source: string;
-    model: string;
-    markdown: string;
-    notebook: string;
-  };
+  queryWriter: QueryWriter;
   querySummary: QuerySummary | undefined;
   onDrill: (filters: malloy.FilterCondition[]) => void;
   isRunning: boolean;
@@ -62,10 +59,11 @@ interface ResultProps {
 
 export const Result: React.FC<ResultProps> = ({
   model,
+  modelPath,
+  queryWriter,
   querySummary,
   source,
   result,
-  malloy,
   onDrill,
   isRunning,
 }) => {
@@ -81,15 +79,33 @@ export const Result: React.FC<ResultProps> = ({
 
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
+  const malloy = queryWriter.getQueryStringForNotebook();
+  let malloyPreview: string | undefined;
+  switch (malloyType) {
+    case 'markdown':
+      malloyPreview = queryWriter.getQueryStringForMarkdown(modelPath);
+      break;
+    case 'notebook':
+      malloyPreview = malloy;
+      break;
+    case 'source':
+      malloyPreview = queryWriter.getQueryStringForSource(
+        querySummary?.name ?? 'new_query'
+      );
+      break;
+    case 'model':
+      malloyPreview = queryWriter.getQueryStringForModel();
+      break;
+  }
+
   useEffect(() => {
     let canceled = false;
 
     const updateMalloy = async () => {
       try {
         const highlighter = malloyType === 'markdown' ? 'md' : 'malloy';
-        const source: string = malloy[malloyType];
 
-        const html = await highlightPre(source, highlighter);
+        const html = await highlightPre(malloyPreview ?? '', highlighter);
         if (!canceled) {
           setHighlightedSource(html);
         }
@@ -103,7 +119,7 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [malloy, malloyType]);
+  }, [malloyPreview, malloyType]);
 
   useEffect(() => {
     let canceled = false;
@@ -113,8 +129,8 @@ export const Result: React.FC<ResultProps> = ({
         const getSQL = async (): Promise<string | undefined> => {
           if (result?.sql) {
             return result?.sql;
-          } else if (model && malloy.model && isRunnable) {
-            return dummyCompiler.compileQueryToSQL(model, malloy.model);
+          } else if (model && malloy && isRunnable) {
+            return dummyCompiler.compileQueryToSQL(model, malloy);
           } else {
             return undefined;
           }
@@ -267,7 +283,7 @@ export const Result: React.FC<ResultProps> = ({
               <ActionIcon
                 action="copy"
                 onClick={() => {
-                  let code = malloy[malloyType];
+                  let code = malloy || '';
                   if (malloyType === 'source') {
                     code = indentCode(code);
                   }

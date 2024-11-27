@@ -29,7 +29,6 @@ import {getConfig} from './config';
 
 export async function runQuery(
   query: string,
-  queryName: string,
   modelPath: string
 ): Promise<Result> {
   const {workingDirectory} = await getConfig();

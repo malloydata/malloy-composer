@@ -71,7 +71,7 @@ export const Explore: React.FC = () => {
   const sourceName = urlParams.get('source') || undefined;
   const model = urlParams.get('model');
   const name = urlParams.get('name');
-  const query = urlParams.get('query');
+  const urlQuery = urlParams.get('query');
   const source = urlParams.get('source');
   const page = urlParams.get('page');
   const run = urlParams.get('run');
@@ -122,8 +122,7 @@ export const Explore: React.FC = () => {
 
   const {
     error: builderError,
-    queryMalloy,
-    queryName,
+    queryWriter,
     queryModifiers,
     querySummary,
   } = useQueryBuilder(modelDef, sourceName, modelPath, updateQueryInURL);
@@ -190,7 +189,7 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     const loadDataset = async () => {
-      if (model && (query || source) && appInfo) {
+      if (model && (urlQuery || source) && appInfo) {
         const newModelInfo = appInfo.models.find(
           modelInfo => modelInfo.id === model
         );
@@ -199,15 +198,15 @@ export const Explore: React.FC = () => {
         }
         try {
           setLoading(loading => ++loading);
-          if (query) {
+          if (urlQuery) {
             if (page !== 'query') return;
             const compiledQuery = await compiler.compileQuery(
               newModelInfo.model,
-              query
+              urlQuery
             );
             queryModifiers.setQuery(compiledQuery, true);
             if (run === 'true' && page === 'query') {
-              runQuery(query, name || 'unnamed');
+              runQuery(urlQuery);
             }
           } else {
             urlParams.delete('query');
@@ -235,7 +234,7 @@ export const Explore: React.FC = () => {
     setParams,
     runQuery,
     model,
-    query,
+    urlQuery,
     source,
     page,
     run,
@@ -311,7 +310,10 @@ export const Explore: React.FC = () => {
   };
 
   const runQueryAction = () => {
-    runQuery(queryMalloy.notebook, queryName);
+    const query = queryWriter.getQueryStringForNotebook();
+    if (query) {
+      runQuery(query);
+    }
   };
 
   const handlers = {
@@ -342,9 +344,10 @@ export const Explore: React.FC = () => {
               {sourceName && section === 'query' && (
                 <span>
                   {' ›'} {snakeToTitle(sourceName)}
-                  {(name || queryName) && section === 'query' && (
+                  {(name || querySummary?.name) && section === 'query' && (
                     <span>
-                      {' ›'} {name || snakeToTitle(queryName)}
+                      {' ›'}
+                      {name || snakeToTitle(querySummary?.name || 'untitled')}
                     </span>
                   )}
                 </span>
@@ -400,9 +403,8 @@ export const Explore: React.FC = () => {
                   source={sourceDef}
                   queryModifiers={queryModifiers}
                   topValues={topValues}
-                  queryName={queryName}
+                  queryWriter={queryWriter}
                   querySummary={querySummary}
-                  queryMalloy={queryMalloy}
                   result={result || error}
                   runQuery={runQueryAction}
                   refreshModel={refresh}

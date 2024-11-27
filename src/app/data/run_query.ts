@@ -12,11 +12,10 @@ import * as duckDBWASM from './duckdb_wasm';
 export async function runQuery(
   query: string,
   model: malloy.ModelDef,
-  modelPath: string,
-  queryName: string
+  modelPath: string
 ): Promise<malloy.Result> {
   if (isDuckDBWASM()) {
-    const result = await duckDBWASM.runQuery(query, queryName, model);
+    const result = await duckDBWASM.runQuery(query, model);
     if (result instanceof Error) {
       throw result;
     }
@@ -32,7 +31,6 @@ export async function runQuery(
       body: JSON.stringify({
         query,
         modelPath,
-        queryName,
       }),
     })
   ).json();

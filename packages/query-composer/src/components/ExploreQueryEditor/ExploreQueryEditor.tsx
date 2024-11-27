@@ -13,20 +13,15 @@ import {Result} from '../Result';
 import {DummyCompile} from '../../core/dummy-compile';
 import {ErrorMessage} from '../ErrorMessage';
 import {QueryEditor} from '../QueryEditor';
+import {QueryWriter} from '../../core/query';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
   topValues: SearchValueMapResult[] | undefined;
-  queryName: string;
+  queryWriter: QueryWriter;
   querySummary: QuerySummary | undefined;
-  queryMalloy: {
-    model: string;
-    source: string;
-    markdown: string;
-    notebook: string;
-  };
   queryModifiers: QueryModifiers;
-  runQuery: (query: string, queryName: string) => void;
+  runQuery: (query: string) => void;
   refreshModel?: () => void;
   isRunning: boolean;
   result: MalloyResult | Error | undefined;
@@ -46,32 +41,31 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   model,
   modelPath,
   source,
-  queryName,
   topValues,
   runQuery,
   refreshModel,
   isRunning,
   result: currentResult,
   querySummary,
-  queryMalloy,
   queryModifiers,
+  queryWriter,
 }) => {
   const [result, setResult] = useState<MalloyResult>();
   const [error, setError] = useState<Error>();
   const [_lastRunQuery, setLastRunQuery] = useState<string>();
 
-  const {notebook: query} = queryMalloy;
+  const query = queryWriter.getQueryStringForNotebook();
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
   const runQueryCallback = React.useCallback(() => {
-    if (!isRunnable) {
+    if (!isRunnable || !query) {
       return;
     }
     setResult(undefined);
     setError(undefined);
     setLastRunQuery(query);
-    runQuery(query, queryName);
-  }, [isRunnable, query, queryName, runQuery]);
+    runQuery(query);
+  }, [isRunnable, query, runQuery]);
 
   useEffect(() => {
     if (currentResult instanceof Error) {
@@ -91,7 +85,6 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
             model={model}
             modelPath={modelPath}
             queryModifiers={queryModifiers}
-            queryName={queryName}
             querySummary={querySummary}
             source={source}
             refreshModel={refreshModel}
@@ -101,13 +94,14 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
         </SidebarOuter>
         <ResultOuter>
           <Result
+            isRunning={isRunning}
             model={model}
+            modelPath={modelPath}
             source={source}
             result={result}
-            malloy={queryMalloy}
+            queryWriter={queryWriter}
             querySummary={querySummary}
             onDrill={queryModifiers.onDrill}
-            isRunning={isRunning}
           />
           <ErrorMessage error={error} />
         </ResultOuter>

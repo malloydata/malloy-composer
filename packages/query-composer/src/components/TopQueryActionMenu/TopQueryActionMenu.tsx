@@ -46,7 +46,6 @@ interface TopQueryActionMenuProps {
   orderByFields: OrderByField[];
   closeMenu: () => void;
   stageSummary: StageSummary | undefined;
-  queryName: string;
   isOnlyStage: boolean;
   queryModifiers: QueryModifiers;
   model: ModelDef;

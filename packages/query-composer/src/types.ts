@@ -208,6 +208,7 @@ export interface StageSummary {
 }
 
 export interface QuerySummary {
+  name: string;
   stages: StageSummary[];
   isRunnable: boolean;
 }

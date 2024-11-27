@@ -41,8 +41,12 @@ const CssVariables = styled.div`
 
 const App = () => {
   const [modelDef, setModeDef] = useState(exampleModel);
-  const {queryMalloy, queryName, queryModifiers, querySummary} =
-    useQueryBuilder(modelDef, 'names', modelPath, updateQueryInURL);
+  const {queryModifiers, querySummary, queryWriter} = useQueryBuilder(
+    modelDef,
+    'names',
+    modelPath,
+    updateQueryInURL
+  );
 
   const {result, isRunning, runQuery} = useRunQuery(
     modelDef,
@@ -67,9 +71,8 @@ const App = () => {
             source={source}
             queryModifiers={queryModifiers}
             topValues={topValues}
-            queryName={queryName}
             querySummary={querySummary}
-            queryMalloy={queryMalloy}
+            queryWriter={queryWriter}
             runQuery={runQuery}
             isRunning={isRunning}
             result={result}

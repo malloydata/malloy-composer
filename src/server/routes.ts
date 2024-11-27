@@ -50,11 +50,10 @@ export function routes(router: express.Router): void {
     '/run_query',
     async (req: express.Request, res: express.Response) => {
       const query = req.body.query as string;
-      const queryName = req.body.queryName as string;
       const modelPath = req.body.modelPath as string;
       res.json(
         await wrapErrors(async () => {
-          const result = await runQuery(query, queryName, modelPath);
+          const result = await runQuery(query, modelPath);
           return {result: result.toJSON()};
         })
       );

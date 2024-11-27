@@ -219,21 +219,6 @@ export class QueryBuilder extends SourceUtils {
     return writer.getQueryStringForNotebook();
   }
 
-  public getQueryStrings(modelPath: string | undefined): {
-    model: string;
-    markdown: string;
-    source: string;
-    notebook: string;
-  } {
-    const writer = this.getWriter();
-    return {
-      model: writer.getQueryStringForModel(),
-      source: writer.getQueryStringForSource(this.query.name),
-      markdown: writer.getQueryStringForMarkdown(modelPath),
-      notebook: writer.getQueryStringForNotebook(),
-    };
-  }
-
   getName(): string {
     return this.query.name;
   }
@@ -1365,7 +1350,8 @@ ${malloy}
       return summary;
     });
     const isRunnable = this.canRun();
-    return {stages, isRunnable};
+    const name = this.query.as ?? this.query.name;
+    return {name, stages, isRunnable};
   }
 
   private nameOf(field: QueryFieldDef) {
