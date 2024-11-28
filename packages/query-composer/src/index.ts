@@ -8,6 +8,7 @@
 export {ExploreQueryEditor} from './components/ExploreQueryEditor';
 export {QueryEditor} from './components/QueryEditor';
 export {QuerySummaryPanel} from './components/QuerySummaryPanel';
+export {Result} from './components/Result';
 export {DummyCompile} from './core/dummy-compile';
 
 export {useRunQuery} from './data/use_run_query';
