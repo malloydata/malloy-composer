@@ -26,13 +26,14 @@ import {useCallback, useState} from 'react';
 export type RunQuery = (
   query: string,
   model: malloy.ModelDef,
-  modelPath: string
+  modelPath: string,
+  queryName?: string
 ) => Promise<malloy.Result>;
 
 export interface UseRunQueryResult {
   result: malloy.Result | undefined;
   error: Error | undefined;
-  runQuery: (query: string) => void;
+  runQuery: (query: string, queryName?: string) => void;
   reset: () => void;
   isRunning: boolean;
 }
@@ -53,14 +54,14 @@ export function useRunQuery(
   }, []);
 
   const runQuery = useCallback(
-    (query: string) => {
+    (query: string, queryName?: string) => {
       reset();
       if (!model || !modelPath) {
         setError(new Error('No model'));
         return;
       }
       setIsRunning(true);
-      runQueryImp(query, model, modelPath)
+      runQueryImp(query, model, modelPath, queryName)
         .then(result => {
           setResult(result);
         })

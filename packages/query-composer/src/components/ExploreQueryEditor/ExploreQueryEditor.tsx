@@ -21,7 +21,7 @@ interface ExploreQueryEditorProps {
   queryWriter: QueryWriter;
   querySummary: QuerySummary | undefined;
   queryModifiers: QueryModifiers;
-  runQuery: (query: string) => void;
+  runQuery: (query: string, queryName?: string) => void;
   refreshModel?: () => void;
   isRunning: boolean;
   result: MalloyResult | Error | undefined;
@@ -56,13 +56,13 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
   const runQueryCallback = React.useCallback(
-    (query: string) => {
+    (query: string, queryName?: string) => {
       if (!isRunnable) {
         return;
       }
       setResult(undefined);
       setError(undefined);
-      runQuery(query);
+      runQuery(query, queryName);
     },
     [isRunnable, runQuery]
   );

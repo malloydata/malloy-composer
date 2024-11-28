@@ -202,7 +202,7 @@ export const Explore: React.FC = () => {
             );
             queryModifiers.setQuery(compiledQuery, true);
             if (run === 'true' && page === 'query') {
-              runQuery(urlQuery);
+              runQuery(urlQuery, name || 'unnamed');
             }
           } else {
             urlParams.delete('query');
@@ -308,7 +308,7 @@ export const Explore: React.FC = () => {
   const runQueryAction = () => {
     const query = queryWriter.getQueryStringForNotebook();
     if (query) {
-      runQuery(query);
+      runQuery(query, querySummary?.name);
     }
   };
 

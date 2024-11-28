@@ -28,7 +28,7 @@ export interface QueryEditorProps {
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
   queryWriter: QueryWriter;
-  runQuery: (query: string) => void;
+  runQuery: (query: string, queryName?: string) => void;
   source: SourceDef;
   topValues: SearchValueMapResult[] | undefined;
 }
@@ -69,7 +69,7 @@ export const QueryEditor = ({
 
   const onRun = () => {
     setLastRunQuery(query);
-    runQuery(query);
+    runQuery(query, querySummary?.name);
   };
 
   return (
