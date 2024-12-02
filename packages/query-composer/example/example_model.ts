@@ -20,14 +20,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -37,14 +31,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -54,14 +42,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -72,14 +54,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -90,14 +66,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 1,
-                character: 10,
-              },
-              end: {
-                line: 1,
-                character: 29,
-              },
+              start: {line: 1, character: 10},
+              end: {line: 1, character: 29},
             },
           },
           as: 'year_born',
@@ -108,24 +78,16 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 2,
-                character: 11,
-              },
-              end: {
-                line: 2,
-                character: 39,
-              },
+              start: {line: 2, character: 11},
+              end: {line: 2, character: 39},
             },
           },
           e: {
             node: 'aggregate',
             function: 'sum',
-            e: {
-              node: 'field',
-              path: ['number'],
-            },
+            e: {node: 'field', path: ['number']},
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'aggregate',
           code: '`number`.sum()',
         },
@@ -135,14 +97,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 3,
-                character: 13,
-              },
-              end: {
-                line: 3,
-                character: 45,
-              },
+              start: {line: 3, character: 13},
+              end: {line: 3, character: 45},
             },
           },
           e: {
@@ -155,6 +111,7 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
+                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -315,12 +272,10 @@ export const model: ModelDef = {
                 expressionType: 'scalar',
                 structPath: undefined,
               },
-              right: {
-                node: 'numberLiteral',
-                literal: '10',
-              },
+              right: {node: 'numberLiteral', literal: '10'},
             },
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'scalar',
           code: 'floor(year_born/10)*10',
         },
@@ -330,14 +285,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 4,
-                character: 11,
-              },
-              end: {
-                line: 4,
-                character: 70,
-              },
+              start: {line: 4, character: 11},
+              end: {line: 4, character: 70},
             },
           },
           e: {
@@ -347,6 +296,7 @@ export const model: ModelDef = {
                 type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
+                compositeFieldUsage: {fields: [], joinedUsage: {}},
               },
               params: [
                 {
@@ -519,6 +469,7 @@ export const model: ModelDef = {
             expressionType: 'ungrouped_aggregate',
             structPath: undefined,
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'ungrouped_aggregate',
           code: 'floor(population/all(population)*100000)',
         },
@@ -529,33 +480,20 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
               ],
               limit: 10,
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 5,
-                character: 8,
-              },
-              end: {
-                line: 9,
-                character: 3,
-              },
+              start: {line: 5, character: 8},
+              end: {line: 9, character: 3},
             },
           },
         },
@@ -566,32 +504,22 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
+                {type: 'fieldref', path: ['state']},
                 {
                   type: 'fieldref',
                   path: ['births_per_100k'],
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 10,
-                character: 8,
-              },
-              end: {
-                line: 13,
-                character: 3,
-              },
+              start: {line: 10, character: 8},
+              end: {line: 13, character: 3},
             },
           },
         },
@@ -602,32 +530,19 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['gender'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['gender']},
+                {type: 'fieldref', path: ['population']},
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 14,
-                character: 8,
-              },
-              end: {
-                line: 17,
-                character: 3,
-              },
+              start: {line: 14, character: 8},
+              end: {line: 17, character: 3},
             },
           },
         },
@@ -638,38 +553,23 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['decade'],
-                },
+                {type: 'fieldref', path: ['decade']},
                 {
                   type: 'fieldref',
                   path: ['births_per_100k'],
                 },
               ],
-              orderBy: [
-                {
-                  field: 1,
-                  dir: 'asc',
-                },
-              ],
+              orderBy: [{field: 1, dir: 'asc'}],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 18,
-                character: 8,
-              },
-              end: {
-                line: 22,
-                character: 3,
-              },
+              start: {line: 18, character: 8},
+              end: {line: 22, character: 3},
             },
           },
         },
@@ -677,14 +577,8 @@ export const model: ModelDef = {
       location: {
         url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
         range: {
-          start: {
-            line: 0,
-            character: 8,
-          },
-          end: {
-            line: 22,
-            character: 5,
-          },
+          start: {line: 0, character: 8},
+          end: {line: 22, character: 5},
         },
       },
       parameters: {},
@@ -692,7 +586,7 @@ export const model: ModelDef = {
     },
     cohort: {
       type: 'query_source',
-      name: 'QuerySource-b3b63624-76c1-4040-88d8-8b29f34d1802',
+      name: 'QuerySource-246cad76-de34-4d79-8cc2-ada47aaeca1a',
       fields: [
         {
           name: 'gender',
@@ -701,21 +595,15 @@ export const model: ModelDef = {
             sourceField: 'gender',
             sourceExpression: undefined,
             sourceClasses: ['gender'],
-            referenceId: '78d989f2-ef9b-4775-b7e6-8b7d123da103',
+            referenceId: 'd50f0a70-c7ff-4c97-a44a-dc0c33e7db18',
             filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
           annotation: undefined,
@@ -727,21 +615,15 @@ export const model: ModelDef = {
             sourceField: 'state',
             sourceExpression: undefined,
             sourceClasses: ['state'],
-            referenceId: '532fb076-890d-4356-953b-cebd825304f6',
+            referenceId: 'de0ebb6a-8fe4-4a74-a77f-7f316beda1af',
             filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
           annotation: undefined,
@@ -754,21 +636,15 @@ export const model: ModelDef = {
             sourceField: 'year',
             sourceExpression: undefined,
             sourceClasses: ['year'],
-            referenceId: 'd5641b42-6ace-430b-9721-2bc9e5b644da',
+            referenceId: '506f9ae5-41ae-4d1f-8b16-f748dad14050',
             filterList: undefined,
             fieldKind: 'dimension',
           },
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 1,
-                character: 10,
-              },
-              end: {
-                line: 1,
-                character: 29,
-              },
+              start: {line: 1, character: 10},
+              end: {line: 1, character: 29},
             },
           },
           annotation: undefined,
@@ -781,21 +657,15 @@ export const model: ModelDef = {
             sourceField: 'cohort_size',
             sourceExpression: 'population',
             sourceClasses: ['cohort_size'],
-            referenceId: '21d605e0-6d9d-481c-8942-a5beb52f9f42',
+            referenceId: '7d9acc54-fbd5-475a-ae8b-42987632806d',
             filterList: [],
             fieldKind: 'measure',
           },
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 28,
-                character: 13,
-              },
-              end: {
-                line: 28,
-                character: 38,
-              },
+              start: {line: 28, character: 13},
+              end: {line: 28, character: 38},
             },
           },
           annotation: undefined,
@@ -806,24 +676,16 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 30,
-                character: 11,
-              },
-              end: {
-                line: 30,
-                character: 42,
-              },
+              start: {line: 30, character: 11},
+              end: {line: 30, character: 42},
             },
           },
           e: {
             node: 'aggregate',
             function: 'sum',
-            e: {
-              node: 'field',
-              path: ['cohort_size'],
-            },
+            e: {node: 'field', path: ['cohort_size']},
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'aggregate',
           code: 'cohort_size.sum()',
         },
@@ -855,14 +717,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
             },
@@ -872,14 +728,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
             },
@@ -889,14 +739,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
             },
@@ -907,14 +751,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
             },
@@ -925,14 +763,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 1,
-                    character: 10,
-                  },
-                  end: {
-                    line: 1,
-                    character: 29,
-                  },
+                  start: {line: 1, character: 10},
+                  end: {line: 1, character: 29},
                 },
               },
               as: 'year_born',
@@ -943,24 +775,16 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 2,
-                    character: 11,
-                  },
-                  end: {
-                    line: 2,
-                    character: 39,
-                  },
+                  start: {line: 2, character: 11},
+                  end: {line: 2, character: 39},
                 },
               },
               e: {
                 node: 'aggregate',
                 function: 'sum',
-                e: {
-                  node: 'field',
-                  path: ['number'],
-                },
+                e: {node: 'field', path: ['number']},
               },
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
               expressionType: 'aggregate',
               code: '`number`.sum()',
             },
@@ -970,14 +794,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 3,
-                    character: 13,
-                  },
-                  end: {
-                    line: 3,
-                    character: 45,
-                  },
+                  start: {line: 3, character: 13},
+                  end: {line: 3, character: 45},
                 },
               },
               e: {
@@ -990,6 +808,7 @@ export const model: ModelDef = {
                         type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
+                        compositeFieldUsage: {fields: [], joinedUsage: {}},
                       },
                       params: [
                         {
@@ -1150,12 +969,10 @@ export const model: ModelDef = {
                     expressionType: 'scalar',
                     structPath: undefined,
                   },
-                  right: {
-                    node: 'numberLiteral',
-                    literal: '10',
-                  },
+                  right: {node: 'numberLiteral', literal: '10'},
                 },
               },
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
               expressionType: 'scalar',
               code: 'floor(year_born/10)*10',
             },
@@ -1165,14 +982,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 4,
-                    character: 11,
-                  },
-                  end: {
-                    line: 4,
-                    character: 70,
-                  },
+                  start: {line: 4, character: 11},
+                  end: {line: 4, character: 70},
                 },
               },
               e: {
@@ -1182,6 +993,7 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
+                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -1354,6 +1166,7 @@ export const model: ModelDef = {
                 expressionType: 'ungrouped_aggregate',
                 structPath: undefined,
               },
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
               expressionType: 'ungrouped_aggregate',
               code: 'floor(population/all(population)*100000)',
             },
@@ -1364,10 +1177,7 @@ export const model: ModelDef = {
                 {
                   type: 'reduce',
                   queryFields: [
-                    {
-                      type: 'fieldref',
-                      path: ['name'],
-                    },
+                    {type: 'fieldref', path: ['name']},
                     {
                       type: 'fieldref',
                       path: ['population'],
@@ -1375,22 +1185,15 @@ export const model: ModelDef = {
                   ],
                   limit: 10,
                   filterList: [],
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
-              annotation: {
-                inherits: undefined,
-              },
+              annotation: {inherits: undefined},
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 5,
-                    character: 8,
-                  },
-                  end: {
-                    line: 9,
-                    character: 3,
-                  },
+                  start: {line: 5, character: 8},
+                  end: {line: 9, character: 3},
                 },
               },
             },
@@ -1401,32 +1204,22 @@ export const model: ModelDef = {
                 {
                   type: 'reduce',
                   queryFields: [
-                    {
-                      type: 'fieldref',
-                      path: ['state'],
-                    },
+                    {type: 'fieldref', path: ['state']},
                     {
                       type: 'fieldref',
                       path: ['births_per_100k'],
                     },
                   ],
                   filterList: [],
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
-              annotation: {
-                inherits: undefined,
-              },
+              annotation: {inherits: undefined},
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 10,
-                    character: 8,
-                  },
-                  end: {
-                    line: 13,
-                    character: 3,
-                  },
+                  start: {line: 10, character: 8},
+                  end: {line: 13, character: 3},
                 },
               },
             },
@@ -1437,32 +1230,22 @@ export const model: ModelDef = {
                 {
                   type: 'reduce',
                   queryFields: [
-                    {
-                      type: 'fieldref',
-                      path: ['gender'],
-                    },
+                    {type: 'fieldref', path: ['gender']},
                     {
                       type: 'fieldref',
                       path: ['population'],
                     },
                   ],
                   filterList: [],
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
-              annotation: {
-                inherits: undefined,
-              },
+              annotation: {inherits: undefined},
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 14,
-                    character: 8,
-                  },
-                  end: {
-                    line: 17,
-                    character: 3,
-                  },
+                  start: {line: 14, character: 8},
+                  end: {line: 17, character: 3},
                 },
               },
             },
@@ -1473,38 +1256,23 @@ export const model: ModelDef = {
                 {
                   type: 'reduce',
                   queryFields: [
-                    {
-                      type: 'fieldref',
-                      path: ['decade'],
-                    },
+                    {type: 'fieldref', path: ['decade']},
                     {
                       type: 'fieldref',
                       path: ['births_per_100k'],
                     },
                   ],
-                  orderBy: [
-                    {
-                      field: 1,
-                      dir: 'asc',
-                    },
-                  ],
+                  orderBy: [{field: 1, dir: 'asc'}],
                   filterList: [],
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
-              annotation: {
-                inherits: undefined,
-              },
+              annotation: {inherits: undefined},
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 18,
-                    character: 8,
-                  },
-                  end: {
-                    line: 22,
-                    character: 3,
-                  },
+                  start: {line: 18, character: 8},
+                  end: {line: 22, character: 3},
                 },
               },
             },
@@ -1512,14 +1280,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 8,
-              },
-              end: {
-                line: 22,
-                character: 5,
-              },
+              start: {line: 0, character: 8},
+              end: {line: 22, character: 5},
             },
           },
           parameters: {},
@@ -1530,56 +1292,34 @@ export const model: ModelDef = {
           {
             type: 'reduce',
             queryFields: [
-              {
-                type: 'fieldref',
-                path: ['gender'],
-              },
-              {
-                type: 'fieldref',
-                path: ['state'],
-              },
-              {
-                type: 'fieldref',
-                path: ['year_born'],
-              },
+              {type: 'fieldref', path: ['gender']},
+              {type: 'fieldref', path: ['state']},
+              {type: 'fieldref', path: ['year_born']},
               {
                 type: 'number',
                 name: 'cohort_size',
                 location: {
                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                   range: {
-                    start: {
-                      line: 28,
-                      character: 13,
-                    },
-                    end: {
-                      line: 28,
-                      character: 38,
-                    },
+                    start: {line: 28, character: 13},
+                    end: {line: 28, character: 38},
                   },
                 },
-                e: {
-                  node: 'field',
-                  path: ['population'],
-                },
+                e: {node: 'field', path: ['population']},
+                compositeFieldUsage: {fields: [], joinedUsage: {}},
                 expressionType: 'aggregate',
                 code: 'population',
               },
             ],
             filterList: [],
+            compositeFieldUsage: {fields: [], joinedUsage: {}},
           },
         ],
         location: {
           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
           range: {
-            start: {
-              line: 26,
-              character: 18,
-            },
-            end: {
-              line: 30,
-              character: 44,
-            },
+            start: {line: 26, character: 18},
+            end: {line: 30, character: 44},
           },
         },
         name: undefined,
@@ -1590,14 +1330,8 @@ export const model: ModelDef = {
       location: {
         url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
         range: {
-          start: {
-            line: 26,
-            character: 8,
-          },
-          end: {
-            line: 30,
-            character: 44,
-          },
+          start: {line: 26, character: 8},
+          end: {line: 30, character: 44},
         },
       },
     },
@@ -1614,14 +1348,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -1631,14 +1359,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -1648,14 +1370,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -1666,14 +1382,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 0,
-                character: 17,
-              },
-              end: {
-                line: 0,
-                character: 50,
-              },
+              start: {line: 0, character: 17},
+              end: {line: 0, character: 50},
             },
           },
         },
@@ -1684,14 +1394,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 1,
-                character: 10,
-              },
-              end: {
-                line: 1,
-                character: 29,
-              },
+              start: {line: 1, character: 10},
+              end: {line: 1, character: 29},
             },
           },
           as: 'year_born',
@@ -1702,24 +1406,16 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 2,
-                character: 11,
-              },
-              end: {
-                line: 2,
-                character: 39,
-              },
+              start: {line: 2, character: 11},
+              end: {line: 2, character: 39},
             },
           },
           e: {
             node: 'aggregate',
             function: 'sum',
-            e: {
-              node: 'field',
-              path: ['number'],
-            },
+            e: {node: 'field', path: ['number']},
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'aggregate',
           code: '`number`.sum()',
         },
@@ -1729,14 +1425,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 3,
-                character: 13,
-              },
-              end: {
-                line: 3,
-                character: 45,
-              },
+              start: {line: 3, character: 13},
+              end: {line: 3, character: 45},
             },
           },
           e: {
@@ -1749,6 +1439,7 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
+                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -1909,12 +1600,10 @@ export const model: ModelDef = {
                 expressionType: 'scalar',
                 structPath: undefined,
               },
-              right: {
-                node: 'numberLiteral',
-                literal: '10',
-              },
+              right: {node: 'numberLiteral', literal: '10'},
             },
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'scalar',
           code: 'floor(year_born/10)*10',
         },
@@ -1924,14 +1613,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 4,
-                character: 11,
-              },
-              end: {
-                line: 4,
-                character: 70,
-              },
+              start: {line: 4, character: 11},
+              end: {line: 4, character: 70},
             },
           },
           e: {
@@ -1941,6 +1624,7 @@ export const model: ModelDef = {
                 type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
+                compositeFieldUsage: {fields: [], joinedUsage: {}},
               },
               params: [
                 {
@@ -2113,6 +1797,7 @@ export const model: ModelDef = {
             expressionType: 'ungrouped_aggregate',
             structPath: undefined,
           },
+          compositeFieldUsage: {fields: [], joinedUsage: {}},
           expressionType: 'ungrouped_aggregate',
           code: 'floor(population/all(population)*100000)',
         },
@@ -2127,21 +1812,15 @@ export const model: ModelDef = {
                 sourceField: 'gender',
                 sourceExpression: undefined,
                 sourceClasses: ['gender'],
-                referenceId: '78d989f2-ef9b-4775-b7e6-8b7d123da103',
+                referenceId: 'd50f0a70-c7ff-4c97-a44a-dc0c33e7db18',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
               annotation: undefined,
@@ -2153,21 +1832,15 @@ export const model: ModelDef = {
                 sourceField: 'state',
                 sourceExpression: undefined,
                 sourceClasses: ['state'],
-                referenceId: '532fb076-890d-4356-953b-cebd825304f6',
+                referenceId: 'de0ebb6a-8fe4-4a74-a77f-7f316beda1af',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 17,
-                  },
-                  end: {
-                    line: 0,
-                    character: 50,
-                  },
+                  start: {line: 0, character: 17},
+                  end: {line: 0, character: 50},
                 },
               },
               annotation: undefined,
@@ -2180,21 +1853,15 @@ export const model: ModelDef = {
                 sourceField: 'year',
                 sourceExpression: undefined,
                 sourceClasses: ['year'],
-                referenceId: 'd5641b42-6ace-430b-9721-2bc9e5b644da',
+                referenceId: '506f9ae5-41ae-4d1f-8b16-f748dad14050',
                 filterList: undefined,
                 fieldKind: 'dimension',
               },
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 1,
-                    character: 10,
-                  },
-                  end: {
-                    line: 1,
-                    character: 29,
-                  },
+                  start: {line: 1, character: 10},
+                  end: {line: 1, character: 29},
                 },
               },
               annotation: undefined,
@@ -2207,21 +1874,15 @@ export const model: ModelDef = {
                 sourceField: 'cohort_size',
                 sourceExpression: 'population',
                 sourceClasses: ['cohort_size'],
-                referenceId: '21d605e0-6d9d-481c-8942-a5beb52f9f42',
+                referenceId: '7d9acc54-fbd5-475a-ae8b-42987632806d',
                 filterList: [],
                 fieldKind: 'measure',
               },
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 28,
-                    character: 13,
-                  },
-                  end: {
-                    line: 28,
-                    character: 38,
-                  },
+                  start: {line: 28, character: 13},
+                  end: {line: 28, character: 38},
                 },
               },
               annotation: undefined,
@@ -2232,24 +1893,16 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 30,
-                    character: 11,
-                  },
-                  end: {
-                    line: 30,
-                    character: 42,
-                  },
+                  start: {line: 30, character: 11},
+                  end: {line: 30, character: 42},
                 },
               },
               e: {
                 node: 'aggregate',
                 function: 'sum',
-                e: {
-                  node: 'field',
-                  path: ['cohort_size'],
-                },
+                e: {node: 'field', path: ['cohort_size']},
               },
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
               expressionType: 'aggregate',
               code: 'cohort_size.sum()',
             },
@@ -2281,14 +1934,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 0,
-                        character: 17,
-                      },
-                      end: {
-                        line: 0,
-                        character: 50,
-                      },
+                      start: {line: 0, character: 17},
+                      end: {line: 0, character: 50},
                     },
                   },
                 },
@@ -2298,14 +1945,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 0,
-                        character: 17,
-                      },
-                      end: {
-                        line: 0,
-                        character: 50,
-                      },
+                      start: {line: 0, character: 17},
+                      end: {line: 0, character: 50},
                     },
                   },
                 },
@@ -2315,14 +1956,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 0,
-                        character: 17,
-                      },
-                      end: {
-                        line: 0,
-                        character: 50,
-                      },
+                      start: {line: 0, character: 17},
+                      end: {line: 0, character: 50},
                     },
                   },
                 },
@@ -2333,14 +1968,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 0,
-                        character: 17,
-                      },
-                      end: {
-                        line: 0,
-                        character: 50,
-                      },
+                      start: {line: 0, character: 17},
+                      end: {line: 0, character: 50},
                     },
                   },
                 },
@@ -2351,14 +1980,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 1,
-                        character: 10,
-                      },
-                      end: {
-                        line: 1,
-                        character: 29,
-                      },
+                      start: {line: 1, character: 10},
+                      end: {line: 1, character: 29},
                     },
                   },
                   as: 'year_born',
@@ -2369,24 +1992,16 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 2,
-                        character: 11,
-                      },
-                      end: {
-                        line: 2,
-                        character: 39,
-                      },
+                      start: {line: 2, character: 11},
+                      end: {line: 2, character: 39},
                     },
                   },
                   e: {
                     node: 'aggregate',
                     function: 'sum',
-                    e: {
-                      node: 'field',
-                      path: ['number'],
-                    },
+                    e: {node: 'field', path: ['number']},
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'aggregate',
                   code: '`number`.sum()',
                 },
@@ -2396,14 +2011,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 3,
-                        character: 13,
-                      },
-                      end: {
-                        line: 3,
-                        character: 45,
-                      },
+                      start: {line: 3, character: 13},
+                      end: {line: 3, character: 45},
                     },
                   },
                   e: {
@@ -2416,6 +2025,7 @@ export const model: ModelDef = {
                             type: 'number',
                             expressionType: 'scalar',
                             evalSpace: 'input',
+                            compositeFieldUsage: {fields: [], joinedUsage: {}},
                           },
                           params: [
                             {
@@ -2576,12 +2186,10 @@ export const model: ModelDef = {
                         expressionType: 'scalar',
                         structPath: undefined,
                       },
-                      right: {
-                        node: 'numberLiteral',
-                        literal: '10',
-                      },
+                      right: {node: 'numberLiteral', literal: '10'},
                     },
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'scalar',
                   code: 'floor(year_born/10)*10',
                 },
@@ -2591,14 +2199,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 4,
-                        character: 11,
-                      },
-                      end: {
-                        line: 4,
-                        character: 70,
-                      },
+                      start: {line: 4, character: 11},
+                      end: {line: 4, character: 70},
                     },
                   },
                   e: {
@@ -2608,6 +2210,7 @@ export const model: ModelDef = {
                         type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
+                        compositeFieldUsage: {fields: [], joinedUsage: {}},
                       },
                       params: [
                         {
@@ -2780,6 +2383,7 @@ export const model: ModelDef = {
                     expressionType: 'ungrouped_aggregate',
                     structPath: undefined,
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'ungrouped_aggregate',
                   code: 'floor(population/all(population)*100000)',
                 },
@@ -2790,10 +2394,7 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['name'],
-                        },
+                        {type: 'fieldref', path: ['name']},
                         {
                           type: 'fieldref',
                           path: ['population'],
@@ -2801,22 +2402,15 @@ export const model: ModelDef = {
                       ],
                       limit: 10,
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 5,
-                        character: 8,
-                      },
-                      end: {
-                        line: 9,
-                        character: 3,
-                      },
+                      start: {line: 5, character: 8},
+                      end: {line: 9, character: 3},
                     },
                   },
                 },
@@ -2827,32 +2421,22 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['state'],
-                        },
+                        {type: 'fieldref', path: ['state']},
                         {
                           type: 'fieldref',
                           path: ['births_per_100k'],
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 10,
-                        character: 8,
-                      },
-                      end: {
-                        line: 13,
-                        character: 3,
-                      },
+                      start: {line: 10, character: 8},
+                      end: {line: 13, character: 3},
                     },
                   },
                 },
@@ -2873,22 +2457,15 @@ export const model: ModelDef = {
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 14,
-                        character: 8,
-                      },
-                      end: {
-                        line: 17,
-                        character: 3,
-                      },
+                      start: {line: 14, character: 8},
+                      end: {line: 17, character: 3},
                     },
                   },
                 },
@@ -2908,29 +2485,17 @@ export const model: ModelDef = {
                           path: ['births_per_100k'],
                         },
                       ],
-                      orderBy: [
-                        {
-                          field: 1,
-                          dir: 'asc',
-                        },
-                      ],
+                      orderBy: [{field: 1, dir: 'asc'}],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 18,
-                        character: 8,
-                      },
-                      end: {
-                        line: 22,
-                        character: 3,
-                      },
+                      start: {line: 18, character: 8},
+                      end: {line: 22, character: 3},
                     },
                   },
                 },
@@ -2938,14 +2503,8 @@ export const model: ModelDef = {
               location: {
                 url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                 range: {
-                  start: {
-                    line: 0,
-                    character: 8,
-                  },
-                  end: {
-                    line: 22,
-                    character: 5,
-                  },
+                  start: {line: 0, character: 8},
+                  end: {line: 22, character: 5},
                 },
               },
               parameters: {},
@@ -2956,56 +2515,34 @@ export const model: ModelDef = {
               {
                 type: 'reduce',
                 queryFields: [
-                  {
-                    type: 'fieldref',
-                    path: ['gender'],
-                  },
-                  {
-                    type: 'fieldref',
-                    path: ['state'],
-                  },
-                  {
-                    type: 'fieldref',
-                    path: ['year_born'],
-                  },
+                  {type: 'fieldref', path: ['gender']},
+                  {type: 'fieldref', path: ['state']},
+                  {type: 'fieldref', path: ['year_born']},
                   {
                     type: 'number',
                     name: 'cohort_size',
                     location: {
                       url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                       range: {
-                        start: {
-                          line: 28,
-                          character: 13,
-                        },
-                        end: {
-                          line: 28,
-                          character: 38,
-                        },
+                        start: {line: 28, character: 13},
+                        end: {line: 28, character: 38},
                       },
                     },
-                    e: {
-                      node: 'field',
-                      path: ['population'],
-                    },
+                    e: {node: 'field', path: ['population']},
+                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                     expressionType: 'aggregate',
                     code: 'population',
                   },
                 ],
                 filterList: [],
+                compositeFieldUsage: {fields: [], joinedUsage: {}},
               },
             ],
             location: {
               url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
               range: {
-                start: {
-                  line: 26,
-                  character: 18,
-                },
-                end: {
-                  line: 30,
-                  character: 44,
-                },
+                start: {line: 26, character: 18},
+                end: {line: 30, character: 44},
               },
             },
             name: undefined,
@@ -3015,14 +2552,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 34,
-                character: 12,
-              },
-              end: {
-                line: 37,
-                character: 36,
-              },
+              start: {line: 34, character: 12},
+              end: {line: 37, character: 36},
             },
           },
           arguments: {},
@@ -3037,10 +2568,7 @@ export const model: ModelDef = {
                   left: {
                     node: '=',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['gender'],
-                      },
+                      left: {node: 'field', path: ['gender']},
                       right: {
                         node: 'field',
                         path: ['cohort', 'gender'],
@@ -3050,10 +2578,7 @@ export const model: ModelDef = {
                   right: {
                     node: '=',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['state'],
-                      },
+                      left: {node: 'field', path: ['state']},
                       right: {
                         node: 'field',
                         path: ['cohort', 'state'],
@@ -3065,10 +2590,7 @@ export const model: ModelDef = {
               right: {
                 node: '=',
                 kids: {
-                  left: {
-                    node: 'field',
-                    path: ['year_born'],
-                  },
+                  left: {node: 'field', path: ['year_born']},
                   right: {
                     node: 'field',
                     path: ['cohort', 'year_born'],
@@ -3076,6 +2598,10 @@ export const model: ModelDef = {
                 },
               },
             },
+          },
+          onCompositeFieldUsage: {
+            fields: [],
+            joinedUsage: {cohort: {fields: [], joinedUsage: {}}},
           },
         },
         {
@@ -3085,33 +2611,20 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
               ],
               limit: 10,
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 5,
-                character: 8,
-              },
-              end: {
-                line: 9,
-                character: 3,
-              },
+              start: {line: 5, character: 8},
+              end: {line: 9, character: 3},
             },
           },
         },
@@ -3122,32 +2635,22 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
+                {type: 'fieldref', path: ['state']},
                 {
                   type: 'fieldref',
                   path: ['births_per_100k'],
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 10,
-                character: 8,
-              },
-              end: {
-                line: 13,
-                character: 3,
-              },
+              start: {line: 10, character: 8},
+              end: {line: 13, character: 3},
             },
           },
         },
@@ -3158,32 +2661,19 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['gender'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['gender']},
+                {type: 'fieldref', path: ['population']},
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 14,
-                character: 8,
-              },
-              end: {
-                line: 17,
-                character: 3,
-              },
+              start: {line: 14, character: 8},
+              end: {line: 17, character: 3},
             },
           },
         },
@@ -3194,38 +2684,23 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['decade'],
-                },
+                {type: 'fieldref', path: ['decade']},
                 {
                   type: 'fieldref',
                   path: ['births_per_100k'],
                 },
               ],
-              orderBy: [
-                {
-                  field: 1,
-                  dir: 'asc',
-                },
-              ],
+              orderBy: [{field: 1, dir: 'asc'}],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 18,
-                character: 8,
-              },
-              end: {
-                line: 22,
-                character: 3,
-              },
+              start: {line: 18, character: 8},
+              end: {line: 22, character: 3},
             },
           },
         },
@@ -3236,10 +2711,7 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
+                {type: 'fieldref', path: ['name']},
                 {
                   type: 'fieldref',
                   path: ['births_per_100k'],
@@ -3261,6 +2733,7 @@ export const model: ModelDef = {
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -3270,14 +2743,8 @@ export const model: ModelDef = {
                         at: {
                           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                           range: {
-                            start: {
-                              line: 41,
-                              character: 4,
-                            },
-                            end: {
-                              line: 41,
-                              character: 17,
-                            },
+                            start: {line: 41, character: 4},
+                            end: {line: 41, character: 17},
                           },
                         },
                       },
@@ -3287,14 +2754,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 42,
-                        character: 10,
-                      },
-                      end: {
-                        line: 45,
-                        character: 5,
-                      },
+                      start: {line: 42, character: 10},
+                      end: {line: 45, character: 5},
                     },
                   },
                 },
@@ -3305,24 +2766,15 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['state'],
-                        },
+                        {type: 'fieldref', path: ['state']},
                         {
                           type: 'number',
                           name: 'per_100k',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 49,
-                                character: 17,
-                              },
-                              end: {
-                                line: 49,
-                                character: 71,
-                              },
+                              start: {line: 49, character: 17},
+                              end: {line: 49, character: 71},
                             },
                           },
                           e: {
@@ -3351,11 +2803,13 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'ungrouped_aggregate',
                           code: 'population/exclude(population,name)*100000',
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -3365,14 +2819,8 @@ export const model: ModelDef = {
                         at: {
                           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                           range: {
-                            start: {
-                              line: 46,
-                              character: 4,
-                            },
-                            end: {
-                              line: 46,
-                              character: 18,
-                            },
+                            start: {line: 46, character: 4},
+                            end: {line: 46, character: 18},
                           },
                         },
                       },
@@ -3382,36 +2830,23 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 47,
-                        character: 10,
-                      },
-                      end: {
-                        line: 50,
-                        character: 5,
-                      },
+                      start: {line: 47, character: 10},
+                      end: {line: 50, character: 5},
                     },
                   },
                 },
               ],
               limit: 10,
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 38,
-                character: 8,
-              },
-              end: {
-                line: 52,
-                character: 3,
-              },
+              start: {line: 38, character: 8},
+              end: {line: 52, character: 3},
             },
           },
         },
@@ -3422,42 +2857,25 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['gender'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['state']},
+                {type: 'fieldref', path: ['gender']},
                 {
                   type: 'number',
                   name: 'all_name',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 56,
-                        character: 6,
-                      },
-                      end: {
-                        line: 56,
-                        character: 39,
-                      },
+                      start: {line: 56, character: 6},
+                      end: {line: 56, character: 39},
                     },
                   },
                   e: {
                     node: 'all',
-                    e: {
-                      node: 'field',
-                      path: ['population'],
-                    },
+                    e: {node: 'field', path: ['population']},
                     fields: ['name'],
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'ungrouped_aggregate',
                   code: 'all(population, name)',
                 },
@@ -3467,14 +2885,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 57,
-                        character: 6,
-                      },
-                      end: {
-                        line: 57,
-                        character: 64,
-                      },
+                      start: {line: 57, character: 6},
+                      end: {line: 57, character: 64},
                     },
                   },
                   e: {
@@ -3497,6 +2909,7 @@ export const model: ModelDef = {
                       },
                     },
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'ungrouped_aggregate',
                   code: 'all(population, name) / all(population)',
                 },
@@ -3506,23 +2919,14 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 58,
-                        character: 6,
-                      },
-                      end: {
-                        line: 58,
-                        character: 61,
-                      },
+                      start: {line: 58, character: 6},
+                      end: {line: 58, character: 61},
                     },
                   },
                   e: {
                     node: '/',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['population'],
-                      },
+                      left: {node: 'field', path: ['population']},
                       right: {
                         node: 'all',
                         e: {
@@ -3533,19 +2937,18 @@ export const model: ModelDef = {
                       },
                     },
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'ungrouped_aggregate',
                   code: 'population / all(population, state)',
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
+                {type: 'fieldref', path: ['state']},
                 {
                   type: 'turtle',
                   name: 'by_gender',
@@ -3597,65 +3000,49 @@ export const model: ModelDef = {
                                       },
                                     },
                                   },
+                                  compositeFieldUsage: {
+                                    fields: [],
+                                    joinedUsage: {},
+                                  },
                                   expressionType: 'scalar',
                                   code: 'state_popularity / name_popularity',
                                 },
                               ],
                               limit: 20,
-                              orderBy: [
-                                {
-                                  field: 2,
-                                  dir: 'desc',
-                                },
-                              ],
+                              orderBy: [{field: 2, dir: 'desc'}],
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
-                          annotation: {
-                            inherits: undefined,
-                          },
+                          annotation: {inherits: undefined},
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 66,
-                                character: 12,
-                              },
-                              end: {
-                                line: 72,
-                                character: 7,
-                              },
+                              start: {line: 66, character: 12},
+                              end: {line: 72, character: 7},
                             },
                           },
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 64,
-                        character: 10,
-                      },
-                      end: {
-                        line: 73,
-                        character: 5,
-                      },
+                      start: {line: 64, character: 10},
+                      end: {line: 73, character: 5},
                     },
                   },
                 },
               ],
               limit: 20,
-              orderBy: [
-                {
-                  field: 1,
-                },
-              ],
+              orderBy: [{field: 1}],
               filterList: [
                 {
                   node: 'filterCondition',
@@ -3663,10 +3050,7 @@ export const model: ModelDef = {
                   e: {
                     node: '>',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['all_name'],
-                      },
+                      left: {node: 'field', path: ['all_name']},
                       right: {
                         node: 'numberLiteral',
                         literal: '3000',
@@ -3674,24 +3058,18 @@ export const model: ModelDef = {
                     },
                   },
                   expressionType: 'scalar',
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 53,
-                character: 8,
-              },
-              end: {
-                line: 76,
-                character: 3,
-              },
+              start: {line: 53, character: 8},
+              end: {line: 76, character: 3},
             },
           },
         },
@@ -3702,28 +3080,16 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['year_born'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['year_born']},
+                {type: 'fieldref', path: ['population']},
                 {
                   type: 'string',
                   name: 'gender',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 82,
-                        character: 14,
-                      },
-                      end: {
-                        line: 82,
-                        character: 67,
-                      },
+                      start: {line: 82, character: 14},
+                      end: {line: 82, character: 67},
                     },
                   },
                   e: {
@@ -3756,11 +3122,13 @@ export const model: ModelDef = {
                       },
                     },
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'scalar',
                   code: "gender ? pick 'Female' when 'F' else 'Male'",
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
           annotation: {
@@ -3770,14 +3138,8 @@ export const model: ModelDef = {
                 at: {
                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                   range: {
-                    start: {
-                      line: 78,
-                      character: 2,
-                    },
-                    end: {
-                      line: 78,
-                      character: 15,
-                    },
+                    start: {line: 78, character: 2},
+                    end: {line: 78, character: 15},
                   },
                 },
               },
@@ -3787,14 +3149,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 79,
-                character: 8,
-              },
-              end: {
-                line: 83,
-                character: 3,
-              },
+              start: {line: 79, character: 8},
+              end: {line: 83, character: 3},
             },
           },
         },
@@ -3805,24 +3161,15 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
+                {type: 'fieldref', path: ['state']},
                 {
                   type: 'number',
                   name: 'percent_female',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 88,
-                        character: 17,
-                      },
-                      end: {
-                        line: 88,
-                        character: 75,
-                      },
+                      start: {line: 88, character: 17},
+                      end: {line: 88, character: 75},
                     },
                   },
                   e: {
@@ -3853,21 +3200,24 @@ export const model: ModelDef = {
                                 },
                               },
                               expressionType: 'scalar',
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                         },
                       },
-                      right: {
-                        node: 'field',
-                        path: ['population'],
-                      },
+                      right: {node: 'field', path: ['population']},
                     },
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'aggregate',
                   code: "population{where: gender='M'}/population",
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
           annotation: {
@@ -3877,14 +3227,8 @@ export const model: ModelDef = {
                 at: {
                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                   range: {
-                    start: {
-                      line: 85,
-                      character: 3,
-                    },
-                    end: {
-                      line: 85,
-                      character: 15,
-                    },
+                    start: {line: 85, character: 3},
+                    end: {line: 85, character: 15},
                   },
                 },
               },
@@ -3894,14 +3238,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 86,
-                character: 9,
-              },
-              end: {
-                line: 89,
-                character: 5,
-              },
+              start: {line: 86, character: 9},
+              end: {line: 89, character: 5},
             },
           },
         },
@@ -3912,14 +3250,8 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
                 {
                   type: 'turtle',
                   name: 'gender_year',
@@ -3941,14 +3273,8 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 82,
-                                character: 14,
-                              },
-                              end: {
-                                line: 82,
-                                character: 67,
-                              },
+                              start: {line: 82, character: 14},
+                              end: {line: 82, character: 67},
                             },
                           },
                           e: {
@@ -3981,11 +3307,13 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'scalar',
                           code: "gender ? pick 'Female' when 'F' else 'Male'",
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -3996,14 +3324,8 @@ export const model: ModelDef = {
                           at: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 78,
-                                character: 2,
-                              },
-                              end: {
-                                line: 78,
-                                character: 15,
-                              },
+                              start: {line: 78, character: 2},
+                              end: {line: 78, character: 15},
                             },
                           },
                         },
@@ -4014,14 +3336,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 94,
-                        character: 10,
-                      },
-                      end: {
-                        line: 94,
-                        character: 21,
-                      },
+                      start: {line: 94, character: 10},
+                      end: {line: 94, character: 21},
                     },
                   },
                 },
@@ -4032,24 +3348,15 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['state'],
-                        },
+                        {type: 'fieldref', path: ['state']},
                         {
                           type: 'number',
                           name: 'percent_female',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 88,
-                                character: 17,
-                              },
-                              end: {
-                                line: 88,
-                                character: 75,
-                              },
+                              start: {line: 88, character: 17},
+                              end: {line: 88, character: 75},
                             },
                           },
                           e: {
@@ -4080,6 +3387,10 @@ export const model: ModelDef = {
                                         },
                                       },
                                       expressionType: 'scalar',
+                                      compositeFieldUsage: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
                                     },
                                   ],
                                 },
@@ -4090,11 +3401,13 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'aggregate',
                           code: "population{where: gender='M'}/population",
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -4105,14 +3418,8 @@ export const model: ModelDef = {
                           at: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 85,
-                                character: 3,
-                              },
-                              end: {
-                                line: 85,
-                                character: 15,
-                              },
+                              start: {line: 85, character: 3},
+                              end: {line: 85, character: 15},
                             },
                           },
                         },
@@ -4123,14 +3430,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 95,
-                        character: 10,
-                      },
-                      end: {
-                        line: 95,
-                        character: 25,
-                      },
+                      start: {line: 95, character: 10},
+                      end: {line: 95, character: 25},
                     },
                   },
                 },
@@ -4174,6 +3475,10 @@ export const model: ModelDef = {
                                         },
                                       },
                                       expressionType: 'scalar',
+                                      compositeFieldUsage: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
                                     },
                                   ],
                                 },
@@ -4221,6 +3526,10 @@ export const model: ModelDef = {
                                         },
                                       },
                                       expressionType: 'scalar',
+                                      compositeFieldUsage: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
                                     },
                                   ],
                                 },
@@ -4240,24 +3549,18 @@ export const model: ModelDef = {
                     },
                   },
                   expressionType: 'aggregate',
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 91,
-                character: 8,
-              },
-              end: {
-                line: 98,
-                character: 3,
-              },
+              start: {line: 91, character: 8},
+              end: {line: 98, character: 3},
             },
           },
         },
@@ -4268,14 +3571,8 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
                 {
                   type: 'turtle',
                   name: 'gender_year',
@@ -4297,14 +3594,8 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 82,
-                                character: 14,
-                              },
-                              end: {
-                                line: 82,
-                                character: 67,
-                              },
+                              start: {line: 82, character: 14},
+                              end: {line: 82, character: 67},
                             },
                           },
                           e: {
@@ -4337,11 +3628,13 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'scalar',
                           code: "gender ? pick 'Female' when 'F' else 'Male'",
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -4352,14 +3645,8 @@ export const model: ModelDef = {
                           at: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 78,
-                                character: 2,
-                              },
-                              end: {
-                                line: 78,
-                                character: 15,
-                              },
+                              start: {line: 78, character: 2},
+                              end: {line: 78, character: 15},
                             },
                           },
                         },
@@ -4370,14 +3657,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 105,
-                        character: 10,
-                      },
-                      end: {
-                        line: 105,
-                        character: 21,
-                      },
+                      start: {line: 105, character: 10},
+                      end: {line: 105, character: 21},
                     },
                   },
                 },
@@ -4388,24 +3669,15 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['state'],
-                        },
+                        {type: 'fieldref', path: ['state']},
                         {
                           type: 'number',
                           name: 'percent_female',
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 88,
-                                character: 17,
-                              },
-                              end: {
-                                line: 88,
-                                character: 75,
-                              },
+                              start: {line: 88, character: 17},
+                              end: {line: 88, character: 75},
                             },
                           },
                           e: {
@@ -4436,6 +3708,10 @@ export const model: ModelDef = {
                                         },
                                       },
                                       expressionType: 'scalar',
+                                      compositeFieldUsage: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
                                     },
                                   ],
                                 },
@@ -4446,11 +3722,13 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'aggregate',
                           code: "population{where: gender='M'}/population",
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -4461,14 +3739,8 @@ export const model: ModelDef = {
                           at: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 85,
-                                character: 3,
-                              },
-                              end: {
-                                line: 85,
-                                character: 15,
-                              },
+                              start: {line: 85, character: 3},
+                              end: {line: 85, character: 15},
                             },
                           },
                         },
@@ -4479,14 +3751,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 106,
-                        character: 10,
-                      },
-                      end: {
-                        line: 106,
-                        character: 25,
-                      },
+                      start: {line: 106, character: 10},
+                      end: {line: 106, character: 25},
                     },
                   },
                 },
@@ -4556,6 +3822,10 @@ export const model: ModelDef = {
                                                 },
                                               },
                                               expressionType: 'scalar',
+                                              compositeFieldUsage: {
+                                                fields: [],
+                                                joinedUsage: {},
+                                              },
                                             },
                                           ],
                                         },
@@ -4566,11 +3836,19 @@ export const model: ModelDef = {
                                       },
                                     },
                                   },
+                                  compositeFieldUsage: {
+                                    fields: [],
+                                    joinedUsage: {},
+                                  },
                                   expressionType: 'aggregate',
                                   code: "population{where: gender='M'}/population",
                                 },
                               ],
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                           annotation: {
@@ -4599,35 +3877,22 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 109,
-                                character: 12,
-                              },
-                              end: {
-                                line: 109,
-                                character: 27,
-                              },
+                              start: {line: 109, character: 12},
+                              end: {line: 109, character: 27},
                             },
                           },
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 107,
-                        character: 10,
-                      },
-                      end: {
-                        line: 110,
-                        character: 5,
-                      },
+                      start: {line: 107, character: 10},
+                      end: {line: 110, character: 5},
                     },
                   },
                 },
@@ -4638,10 +3903,7 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['state'],
-                        },
+                        {type: 'fieldref', path: ['state']},
                         {
                           type: 'turtle',
                           name: 'gender_year',
@@ -4703,11 +3965,19 @@ export const model: ModelDef = {
                                       },
                                     },
                                   },
+                                  compositeFieldUsage: {
+                                    fields: [],
+                                    joinedUsage: {},
+                                  },
                                   expressionType: 'scalar',
                                   code: "gender ? pick 'Female' when 'F' else 'Male'",
                                 },
                               ],
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                           annotation: {
@@ -4736,35 +4006,22 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 113,
-                                character: 12,
-                              },
-                              end: {
-                                line: 113,
-                                character: 23,
-                              },
+                              start: {line: 113, character: 12},
+                              end: {line: 113, character: 23},
                             },
                           },
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 111,
-                        character: 10,
-                      },
-                      end: {
-                        line: 114,
-                        character: 5,
-                      },
+                      start: {line: 111, character: 10},
+                      end: {line: 114, character: 5},
                     },
                   },
                 },
@@ -4776,10 +4033,7 @@ export const model: ModelDef = {
                   e: {
                     node: '=',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['name'],
-                      },
+                      left: {node: 'field', path: ['name']},
                       right: {
                         node: 'stringLiteral',
                         literal: 'Kelly',
@@ -4787,8 +4041,10 @@ export const model: ModelDef = {
                     },
                   },
                   expressionType: 'scalar',
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
           annotation: {
@@ -4798,14 +4054,8 @@ export const model: ModelDef = {
                 at: {
                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                   range: {
-                    start: {
-                      line: 100,
-                      character: 2,
-                    },
-                    end: {
-                      line: 100,
-                      character: 14,
-                    },
+                    start: {line: 100, character: 2},
+                    end: {line: 100, character: 14},
                   },
                 },
               },
@@ -4815,14 +4065,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 101,
-                character: 8,
-              },
-              end: {
-                line: 115,
-                character: 3,
-              },
+              start: {line: 101, character: 8},
+              end: {line: 115, character: 3},
             },
           },
         },
@@ -4833,14 +4077,8 @@ export const model: ModelDef = {
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
                 {
                   type: 'turtle',
                   name: 'by_decade',
@@ -4858,14 +4096,8 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 128,
-                                character: 17,
-                              },
-                              end: {
-                                line: 128,
-                                character: 64,
-                              },
+                              start: {line: 128, character: 17},
+                              end: {line: 128, character: 64},
                             },
                           },
                           e: {
@@ -4884,65 +4116,43 @@ export const model: ModelDef = {
                               },
                             },
                           },
+                          compositeFieldUsage: {fields: [], joinedUsage: {}},
                           expressionType: 'ungrouped_aggregate',
                           code: 'population/all(population)',
                         },
                       ],
                       limit: 2,
-                      orderBy: [
-                        {
-                          field: 2,
-                          dir: 'desc',
-                        },
-                      ],
+                      orderBy: [{field: 2, dir: 'desc'}],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 126,
-                        character: 10,
-                      },
-                      end: {
-                        line: 131,
-                        character: 5,
-                      },
+                      start: {line: 126, character: 10},
+                      end: {line: 131, character: 5},
                     },
                   },
                 },
               ],
               filterList: [],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
             {
               type: 'reduce',
               queryFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['population'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['population']},
                 {
                   type: 'number',
                   name: 'years_apart',
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 139,
-                        character: 6,
-                      },
-                      end: {
-                        line: 139,
-                        character: 64,
-                      },
+                      start: {line: 139, character: 6},
+                      end: {line: 139, character: 64},
                     },
                   },
                   e: {
@@ -4966,6 +4176,12 @@ export const model: ModelDef = {
                       },
                     },
                   },
+                  compositeFieldUsage: {
+                    fields: [],
+                    joinedUsage: {
+                      by_decade: {fields: [], joinedUsage: {}},
+                    },
+                  },
                   expressionType: 'aggregate',
                   code: 'max(by_decade.decade)-min(by_decade.decade)',
                 },
@@ -4975,14 +4191,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 140,
-                        character: 6,
-                      },
-                      end: {
-                        line: 140,
-                        character: 59,
-                      },
+                      start: {line: 140, character: 6},
+                      end: {line: 140, character: 59},
                     },
                   },
                   e: {
@@ -4994,6 +4204,7 @@ export const model: ModelDef = {
                     },
                     structPath: ['by_decade'],
                   },
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                   expressionType: 'aggregate',
                   code: 'by_decade.percent_in_decade.sum()',
                 },
@@ -5003,14 +4214,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 141,
-                        character: 6,
-                      },
-                      end: {
-                        line: 141,
-                        character: 56,
-                      },
+                      start: {line: 141, character: 6},
+                      end: {line: 141, character: 56},
                     },
                   },
                   e: {
@@ -5019,6 +4224,12 @@ export const model: ModelDef = {
                     e: {
                       node: 'field',
                       path: ['by_decade', 'percent_in_decade'],
+                    },
+                  },
+                  compositeFieldUsage: {
+                    fields: [],
+                    joinedUsage: {
+                      by_decade: {fields: [], joinedUsage: {}},
                     },
                   },
                   expressionType: 'aggregate',
@@ -5041,22 +4252,15 @@ export const model: ModelDef = {
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
-                  annotation: {
-                    inherits: undefined,
-                  },
+                  annotation: {inherits: undefined},
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 142,
-                        character: 10,
-                      },
-                      end: {
-                        line: 144,
-                        character: 5,
-                      },
+                      start: {line: 142, character: 10},
+                      end: {line: 144, character: 5},
                     },
                   },
                 },
@@ -5069,10 +4273,7 @@ export const model: ModelDef = {
                   e: {
                     node: '>',
                     kids: {
-                      left: {
-                        node: 'field',
-                        path: ['population'],
-                      },
+                      left: {node: 'field', path: ['population']},
                       right: {
                         node: 'numberLiteral',
                         literal: '3000',
@@ -5080,24 +4281,18 @@ export const model: ModelDef = {
                     },
                   },
                   expressionType: 'scalar',
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 123,
-                character: 9,
-              },
-              end: {
-                line: 146,
-                character: 3,
-              },
+              start: {line: 123, character: 9},
+              end: {line: 146, character: 3},
             },
           },
         },
@@ -5123,12 +4318,10 @@ export const model: ModelDef = {
                           type: 'fieldref',
                           path: ['births_per_100k'],
                         },
-                        {
-                          type: 'fieldref',
-                          path: ['name'],
-                        },
+                        {type: 'fieldref', path: ['name']},
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -5138,14 +4331,8 @@ export const model: ModelDef = {
                         at: {
                           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                           range: {
-                            start: {
-                              line: 151,
-                              character: 4,
-                            },
-                            end: {
-                              line: 151,
-                              character: 17,
-                            },
+                            start: {line: 151, character: 4},
+                            end: {line: 151, character: 17},
                           },
                         },
                       },
@@ -5155,14 +4342,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 152,
-                        character: 10,
-                      },
-                      end: {
-                        line: 156,
-                        character: 5,
-                      },
+                      start: {line: 152, character: 10},
+                      end: {line: 156, character: 5},
                     },
                   },
                 },
@@ -5173,10 +4354,7 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['name'],
-                        },
+                        {type: 'fieldref', path: ['name']},
                         {
                           type: 'fieldref',
                           path: ['births_per_100k'],
@@ -5187,6 +4365,7 @@ export const model: ModelDef = {
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -5196,14 +4375,8 @@ export const model: ModelDef = {
                         at: {
                           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                           range: {
-                            start: {
-                              line: 157,
-                              character: 4,
-                            },
-                            end: {
-                              line: 157,
-                              character: 16,
-                            },
+                            start: {line: 157, character: 4},
+                            end: {line: 157, character: 16},
                           },
                         },
                       },
@@ -5213,14 +4386,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 158,
-                        character: 10,
-                      },
-                      end: {
-                        line: 162,
-                        character: 5,
-                      },
+                      start: {line: 158, character: 10},
+                      end: {line: 162, character: 5},
                     },
                   },
                 },
@@ -5231,10 +4398,7 @@ export const model: ModelDef = {
                     {
                       type: 'reduce',
                       queryFields: [
-                        {
-                          type: 'fieldref',
-                          path: ['name'],
-                        },
+                        {type: 'fieldref', path: ['name']},
                         {
                           type: 'fieldref',
                           path: ['population'],
@@ -5256,6 +4420,10 @@ export const model: ModelDef = {
                                 },
                               ],
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                           annotation: {
@@ -5265,10 +4433,7 @@ export const model: ModelDef = {
                                 at: {
                                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                   range: {
-                                    start: {
-                                      line: 167,
-                                      character: 6,
-                                    },
+                                    start: {line: 167, character: 6},
                                     end: {
                                       line: 167,
                                       character: 19,
@@ -5282,14 +4447,8 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 168,
-                                character: 12,
-                              },
-                              end: {
-                                line: 171,
-                                character: 7,
-                              },
+                              start: {line: 168, character: 12},
+                              end: {line: 171, character: 7},
                             },
                           },
                         },
@@ -5342,11 +4501,24 @@ export const model: ModelDef = {
                                       },
                                     },
                                   },
+                                  compositeFieldUsage: {
+                                    fields: [],
+                                    joinedUsage: {
+                                      cohort: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
+                                    },
+                                  },
                                   expressionType: 'aggregate',
                                   code: 'population/cohort.population * 100000',
                                 },
                               ],
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                           annotation: {
@@ -5356,10 +4528,7 @@ export const model: ModelDef = {
                                 at: {
                                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                   range: {
-                                    start: {
-                                      line: 172,
-                                      character: 6,
-                                    },
+                                    start: {line: 172, character: 6},
                                     end: {
                                       line: 172,
                                       character: 18,
@@ -5373,14 +4542,8 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 173,
-                                character: 12,
-                              },
-                              end: {
-                                line: 176,
-                                character: 7,
-                              },
+                              start: {line: 173, character: 12},
+                              end: {line: 176, character: 7},
                             },
                           },
                         },
@@ -5437,12 +4600,25 @@ export const model: ModelDef = {
                                       },
                                     },
                                   },
+                                  compositeFieldUsage: {
+                                    fields: [],
+                                    joinedUsage: {
+                                      cohort: {
+                                        fields: [],
+                                        joinedUsage: {},
+                                      },
+                                    },
+                                  },
                                   expressionType: 'aggregate',
                                   code: 'population/cohort.population * 100000',
                                 },
                               ],
                               limit: 5,
                               filterList: [],
+                              compositeFieldUsage: {
+                                fields: [],
+                                joinedUsage: {},
+                              },
                             },
                           ],
                           annotation: {
@@ -5452,10 +4628,7 @@ export const model: ModelDef = {
                                 at: {
                                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                                   range: {
-                                    start: {
-                                      line: 172,
-                                      character: 6,
-                                    },
+                                    start: {line: 172, character: 6},
                                     end: {
                                       line: 172,
                                       character: 18,
@@ -5469,19 +4642,14 @@ export const model: ModelDef = {
                           location: {
                             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                             range: {
-                              start: {
-                                line: 177,
-                                character: 6,
-                              },
-                              end: {
-                                line: 181,
-                                character: 7,
-                              },
+                              start: {line: 177, character: 6},
+                              end: {line: 181, character: 7},
                             },
                           },
                         },
                       ],
                       filterList: [],
+                      compositeFieldUsage: {fields: [], joinedUsage: {}},
                     },
                   ],
                   annotation: {
@@ -5491,14 +4659,8 @@ export const model: ModelDef = {
                         at: {
                           url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                           range: {
-                            start: {
-                              line: 163,
-                              character: 4,
-                            },
-                            end: {
-                              line: 163,
-                              character: 16,
-                            },
+                            start: {line: 163, character: 4},
+                            end: {line: 163, character: 16},
                           },
                         },
                       },
@@ -5508,14 +4670,8 @@ export const model: ModelDef = {
                   location: {
                     url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                     range: {
-                      start: {
-                        line: 164,
-                        character: 10,
-                      },
-                      end: {
-                        line: 182,
-                        character: 5,
-                      },
+                      start: {line: 164, character: 10},
+                      end: {line: 182, character: 5},
                     },
                   },
                 },
@@ -5528,10 +4684,7 @@ export const model: ModelDef = {
                     node: 'in',
                     not: false,
                     kids: {
-                      e: {
-                        node: 'field',
-                        path: ['name'],
-                      },
+                      e: {node: 'field', path: ['name']},
                       oneOf: [
                         {
                           node: 'stringLiteral',
@@ -5561,8 +4714,10 @@ export const model: ModelDef = {
                     },
                   },
                   expressionType: 'scalar',
+                  compositeFieldUsage: {fields: [], joinedUsage: {}},
                 },
               ],
+              compositeFieldUsage: {fields: [], joinedUsage: {}},
             },
           ],
           annotation: {
@@ -5572,14 +4727,8 @@ export const model: ModelDef = {
                 at: {
                   url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
                   range: {
-                    start: {
-                      line: 148,
-                      character: 2,
-                    },
-                    end: {
-                      line: 148,
-                      character: 14,
-                    },
+                    start: {line: 148, character: 2},
+                    end: {line: 148, character: 14},
                   },
                 },
               },
@@ -5589,14 +4738,8 @@ export const model: ModelDef = {
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 149,
-                character: 8,
-              },
-              end: {
-                line: 183,
-                character: 3,
-              },
+              start: {line: 149, character: 8},
+              end: {line: 183, character: 3},
             },
           },
         },
@@ -5607,33 +4750,19 @@ export const model: ModelDef = {
             {
               type: 'index',
               indexFields: [
-                {
-                  type: 'fieldref',
-                  path: ['name'],
-                },
-                {
-                  type: 'fieldref',
-                  path: ['state'],
-                },
+                {type: 'fieldref', path: ['name']},
+                {type: 'fieldref', path: ['state']},
               ],
               filterList: [],
               weightMeasure: 'population',
             },
           ],
-          annotation: {
-            inherits: undefined,
-          },
+          annotation: {inherits: undefined},
           location: {
             url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
             range: {
-              start: {
-                line: 185,
-                character: 8,
-              },
-              end: {
-                line: 187,
-                character: 3,
-              },
+              start: {line: 185, character: 8},
+              end: {line: 187, character: 3},
             },
           },
         },
@@ -5641,14 +4770,8 @@ export const model: ModelDef = {
       location: {
         url: 'file:///Users/scullin/src/malloydata/malloy-samples/names/names.malloy',
         range: {
-          start: {
-            line: 33,
-            character: 8,
-          },
-          end: {
-            line: 188,
-            character: 47,
-          },
+          start: {line: 33, character: 8},
+          end: {line: 188, character: 47},
         },
       },
       parameters: {},
