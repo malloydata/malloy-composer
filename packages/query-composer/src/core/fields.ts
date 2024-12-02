@@ -175,7 +175,7 @@ const MEASURE_AVG = /^(.*)\.avg\(\)$/;
 const MEASURE_SUM = /^(.*)\.sum\(\)$/;
 const MEASURE_MIN = /^min\((.*)\)/;
 const MEASURE_MAX = /^max\((.*)\)/;
-const MEASURE_PERCENT = /^100 \* (.*) \/ all\((.*)\)$/;
+const MEASURE_PERCENT = /^100 \* (.+) \/ all\((.+)\)$/;
 
 export function degenerateAggregate(
   source: SourceDef,

@@ -13,7 +13,7 @@ import {
   StageSummary,
   stagePathPush,
 } from '../../types';
-import {ModelDef, SourceDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {StageSummaryUI} from './StateSummaryUI';
 import {FieldListDiv} from './FieldListDiv';
 import {HoverToPopover} from '../HoverToPopover';
@@ -46,13 +46,9 @@ export interface SummaryItemProps {
   isSelected: boolean;
   deselect: () => void;
   queryModifiers: QueryModifiers;
-  model: ModelDef;
-  modelPath: string;
 }
 
 export const SummaryItem: React.FC<SummaryItemProps> = ({
-  model,
-  modelPath,
   item,
   source,
   stagePath,
@@ -88,8 +84,6 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
         popoverContent={({closeMenu}) => {
           const baseMenuProps = {
             closeMenu,
-            model,
-            modelPath,
             source,
             stagePath,
             stageSummary,
@@ -383,8 +377,6 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             stageIndex,
           });
           const baseProps = {
-            model,
-            modelPath,
             source: stageSummary.inputSource,
             stagePath: nestStagePath,
             stageSummary,
@@ -430,8 +422,6 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
             {children.map(({childItem, fieldIndex}, index) => {
               return (
                 <SummaryItem
-                  model={model}
-                  modelPath={modelPath}
                   key={'child:' + index}
                   item={childItem}
                   source={source}

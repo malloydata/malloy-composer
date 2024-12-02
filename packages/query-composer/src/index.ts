@@ -1,5 +1,14 @@
-export {ExploreQueryEditor} from './components/ExploreQueryEditor/ExploreQueryEditor';
-export {QuerySummaryPanel} from './components/QuerySummaryPanel/QuerySummaryPanel';
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+export {ExploreQueryEditor} from './components/ExploreQueryEditor';
+export {QueryEditor} from './components/QueryEditor';
+export {QuerySummaryPanel} from './components/QuerySummaryPanel';
+export {Result} from './components/Result';
 export {DummyCompile} from './core/dummy-compile';
 
 export {useRunQuery} from './data/use_run_query';

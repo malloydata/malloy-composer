@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {ModelDef, SourceDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {StagePath, StageSummary} from '../../types';
 import {QueryModifiers} from '../../hooks';
 import {notUndefined} from '../../utils';
@@ -20,13 +20,9 @@ interface SummaryStageProps {
   source: SourceDef;
   fieldIndex?: number | undefined;
   queryModifiers: QueryModifiers;
-  model: ModelDef;
-  modelPath: string;
 }
 
 export const StageSummaryUI: React.FC<SummaryStageProps> = ({
-  model,
-  modelPath,
   stageSummary,
   queryModifiers,
   source,
@@ -72,8 +68,6 @@ export const StageSummaryUI: React.FC<SummaryStageProps> = ({
     <FieldListDiv>
       {stageSummary.items.map((item, index) => (
         <SummaryItem
-          model={model}
-          modelPath={modelPath}
           key={`${item.type}/${index}`}
           item={item}
           stageSummary={stageSummary}

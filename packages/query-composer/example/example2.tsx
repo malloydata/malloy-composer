@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {ExploreQueryEditor, useQueryBuilder, useRunQuery} from '../src/index';
+import {useQueryBuilder, useRunQuery} from '../src/index';
 
 import {model as exampleModel, modelPath, topValues} from './example_model';
 import styled, {createGlobalStyle} from 'styled-components';
 import {SourceDef} from '@malloydata/malloy';
+import {QueryEditor} from '../src/components/QueryEditor';
 
 const updateQueryInURL = () => {};
 const runQueryAction = () => {
@@ -48,13 +49,20 @@ const App = () => {
     updateQueryInURL
   );
 
-  const {result, isRunning, runQuery} = useRunQuery(
+  const {isRunning, runQuery} = useRunQuery(
     modelDef,
     modelPath,
     runQueryAction
   );
 
   const source = modelDef.contents['names'] as SourceDef;
+
+  const runQueryCallback = () => {
+    const query = queryWriter.getQueryStringForNotebook();
+    if (query) {
+      runQuery(query);
+    }
+  };
 
   return (
     <div className="dark">
@@ -65,17 +73,15 @@ const App = () => {
             backgroundColor: 'var(--malloy-composer-background)',
           }}
         >
-          <ExploreQueryEditor
+          <QueryEditor
             model={modelDef}
-            modelPath={modelPath}
             source={source}
             queryModifiers={queryModifiers}
             topValues={topValues}
             querySummary={querySummary}
             queryWriter={queryWriter}
-            runQuery={runQuery}
+            runQuery={runQueryCallback}
             isRunning={isRunning}
-            result={result}
             refreshModel={() => setModeDef(structuredClone(exampleModel))}
           />
         </div>

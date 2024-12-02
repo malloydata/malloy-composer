@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  FilterCondition,
-  ModelDef,
-  StructDef,
-} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {AddFilter} from '../AddFilter';
 import {
@@ -56,13 +51,9 @@ interface FilterContextBarProps {
   addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;
-  model: ModelDef;
-  modelPath: string;
 }
 
 export const FilterContextBar: React.FC<FilterContextBarProps> = ({
-  model,
-  modelPath,
   source,
   addFilter,
   onComplete,
@@ -71,12 +62,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   const {dummyCompiler} = useContext(ComposerOptionsContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [field, setField] = useState<{path: string; def: FieldDef}>();
-  const {searchResults, isLoading} = useSearch(
-    model,
-    modelPath,
-    source,
-    searchTerm
-  );
+  const {searchResults, isLoading} = useSearch(searchTerm);
   const stringSearchResults =
     searchResults &&
     searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
@@ -115,8 +101,6 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
       <div>
         {field && (
           <AddFilter
-            model={model}
-            modelPath={modelPath}
             source={source}
             fieldPath={field.path}
             field={field.def}

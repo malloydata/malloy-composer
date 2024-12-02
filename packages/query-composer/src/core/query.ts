@@ -219,23 +219,6 @@ export class QueryBuilder extends SourceUtils {
     return writer.getQueryStringForNotebook();
   }
 
-  public getQueryStrings(modelPath: string | undefined): {
-    model: string;
-    markdown: string;
-    source: string;
-    notebook: string;
-    isRunnable: boolean;
-  } {
-    const writer = this.getWriter();
-    return {
-      model: writer.getQueryStringForModel(),
-      source: writer.getQueryStringForSource(this.query.name),
-      markdown: writer.getQueryStringForMarkdown(modelPath),
-      notebook: writer.getQueryStringForNotebook(),
-      isRunnable: this.canRun(),
-    };
-  }
-
   getName(): string {
     return this.query.name;
   }
@@ -816,28 +799,8 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
-  // TODO(whscullin) - segments with only window functions are not runnable
-  canRun(): boolean {
-    const canRunPipeline = (stages: PipeSegment[]) => {
-      if (stages.length === 0) {
-        return false;
-      }
-      for (const stage of stages) {
-        const fields = getFields(stage);
-        if (fields.length === 0) {
-          return false;
-        }
-        for (const field of fields) {
-          if (field.type === 'turtle') {
-            if (!canRunPipeline(field.pipeline)) {
-              return false;
-            }
-          }
-        }
-      }
-      return true;
-    };
-    return canRunPipeline(this.query.pipeline);
+  canRun() {
+    return this.getWriter().canRun();
   }
 
   renameField(stagePath: StagePath, fieldIndex: number, as: string): void {
@@ -1346,6 +1309,30 @@ ${malloy}
     return items;
   }
 
+  // TODO(whscullin) - segments with only window functions are not runnable
+  canRun(): boolean {
+    const canRunPipeline = (stages: PipeSegment[]) => {
+      if (stages.length === 0) {
+        return false;
+      }
+      for (const stage of stages) {
+        const fields = getFields(stage);
+        if (fields.length === 0) {
+          return false;
+        }
+        for (const field of fields) {
+          if (field.type === 'turtle') {
+            if (!canRunPipeline(field.pipeline)) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    };
+    return canRunPipeline(this.query.pipeline);
+  }
+
   getQuerySummary(): QuerySummary {
     let stageSource = this.getSource();
     const stages = this.query.pipeline.map((stage, index) => {
@@ -1362,7 +1349,9 @@ ${malloy}
       }
       return summary;
     });
-    return {stages};
+    const isRunnable = this.canRun();
+    const name = this.query.as ?? this.query.name;
+    return {name, stages, isRunnable};
   }
 
   private nameOf(field: QueryFieldDef) {

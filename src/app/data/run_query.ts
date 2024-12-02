@@ -13,10 +13,10 @@ export async function runQuery(
   query: string,
   model: malloy.ModelDef,
   modelPath: string,
-  queryName: string
+  queryName?: string
 ): Promise<malloy.Result> {
   if (isDuckDBWASM()) {
-    const result = await duckDBWASM.runQuery(query, queryName, model);
+    const result = await duckDBWASM.runQuery(query, model);
     if (result instanceof Error) {
       throw result;
     }

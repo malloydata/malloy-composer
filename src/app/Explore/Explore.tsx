@@ -71,7 +71,7 @@ export const Explore: React.FC = () => {
   const sourceName = urlParams.get('source') || undefined;
   const model = urlParams.get('model');
   const name = urlParams.get('name');
-  const query = urlParams.get('query');
+  const urlQuery = urlParams.get('query');
   const source = urlParams.get('source');
   const page = urlParams.get('page');
   const run = urlParams.get('run');
@@ -122,8 +122,7 @@ export const Explore: React.FC = () => {
 
   const {
     error: builderError,
-    queryMalloy,
-    queryName,
+    queryWriter,
     queryModifiers,
     querySummary,
   } = useQueryBuilder(modelDef, sourceName, modelPath, updateQueryInURL);
@@ -186,7 +185,7 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     const loadDataset = async () => {
-      if (model && (query || source) && appInfo) {
+      if (model && (urlQuery || source) && appInfo) {
         const newModelInfo = appInfo.models.find(
           modelInfo => modelInfo.id === model
         );
@@ -195,15 +194,15 @@ export const Explore: React.FC = () => {
         }
         try {
           setLoading(loading => ++loading);
-          if (query) {
+          if (urlQuery) {
             if (page !== 'query') return;
             const compiledQuery = await compiler.compileQuery(
               newModelInfo.model,
-              query
+              urlQuery
             );
             queryModifiers.setQuery(compiledQuery, true);
             if (run === 'true' && page === 'query') {
-              runQuery(query, name || 'unnamed');
+              runQuery(urlQuery, name || 'unnamed');
             }
           } else {
             urlParams.delete('query');
@@ -231,7 +230,7 @@ export const Explore: React.FC = () => {
     setParams,
     runQuery,
     model,
-    query,
+    urlQuery,
     source,
     page,
     run,
@@ -307,7 +306,10 @@ export const Explore: React.FC = () => {
   };
 
   const runQueryAction = () => {
-    runQuery(queryMalloy.notebook, queryName);
+    const query = queryWriter.getQueryStringForNotebook();
+    if (query) {
+      runQuery(query, querySummary?.name);
+    }
   };
 
   const handlers = {
@@ -316,16 +318,6 @@ export const Explore: React.FC = () => {
   };
 
   const topValues = useTopValues(modelDef, modelPath, sourceDef);
-  if (loading || (appId && !appInfo)) {
-    section = 'loading';
-  }
-
-  // eslint-disable-next-line no-console
-  console.log({
-    model,
-    modelPath,
-    source,
-  });
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>
@@ -338,9 +330,10 @@ export const Explore: React.FC = () => {
               {sourceName && section === 'query' && (
                 <span>
                   {' ›'} {snakeToTitle(sourceName)}
-                  {(name || queryName) && section === 'query' && (
+                  {(name || querySummary?.name) && section === 'query' && (
                     <span>
-                      {' ›'} {name || snakeToTitle(queryName)}
+                      {' ›'}
+                      {name || snakeToTitle(querySummary?.name || 'untitled')}
                     </span>
                   )}
                 </span>
@@ -396,9 +389,8 @@ export const Explore: React.FC = () => {
                   source={sourceDef}
                   queryModifiers={queryModifiers}
                   topValues={topValues}
-                  queryName={queryName}
+                  queryWriter={queryWriter}
                   querySummary={querySummary}
-                  queryMalloy={queryMalloy}
                   result={result || error}
                   runQuery={runQueryAction}
                   refreshModel={refresh}
@@ -421,10 +413,10 @@ export const Explore: React.FC = () => {
                   <Apps />
                 </PageContent>
               )}
-              {section === 'loading' && (
-                <EmptyMessage>
+              {loading && (
+                <LoadingOverlay>
                   <LoadingSpinner text="Loading Data..." />
-                </EmptyMessage>
+                </LoadingOverlay>
               )}
             </PageContainer>
           </Page>
@@ -513,6 +505,7 @@ const HeaderLeft = styled.div`
 const Page = styled(Content)`
   margin-top: 10px;
   height: unset;
+  position: relative;
 `;
 
 const RightChannel = styled.div`
@@ -531,6 +524,17 @@ const BottomChannel = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${COLORS.mainBackground};
+`;
+
+const LoadingOverlay = styled(EmptyMessage)`
+  background-color: ${COLORS.mainBackground};
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  margin: 0;
 `;
 
 function generateReadme(appInfo: AppInfo) {

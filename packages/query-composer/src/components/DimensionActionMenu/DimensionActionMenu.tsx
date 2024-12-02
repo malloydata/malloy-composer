@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, StructDef, ModelDef} from '@malloydata/malloy';
+import {FieldDef, StructDef} from '@malloydata/malloy';
 import {OrderByField, StagePath, StageSummary} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
@@ -32,7 +32,6 @@ import {RenameField} from '../RenameField';
 import {QueryModifiers} from '../../hooks';
 
 interface DimensionActionMenuProps {
-  model: ModelDef;
   closeMenu: () => void;
   stagePath: StagePath;
   fieldIndex: number;
@@ -45,14 +44,11 @@ interface DimensionActionMenuProps {
   filterField?: FieldDef;
   filterFieldPath?: string;
   orderByField: OrderByField;
-  modelPath: string;
   queryModifiers: QueryModifiers;
 }
 
 export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
   source,
-  model,
-  modelPath,
   name,
   closeMenu,
   fieldIndex,
@@ -95,8 +91,6 @@ export const DimensionActionMenu: React.FC<DimensionActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) =>
             filterField && filterFieldPath ? (
               <AddFilter
-                model={model}
-                modelPath={modelPath}
                 onComplete={onComplete}
                 source={source}
                 field={filterField}

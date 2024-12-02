@@ -42,15 +42,17 @@ describe('useQueryBuilder', () => {
       }
     );
 
-    const {error, queryMalloy} = result.current;
+    const {error, querySummary, queryWriter} = result.current;
+    const queryMalloy = queryWriter.getQueryStringForNotebook();
 
     expect(error).toBe(undefined);
-    expect(queryMalloy).toEqual(
+    expect(querySummary).toEqual(
       expect.objectContaining({
+        name: 'new_query',
         isRunnable: false,
-        source: 'view: new_query is {\n}',
       })
     );
+    expect(queryMalloy).toEqual('run: names -> {\n}');
   });
 
   it('supports modification', () => {
@@ -72,19 +74,21 @@ describe('useQueryBuilder', () => {
 
     rerender({args: [model, 'names', 'names.malloy', undefined]});
 
-    const {error, queryMalloy} = result.current;
+    const {error, querySummary, queryWriter} = result.current;
+    const queryMalloy = queryWriter.getQueryStringForNotebook();
 
     expect(error).toBe(undefined);
-    expect(queryMalloy).toEqual(
+    expect(querySummary).toEqual(
       expect.objectContaining({
+        name: 'new_query',
         isRunnable: true,
-        source: `\
-view: new_query is {
-  group_by: abc is decade
-  limit: 10
-}`,
       })
     );
+    expect(queryMalloy).toEqual(`\
+run: names -> {
+  group_by: abc is decade
+  limit: 10
+}`);
   });
 
   describe('updating the model', () => {
@@ -108,19 +112,21 @@ view: new_query is {
       const newModel = structuredClone(model);
       rerender({args: [newModel, 'names', 'names.malloy', undefined]});
 
-      const {error, queryMalloy} = result.current;
+      const {error, querySummary, queryWriter} = result.current;
+      const queryMalloy = queryWriter.getQueryStringForNotebook();
 
       expect(error).toBe(undefined);
-      expect(queryMalloy).toEqual(
+      expect(querySummary).toEqual(
         expect.objectContaining({
+          name: 'new_query',
           isRunnable: true,
-          source: `\
-view: new_query is {
-  group_by: abc is decade
-  limit: 10
-}`,
         })
       );
+      expect(queryMalloy).toEqual(`\
+run: names -> {
+  group_by: abc is decade
+  limit: 10
+}`);
     });
 
     it('clears the query when a new source is incompatible', () => {
@@ -142,15 +148,17 @@ view: new_query is {
 
       rerender({args: [model, 'cohort', 'names.malloy', undefined]});
 
-      const {error, queryMalloy} = result.current;
+      const {error, querySummary, queryWriter} = result.current;
+      const queryMalloy = queryWriter.getQueryStringForNotebook();
 
       expect(error).toBe(undefined);
-      expect(queryMalloy).toEqual(
+      expect(querySummary).toEqual(
         expect.objectContaining({
-          isRunnable: false,
-          source: '',
+          name: 'new_query',
+          isRunnable: true,
         })
       );
+      expect(queryMalloy).toEqual('run: cohort -> {\n}');
     });
   });
 });

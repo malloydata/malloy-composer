@@ -21,12 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {
-  FieldDef,
-  FilterCondition,
-  ModelDef,
-  StructDef,
-} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
 import {Filter, StagePath} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
@@ -34,8 +29,6 @@ import {EditFilter} from '../EditFilter';
 import {QueryModifiers} from '../../hooks';
 
 interface FilterActionMenuProps {
-  model: ModelDef;
-  modelPath: string;
   stagePath: StagePath;
   source: StructDef;
   filterSource: string;
@@ -54,8 +47,6 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
   source,
   filterField,
   parsedFilter,
-  model,
-  modelPath,
   stagePath,
   fieldPath,
   fieldIndex,
@@ -78,14 +69,12 @@ export const FilterActionMenu: React.FC<FilterActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) =>
             filterField && parsedFilter ? (
               <AddFilter
-                model={model}
                 source={source}
                 field={filterField}
                 addFilter={editFilter}
                 fieldPath={fieldPath}
                 needsRename={false}
                 onComplete={onComplete}
-                modelPath={modelPath}
                 initial={parsedFilter}
               />
             ) : (

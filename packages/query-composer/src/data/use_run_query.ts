@@ -27,13 +27,13 @@ export type RunQuery = (
   query: string,
   model: malloy.ModelDef,
   modelPath: string,
-  queryName: string
+  queryName?: string
 ) => Promise<malloy.Result>;
 
 export interface UseRunQueryResult {
   result: malloy.Result | undefined;
   error: Error | undefined;
-  runQuery: (query: string, queryName: string) => void;
+  runQuery: (query: string, queryName?: string) => void;
   reset: () => void;
   isRunning: boolean;
 }
@@ -54,7 +54,7 @@ export function useRunQuery(
   }, []);
 
   const runQuery = useCallback(
-    (query: string, queryName: string) => {
+    (query: string, queryName?: string) => {
       reset();
       if (!model || !modelPath) {
         setError(new Error('No model'));

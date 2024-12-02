@@ -27,7 +27,7 @@ export const EmptyMessage = styled.div`
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   text-transform: none;
   font-size: 16px;
   font-weight: normal;

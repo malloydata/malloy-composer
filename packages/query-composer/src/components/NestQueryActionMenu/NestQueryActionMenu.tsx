@@ -29,7 +29,7 @@ import {FilterContextBar} from '../FilterContextBar';
 import {AddLimit} from '../AddLimit';
 import {OrderByContextBar} from '../OrderByContextBar';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
-import {SourceDef, ModelDef} from '@malloydata/malloy';
+import {SourceDef} from '@malloydata/malloy';
 import {DataStyleContextBar} from '../DataStyleContextBar';
 import {
   fieldToSummaryItem,
@@ -47,15 +47,11 @@ interface NestQueryActionMenuProps {
   orderByFields: OrderByField[];
   closeMenu: () => void;
   beginReorderingField: () => void;
-  model: ModelDef;
-  modelPath: string;
   isExpanded: boolean;
   queryModifiers: QueryModifiers;
 }
 
 export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
-  model,
-  modelPath,
   source,
   stagePath,
   fieldIndex,
@@ -67,8 +63,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
 }) => {
   return (
     <ActionMenu
-      model={model}
-      modelPath={modelPath}
       valueSearchSource={source}
       addFilter={filter => queryModifiers.addFilter(stagePath, filter)}
       closeMenu={closeMenu}
@@ -82,8 +76,6 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           closeOnComplete: true,
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <FilterContextBar
-              modelPath={modelPath}
-              model={model}
               source={source}
               addFilter={(filter, as) =>
                 queryModifiers.addFilter(stagePath, filter, as)

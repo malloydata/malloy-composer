@@ -29,23 +29,14 @@ import {
   TurtleDef,
 } from '@malloydata/malloy';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {QueryBuilder} from '../core/query';
+import {QueryBuilder, QueryWriter} from '../core/query';
 import {QuerySummary, RendererName, StagePath} from '../types';
 import {getSourceDef} from '../core/models';
 
 export interface UseQueryBuilderResult {
-  queryBuilder: QueryBuilder;
-  queryMalloy: {
-    model: string;
-    source: string;
-    markdown: string;
-    notebook: string;
-    isRunnable: boolean;
-  };
-  queryName: string;
+  queryWriter: QueryWriter;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
-  query: string;
   error: Error | undefined;
 }
 
@@ -122,14 +113,6 @@ export interface QueryModifiers {
   setQuery: (query: NamedQuery, noURLUpdate?: boolean) => void;
 }
 
-const nullQueryMalloy = {
-  isRunnable: false,
-  notebook: '',
-  markdown: '',
-  source: '',
-  model: '',
-};
-
 export function useQueryBuilder(
   modelDef?: ModelDef,
   sourceName?: string,
@@ -145,8 +128,10 @@ export function useQueryBuilder(
     if (query.current) {
       try {
         qb.setQuery(query.current);
+        qb.getQueryStringForNotebook();
       } catch (error) {
         console.warn('Discarding query', error);
+        qb.clearQuery();
       }
     }
     return qb;
@@ -163,8 +148,6 @@ export function useQueryBuilder(
   useEffect(() => {
     console.info('> sourceDef changed');
   }, [sourceDef]);
-
-  const queryName = queryBuilder.getQuery().name;
 
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
@@ -412,22 +395,12 @@ export function useQueryBuilder(
     console.info('> querySummary changed');
   }, [querySummary]);
 
-  const queryMalloy = (() => {
-    try {
-      return queryBuilder.getQueryStrings(modelPath);
-    } catch (error) {
-      if (!error) setError(error as Error);
-      return nullQueryMalloy;
-    }
-  })();
+  const queryWriter = queryBuilder.getWriter();
 
   return {
-    queryBuilder,
-    queryMalloy,
-    queryName,
-    querySummary,
     queryModifiers,
-    query: queryMalloy.notebook,
+    querySummary,
+    queryWriter,
     error,
   };
 }
