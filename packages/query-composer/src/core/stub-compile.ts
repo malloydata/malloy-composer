@@ -27,46 +27,46 @@ import {QuerySegment} from '@malloydata/malloy/dist/model';
 
 const DEFAULT_NAME = 'new_query';
 
-export class DummyReader implements URLReader {
+export class StubReader implements URLReader {
   async readURL(_url: URL): Promise<string> {
-    throw new Error('Dummy reader cannot read files');
+    throw new Error('Stub reader cannot read files');
   }
 }
 
-export class DummyConnection extends BaseConnection {
-  name = 'dummy';
+export class StubConnection extends BaseConnection {
+  name = 'stub';
 
   dialectName = 'duckdb';
 
   runSQL(): Promise<MalloyQueryData> {
-    throw new Error('Dummy connection cannot run SQL.');
+    throw new Error('Stub connection cannot run SQL.');
   }
 
   fetchSelectSchema(_sqlSource: SQLSourceDef): Promise<SQLSourceDef | string> {
-    throw new Error('Dummy connection cannot fetch schemas.');
+    throw new Error('Stub connection cannot fetch schemas.');
   }
 
   fetchTableSchema(
     _tableName: string,
     _tablePath: string
   ): Promise<TableSourceDef | string> {
-    throw new Error('Dummy connection cannot fetch schemas.');
+    throw new Error('Stub connection cannot fetch schemas.');
   }
 }
 
-export class DummyCompile {
+export class StubCompile {
   private async _compileModel(
     modelDef: ModelDef,
     malloy: string
   ): Promise<Model> {
-    const runtime = new Runtime(new DummyReader(), new DummyConnection());
+    const runtime = new Runtime(new StubReader(), new StubConnection());
     const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
     const model = await Malloy.compile({
-      urlReader: new DummyReader(),
+      urlReader: new StubReader(),
       connections: new FixedConnectionMap(
-        new Map([['dummy', new DummyConnection()]]),
-        'dummy'
+        new Map([['stub', new StubConnection()]]),
+        'stub'
       ),
       model: baseModel,
       parse: Malloy.parse({source: malloy}),

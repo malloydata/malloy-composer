@@ -11,10 +11,10 @@ import {renderHook, act} from '@testing-library/react';
 import {ModelDef, QueryFieldDef, SourceDef} from '@malloydata/malloy';
 import {model} from '../../example/example_model';
 import {useQueryBuilder} from '../../src/hooks';
-import {DummyCompile} from '../../src/core/dummy-compile';
+import {StubCompile} from '../../src/core/stub-compile';
 import {getSourceDef} from '../../src/core/models';
 
-const dummy = new DummyCompile();
+const stub = new StubCompile();
 
 interface RenderProps {
   args: [ModelDef, string, string, undefined];
@@ -29,7 +29,7 @@ describe('useQueryBuilder', () => {
     jest.spyOn(console, 'info').mockImplementation(() => {});
 
     testSource = getSourceDef(model, 'names');
-    testDimension = await dummy.compileDimension(testSource, 'abc', 'decade');
+    testDimension = await stub.compileDimension(testSource, 'abc', 'decade');
   });
 
   it('Starts with an empty query', () => {

@@ -67,7 +67,7 @@ export const Result: React.FC<ResultProps> = ({
   onDrill,
   isRunning,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [html, setHTML] = useState<HTMLElement>();
   const [highlightedSource, setHighlightedSource] = useState<HTMLElement>();
   const [sql, setSQL] = useState<HTMLElement>();
@@ -130,7 +130,7 @@ export const Result: React.FC<ResultProps> = ({
           if (result?.sql) {
             return result?.sql;
           } else if (model && malloy && isRunnable) {
-            return dummyCompiler.compileQueryToSQL(model, malloy);
+            return compiler.compileQueryToSQL(model, malloy);
           } else {
             return undefined;
           }
@@ -159,13 +159,13 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [result, malloy, model, dummyCompiler, isRunnable]);
+  }, [result, malloy, model, compiler, isRunnable]);
 
   const drillCallback = useCallback(
     (_drillQuery: string, _target: HTMLElement, drillFilters: string[]) => {
       Promise.all(
         drillFilters.map(filter =>
-          dummyCompiler.compileFilter(source, filter).catch(error => {
+          compiler.compileFilter(source, filter).catch(error => {
             console.error(error);
             return undefined;
           })
@@ -177,7 +177,7 @@ export const Result: React.FC<ResultProps> = ({
         }
       });
     },
-    [dummyCompiler, onDrill, source]
+    [compiler, onDrill, source]
   );
 
   useEffect(() => {

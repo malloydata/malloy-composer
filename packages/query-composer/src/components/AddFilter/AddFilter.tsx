@@ -74,7 +74,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
   fieldPath,
   initial,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const type = typeOfField(field);
   const kind = kindOfField(field);
   const [stringFilter, setStringFilter] = useState<StringFilter | undefined>(
@@ -200,7 +200,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
           </Button>
           <Button
             onClick={event => {
-              dummyCompiler
+              compiler
                 .compileFilter(source, filter)
                 .then(filterExpression => {
                   addFilter(filterExpression, newName || undefined);

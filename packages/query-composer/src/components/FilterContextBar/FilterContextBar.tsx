@@ -58,7 +58,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
   onComplete,
   needsRename,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [field, setField] = useState<{path: string; def: FieldDef}>();
   const {searchResults, isLoading} = useSearch(searchTerm);
@@ -153,7 +153,7 @@ export const FilterContextBar: React.FC<FilterContextBarProps> = ({
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
-                                dummyCompiler
+                                compiler
                                   .compileFilter(
                                     source,
                                     stringFilterToString(

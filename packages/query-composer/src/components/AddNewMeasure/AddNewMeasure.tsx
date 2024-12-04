@@ -211,7 +211,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   initialName,
   initialProperty,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   let initialMode = Mode.FIELD;
   let initialField: FlatField | undefined;
   let initialType: AggregateType | CalculateType | undefined;
@@ -392,7 +392,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
                   return setError(new Error('Select a field'));
                 }
               }
-              dummyCompiler
+              compiler
                 .compileMeasure(source, maybeQuoteIdentifier(newName), measure)
                 .then(measure => {
                   if (isLeafAtomic(measure)) {

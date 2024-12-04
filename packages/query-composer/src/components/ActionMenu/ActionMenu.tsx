@@ -92,7 +92,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
     searchResults &&
     searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
   const isSearchEnabled = searchItems !== undefined;
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
 
   const {searchList, count: resultCount} = useSearchList({
     searchTerm,
@@ -186,7 +186,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
-                                dummyCompiler
+                                compiler
                                   .compileFilter(
                                     valueSearchSource,
                                     stringFilterToString(

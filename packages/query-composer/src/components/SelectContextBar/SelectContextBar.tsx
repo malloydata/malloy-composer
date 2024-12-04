@@ -63,7 +63,7 @@ export const SelectContextBar: React.FC<SelectContextBarProps> = ({
   addNewDimension,
   onComplete,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [isAddingNewField, setIsAddingNewField] = useState(false);
   const [isSelectingGranularity, setSelectingGranularity] = useState<{
     field: FieldDef;
@@ -150,7 +150,7 @@ export const SelectContextBar: React.FC<SelectContextBarProps> = ({
           path={isSelectingGranularity.path}
           source={source}
           addGroupBy={async (name, expression) => {
-            const field = await dummyCompiler.compileSelect(
+            const field = await compiler.compileSelect(
               source,
               name,
               expression

@@ -50,7 +50,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
   initialCode,
   initialName,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [dimension, setDimension] = useState(initialCode || '');
   const [newName, setNewName] = useState(initialName || '');
   const [error, setError] = useState<Error>();
@@ -87,7 +87,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
             onClick={event => {
               event.stopPropagation();
               event.preventDefault();
-              dummyCompiler
+              compiler
                 .compileDimension(
                   source,
                   maybeQuoteIdentifier(newName),

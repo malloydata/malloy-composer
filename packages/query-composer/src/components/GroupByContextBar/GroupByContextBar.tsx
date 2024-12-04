@@ -63,7 +63,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
   addNewDimension,
   onComplete,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [isAddingNewField, setIsAddingNewField] = useState(false);
   const [isSelectingGranularity, setSelectingGranularity] = useState<{
     field: FieldDef;
@@ -150,7 +150,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
           path={isSelectingGranularity.path}
           source={source}
           addGroupBy={async (name, expression) => {
-            const field = await dummyCompiler.compileGroupBy(
+            const field = await compiler.compileGroupBy(
               source,
               name,
               expression
