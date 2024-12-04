@@ -44,8 +44,7 @@ import {
 import {FieldButton} from '../FieldButton';
 import {ActionIcon} from '../ActionIcon';
 import {stringFilterToString} from '../../core/filters';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
-
+import {ComposerOptionsContext} from '../../contexts';
 interface FilterContextBarProps {
   source: StructDef;
   addFilter: (filter: FilterCondition, as?: string) => void;

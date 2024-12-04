@@ -58,7 +58,7 @@ import {
   pathParent,
   typeOfField,
 } from '../../utils';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {ComposerOptionsContext} from '../../contexts';
 import {maybeQuoteIdentifier} from '../../core/utils';
 import {PropertyType} from '../../types';
 

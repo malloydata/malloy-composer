@@ -32,7 +32,7 @@ import {
   FormFieldList,
 } from '../CommonElements';
 import {isLeafAtomic, QueryFieldDef, StructDef} from '@malloydata/malloy';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {ComposerOptionsContext} from '../../contexts';
 import {maybeQuoteIdentifier} from '../../core/utils';
 
 interface AddFilterProps {

@@ -39,7 +39,7 @@ import {DOMElement} from '../DOMElement';
 import {PageContent, PageHeader} from '../CommonElements';
 import {SelectDropdown} from '../SelectDropdown';
 import {ActionIcon} from '../ActionIcon';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {ComposerOptionsContext} from '../../contexts';
 import {highlightPre} from '../../highlight';
 import {QuerySummary} from '../../types';
 import {QueryWriter} from '../../core/query';

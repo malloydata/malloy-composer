@@ -54,8 +54,7 @@ import {NumberFilterBuilder} from './NumberFilterBuilder';
 import {TimeFilterBuilder} from './TimeFilterBuilder';
 import {BooleanFilterBuilder} from './BooleanFilterBuilder';
 import {kindOfField, typeOfField} from '../../utils';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
-
+import {ComposerOptionsContext} from '../../contexts';
 interface AddFilterProps {
   source: StructDef;
   field: FieldDef;
