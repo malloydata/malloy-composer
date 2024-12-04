@@ -44,7 +44,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
   source,
   onComplete,
 }) => {
-  const {dummyCompiler} = useContext(ComposerOptionsContext);
+  const {compiler} = useContext(ComposerOptionsContext);
   const [filter, setFilter] = useState(existing);
   return (
     <ContextMenuMain>
@@ -63,7 +63,7 @@ export const EditFilter: React.FC<EditFilterProps> = ({
           </Button>
           <Button
             onClick={() => {
-              dummyCompiler
+              compiler
                 .compileFilter(source, filter)
                 .then(filterExpression => {
                   editFilter(filterExpression);

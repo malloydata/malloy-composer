@@ -29,7 +29,7 @@ import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {HotKeys} from 'react-hotkeys';
 import {
-  DummyCompile,
+  StubCompile,
   ExploreQueryEditor,
   useQueryBuilder,
   useRunQuery,
@@ -53,7 +53,7 @@ const KEY_MAP = {
   RUN_QUERY: 'command+enter',
 };
 
-const compiler = new DummyCompile();
+const compiler = new StubCompile();
 
 export const Explore: React.FC = () => {
   const [error, setError] = useState<Error>();

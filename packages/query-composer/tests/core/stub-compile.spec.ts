@@ -6,60 +6,60 @@
  */
 
 import {
-  DummyCompile,
-  DummyConnection,
-  DummyReader,
-} from '../../src/core/dummy-compile';
+  StubCompile,
+  StubConnection,
+  StubReader,
+} from '../../src/core/stub-compile';
 
 import {model, source} from '../../example/example_model';
 import {SQLSourceDef} from '@malloydata/malloy';
 
-describe('DummyReader', () => {
-  let dummyReader: DummyReader;
+describe('StubReader', () => {
+  let stubReader: StubReader;
 
   beforeEach(() => {
-    dummyReader = new DummyReader();
+    stubReader = new StubReader();
   });
 
   it('throws when asked to read a URL', async () => {
     await expect(() =>
-      dummyReader.readURL(new URL('file:///foo/bar'))
+      stubReader.readURL(new URL('file:///foo/bar'))
     ).rejects.toThrow();
   });
 });
 
-describe('DummyConnection', () => {
-  let dummyConnection: DummyConnection;
+describe('StubConnection', () => {
+  let stubConnection: StubConnection;
 
   beforeEach(() => {
-    dummyConnection = new DummyConnection();
+    stubConnection = new StubConnection();
   });
 
   it('throws when asked to run sql', () => {
-    expect(() => dummyConnection.runSQL()).toThrow();
+    expect(() => stubConnection.runSQL()).toThrow();
   });
 
   it('throws when asked to fetch sql schema', () => {
     expect(() =>
-      dummyConnection.fetchSelectSchema({} as SQLSourceDef)
+      stubConnection.fetchSelectSchema({} as SQLSourceDef)
     ).toThrow();
   });
 
   it('throws when asked to fetch stable schema', () => {
-    expect(() => dummyConnection.fetchTableSchema('foo', 'bar')).toThrow();
+    expect(() => stubConnection.fetchTableSchema('foo', 'bar')).toThrow();
   });
 });
 
-describe('DummyCompile', () => {
-  let dummyCompile: DummyCompile;
+describe('StubCompile', () => {
+  let stubCompile: StubCompile;
 
   beforeEach(() => {
-    dummyCompile = new DummyCompile();
+    stubCompile = new StubCompile();
   });
 
   describe('compileQuery', () => {
     it('compiles a query', async () => {
-      expect(await dummyCompile.compileQuery(model, QUERY)).toEqual(
+      expect(await stubCompile.compileQuery(model, QUERY)).toEqual(
         expect.objectContaining(QUERY_FRAGMENT)
       );
     });
@@ -67,7 +67,7 @@ describe('DummyCompile', () => {
 
   describe('compileQueryToSQL', () => {
     it('compiles a query to SQL', async () => {
-      expect(await dummyCompile.compileQueryToSQL(model, QUERY)).toEqual(
+      expect(await stubCompile.compileQueryToSQL(model, QUERY)).toEqual(
         QUERY_SQL
       );
     });
@@ -75,22 +75,22 @@ describe('DummyCompile', () => {
 
   describe('compileFilter', () => {
     it('compiles a scalar filter', async () => {
-      expect(await dummyCompile.compileFilter(source, SCALAR_FILTER)).toEqual(
+      expect(await stubCompile.compileFilter(source, SCALAR_FILTER)).toEqual(
         expect.objectContaining(SCALAR_FILTER_FRAGMENT)
       );
     });
 
     it('compiles a aggregate filter', async () => {
-      expect(
-        await dummyCompile.compileFilter(source, AGGREGATE_FILTER)
-      ).toEqual(expect.objectContaining(AGGREGATE_FILTER_FRAGMENT));
+      expect(await stubCompile.compileFilter(source, AGGREGATE_FILTER)).toEqual(
+        expect.objectContaining(AGGREGATE_FILTER_FRAGMENT)
+      );
     });
   });
 
   describe('compileDimension', () => {
     it('compiles a dimension', async () => {
       expect(
-        await dummyCompile.compileDimension(source, 'first_name', 'name')
+        await stubCompile.compileDimension(source, 'first_name', 'name')
       ).toEqual(expect.objectContaining(DIMENSION_FRAGMENT));
     });
   });
@@ -98,7 +98,7 @@ describe('DummyCompile', () => {
   describe('compileMeasure', () => {
     it('compiles a measure', async () => {
       expect(
-        await dummyCompile.compileMeasure(source, 'name_count', 'count()')
+        await stubCompile.compileMeasure(source, 'name_count', 'count()')
       ).toEqual(expect.objectContaining(MEASURE_FRAGMENT));
     });
   });
@@ -106,14 +106,14 @@ describe('DummyCompile', () => {
   describe('compileGroupBy', () => {
     it('compiles a measure', async () => {
       expect(
-        await dummyCompile.compileGroupBy(source, 'first_name', 'name')
+        await stubCompile.compileGroupBy(source, 'first_name', 'name')
       ).toEqual(expect.objectContaining(GROUP_BY_FRAGMENT));
     });
   });
 
   describe('getSourceNameForQuery', () => {
     it('gets the source name for a query', async () => {
-      expect(await dummyCompile.getSourceNameForQuery(model, QUERY)).toEqual(
+      expect(await stubCompile.getSourceNameForQuery(model, QUERY)).toEqual(
         'names'
       );
     });

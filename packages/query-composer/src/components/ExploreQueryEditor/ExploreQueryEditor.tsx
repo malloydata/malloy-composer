@@ -21,7 +21,7 @@ import {ErrorMessage} from '../ErrorMessage';
 import {QueryEditor} from '../QueryEditor';
 import {QueryWriter} from '../../core/query';
 import {ComposerOptionsContext} from '../../contexts';
-import {DummyCompile} from '../../core/dummy-compile';
+import {StubCompile} from '../../core/stub-compile';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
@@ -38,7 +38,7 @@ interface ExploreQueryEditorProps {
 }
 
 const composerOptions = {
-  dummyCompiler: new DummyCompile(),
+  compiler: new StubCompile(),
 };
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({

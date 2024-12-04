@@ -6,14 +6,14 @@
  */
 
 import {createContext} from 'react';
-import {DummyCompile} from '../core/dummy-compile';
+import {StubCompile} from '../core/stub-compile';
 
 const composerOptions = {
-  dummyCompiler: new DummyCompile(),
+  compiler: new StubCompile(),
 };
 
 export interface ComposerOptionsProps {
-  dummyCompiler: DummyCompile;
+  compiler: StubCompile;
 }
 
 export const ComposerOptionsContext =
