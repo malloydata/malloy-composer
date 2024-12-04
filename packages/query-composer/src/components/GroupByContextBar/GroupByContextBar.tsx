@@ -49,8 +49,7 @@ import {
   pathParent,
   termsForField,
 } from '../../utils';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
-
+import {ComposerOptionsContext} from '../../contexts';
 interface GroupByContextBarProps {
   source: SourceDef;
   toggleField: (fieldPath: string) => void;

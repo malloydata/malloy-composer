@@ -30,8 +30,7 @@ import {
   ContextMenuMain,
   ContextMenuTitle,
 } from '../CommonElements';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
-
+import {ComposerOptionsContext} from '../../contexts';
 interface EditFilterProps {
   source: StructDef;
   existing: string;

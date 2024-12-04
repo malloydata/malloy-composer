@@ -14,6 +14,9 @@ export {DummyCompile} from './core/dummy-compile';
 export {useRunQuery} from './data/use_run_query';
 export type {RunQuery} from './data/use_run_query';
 
+export {ComposerOptionsContext} from './contexts';
+export type {ComposerOptionsProps} from './contexts';
+
 export {useQueryBuilder} from './hooks';
 
 export * from './types';

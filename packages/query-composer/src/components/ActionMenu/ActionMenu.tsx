@@ -38,7 +38,7 @@ import {FieldButton} from '../FieldButton';
 import {SearchInput} from '../SearchInput';
 import {SearchItem, useSearchList} from '../SearchList';
 import {LoadingSpinner} from '../Spinner';
-import {ComposerOptionsContext} from '../ExploreQueryEditor/ExploreQueryEditor';
+import {ComposerOptionsContext} from '../../contexts';
 
 interface ActionBase {
   id: string;

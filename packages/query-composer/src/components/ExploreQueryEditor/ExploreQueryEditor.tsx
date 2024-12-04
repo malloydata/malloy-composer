@@ -12,15 +12,16 @@ import {
   Result as MalloyResult,
   ModelDef,
 } from '@malloydata/malloy';
-import {createContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {QuerySummary} from '../../types';
 import {QueryModifiers} from '../../hooks';
 import {Result} from '../Result';
-import {DummyCompile} from '../../core/dummy-compile';
 import {ErrorMessage} from '../ErrorMessage';
 import {QueryEditor} from '../QueryEditor';
 import {QueryWriter} from '../../core/query';
+import {ComposerOptionsContext} from '../../contexts';
+import {DummyCompile} from '../../core/dummy-compile';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
@@ -39,10 +40,6 @@ interface ExploreQueryEditorProps {
 const composerOptions = {
   dummyCompiler: new DummyCompile(),
 };
-
-export const ComposerOptionsContext = createContext<{
-  dummyCompiler: DummyCompile;
-}>(composerOptions);
 
 export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
   model,
