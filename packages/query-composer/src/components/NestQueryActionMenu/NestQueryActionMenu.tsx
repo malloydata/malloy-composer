@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {OrderByField, StagePath} from '../../types';
+import {OrderByField, StagePath, stagePathParent} from '../../types';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -229,7 +229,8 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           label: 'Add stage',
           iconName: 'stage',
           iconColor: 'other',
-          onClick: () => queryModifiers.addStage(stagePath, fieldIndex),
+          onClick: () =>
+            queryModifiers.addStage(stagePathParent(stagePath), fieldIndex),
         },
         {
           kind: 'one_click',
