@@ -47,11 +47,12 @@ import {
   pathParent,
   termsForField,
 } from '../../utils';
+import {EventModifiers} from '../component_types';
 
 interface LoadTopQueryContextBarProps {
   model: ModelDef | undefined;
   source: StructDef;
-  selectField: (field: FieldDef) => void;
+  selectField: (field: FieldDef, modifiers: EventModifiers) => void;
   onComplete: () => void;
 }
 
@@ -85,8 +86,8 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
               fields={fields}
               filter={field => field.type === 'turtle'}
               showNested={true}
-              selectField={(_, fieldDef) => {
-                selectField(fieldDef);
+              selectField={(_, fieldDef, modifiers) => {
+                selectField(fieldDef, modifiers);
                 onComplete();
               }}
             />
@@ -102,8 +103,8 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
                     terms: [...termsForField(field, path), 'query'],
                     detail: pathParent(path),
                     key: keyFor(path),
-                    select: () => {
-                      selectField(field);
+                    select: (field, modifiers: EventModifiers) => {
+                      selectField(field, modifiers);
                       onComplete();
                     },
                   }))}

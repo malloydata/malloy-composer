@@ -51,7 +51,7 @@ interface ActionBase {
 
 interface OneClickAction extends ActionBase {
   kind: 'one_click';
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
 }
 
 export interface ActionSubmenuComponentProps {
@@ -129,9 +129,9 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                         <ActionButton
                           key={action.id}
                           color={action.iconColor}
-                          onClick={() => {
+                          onClick={event => {
                             if (action.kind === 'one_click') {
-                              action.onClick();
+                              action.onClick(event);
                               closeMenu();
                             } else {
                               setActiveAction(action);

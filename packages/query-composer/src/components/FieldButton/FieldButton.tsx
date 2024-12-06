@@ -29,7 +29,7 @@ import {FieldName, FieldIcon} from '../CommonElements';
 
 interface FieldButtonProps {
   icon: ReactElement;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   canRemove?: boolean;
   onRemove?: () => void;
   name: string;

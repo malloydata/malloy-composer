@@ -129,7 +129,7 @@ export const ButtonAndInputRow = styled.form`
 `;
 
 interface ChevronButtonProps {
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
 }
 
 export const ChevronLeftButton: React.FC<ChevronButtonProps> = ({onClick}) => {

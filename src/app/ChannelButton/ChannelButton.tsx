@@ -28,7 +28,7 @@ import {ChannelIcon, ChannelIconName} from '../ChannelIcon';
 export const ChannelButton: React.FC<{
   icon: ChannelIconName;
   text: string;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
   selected: boolean;
   disabled?: boolean;
 }> = ({icon, text, onClick, selected, disabled = false}) => {
