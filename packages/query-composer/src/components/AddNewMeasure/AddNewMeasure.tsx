@@ -85,7 +85,8 @@ type FieldTypes =
   | 'sql_select'
   | 'error'
   | 'query_source'
-  | 'turtle';
+  | 'turtle'
+  | 'composite';
 
 const VALID_MEASURES: Record<
   FieldTypes,
@@ -122,6 +123,7 @@ const VALID_MEASURES: Record<
   sql_select: [],
   query_source: [],
   turtle: [],
+  composite: [],
 };
 
 const MEASURE_OPTIONS: {
