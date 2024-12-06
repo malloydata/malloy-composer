@@ -49,8 +49,8 @@
     "vite-plugin-svgr": "^4.2.0"
   },
   "peerDependencies": {
-    "@malloydata/malloy": ">=0.0.217",
-    "@malloydata/render": ">=0.0.217",
+    "@malloydata/malloy": ">=0.0.220-dev241205235613",
+    "@malloydata/render": ">=0.0.220-dev241205235613",
     "react": ">=18",
     "react-dom": ">=18",
     "styled-components": "^5.3.3"

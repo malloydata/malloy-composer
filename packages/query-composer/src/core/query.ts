@@ -405,10 +405,6 @@ export class QueryBuilder extends SourceUtils {
           throw new Error('Cannot load query with non-reduce stages');
         }
         existingStage.type = stage.type;
-        if (stage.by) {
-          existingStage.by = {...stage.by};
-          existingStage.orderBy = undefined;
-        }
         if (stage.filterList) {
           existingStage.filterList = (existingStage.filterList || []).concat(
             ...stage.filterList.filter(filter => {
@@ -423,7 +419,6 @@ export class QueryBuilder extends SourceUtils {
         }
         if (stage.orderBy) {
           existingStage.orderBy = stage.orderBy;
-          existingStage.by = undefined;
         }
         existingStage.queryFields = stage.queryFields
           .map(field => structuredClone(field))
@@ -963,7 +958,8 @@ export class QueryBuilder extends SourceUtils {
     if (
       definition.type === 'table' ||
       definition.type === 'sql_select' ||
-      definition.type === 'query_source'
+      definition.type === 'query_source' ||
+      definition.type === 'composite'
     ) {
       throw new Error(`Unhandled definition type: ${definition.type}`);
     }
