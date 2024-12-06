@@ -305,12 +305,14 @@ export const Explore: React.FC = () => {
     }
   };
 
-  const runQueryAction = () => {
+  const queryName = querySummary?.name ?? 'new_query';
+
+  const runQueryAction = useCallback(() => {
     const query = queryWriter.getQueryStringForNotebook();
     if (query) {
-      runQuery(query, querySummary?.name);
+      runQuery(query, queryName);
     }
-  };
+  }, [queryName, queryWriter, runQuery]);
 
   const handlers = {
     REMOVE_FIELDS: () => queryModifiers.clearQuery(),
