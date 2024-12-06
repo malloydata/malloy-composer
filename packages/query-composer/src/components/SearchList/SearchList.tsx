@@ -22,16 +22,18 @@
  */
 import * as React from 'react';
 import styled from 'styled-components';
-import {QuerySummaryItem, QuerySummaryItemField} from '../../types';
+import {FieldDef} from '@malloydata/malloy';
+import {QuerySummaryItem} from '../../types';
 import {EmptyMessage} from '../CommonElements';
 import {FieldButton} from '../FieldButton';
 import {FieldDetailPanel} from '../FieldDetailPanel';
 import {HoverToPopover} from '../HoverToPopover';
 import {TypeIcon} from '../TypeIcon';
 import {typeOfField} from '../../utils';
+import {EventModifiers} from '../component_types';
 
 export interface SearchItem {
-  select: () => void;
+  select: (field: FieldDef, modifiers: EventModifiers) => void;
   item: QuerySummaryItem;
   detail?: string;
   terms: string[];
@@ -63,7 +65,7 @@ export const useSearchList = ({
     <ListDiv>
       {rankedItems.map(({item}) => {
         if (item.item.type === 'field') {
-          const field = item.item as QuerySummaryItemField;
+          const field = item.item;
           const type = typeOfField(item.item.field);
           return (
             <HoverToPopover
@@ -72,7 +74,15 @@ export const useSearchList = ({
               content={() => (
                 <FieldButton
                   icon={<TypeIcon type={type} kind={field.kind} />}
-                  onClick={item.select}
+                  onClick={event => {
+                    const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                    item.select(field.field, {
+                      altKey,
+                      ctrlKey,
+                      metaKey,
+                      shiftKey,
+                    });
+                  }}
                   name={field.name}
                   color={field.kind}
                   detail={item.detail}

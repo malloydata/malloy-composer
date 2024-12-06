@@ -31,13 +31,18 @@ import {HoverToPopover} from '../HoverToPopover';
 import {ListNest} from '../ListNest';
 import {TypeIcon} from '../TypeIcon';
 import {kindOfField, typeOfField} from '../../utils';
+import {EventModifiers} from '../component_types';
 
-interface FieldListProps {
+export interface FieldListProps {
   path?: string[];
   fields: FieldDef[];
   filter: (field: FieldDef) => boolean;
   showNested: boolean;
-  selectField: (fieldPath: string, field: FieldDef) => void;
+  selectField: (
+    fieldPath: string,
+    field: FieldDef,
+    modifiers: EventModifiers
+  ) => void;
 }
 
 export const FieldList: React.FC<FieldListProps> = ({
@@ -63,7 +68,15 @@ export const FieldList: React.FC<FieldListProps> = ({
                 content={() => (
                   <FieldButton
                     icon={<TypeIcon type={type} kind={kind} />}
-                    onClick={() => selectField(fieldPath, field)}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      selectField(fieldPath, field, {
+                        altKey,
+                        ctrlKey,
+                        metaKey,
+                        shiftKey,
+                      });
+                    }}
                     name={field.as || field.name}
                     color={kind}
                   />
@@ -111,7 +124,11 @@ interface CollapsibleSourceProps {
   path: string[];
   source: StructDef;
   filter: (field: FieldDef) => boolean;
-  selectField: (fieldPath: string, field: FieldDef) => void;
+  selectField: (
+    fieldPath: string,
+    field: FieldDef,
+    modifiers: EventModifiers
+  ) => void;
 }
 
 const CollapsibleSource: React.FC<CollapsibleSourceProps> = ({

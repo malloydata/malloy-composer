@@ -19,8 +19,6 @@ import styled from 'styled-components';
 import {SearchContext} from '../../contexts/search_context';
 import {QueryWriter} from '../../core/query';
 
-const useLoad = true;
-
 export interface QueryEditorProps {
   isRunning: boolean;
   model: ModelDef;
@@ -115,8 +113,8 @@ export const QueryEditor = ({
                   <LoadTopQueryContextBar
                     model={model}
                     source={source}
-                    selectField={field =>
-                      useLoad
+                    selectField={(field, {shiftKey}) =>
+                      shiftKey
                         ? loadQuery(field.as || field.name)
                         : replaceQuery(field as TurtleDef)
                     }
