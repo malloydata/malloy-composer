@@ -341,6 +341,7 @@ export function useQueryBuilder(
 
     const onDrill = (filters: FilterCondition[]) => {
       modifyQuery(qb => {
+        qb.clearQuery();
         for (const filter of filters) {
           qb.addFilter({stageIndex: 0}, filter);
         }

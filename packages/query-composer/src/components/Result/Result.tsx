@@ -43,8 +43,23 @@ import {ComposerOptionsContext} from '../../contexts';
 import {highlightPre} from '../../highlight';
 import {QuerySummary} from '../../types';
 import {QueryWriter} from '../../core/query';
+import {maybeQuoteIdentifier} from '../../core/utils';
 
 type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
+
+// TODO: import from Malloy
+type DimensionContextEntry = {
+  fieldDef: string;
+  value: string | number | boolean | Date;
+};
+
+// TODO: import from Malloy
+type DrillData = {
+  dimensionFilters: DimensionContextEntry[];
+  copyQueryToClipboard: () => Promise<void>;
+  query: string;
+  whereClause: string;
+};
 
 interface ResultProps {
   model: malloy.ModelDef;
@@ -161,7 +176,7 @@ export const Result: React.FC<ResultProps> = ({
     };
   }, [result, malloy, model, compiler, isRunnable]);
 
-  const drillCallback = useCallback(
+  const legacyDrillCallback = useCallback(
     (_drillQuery: string, _target: HTMLElement, drillFilters: string[]) => {
       Promise.all(
         drillFilters.map(filter =>
@@ -170,6 +185,29 @@ export const Result: React.FC<ResultProps> = ({
             return undefined;
           })
         )
+      ).then(filters => {
+        const validFilters = filters.filter(notUndefined);
+        if (validFilters.length > 0) {
+          onDrill(validFilters);
+        }
+      });
+    },
+    [compiler, onDrill, source]
+  );
+
+  const drillCallback = useCallback(
+    (drillData: DrillData) => {
+      Promise.all(
+        drillData.dimensionFilters.map(dimensionFilter => {
+          const fieldName = maybeQuoteIdentifier(dimensionFilter.fieldDef);
+          const value = dimensionFilter.value;
+          return compiler
+            .compileFilter(source, `${fieldName} = ${JSON.stringify(value)}`)
+            .catch(error => {
+              console.error(error);
+              return undefined;
+            });
+        })
       ).then(filters => {
         const validFilters = filters.filter(notUndefined);
         if (validFilters.length > 0) {
@@ -194,10 +232,17 @@ export const Result: React.FC<ResultProps> = ({
     const updateResults = async () => {
       try {
         const renderer = new render.HTMLView(document);
+        const nextRendererOptions: render.MalloyRenderProps = {
+          onDrill: drillCallback,
+          tableConfig: {
+            enableDrill: true,
+          },
+        };
         const html = await renderer.render(result, {
           dataStyles: {},
           isDrillingEnabled: true,
-          onDrill: drillCallback,
+          onDrill: legacyDrillCallback,
+          nextRendererOptions,
         });
         if (canceled) {
           return;
@@ -215,7 +260,7 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [result, drillCallback]);
+  }, [result, drillCallback, legacyDrillCallback]);
 
   return (
     <OuterDiv>
