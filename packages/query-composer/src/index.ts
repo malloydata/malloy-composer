@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+export type {EventModifiers} from './components/component_types';
 export {ExploreQueryEditor} from './components/ExploreQueryEditor';
 export {QueryEditor} from './components/QueryEditor';
 export {QuerySummaryPanel} from './components/QuerySummaryPanel';

@@ -84,7 +84,7 @@ export type ActionIconName =
 
 interface ActionIconProps {
   action: ActionIconName;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   color?: ColorKey;
   title?: string;
 }

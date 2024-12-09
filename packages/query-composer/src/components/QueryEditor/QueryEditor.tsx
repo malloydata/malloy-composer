@@ -8,6 +8,7 @@ import {
   TurtleDef,
 } from '@malloydata/malloy';
 import {ActionIcon} from '../ActionIcon';
+import {EventModifiers} from '../component_types';
 import {PageContent, PageHeader} from '../CommonElements';
 import {LoadTopQueryContextBar} from '../LoadTopQueryContextBar';
 import {Popover} from '../Popover';
@@ -22,7 +23,7 @@ import {QueryWriter} from '../../core/query';
 export interface QueryEditorProps {
   isRunning: boolean;
   model: ModelDef;
-  refreshModel?: () => void;
+  refreshModel?: (modifiers: EventModifiers) => void;
   queryModifiers: QueryModifiers;
   querySummary: QuerySummary | undefined;
   queryWriter: QueryWriter;
@@ -80,7 +81,10 @@ export const QueryEditor = ({
                 {refreshModel && (
                   <ActionIcon
                     action="refresh"
-                    onClick={() => refreshModel()}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      refreshModel({altKey, ctrlKey, metaKey, shiftKey});
+                    }}
                     color="dimension"
                   />
                 )}

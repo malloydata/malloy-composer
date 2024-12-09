@@ -22,6 +22,7 @@ import {QueryEditor} from '../QueryEditor';
 import {QueryWriter} from '../../core/query';
 import {ComposerOptionsContext} from '../../contexts';
 import {StubCompile} from '../../core/stub-compile';
+import {EventModifiers} from '../component_types';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
@@ -30,7 +31,7 @@ interface ExploreQueryEditorProps {
   querySummary: QuerySummary | undefined;
   queryModifiers: QueryModifiers;
   runQuery: (query: string, queryName?: string) => void;
-  refreshModel?: () => void;
+  refreshModel?: (modifiers: EventModifiers) => void;
   isRunning: boolean;
   result: MalloyResult | Error | undefined;
   model: ModelDef;
