@@ -29,8 +29,9 @@ import {EmptyMessage, PageContent} from '../CommonElements';
 import {ChannelButton} from '../ChannelButton';
 import {HotKeys} from 'react-hotkeys';
 import {
-  StubCompile,
+  EventModifiers,
   ExploreQueryEditor,
+  StubCompile,
   useQueryBuilder,
   useRunQuery,
 } from '@malloydata/query-composer';
@@ -64,7 +65,7 @@ export const Explore: React.FC = () => {
   const app = onlyDefaultDataset
     ? config.apps[0]
     : config?.apps?.find(app => app.id === appId);
-  const {appInfo, refresh} = useDatasets(app);
+  const {appInfo, refresh: refreshModel} = useDatasets(app);
 
   // URL Parameter values
   const [urlParams, setParams] = useSearchParams();
@@ -319,7 +320,21 @@ export const Explore: React.FC = () => {
     RUN_QUERY: runQueryAction,
   };
 
-  const topValues = useTopValues(modelDef, modelPath, sourceDef);
+  const {topValues, refresh: refreshTopValues} = useTopValues(
+    modelDef,
+    modelPath,
+    sourceDef
+  );
+
+  const refresh = useCallback(
+    ({shiftKey}: EventModifiers) => {
+      refreshModel();
+      if (shiftKey) {
+        refreshTopValues();
+      }
+    },
+    [refreshModel, refreshTopValues]
+  );
 
   return (
     <Main handlers={handlers} keyMap={KEY_MAP}>

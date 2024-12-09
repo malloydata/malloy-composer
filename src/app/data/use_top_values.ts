@@ -25,6 +25,7 @@ import {ModelDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
 import {useQuery} from 'react-query';
 import {isDuckDBWASM} from '../utils';
 import * as duckDBWASM from './duckdb_wasm';
+import {useCallback} from 'react';
 
 async function fetchTopValues(
   model?: ModelDef,
@@ -58,8 +59,8 @@ export function useTopValues(
   model?: ModelDef,
   modelPath?: string,
   source?: StructDef
-): SearchValueMapResult[] | undefined {
-  const {data: models} = useQuery(
+): {refresh: () => void; topValues: SearchValueMapResult[] | undefined} {
+  const {data: topValues, refetch} = useQuery(
     ['top_values', modelPath, source?.name],
     () => fetchTopValues(model, modelPath, source),
     {
@@ -67,5 +68,9 @@ export function useTopValues(
     }
   );
 
-  return models;
+  const refresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  return {refresh, topValues};
 }
