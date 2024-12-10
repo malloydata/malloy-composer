@@ -607,6 +607,15 @@ export class QueryBuilder extends SourceUtils {
     }
   }
 
+  onDrill(filters: FilterCondition[]) {
+    const stage = this.stageAtPath({stageIndex: 0});
+    const oldFilters = [...(stage.filterList ?? [])];
+    this.clearQuery();
+    for (const filter of [...oldFilters, ...filters]) {
+      this.addFilter({stageIndex: 0}, filter);
+    }
+  }
+
   hasLimit(stagePath: StagePath): boolean {
     const stage = this.stageAtPath(stagePath);
     if (!(stage.type === 'reduce' || stage.type === 'project')) {

@@ -130,6 +130,7 @@ run: names -> {
     });
 
     it('clears the query when a new source is incompatible', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       const {result, rerender} = renderHook(
         ({args}: RenderProps) => useQueryBuilder(...args),
         {
@@ -159,6 +160,10 @@ run: names -> {
         })
       );
       expect(queryMalloy).toEqual('run: cohort -> {\n}');
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Discarding query',
+        new Error('decade not found')
+      );
     });
   });
 });
