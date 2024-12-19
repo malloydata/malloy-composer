@@ -217,7 +217,11 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           Component: ({onComplete}: ActionSubmenuComponentProps) => (
             <RenameField
               rename={name =>
-                queryModifiers.renameField(stagePath, fieldIndex, name)
+                queryModifiers.renameField(
+                  stagePathParent(stagePath),
+                  fieldIndex,
+                  name
+                )
               }
               onComplete={onComplete}
             />
@@ -240,11 +244,10 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
           iconColor: 'other',
           isEnabled: !isExpanded,
           onClick: () => {
-            const {stageIndex, parts: oldParts} = stagePath;
-            const parts = oldParts ? [...oldParts] : [];
-            parts.pop();
-            const parentPath = {stageIndex, parts};
-            queryModifiers.replaceWithDefinition(parentPath, fieldIndex);
+            queryModifiers.replaceWithDefinition(
+              stagePathParent(stagePath),
+              fieldIndex
+            );
           },
         },
         {
