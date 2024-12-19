@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, SourceDef} from '@malloydata/malloy';
 import {Filter, StagePath} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
@@ -30,7 +30,7 @@ import {QueryModifiers} from '../../hooks';
 
 interface FilterActionMenuProps {
   stagePath: StagePath;
-  source: StructDef;
+  source: SourceDef;
   filterSource: string;
   closeMenu: () => void;
   filterField: FieldDef | undefined;

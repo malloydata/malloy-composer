@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, StructDef} from '@malloydata/malloy';
+import {FieldDef, SourceDef} from '@malloydata/malloy';
 import {OrderByField, StagePath, StageSummary} from '../../types';
 import {ActionMenu, ActionSubmenuComponentProps} from '../ActionMenu';
 import {AddFilter} from '../AddFilter';
@@ -40,7 +40,7 @@ interface DimensionActionMenuProps {
   isEditable: boolean;
   name: string;
   definition: string | undefined;
-  source: StructDef;
+  source: SourceDef;
   filterField?: FieldDef;
   filterFieldPath?: string;
   orderByField: OrderByField;

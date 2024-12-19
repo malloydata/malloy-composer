@@ -64,7 +64,7 @@ type DrillData = {
 interface ResultProps {
   model: malloy.ModelDef;
   modelPath: string;
-  source: malloy.StructDef;
+  source: malloy.SourceDef;
   result?: malloy.Result;
   queryWriter: QueryWriter;
   querySummary: QuerySummary | undefined;

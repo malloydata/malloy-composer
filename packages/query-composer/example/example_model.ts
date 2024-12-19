@@ -111,7 +111,6 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
-                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -296,7 +295,6 @@ export const model: ModelDef = {
                 type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
-                compositeFieldUsage: {fields: [], joinedUsage: {}},
               },
               params: [
                 {
@@ -808,7 +806,6 @@ export const model: ModelDef = {
                         type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
-                        compositeFieldUsage: {fields: [], joinedUsage: {}},
                       },
                       params: [
                         {
@@ -993,7 +990,6 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
-                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -1439,7 +1435,6 @@ export const model: ModelDef = {
                     type: 'number',
                     expressionType: 'scalar',
                     evalSpace: 'input',
-                    compositeFieldUsage: {fields: [], joinedUsage: {}},
                   },
                   params: [
                     {
@@ -1624,7 +1619,6 @@ export const model: ModelDef = {
                 type: 'number',
                 expressionType: 'scalar',
                 evalSpace: 'input',
-                compositeFieldUsage: {fields: [], joinedUsage: {}},
               },
               params: [
                 {
@@ -2025,7 +2019,6 @@ export const model: ModelDef = {
                             type: 'number',
                             expressionType: 'scalar',
                             evalSpace: 'input',
-                            compositeFieldUsage: {fields: [], joinedUsage: {}},
                           },
                           params: [
                             {
@@ -2210,7 +2203,6 @@ export const model: ModelDef = {
                         type: 'number',
                         expressionType: 'scalar',
                         evalSpace: 'input',
-                        compositeFieldUsage: {fields: [], joinedUsage: {}},
                       },
                       params: [
                         {
