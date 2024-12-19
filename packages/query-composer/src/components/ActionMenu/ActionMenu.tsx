@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FilterCondition, StructDef} from '@malloydata/malloy';
+import {FilterCondition, SourceDef} from '@malloydata/malloy';
 import {ReactElement, useContext, useState} from 'react';
 import styled from 'styled-components';
 import {stringFilterToString} from '../../core/filters';
@@ -67,7 +67,7 @@ interface SubMenuAction extends ActionBase {
 export type Action = OneClickAction | SubMenuAction;
 
 interface ActionMenuProps {
-  valueSearchSource?: StructDef | undefined;
+  valueSearchSource?: SourceDef | undefined;
   actions: Action[];
   closeMenu: () => void;
   searchItems?: SearchItem[];

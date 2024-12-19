@@ -31,12 +31,12 @@ import {
   FormError,
   FormFieldList,
 } from '../CommonElements';
-import {isLeafAtomic, QueryFieldDef, StructDef} from '@malloydata/malloy';
+import {isLeafAtomic, QueryFieldDef, SourceDef} from '@malloydata/malloy';
 import {ComposerOptionsContext} from '../../contexts';
 import {maybeQuoteIdentifier} from '../../core/utils';
 
 interface AddFilterProps {
-  source: StructDef;
+  source: SourceDef;
   addDimension: (dimension: QueryFieldDef) => void;
   onComplete: () => void;
   initialCode?: string;

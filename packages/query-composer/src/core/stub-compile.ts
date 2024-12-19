@@ -17,7 +17,7 @@ import {
   QueryFieldDef,
   Runtime,
   SQLSourceDef,
-  StructDef,
+  SourceDef,
   TableSourceDef,
   URLReader,
 } from '@malloydata/malloy';
@@ -81,7 +81,7 @@ export class StubCompile {
     return (await this._compileModel(modelDef, malloy))._modelDef;
   }
 
-  private modelDefForSource(source: StructDef): ModelDef {
+  private modelDefForSource(source: SourceDef): ModelDef {
     return {
       name: 'model',
       exports: [],
@@ -90,7 +90,7 @@ export class StubCompile {
   }
 
   private async compile(
-    source: StructDef,
+    source: SourceDef,
     malloy: string
   ): Promise<QuerySegment> {
     const modelDef = this.modelDefForSource(source);
@@ -107,7 +107,7 @@ export class StubCompile {
   }
 
   public async compileFilter(
-    source: StructDef,
+    source: SourceDef,
     filter: string
   ): Promise<FilterCondition> {
     const name = source.as || source.name;
@@ -129,7 +129,7 @@ export class StubCompile {
   }
 
   private async compileToField(
-    source: StructDef,
+    source: SourceDef,
     malloy: string
   ): Promise<QueryFieldDef> {
     const segment = await this.compile(source, malloy);
@@ -147,7 +147,7 @@ export class StubCompile {
   }
 
   public async compileGroupBy(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     expression: string | undefined
   ): Promise<QueryFieldDef> {
@@ -160,7 +160,7 @@ export class StubCompile {
   }
 
   public async compileDimension(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     dimension: string
   ): Promise<QueryFieldDef> {
@@ -171,7 +171,7 @@ export class StubCompile {
   }
 
   public async compileAggregate(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     aggregate: string
   ): Promise<QueryFieldDef> {
@@ -182,7 +182,7 @@ export class StubCompile {
   }
 
   public async compileCalculate(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     calculate: string
   ): Promise<QueryFieldDef> {
@@ -193,7 +193,7 @@ export class StubCompile {
   }
 
   public async compileMeasure(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     measure: string
   ) {
@@ -209,7 +209,7 @@ export class StubCompile {
   }
 
   public async compileSelect(
-    source: StructDef,
+    source: SourceDef,
     name: string,
     expression: string | undefined
   ): Promise<QueryFieldDef> {

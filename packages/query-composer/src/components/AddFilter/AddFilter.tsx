@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, SourceDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {CodeInput} from '../CodeInput';
 import {
@@ -56,7 +56,7 @@ import {BooleanFilterBuilder} from './BooleanFilterBuilder';
 import {kindOfField, typeOfField} from '../../utils';
 import {ComposerOptionsContext} from '../../contexts';
 interface AddFilterProps {
-  source: StructDef;
+  source: SourceDef;
   field: FieldDef;
   fieldPath: string;
   addFilter: (filter: FilterCondition, as?: string) => void;

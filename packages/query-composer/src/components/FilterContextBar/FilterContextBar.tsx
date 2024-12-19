@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, FilterCondition, StructDef} from '@malloydata/malloy';
+import {FieldDef, FilterCondition, SourceDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {AddFilter} from '../AddFilter';
 import {
@@ -46,7 +46,7 @@ import {ActionIcon} from '../ActionIcon';
 import {stringFilterToString} from '../../core/filters';
 import {ComposerOptionsContext} from '../../contexts';
 interface FilterContextBarProps {
-  source: StructDef;
+  source: SourceDef;
   addFilter: (filter: FilterCondition, as?: string) => void;
   onComplete: () => void;
   needsRename: boolean;

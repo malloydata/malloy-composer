@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FilterCondition, StructDef} from '@malloydata/malloy';
+import {FilterCondition, SourceDef} from '@malloydata/malloy';
 import {useContext, useState} from 'react';
 import {CodeTextArea} from '../CodeInput';
 import {
@@ -32,7 +32,7 @@ import {
 } from '../CommonElements';
 import {ComposerOptionsContext} from '../../contexts';
 interface EditFilterProps {
-  source: StructDef;
+  source: SourceDef;
   existing: string;
   editFilter: (filter: FilterCondition) => void;
   onComplete: () => void;
