@@ -93,23 +93,21 @@ export const LoadTopQueryContextBar: React.FC<LoadTopQueryContextBarProps> = ({
             />
           )}
           {searchTerm !== '' && (
-            <>
-              <SearchList
-                searchTerm={searchTerm}
-                items={fields
-                  .map(field => ({field, path: field.as || field.name}))
-                  .map(({field, path}) => ({
-                    item: fieldToSummaryItem(field, path),
-                    terms: [...termsForField(field, path), 'query'],
-                    detail: pathParent(path),
-                    key: keyFor(path),
-                    select: (field, modifiers: EventModifiers) => {
-                      selectField(field, modifiers);
-                      onComplete();
-                    },
-                  }))}
-              />
-            </>
+            <SearchList
+              searchTerm={searchTerm}
+              items={fields
+                .map(field => ({field, path: field.as || field.name}))
+                .map(({field, path}) => ({
+                  item: fieldToSummaryItem(field, path),
+                  terms: [...termsForField(field, path), 'query'],
+                  detail: pathParent(path),
+                  key: keyFor(path),
+                  select: (field, modifiers: EventModifiers) => {
+                    selectField(field, modifiers);
+                    onComplete();
+                  },
+                }))}
+            />
           )}
         </ContextMenuContent>
       </ScrollMain>

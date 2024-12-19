@@ -45,6 +45,16 @@ export interface FieldListProps {
   ) => void;
 }
 
+// Views and named queries can have the same name so key needs to
+// include the source
+function keyFor(path: string, field: FieldDef) {
+  if ('structRef' in field) {
+    return field.structRef + ' -> ' + path;
+  } else {
+    return path;
+  }
+}
+
 export const FieldList: React.FC<FieldListProps> = ({
   fields,
   selectField,
@@ -57,14 +67,15 @@ export const FieldList: React.FC<FieldListProps> = ({
       {fields
         .filter(field => filter(field) || (showNested && isJoined(field)))
         .map(field => {
+          const fieldPath = [...path, field.as || field.name].join('.');
+          const key = keyFor(fieldPath, field);
           if (filter(field)) {
             const type = typeOfField(field);
             const kind = kindOfField(field);
-            const fieldPath = [...path, field.as || field.name].join('.');
             return (
               <HoverToPopover
                 width={300}
-                key={field.as || field.name}
+                key={key}
                 content={() => (
                   <FieldButton
                     icon={<TypeIcon type={type} kind={kind} />}
@@ -89,7 +100,7 @@ export const FieldList: React.FC<FieldListProps> = ({
           } else if (isJoined(field) && sourceHasAny(field, filter)) {
             return (
               <CollapsibleSource
-                key={field.as || field.name}
+                key={key}
                 source={field}
                 filter={filter}
                 selectField={selectField}
