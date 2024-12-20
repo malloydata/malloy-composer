@@ -29,6 +29,9 @@ import TypeIconJSON from '../../assets/img/type_icons/type-icon-json.svg?react';
 import TypeIconQuery from '../../assets/img/type_icons/type-icon-query.svg?react';
 import TypeIconSource from '../../assets/img/type_icons/type-icon-projection.svg?react';
 import TypeIconMeasure from '../../assets/img/type_icons/type-icon-number-measure.svg?react';
+import TypeIconSQLNative from '../../assets/img/type_icons/sql-database.svg?react';
+import TypeIconArray from '../../assets/img/type_icons/data-type-array.svg?react';
+import TypeIconRecord from '../../assets/img/type_icons/data-type-json.svg?react';
 import {FieldKind, FieldType} from '../../utils';
 
 interface TypeIconProps {
@@ -56,6 +59,12 @@ export const TypeIcon: React.FC<TypeIconProps> = ({type, kind}) => {
     return <TypeIconQuery {...sizeProps} />;
   } else if (type === 'source') {
     return <TypeIconSource {...sizeProps} />;
+  } else if (type === 'sql native') {
+    return <TypeIconSQLNative {...sizeProps} />;
+  } else if (type === 'array') {
+    return <TypeIconArray {...sizeProps} />;
+  } else if (type === 'record') {
+    return <TypeIconRecord {...sizeProps} />;
   }
   console.warn(`invalid type icon ${type} ${kind}`);
   return <TypeIconNumber {...sizeProps} />;
