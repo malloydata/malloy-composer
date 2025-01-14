@@ -4771,6 +4771,8 @@ export const model: ModelDef = {
       arguments: {},
     },
   },
+  queryList: [],
+  dependencies: {},
 };
 
 export const source = getSourceDef(model, 'names');
