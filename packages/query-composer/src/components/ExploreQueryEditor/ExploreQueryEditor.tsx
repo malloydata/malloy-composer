@@ -23,6 +23,7 @@ import {QueryWriter} from '../../core/query_writer';
 import {ComposerOptionsContext} from '../../contexts';
 import {StubCompile} from '../../core/stub-compile';
 import {EventModifiers} from '../component_types';
+import {ParametersEditor} from '../ParametersEditor';
 
 interface ExploreQueryEditorProps {
   source: SourceDef;
@@ -98,6 +99,10 @@ export const ExploreQueryEditor: React.FC<ExploreQueryEditorProps> = ({
           />
         </SidebarOuter>
         <ResultOuter>
+          <ParametersEditor
+            querySummary={querySummary}
+            queryModifiers={queryModifiers}
+          />
           <Result
             isRunning={isRunning}
             model={model}

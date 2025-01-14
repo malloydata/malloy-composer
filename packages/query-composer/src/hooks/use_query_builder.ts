@@ -108,6 +108,8 @@ export interface QueryModifiers {
     orderByIndex: number,
     direction: 'asc' | 'desc' | undefined
   ) => void;
+  editParameter: (name: string, value: string) => void;
+
   removeStage: (stagePath: StagePath) => void;
   clearQuery: (noURLUpdate?: boolean) => void;
   onDrill: (filters: FilterCondition[]) => void;
@@ -265,6 +267,10 @@ export function useQueryBuilder(
       modifyQuery(qb => qb.removeOrderBy(stagePath, orderByIndex));
     };
 
+    const editParameter = (name: string, value: string) => {
+      modifyQuery(qb => qb.editParameter(name, value));
+    };
+
     const removeLimit = (stagePath: StagePath) => {
       modifyQuery(qb => qb.removeLimit(stagePath));
     };
@@ -372,6 +378,7 @@ export function useQueryBuilder(
       editDimension,
       editMeasure,
       editOrderBy,
+      editParameter,
       removeStage,
       clearQuery,
       onDrill,

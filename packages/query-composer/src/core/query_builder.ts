@@ -1,9 +1,17 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import {
   DocumentLocation,
   FilterCondition,
   isJoined,
   isLeafAtomic,
   NamedQuery,
+  Parameter,
   QueryFieldDef,
   SourceDef,
   TurtleDef,
@@ -27,6 +35,7 @@ import {
 } from './source_utils';
 import {QueryWriter} from './query_writer';
 import {sortFieldOrder} from './fields';
+import {stringToParameter} from './expr';
 
 const BLANK_QUERY: TurtleDef = {
   pipeline: [
@@ -50,6 +59,7 @@ class NotAStageError extends Error {
 
 export class QueryBuilder extends SourceUtils {
   private query: TurtleDef;
+  private sourceArguments: Record<string, Parameter> = {};
 
   constructor(source: SourceDef | undefined) {
     super(source);
@@ -57,7 +67,7 @@ export class QueryBuilder extends SourceUtils {
   }
 
   public getWriter(): QueryWriter {
-    return new QueryWriter(this.query, this._source);
+    return new QueryWriter(this.query, this._source, this.sourceArguments);
   }
 
   // TODO(whscullin): Remove writer helper methods
@@ -113,6 +123,9 @@ export class QueryBuilder extends SourceUtils {
     let tag = {};
     if (query.annotation) {
       tag = {annotation: structuredClone(query.annotation)};
+    }
+    if ('sourceArguments' in query) {
+      this.sourceArguments = structuredClone(query.sourceArguments) || {};
     }
     this.query = {
       ...tag,
@@ -310,6 +323,7 @@ export class QueryBuilder extends SourceUtils {
       }
     });
     this.query.annotation = structuredClone(definition.annotation);
+    this.sourceArguments = structuredClone(source.parameters) || {};
     this.query.name = definition.as || definition.name;
   }
 
@@ -409,6 +423,10 @@ export class QueryBuilder extends SourceUtils {
 
   getQuery(): TurtleDef {
     return this.query;
+  }
+
+  getSourceArguments(): Record<string, Parameter> {
+    return this.sourceArguments;
   }
 
   addFilter(stagePath: StagePath, filter: FilterCondition): void {
@@ -554,6 +572,20 @@ export class QueryBuilder extends SourceUtils {
       field: stage.orderBy[orderByIndex].field,
       dir: direction,
     };
+  }
+
+  editParameter(name: string, value: string | undefined) {
+    if (!this._source?.parameters) {
+      return;
+    }
+
+    if (value === undefined) {
+      delete this.sourceArguments[name];
+      return;
+    }
+
+    const {type} = this._source.parameters[name];
+    this.sourceArguments[name] = stringToParameter(name, value, type);
   }
 
   removeLimit(stagePath: StagePath): void {

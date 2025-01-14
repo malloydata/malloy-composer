@@ -69,7 +69,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
 };
 
 const StyledInput = styled.input`
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;

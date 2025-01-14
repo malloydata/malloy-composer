@@ -464,7 +464,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 const Outer = styled.div`
   user-select: none;
   font-size: var(--malloy-composer-fontSize, 14px);
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
 `;
 
 const ControlRow = styled.div`

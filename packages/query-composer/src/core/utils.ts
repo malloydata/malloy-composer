@@ -22,6 +22,8 @@
  */
 
 import {RESERVED_WORDS} from './reserved_words';
+import camelCase from 'lodash/camelCase';
+import startCase from 'lodash/startCase';
 
 export const unquoteIdentifier = (identifier: string): string =>
   identifier
@@ -43,4 +45,8 @@ export function maybeQuoteIdentifier(name: string): string {
     }
   }
   return path.join('.');
+}
+
+export function titleize(name: string) {
+  return startCase(camelCase(name));
 }

@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {FieldDef, QueryFieldDef, SourceDef} from '@malloydata/malloy';
+import {Expr, FieldDef, QueryFieldDef, SourceDef} from '@malloydata/malloy';
 
 export interface SchemaFieldMeasure {
   name: string;
@@ -207,9 +207,17 @@ export interface StageSummary {
   type: StageType;
 }
 
+export interface QuerySummaryParameter {
+  name: string;
+  type: string;
+  value?: Expr | null;
+  defaultValue?: Expr | null;
+}
+
 export interface QuerySummary {
   name: string;
   stages: StageSummary[];
+  parameters: QuerySummaryParameter[];
   isRunnable: boolean;
 }
 
