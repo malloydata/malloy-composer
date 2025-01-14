@@ -1,2 +1,2 @@
-import './example2.tsx';
+import './example.tsx';
 export * from './example_model.ts';

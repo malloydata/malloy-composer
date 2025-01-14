@@ -40,7 +40,10 @@ export function readPackageJson(path: string): NpmPackage {
     const fileBuffer = fs.readFileSync(path, 'utf8');
     return JSON.parse(fileBuffer);
   } catch (error) {
-    console.warn('Could not read package.json', error);
+    console.warn(
+      'Could not read package.json',
+      error instanceof Error ? error.message : error
+    );
   }
   return {};
 }

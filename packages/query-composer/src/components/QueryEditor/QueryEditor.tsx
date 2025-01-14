@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {QuerySummaryPanel} from '../QuerySummaryPanel';
 import {
   ModelDef,
@@ -18,7 +18,7 @@ import {QueryModifiers} from '../../hooks';
 import {QuerySummary} from '../../types';
 import styled from 'styled-components';
 import {SearchContext} from '../../contexts/search_context';
-import {QueryWriter} from '../../core/query';
+import {QueryWriter} from '../../core/query_writer';
 
 export interface QueryEditorProps {
   isRunning: boolean;
@@ -46,11 +46,14 @@ export const QueryEditor = ({
   const [insertOpen, setInsertOpen] = useState(false);
   const [loadOpen, setLoadOpen] = useState(false);
   const [lastRunQuery, setLastRunQuery] = useState<string>('');
+  const [query, setQuery] = useState<string>('');
 
   const isQueryEmpty = !querySummary || querySummary.stages.length === 0;
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
-  const query = queryWriter.getQueryStringForNotebook();
+  useEffect(() => {
+    setQuery(queryWriter.getQueryStringForNotebook());
+  }, [queryWriter]);
 
   const clearQuery = () => {
     queryModifiers.clearQuery();

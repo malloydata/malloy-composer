@@ -19,7 +19,7 @@ import {QueryModifiers} from '../../hooks';
 import {Result} from '../Result';
 import {ErrorMessage} from '../ErrorMessage';
 import {QueryEditor} from '../QueryEditor';
-import {QueryWriter} from '../../core/query';
+import {QueryWriter} from '../../core/query_writer';
 import {ComposerOptionsContext} from '../../contexts';
 import {StubCompile} from '../../core/stub-compile';
 import {EventModifiers} from '../component_types';

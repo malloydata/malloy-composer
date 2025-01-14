@@ -29,7 +29,8 @@ import {
   TurtleDef,
 } from '@malloydata/malloy';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {QueryBuilder, QueryWriter} from '../core/query';
+import {QueryBuilder} from '../core/query_builder';
+import {QueryWriter} from '../core/query_writer';
 import {QuerySummary, RendererName, StagePath} from '../types';
 import {getSourceDef} from '../core/models';
 
@@ -136,6 +137,10 @@ export function useQueryBuilder(
     }
     return qb;
   }, [sourceDef]);
+  const current = queryBuilder.getQuery();
+  const queryWriter = useMemo(() => {
+    return new QueryWriter(current, sourceDef);
+  }, [current, sourceDef]);
   const [querySummary, setQuerySummary] = useState(() => {
     try {
       return queryBuilder.getQuerySummary();
@@ -392,8 +397,6 @@ export function useQueryBuilder(
   useEffect(() => {
     console.info('> querySummary changed');
   }, [querySummary]);
-
-  const queryWriter = queryBuilder.getWriter();
 
   return {
     queryModifiers,
