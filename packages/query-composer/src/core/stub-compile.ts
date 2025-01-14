@@ -86,6 +86,8 @@ export class StubCompile {
       name: 'model',
       exports: [],
       contents: {[source.as || source.name]: source},
+      queryList: [],
+      dependencies: {},
     };
   }
 
