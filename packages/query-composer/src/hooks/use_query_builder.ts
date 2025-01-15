@@ -145,7 +145,6 @@ export function useQueryBuilder(
       return undefined;
     }
   });
-  const [queryWriter, setQueryWriter] = useState(queryBuilder.getWriter());
 
   useEffect(() => {
     console.info('> sourceDef changed');
@@ -173,7 +172,6 @@ export function useQueryBuilder(
       }
       try {
         setQuerySummary(queryBuilder.getQuerySummary());
-        setQueryWriter(queryBuilder.getWriter());
         query.current = structuredClone(queryBuilder.getQuery());
       } catch (error) {
         queryBuilder.setQuery(query.current);
@@ -395,6 +393,8 @@ export function useQueryBuilder(
   useEffect(() => {
     console.info('> querySummary changed');
   }, [querySummary]);
+
+  const queryWriter = queryBuilder.getWriter();
 
   return {
     queryModifiers,
