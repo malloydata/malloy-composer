@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import * as malloy from '@malloydata/malloy';
 import * as render from '@malloydata/render';
 import '@malloydata/render/webcomponent';
@@ -94,31 +94,25 @@ export const Result: React.FC<ResultProps> = ({
 
   const {isRunnable} = querySummary ?? {isRunnable: false};
 
-  const malloy = useMemo(
-    () => queryWriter.getQueryStringForNotebook(),
-    [queryWriter]
-  );
+  const malloy = queryWriter.getQueryStringForNotebook();
 
-  const malloyPreview = useMemo(() => {
-    let queryString: string;
-    switch (malloyType) {
-      case 'markdown':
-        queryString = queryWriter.getQueryStringForMarkdown(modelPath);
-        break;
-      case 'notebook':
-        queryString = malloy;
-        break;
-      case 'source':
-        queryString = queryWriter.getQueryStringForSource(
-          querySummary?.name ?? 'new_query'
-        );
-        break;
-      case 'model':
-        queryString = queryWriter.getQueryStringForModel();
-        break;
-    }
-    return queryString;
-  }, [modelPath, querySummary, queryWriter, malloy, malloyType]);
+  let malloyPreview: string;
+  switch (malloyType) {
+    case 'markdown':
+      malloyPreview = queryWriter.getQueryStringForMarkdown(modelPath);
+      break;
+    case 'notebook':
+      malloyPreview = malloy;
+      break;
+    case 'source':
+      malloyPreview = queryWriter.getQueryStringForSource(
+        querySummary?.name ?? 'new_query'
+      );
+      break;
+    case 'model':
+      malloyPreview = queryWriter.getQueryStringForModel();
+      break;
+  }
 
   useEffect(() => {
     let canceled = false;

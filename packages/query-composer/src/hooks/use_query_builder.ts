@@ -137,10 +137,6 @@ export function useQueryBuilder(
     }
     return qb;
   }, [sourceDef]);
-  const current = queryBuilder.getQuery();
-  const queryWriter = useMemo(() => {
-    return new QueryWriter(current, sourceDef);
-  }, [current, sourceDef]);
   const [querySummary, setQuerySummary] = useState(() => {
     try {
       return queryBuilder.getQuerySummary();
@@ -397,6 +393,8 @@ export function useQueryBuilder(
   useEffect(() => {
     console.info('> querySummary changed');
   }, [querySummary]);
+
+  const queryWriter = queryBuilder.getWriter();
 
   return {
     queryModifiers,
