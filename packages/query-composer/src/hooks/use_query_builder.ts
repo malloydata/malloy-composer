@@ -137,10 +137,6 @@ export function useQueryBuilder(
     }
     return qb;
   }, [sourceDef]);
-  const current = queryBuilder.getQuery();
-  const queryWriter = useMemo(() => {
-    return new QueryWriter(current, sourceDef);
-  }, [current, sourceDef]);
   const [querySummary, setQuerySummary] = useState(() => {
     try {
       return queryBuilder.getQuerySummary();
@@ -149,6 +145,7 @@ export function useQueryBuilder(
       return undefined;
     }
   });
+  const [queryWriter, setQueryWriter] = useState(queryBuilder.getWriter());
 
   useEffect(() => {
     console.info('> sourceDef changed');
@@ -176,6 +173,7 @@ export function useQueryBuilder(
       }
       try {
         setQuerySummary(queryBuilder.getQuerySummary());
+        setQueryWriter(queryBuilder.getWriter());
         query.current = structuredClone(queryBuilder.getQuery());
       } catch (error) {
         queryBuilder.setQuery(query.current);
