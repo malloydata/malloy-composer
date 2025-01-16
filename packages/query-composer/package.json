@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",
+    "@types/lodash": "^4.17.14",
     "@types/moment": "^2.13.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
