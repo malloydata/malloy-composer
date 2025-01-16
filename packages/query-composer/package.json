@@ -31,12 +31,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.21",
     "moment-js": "^1.1.15",
     "react-popper": "^2.2.5",
     "shiki": "^1.1.6"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",
+    "@types/lodash": "^4.17.14",
     "@types/moment": "^2.13.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",

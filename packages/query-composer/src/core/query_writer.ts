@@ -11,6 +11,7 @@ import {
   Tag,
   TurtleDef,
 } from '@malloydata/malloy';
+import uniq from 'lodash/uniq';
 import {
   dottify,
   FilteredField,
@@ -109,6 +110,7 @@ export class QueryWriter extends SourceUtils {
           tagLine.replace(/\n$/, '')
         );
       }
+      tagLines = uniq(tagLines);
 
       if (field.type === 'fieldref') {
         const fieldDef = this.getField(source, dottify(field.path));
