@@ -26,7 +26,7 @@ const ParameterEditor = ({
   queryModifiers,
 }: ParameterEditorProps) => {
   const [current, setCurrent] = useState<string>(
-    stringFromExpr(value ?? defaultValue ?? null)
+    stringFromExpr(value ?? defaultValue ?? null, '')
   );
 
   const update = () => queryModifiers.editParameter(name, current);
