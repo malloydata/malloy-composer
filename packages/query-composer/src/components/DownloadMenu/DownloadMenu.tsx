@@ -118,7 +118,7 @@ const Wrapper = styled.div`
 
 const NewTabContainer = styled.div`
   border-top: 1px solid #ececec;
-  font-family: Roboto;
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
   padding: 10px 15px;
 `;
 

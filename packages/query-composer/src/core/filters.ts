@@ -722,7 +722,7 @@ function toTimePeriod(timeUnitString: string): ThisLastPeriod {
   throw new Error(`Invalid time period '${timeUnitString}'`);
 }
 
-function toDate(dateString: string): Date {
+export function toDate(dateString: string): Date {
   const isDate = dateString.match(new RegExp(`^${TIME}$`));
   const isWeek = dateString.match(new RegExp(`^${WEEK}$`));
   if (isDate || isWeek) {

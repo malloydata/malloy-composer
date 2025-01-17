@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import {
   AtomicFieldDef,
   expressionIsCalculation,
@@ -5,6 +12,7 @@ import {
   FilterCondition,
   isJoined,
   isLeafAtomic,
+  Parameter,
   PipeSegment,
   QueryFieldDef,
   SourceDef,
@@ -27,17 +35,20 @@ import {
   QuerySummaryItem,
   QuerySummaryItemDataStyle,
   QuerySummaryItemFilter,
+  QuerySummaryParameter,
   RendererName,
   StageSummary,
 } from '../types';
 import {IndexSegment, QuerySegment} from '@malloydata/malloy/dist/model';
 import {maybeQuoteIdentifier} from './utils';
 import {hackyTerribleStringToFilter} from './filters';
+import {codeFromExpr} from './expr';
 
 export class QueryWriter extends SourceUtils {
   constructor(
     private readonly query: TurtleDef,
-    source: SourceDef | undefined
+    source: SourceDef | undefined,
+    private sourceArguments: Record<string, Parameter>
   ) {
     super(source);
   }
@@ -313,6 +324,7 @@ export class QueryWriter extends SourceUtils {
     const source = this.getSource();
     if (source === undefined) return '';
     const malloy: Fragment[] = [];
+
     let stageSource = this.getSource();
     if (this.query.annotation) {
       const tagLines = Tag.annotationToTaglines(this.query.annotation).map(
@@ -321,17 +333,47 @@ export class QueryWriter extends SourceUtils {
       tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
     }
 
-    const initParts = [];
-    initParts.push(`${forUse}:`);
+    const parameters: Fragment[] = [];
+    if (this._source?.parameters) {
+      const parameterStrings: string[] = [];
+      for (const key in this._source.parameters) {
+        const {value: defaultValue} = this._source.parameters[key];
+        const value = this.sourceArguments[key]?.value;
+        if (value !== undefined) {
+          parameterStrings.push(`${key} is ${codeFromExpr(value)}`);
+        } else if (!defaultValue) {
+          parameterStrings.push(`${key} is null`);
+        }
+      }
+      if (parameterStrings.length) {
+        parameters.push('(');
+        if (parameterStrings.length === 1) {
+          parameters.push(parameterStrings[0]);
+        } else if (parameterStrings.length > 1) {
+          parameters.push(NEWLINE, INDENT);
+          parameterStrings.forEach((parameter, idx) => {
+            parameters.push(parameter);
+            if (idx < parameterStrings.length - 1) {
+              parameters.push(',', NEWLINE);
+            }
+          });
+          parameters.push(NEWLINE, OUTDENT);
+        }
+        parameters.push(')');
+      }
+    }
+
+    const initParts: Fragment[] = [];
+    initParts.push(`${forUse}: `);
     if (forUse !== 'run' && name !== undefined) {
-      initParts.push(`${maybeQuoteIdentifier(name)} is`);
+      initParts.push(maybeQuoteIdentifier(name), ...parameters, ' is');
     }
     if (forUse !== 'view') {
       const identifier = source.as || source.name;
 
-      initParts.push(maybeQuoteIdentifier(identifier));
+      initParts.push(maybeQuoteIdentifier(identifier), ...parameters);
     }
-    malloy.push(initParts.join(' '));
+    malloy.push(...initParts);
     stageSource = source;
     for (
       let stageIndex = 0;
@@ -398,6 +440,14 @@ export class QueryWriter extends SourceUtils {
 
   getQuerySummary(): QuerySummary {
     let stageSource = this.getSource();
+    const parameters: QuerySummaryParameter[] = [];
+    if (this._source?.parameters) {
+      for (const key in this._source.parameters) {
+        const {name, type, value: defaultValue} = this._source.parameters[key];
+        const value = this.sourceArguments[key]?.value;
+        parameters.push({name, type, value, defaultValue});
+      }
+    }
 
     const stages = this.query.pipeline.map((stage, index) => {
       if (stageSource === undefined) {
@@ -415,7 +465,7 @@ export class QueryWriter extends SourceUtils {
     });
     const isRunnable = this.canRun();
     const name = this.query.as ?? this.query.name;
-    return {name, stages, isRunnable};
+    return {name, parameters, stages, isRunnable};
   }
 
   private nameOf(field: QueryFieldDef) {

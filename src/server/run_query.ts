@@ -31,6 +31,7 @@ export async function runQuery(
   query: string,
   modelPath: string
 ): Promise<Result> {
+  console.info(query);
   const {workingDirectory} = await getConfig();
   const modelURL = new URL('file://' + path.join(workingDirectory, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);

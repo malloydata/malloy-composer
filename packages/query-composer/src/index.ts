@@ -7,6 +7,7 @@
 
 export type {EventModifiers} from './components/component_types';
 export {ExploreQueryEditor} from './components/ExploreQueryEditor';
+export {ParametersEditor} from './components/ParametersEditor';
 export {QueryEditor} from './components/QueryEditor';
 export {QuerySummaryPanel} from './components/QuerySummaryPanel';
 export {Result} from './components/Result';
