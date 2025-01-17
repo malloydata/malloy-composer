@@ -324,6 +324,7 @@ export class QueryWriter extends SourceUtils {
     const source = this.getSource();
     if (source === undefined) return '';
     const malloy: Fragment[] = [];
+
     let stageSource = this.getSource();
     if (this.query.annotation) {
       const tagLines = Tag.annotationToTaglines(this.query.annotation).map(
@@ -332,7 +333,7 @@ export class QueryWriter extends SourceUtils {
       tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
     }
 
-    let parameters: string = '';
+    const parameters: Fragment[] = [];
     if (this._source?.parameters) {
       const parameterStrings: string[] = [];
       for (const key in this._source.parameters) {
@@ -345,21 +346,34 @@ export class QueryWriter extends SourceUtils {
         }
       }
       if (parameterStrings.length) {
-        parameters = `(${parameterStrings.join(', ')})`;
+        parameters.push('(');
+        if (parameterStrings.length === 1) {
+          parameters.push(parameterStrings[0]);
+        } else if (parameterStrings.length > 1) {
+          parameters.push(NEWLINE, INDENT);
+          parameterStrings.forEach((parameter, idx) => {
+            parameters.push(parameter);
+            if (idx < parameterStrings.length - 1) {
+              parameters.push(',', NEWLINE);
+            }
+          });
+          parameters.push(NEWLINE, OUTDENT);
+        }
+        parameters.push(')');
       }
     }
 
-    const initParts = [];
-    initParts.push(`${forUse}:`);
+    const initParts: Fragment[] = [];
+    initParts.push(`${forUse}: `);
     if (forUse !== 'run' && name !== undefined) {
-      initParts.push(`${maybeQuoteIdentifier(name)}${parameters} is`);
+      initParts.push(maybeQuoteIdentifier(name), ...parameters, ' is');
     }
     if (forUse !== 'view') {
       const identifier = source.as || source.name;
 
-      initParts.push(`${maybeQuoteIdentifier(identifier)}${parameters}`);
+      initParts.push(maybeQuoteIdentifier(identifier), ...parameters);
     }
-    malloy.push(initParts.join(' '));
+    malloy.push(...initParts);
     stageSource = source;
     for (
       let stageIndex = 0;

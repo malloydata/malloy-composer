@@ -31,6 +31,8 @@ const ParameterEditor = ({
 
   const update = () => queryModifiers.editParameter(name, current);
   const updateDate = (date: string) => queryModifiers.editParameter(name, date);
+  const updateBoolean = (checked: string) =>
+    queryModifiers.editParameter(name, checked);
 
   if (type === 'date') {
     return (
@@ -60,9 +62,40 @@ const ParameterEditor = ({
         />
       </ParameterBox>
     );
+  } else if (type === 'number') {
+    return (
+      <ParameterBox>
+        <Label>{titleize(name)}: </Label>
+        <StyledInput
+          type="number"
+          value={current}
+          placeholder={stringFromExpr(defaultValue ?? null, '')}
+          onChange={e => setCurrent(e.target.value)}
+          onBlur={() => update()}
+          onKeyDown={e => {
+            if (e.key === 'Enter') update();
+          }}
+        />
+      </ParameterBox>
+    );
+  } else if (type === 'boolean') {
+    return (
+      <ParameterBox>
+        <Label>{titleize(name)}: </Label>
+        <StyledInput
+          type="checkbox"
+          checked={current === 'true'}
+          onChange={e => {
+            const value = e.target.checked ? 'true' : 'false';
+            setCurrent(value);
+            updateBoolean(value);
+          }}
+        />
+      </ParameterBox>
+    );
   } else {
     return (
-      <div>
+      <ParameterBox>
         <Label>{titleize(name)}: </Label>
         <StyledInput
           value={current}
@@ -73,7 +106,7 @@ const ParameterEditor = ({
             if (e.key === 'Enter') update();
           }}
         />
-      </div>
+      </ParameterBox>
     );
   }
 };
