@@ -430,11 +430,11 @@ export const Explore: React.FC = () => {
                   <Apps />
                 </PageContent>
               )}
-              {loading && (
+              {loading ? (
                 <LoadingOverlay>
                   <LoadingSpinner text="Loading Data..." />
                 </LoadingOverlay>
-              )}
+              ) : null}
             </PageContainer>
           </Page>
           <RightChannel />
