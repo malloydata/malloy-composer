@@ -22,7 +22,8 @@
  */
 import * as React from 'react';
 
-import {QuerySummary, StagePath, stagePathPush} from '../../types';
+import {QuerySummary, StagePath} from '../../types';
+import {stagePathPush} from '../../core/stage_path';
 import {EmptyMessage} from '../CommonElements';
 import {StageActionMenu} from '../StageActionMenu';
 import {BackPart, CloseIconStyled} from '../FieldButton/FieldButton';

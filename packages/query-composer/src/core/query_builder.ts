@@ -6,7 +6,6 @@
  */
 
 import {
-  DocumentLocation,
   FilterCondition,
   isJoined,
   isLeafAtomic,
@@ -16,14 +15,8 @@ import {
   SourceDef,
   TurtleDef,
 } from '@malloydata/malloy';
-import {
-  QuerySummary,
-  RendererName,
-  SchemaField,
-  StagePath,
-  stagePathParent,
-  stagePathPop,
-} from '../types';
+import {QuerySummary, RendererName, SchemaField, StagePath} from '../types';
+import {stagePathParent, stagePathPop} from './stage_path';
 import {
   dottify,
   getFields,
@@ -36,6 +29,7 @@ import {
 import {QueryWriter} from './query_writer';
 import {sortFieldOrder} from './fields';
 import {stringToParameter} from './expr';
+import {updateAnnotation} from './renderer';
 
 const BLANK_QUERY: TurtleDef = {
   pipeline: [
@@ -606,28 +600,11 @@ export class QueryBuilder extends SourceUtils {
       throw new Error(`Unhandled stage type ${stage.type}`);
     }
     if (fieldIndex === undefined) {
-      if (renderer) {
-        const at: DocumentLocation = {
-          url: 'internal://internal.malloy',
-          range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
-        };
-        this.query.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
-      } else {
-        delete this.query.annotation;
-      }
-      return;
-    }
-    const fields = getFields(stage);
-    const field = fields[fieldIndex];
-    // TODO(whscullin) This is violent
-    if (renderer) {
-      const at: DocumentLocation = {
-        url: 'internal://internal.malloy',
-        range: {start: {line: 0, character: 0}, end: {line: 0, character: 0}},
-      };
-      field.annotation = {blockNotes: [{text: `# ${renderer}\n`, at}]};
+      this.query.annotation = updateAnnotation(this.query.annotation, renderer);
     } else {
-      delete field.annotation;
+      const fields = getFields(stage);
+      const field = fields[fieldIndex];
+      field.annotation = updateAnnotation(field.annotation, renderer);
     }
   }
 

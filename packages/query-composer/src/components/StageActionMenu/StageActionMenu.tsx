@@ -39,6 +39,7 @@ import {
   termsForField,
 } from '../../utils';
 import {QueryModifiers} from '../../hooks';
+import {QUERY_RENDERERS} from '../../core/renderer';
 
 interface StageActionMenuProps {
   source: SourceDef;
@@ -212,20 +213,7 @@ export const StageActionMenu: React.FC<StageActionMenuProps> = ({
                 queryModifiers.setRenderer(stagePath, 0, renderName)
               }
               onComplete={onComplete}
-              allowedRenderers={[
-                'table',
-                'bar_chart',
-                'dashboard',
-                'json',
-                'line_chart',
-                'list',
-                'list_detail',
-                'point_map',
-                'scatter_chart',
-                'segment_map',
-                'shape_map',
-                'sparkline',
-              ]}
+              allowedRenderers={QUERY_RENDERERS}
             />
           ),
         },

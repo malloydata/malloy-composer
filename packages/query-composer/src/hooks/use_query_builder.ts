@@ -390,10 +390,6 @@ export function useQueryBuilder(
   }, [modifyQuery]);
 
   useEffect(() => {
-    console.info('> queryBuilder changed');
-  }, [queryBuilder]);
-
-  useEffect(() => {
     console.info('> updateQueryInURL changed');
   }, [updateQueryInURL]);
 

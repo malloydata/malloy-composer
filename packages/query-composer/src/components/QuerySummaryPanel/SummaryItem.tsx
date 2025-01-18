@@ -7,12 +7,8 @@
 
 import {ReactElement, useRef} from 'react';
 import * as React from 'react';
-import {
-  QuerySummaryItem,
-  StagePath,
-  StageSummary,
-  stagePathPush,
-} from '../../types';
+import {QuerySummaryItem, StagePath, StageSummary} from '../../types';
+import {stagePathPush} from '../../core/stage_path';
 import {SourceDef} from '@malloydata/malloy';
 import {StageSummaryUI} from './StateSummaryUI';
 import {FieldListDiv} from './FieldListDiv';
@@ -250,6 +246,9 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                   return (
                     <FieldDetailPanel
                       fieldPath={item.type === 'field' ? item.path : undefined}
+                      annotations={
+                        item.type === 'field' ? item.annotations : []
+                      }
                       definition={
                         item.type !== 'field' ? item.source : undefined
                       }
@@ -282,8 +281,12 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                   />
                 )}
                 popoverContent={() => {
+                  // XXX Fix Me
                   return (
-                    <FieldDetailPanel filterExpression={item.filterSource} />
+                    <FieldDetailPanel
+                      filterExpression={item.filterSource}
+                      annotations={[]}
+                    />
                   );
                 }}
               />

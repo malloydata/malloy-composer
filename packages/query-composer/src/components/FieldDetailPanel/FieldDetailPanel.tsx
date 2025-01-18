@@ -28,12 +28,14 @@ import {largeNumberLabel} from '../../utils';
 import {SearchContext} from '../../contexts/search_context';
 
 interface FieldDetailPanelProps {
+  annotations: string[];
   fieldPath?: string;
   filterExpression?: string;
   definition?: string;
 }
 
 export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
+  annotations,
   fieldPath,
   filterExpression,
   definition,
@@ -70,6 +72,14 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
               <FieldPath>{filterExpression}</FieldPath>
             </InfoSection>
           )}
+          {annotations.length ? (
+            <InfoSection>
+              <div>Annotations</div>
+              {annotations.map((annotation, idx) => (
+                <FieldPath key={idx}>{annotation}</FieldPath>
+              ))}
+            </InfoSection>
+          ) : null}
           {fieldTopValues && (
             <InfoSection>
               <div>Top Values</div>
