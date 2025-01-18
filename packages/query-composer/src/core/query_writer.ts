@@ -36,13 +36,17 @@ import {
   QuerySummaryItemDataStyle,
   QuerySummaryItemFilter,
   QuerySummaryParameter,
-  RendererName,
   StageSummary,
 } from '../types';
 import {IndexSegment, QuerySegment} from '@malloydata/malloy/dist/model';
 import {maybeQuoteIdentifier} from './utils';
 import {hackyTerribleStringToFilter} from './filters';
 import {codeFromExpr} from './expr';
+import {
+  ATOMIC_RENDERERS,
+  QUERY_RENDERERS,
+  rendererFromAnnotation,
+} from './renderer';
 
 export class QueryWriter extends SourceUtils {
   constructor(
@@ -113,11 +117,9 @@ export class QueryWriter extends SourceUtils {
     try {
       let tagLines: string[] | undefined;
       if (field.annotation) {
-        const copy = structuredClone(field.annotation);
-        // TODO(whscullin) - better understand inheritance in cloned
-        // views
-        // delete copy.inherits;
-        tagLines = Tag.annotationToTaglines(copy).map(tagLine =>
+        const {blockNotes, notes} = field.annotation;
+        const directOnly = {blockNotes, notes};
+        tagLines = Tag.annotationToTaglines(directOnly).map(tagLine =>
           tagLine.replace(/\n$/, '')
         );
       }
@@ -476,77 +478,19 @@ export class QueryWriter extends SourceUtils {
     }
   }
 
-  renderers: RendererName[] = [
-    'table',
-    'dashboard',
-    'text',
-    'currency',
-    'image',
-    'time',
-    'json',
-    'single_value',
-    'list',
-    'list_detail',
-    'bar_chart',
-    'scatter_chart',
-    'line_chart',
-    'point_map',
-    'segment_map',
-    'shape_map',
-    'number',
-    'percent',
-    'boolean',
-    'sparkline',
-    'url',
-  ];
-
-  private rendererFromAnnotation(notes: string[]): RendererName | undefined {
-    if (notes.length) {
-      if (this.renderers.includes(notes[0] as RendererName)) {
-        return notes[0] as RendererName;
-      }
-    }
-    return undefined;
-  }
-
   private stylesForField(
     field: QueryFieldDef,
     fieldIndex: number | undefined
   ): QuerySummaryItemDataStyle[] {
     const result: QuerySummaryItemDataStyle[] = [];
-    const tagProps = Tag.annotationToTag(field.annotation).tag.getProperties();
-    const tags = Object.keys(tagProps);
-    if (tags.length) {
+    const renderer = rendererFromAnnotation(field.annotation);
+    if (renderer) {
       result.push({
         type: 'data_style',
-        renderer: this.rendererFromAnnotation(tags),
+        renderer,
         canRemove: true,
         allowedRenderers:
-          field.type === 'turtle'
-            ? [
-                'table',
-                'bar_chart',
-                'dashboard',
-                'json',
-                'line_chart',
-                'list',
-                'list_detail',
-                'point_map',
-                'scatter_chart',
-                'segment_map',
-                'shape_map',
-                'sparkline',
-              ]
-            : [
-                'number',
-                'boolean',
-                'currency',
-                'image',
-                'url',
-                'percent',
-                'text',
-                'time',
-              ],
+          field.type === 'turtle' ? QUERY_RENDERERS : ATOMIC_RENDERERS,
         fieldIndex,
       });
     }
@@ -573,6 +517,9 @@ export class QueryWriter extends SourceUtils {
       const field = fields[fieldIndex];
       try {
         const stages = [];
+        const annotations: string[] = Tag.annotationToTaglines(
+          field.annotation
+        );
         const fieldDef = this.fieldDefForQueryFieldDef(field, source);
         if (fieldDef.type === 'turtle') {
           let stageSource = source;
@@ -596,8 +543,9 @@ export class QueryWriter extends SourceUtils {
             kind: computeKind(fieldDef),
             property: computeProperty(stage, fieldDef),
             name: fieldDef.as || fieldDef.name,
-            styles: this.stylesForField(fieldDef, fieldIndex),
+            styles: this.stylesForField(field, fieldIndex),
             stages,
+            annotations,
           });
           if (fieldDef.type !== 'turtle' && fieldDef.type !== 'error') {
             orderByFields.push({
@@ -630,6 +578,7 @@ export class QueryWriter extends SourceUtils {
             kind: computeKind(fieldDef),
             property: computeProperty(stage, fieldDef),
             stages,
+            annotations,
           });
         } else if (isFilteredField(field)) {
           if (isJoined(fieldDef)) {
@@ -662,6 +611,7 @@ export class QueryWriter extends SourceUtils {
             kind: computeKind(fieldDef),
             property: computeProperty(stage, fieldDef),
             stages,
+            annotations,
           });
         } else if (field.type === 'turtle') {
           items.push({

@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, isJoined, StructDef} from '@malloydata/malloy';
+import {FieldDef, isJoined, StructDef, Tag} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {ActionIcon} from '../ActionIcon';
@@ -67,6 +67,9 @@ export const FieldList: React.FC<FieldListProps> = ({
       {fields
         .filter(field => filter(field) || (showNested && isJoined(field)))
         .map(field => {
+          const annotations: string[] = Tag.annotationToTaglines(
+            field.annotation
+          );
           const fieldPath = [...path, field.as || field.name].join('.');
           const key = keyFor(fieldPath, field);
           if (filter(field)) {
@@ -93,7 +96,12 @@ export const FieldList: React.FC<FieldListProps> = ({
                   />
                 )}
                 popoverContent={() => {
-                  return <FieldDetailPanel fieldPath={fieldPath} />;
+                  return (
+                    <FieldDetailPanel
+                      fieldPath={fieldPath}
+                      annotations={annotations}
+                    />
+                  );
                 }}
               />
             );

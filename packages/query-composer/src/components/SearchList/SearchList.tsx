@@ -88,7 +88,12 @@ export const useSearchList = ({
                   detail={item.detail}
                 />
               )}
-              popoverContent={() => <FieldDetailPanel fieldPath={field.path} />}
+              popoverContent={() => (
+                <FieldDetailPanel
+                  fieldPath={field.path}
+                  annotations={field.annotations}
+                />
+              )}
             />
           );
         } else {

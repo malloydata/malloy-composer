@@ -21,7 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {OrderByField, StagePath, stagePathParent} from '../../types';
+import {OrderByField, StagePath} from '../../types';
+import {stagePathParent} from '../../core/stage_path';
 import {AggregateContextBar} from '../AggregateContextBar';
 import {GroupByContextBar} from '../GroupByContextBar';
 import {NestContextBar} from '../NestContextBar';
@@ -39,6 +40,7 @@ import {
 } from '../../utils';
 import {RenameField} from '../RenameField';
 import {QueryModifiers} from '../../hooks';
+import {QUERY_RENDERERS} from '../../core/renderer';
 
 interface NestQueryActionMenuProps {
   source: SourceDef;
@@ -190,20 +192,7 @@ export const NestQueryActionMenu: React.FC<NestQueryActionMenuProps> = ({
                 queryModifiers.setRenderer(stagePath, fieldIndex, renderer)
               }
               onComplete={onComplete}
-              allowedRenderers={[
-                'table',
-                'bar_chart',
-                'dashboard',
-                'json',
-                'line_chart',
-                'list',
-                'list_detail',
-                'point_map',
-                'scatter_chart',
-                'segment_map',
-                'shape_map',
-                'sparkline',
-              ]}
+              allowedRenderers={QUERY_RENDERERS}
             />
           ),
         },

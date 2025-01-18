@@ -39,6 +39,7 @@ import {
   termsForField,
 } from '../../utils';
 import {QueryModifiers} from '../../hooks';
+import {QUERY_RENDERERS} from '../../core/renderer';
 
 interface TopQueryActionMenuProps {
   source: SourceDef;
@@ -186,20 +187,7 @@ export const TopQueryActionMenu: React.FC<TopQueryActionMenuProps> = ({
                 queryModifiers.setRenderer(stagePath, undefined, renderName)
               }
               onComplete={onComplete}
-              allowedRenderers={[
-                'table',
-                'bar_chart',
-                'dashboard',
-                'json',
-                'line_chart',
-                'list',
-                'list_detail',
-                'point_map',
-                'scatter_chart',
-                'segment_map',
-                'shape_map',
-                'sparkline',
-              ]}
+              allowedRenderers={QUERY_RENDERERS}
             />
           ),
         },
