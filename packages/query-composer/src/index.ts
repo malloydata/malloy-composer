@@ -21,4 +21,6 @@ export type {ComposerOptionsProps} from './contexts';
 
 export {useQueryBuilder} from './hooks';
 
+export {UndoContext} from './contexts/undo_context';
+
 export * from './types';
