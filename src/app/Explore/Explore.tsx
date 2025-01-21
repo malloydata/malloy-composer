@@ -32,6 +32,7 @@ import {
   EventModifiers,
   ExploreQueryEditor,
   StubCompile,
+  UndoContext,
   useQueryBuilder,
   useRunQuery,
 } from '@malloydata/query-composer';
@@ -39,7 +40,7 @@ import {COLORS} from '../colors';
 import {MalloyLogo} from '../MalloyLogo';
 import {MarkdownDocument} from '../MarkdownDocument';
 import {SourceDef} from '@malloydata/malloy';
-import {useSearchParams, useParams} from 'react-router-dom';
+import {useParams, useSearchParams} from 'react-router-dom';
 import {snakeToTitle} from '../utils';
 import {runQuery as runQueryExt} from '../data/run_query';
 import {useApps} from '../data/use_apps';
@@ -55,6 +56,13 @@ const KEY_MAP = {
 };
 
 const compiler = new StubCompile();
+
+const undoContext = {
+  canRedo: () => true,
+  canUndo: () => true,
+  redo: () => history.forward(),
+  undo: () => history.back(),
+};
 
 export const Explore: React.FC = () => {
   const [error, setError] = useState<Error>();
@@ -400,19 +408,21 @@ export const Explore: React.FC = () => {
           <Page>
             <PageContainer>
               {section === 'query' && sourceDef && modelDef && modelPath && (
-                <ExploreQueryEditor
-                  model={modelDef}
-                  modelPath={modelPath}
-                  source={sourceDef}
-                  queryModifiers={queryModifiers}
-                  topValues={topValues}
-                  queryWriter={queryWriter}
-                  querySummary={querySummary}
-                  result={result || error}
-                  runQuery={runQueryAction}
-                  refreshModel={refresh}
-                  isRunning={isRunning}
-                />
+                <UndoContext.Provider value={undoContext}>
+                  <ExploreQueryEditor
+                    model={modelDef}
+                    modelPath={modelPath}
+                    source={sourceDef}
+                    queryModifiers={queryModifiers}
+                    topValues={topValues}
+                    queryWriter={queryWriter}
+                    querySummary={querySummary}
+                    result={result || error}
+                    runQuery={runQueryAction}
+                    refreshModel={refresh}
+                    isRunning={isRunning}
+                  />
+                </UndoContext.Provider>
               )}
               {section === 'about' && (
                 <PageContent>
