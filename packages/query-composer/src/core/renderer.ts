@@ -72,8 +72,9 @@ export function updateAnnotation(
 
     if (inheritedRenderer !== renderer) {
       const removeRenderer = inheritedRenderer ? `-${inheritedRenderer} ` : '';
+      const addRenderer = renderer ?? '';
       annotation = {
-        blockNotes: [{text: `# ${removeRenderer}${renderer}\n`, at}],
+        blockNotes: [{text: `# ${removeRenderer}${addRenderer}\n`, at}],
       };
     } else {
       annotation = undefined;
