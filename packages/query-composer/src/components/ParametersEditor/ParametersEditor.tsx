@@ -14,101 +14,131 @@ import {titleize} from '../../core/utils';
 import {DateInput} from '../DateInput';
 import {timeToString, toDate} from '../../core/filters';
 import {stringFromExpr} from '../../core/expr';
+import {ClickToPopover} from '../QuerySummaryPanel/ClickToPopover';
+import {ActionIcon} from '../ActionIcon';
+import {
+  Button,
+  ButtonAndInputRow,
+  ContextMenuMain,
+  ContextMenuTitle,
+} from '../CommonElements';
 // import {DatePicker} from '../DatePicker';
+
+interface ParameterViewerProps {
+  parameter: QuerySummaryParameter;
+}
 
 interface ParameterEditorProps {
   parameter: QuerySummaryParameter;
   queryModifiers: QueryModifiers;
+  closeMenu: () => void;
 }
+
+const ParameterViewer = ({
+  parameter: {name, value, defaultValue},
+}: ParameterViewerProps) => {
+  const stringValue = stringFromExpr(value ?? defaultValue ?? null, '∅');
+  return (
+    <ParameterBox>
+      <Label>{titleize(name)}:</Label>
+      <Value>{stringValue}</Value>
+      <Hover>
+        <ActionIcon action="edit" />
+      </Hover>
+    </ParameterBox>
+  );
+};
 
 const ParameterEditor = ({
   parameter: {name, type, value, defaultValue},
   queryModifiers,
+  closeMenu,
 }: ParameterEditorProps) => {
   const [current, setCurrent] = useState<string>(
     stringFromExpr(value ?? defaultValue ?? null, '')
   );
 
   const update = () => queryModifiers.editParameter(name, current);
-  const updateDate = (date: string) => queryModifiers.editParameter(name, date);
-  const updateBoolean = (checked: string) =>
-    queryModifiers.editParameter(name, checked);
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      update();
+      closeMenu();
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMenu();
+    }
+  };
 
-  if (type === 'date') {
-    return (
-      <ParameterBox>
-        <Label>{titleize(name)}: </Label>
+  const getParameterEditor = () => {
+    if (type === 'date') {
+      return (
         <DateInput
           value={toDate(current)}
           setValue={time => {
             setCurrent(timeToString(time, 'day'));
-            updateDate(timeToString(time, 'day'));
           }}
           granularity="day"
         />
-      </ParameterBox>
-    );
-  } else if (type === 'time') {
-    return (
-      <ParameterBox>
-        <Label>{titleize(name)}: </Label>
+      );
+    } else if (type === 'time') {
+      return (
         <DateInput
           value={toDate(current)}
           setValue={time => {
             setCurrent(timeToString(time, 'second'));
-            updateDate(timeToString(time, 'second'));
           }}
           granularity="second"
         />
-      </ParameterBox>
-    );
-  } else if (type === 'number') {
-    return (
-      <ParameterBox>
-        <Label>{titleize(name)}: </Label>
+      );
+    } else if (type === 'number') {
+      return (
         <StyledInput
           type="number"
           value={current}
           placeholder={stringFromExpr(defaultValue ?? null, '')}
           onChange={e => setCurrent(e.target.value)}
-          onBlur={() => update()}
-          onKeyDown={e => {
-            if (e.key === 'Enter') update();
-          }}
         />
-      </ParameterBox>
-    );
-  } else if (type === 'boolean') {
-    return (
-      <ParameterBox>
-        <Label>{titleize(name)}: </Label>
+      );
+    } else if (type === 'boolean') {
+      return (
         <StyledInput
           type="checkbox"
           checked={current === 'true'}
           onChange={e => {
             const value = e.target.checked ? 'true' : 'false';
             setCurrent(value);
-            updateBoolean(value);
           }}
         />
-      </ParameterBox>
-    );
-  } else {
-    return (
-      <ParameterBox>
-        <Label>{titleize(name)}: </Label>
+      );
+    } else {
+      return (
         <StyledInput
           value={current}
           placeholder={stringFromExpr(defaultValue ?? null, '')}
           onChange={e => setCurrent(e.target.value)}
-          onBlur={() => update()}
-          onKeyDown={e => {
-            if (e.key === 'Enter') update();
-          }}
         />
-      </ParameterBox>
-    );
-  }
+      );
+    }
+  };
+  return (
+    <ContextMenuMain onKeyDown={onKeyDown}>
+      <ContextMenuTitle>{titleize(name)}</ContextMenuTitle>
+      <ButtonAndInputRow>
+        {getParameterEditor()}
+        <Button onClick={closeMenu}>Cancel</Button>
+        <Button
+          onClick={() => {
+            update();
+            closeMenu();
+          }}
+        >
+          OK
+        </Button>
+      </ButtonAndInputRow>
+    </ContextMenuMain>
+  );
 };
 
 export interface ParametersEditorProps {
@@ -126,10 +156,16 @@ export const ParametersEditor = ({
   return (
     <Row>
       {querySummary.parameters.map(parameter => (
-        <ParameterEditor
+        <ClickToPopover
           key={parameter.name}
-          parameter={parameter}
-          queryModifiers={queryModifiers}
+          popoverContent={({closeMenu}) => (
+            <ParameterEditor
+              parameter={parameter}
+              queryModifiers={queryModifiers}
+              closeMenu={closeMenu}
+            />
+          )}
+          content={() => <ParameterViewer parameter={parameter} />}
         />
       ))}
     </Row>
@@ -137,25 +173,39 @@ export const ParametersEditor = ({
 };
 
 const Row = styled.div`
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
+  font-size: var(--malloy-composer-fontSize, 14px);
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px;
+  z-index: 1000;
+`;
+
+const Hover = styled.div`
+  visibility: hidden;
 `;
 
 const ParameterBox = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+
+  &:hover ${Hover} {
+    visibility: visible !important;
+  }
 `;
 
 const Label = styled.label`
-  font-weight: bold;
   white-space: nowrap;
+  margin-right: 6px;
+`;
+
+const Value = styled.span`
+  white-space: nowrap;
+  font-weight: lighter;
 `;
 
 const StyledInput = styled.input`
-  font-family: var(--malloy-composer-fontFamily, sans-serif);
-  font-size: var(--malloy-composer-fontSize, 14px);
   border-radius: 5px;
   border: 1px solid #efefef;
   padding: 5.75px 10px;
