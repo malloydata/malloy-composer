@@ -153,8 +153,8 @@ export function useQueryBuilder(
   }, [sourceDef]);
 
   useEffect(() => {
-    setQuerySummary(queryBuilder.getQuerySummary())
-  }, [queryBuilder, setQuerySummary])
+    setQuerySummary(queryBuilder.getQuerySummary());
+  }, [queryBuilder, setQuerySummary]);
 
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
