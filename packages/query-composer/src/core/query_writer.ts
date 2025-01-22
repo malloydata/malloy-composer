@@ -119,9 +119,15 @@ export class QueryWriter extends SourceUtils {
       if (field.annotation) {
         const {blockNotes, notes} = field.annotation;
         const directOnly = {blockNotes, notes};
-        tagLines = Tag.annotationToTaglines(directOnly).map(tagLine =>
-          tagLine.replace(/\n$/, '')
-        );
+        if (field.type === 'turtle') {
+          tagLines = Tag.annotationToTaglines(field.annotation).map(tagLine =>
+            tagLine.replace(/\n$/, '')
+          );
+        } else {
+          tagLines = Tag.annotationToTaglines(directOnly).map(tagLine =>
+            tagLine.replace(/\n$/, '')
+          );
+        }
       }
       tagLines = uniq(tagLines);
 
