@@ -386,7 +386,7 @@ export function useQueryBuilder(
       clearQuery,
       onDrill,
     };
-  }, [modifyQuery, queryBuilder, updateQueryInURL]);
+  }, [modifyQuery, updateQueryInURL]);
 
   useEffect(() => {
     console.info('> modifyQuery changed');
