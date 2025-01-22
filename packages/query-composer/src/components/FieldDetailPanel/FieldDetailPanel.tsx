@@ -27,8 +27,8 @@ import {ContextMenuMain, ScrollMain} from '../CommonElements';
 import {largeNumberLabel} from '../../utils';
 import {SearchContext} from '../../contexts/search_context';
 
-interface FieldDetailPanelProps {
-  annotations: string[];
+export interface FieldDetailPanelProps {
+  annotations?: string[];
   fieldPath?: string;
   filterExpression?: string;
   definition?: string;
@@ -72,7 +72,7 @@ export const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({
               <FieldPath>{filterExpression}</FieldPath>
             </InfoSection>
           )}
-          {annotations.length ? (
+          {annotations?.length ? (
             <InfoSection>
               <div>Annotations</div>
               {annotations.map((annotation, idx) => (
