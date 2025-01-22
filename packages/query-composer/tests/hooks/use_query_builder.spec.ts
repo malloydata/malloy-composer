@@ -156,9 +156,11 @@ run: names -> {
       expect(querySummary).toEqual(
         expect.objectContaining({
           name: 'new_query',
-          isRunnable: true,
+          isRunnable: false,
         })
       );
+      expect(querySummary?.stages).toHaveLength(1);
+      expect(querySummary?.stages?.[0].items).toHaveLength(0);
       expect(queryMalloy).toEqual('run: cohort -> {\n}');
       expect(warnSpy).toHaveBeenCalledWith(
         'Discarding query',
