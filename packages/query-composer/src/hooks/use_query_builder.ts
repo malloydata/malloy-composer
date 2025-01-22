@@ -152,6 +152,10 @@ export function useQueryBuilder(
     console.info('> sourceDef changed');
   }, [sourceDef]);
 
+  useEffect(() => {
+    setQuerySummary(queryBuilder.getQuerySummary())
+  }, [queryBuilder, setQuerySummary])
+
   const modifyQuery = useCallback(
     (modify: (queryBuilder: QueryBuilder) => void, noURLUpdate = false) => {
       query.current = structuredClone(queryBuilder.getQuery());
@@ -186,7 +190,6 @@ export function useQueryBuilder(
 
   const queryModifiers = useMemo(() => {
     const clearQuery = (noURLUpdate = false) => {
-      if (queryBuilder.isEmpty()) return;
       modifyQuery(qb => {
         qb.clearQuery();
       }, noURLUpdate);
