@@ -244,7 +244,7 @@ const TO_TIME_STRING: [Date, TimeFrame, string][] = [
 
 describe('timeToString', () => {
   it.each(TO_TIME_STRING)(
-    '%s generates %s',
+    '%s, %s generates %s',
     (input: Date, format: TimeFrame, output: string) => {
       expect(timeToString(input, format)).toEqual(output);
     }
