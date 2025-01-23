@@ -130,6 +130,7 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
               {value: 'custom', label: 'Custom'},
             ] as {value: StringFilterType; label: string}[]
           }
+          width="20em"
         />
         {equalTo.builder}
         {startsWith.builder}

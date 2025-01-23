@@ -36,7 +36,7 @@ interface SelectDropdownProps<T> {
   options: {label: string | JSX.Element; value: T; divider?: boolean}[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
-  width?: number;
+  width?: number | string;
 }
 
 const Wrapper = styled.div`
