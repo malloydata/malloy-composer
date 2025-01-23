@@ -229,7 +229,7 @@ describe('stringFilterChangeType', () => {
   );
 });
 
-const DATE = new Date('02-03-2024 13:02:01');
+const DATE = new Date(1706994121000); // 2024-02-03 21:02:01 UTC
 
 const TO_TIME_STRING: [Date, TimeFrame, string][] = [
   [DATE, 'year', '@2024'],
