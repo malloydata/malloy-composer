@@ -29,7 +29,7 @@ import {Placement} from '@popperjs/core';
 interface PopoverProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  width?: number;
+  width?: number | string;
   maxHeight?: number;
   placement?: Placement;
   referenceDiv?: RefObject<HTMLDivElement>;
@@ -41,7 +41,7 @@ interface PopoverProps {
 }
 
 export const PopoverBox = styled.div<{
-  width: number;
+  width: number | string;
   zIndex: number;
 }>`
   border: 1px solid var(--malloy-composer-menu-border, #ececed);
@@ -51,7 +51,7 @@ export const PopoverBox = styled.div<{
   background-color: var(--malloy-composer-menu-background, white);
   font-size: var(--malloy-composer-menu-fontSize, 14px);
   ${({width, zIndex}) => `
-    width: ${width}px;
+    width: ${typeof width === 'string' ? width : `${width}px`};
     z-index: ${zIndex};
   `}
 `;

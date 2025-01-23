@@ -21,9 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import styled from 'styled-components';
 import {useEffect, useState} from 'react';
-import {FormItem, FormInputLabel} from '../CommonElements';
+import {FormItem, FormInputLabel, StyledInput} from '../CommonElements';
 
 interface NumberInputProps {
   value: number;
@@ -67,18 +66,3 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     </FormItem>
   );
 };
-
-const StyledInput = styled.input`
-  font-family: var(--malloy-composer-fontFamily, sans-serif);
-  font-size: var(--malloy-composer-fontSize, 14px);
-  border-radius: 5px;
-  border: 1px solid #efefef;
-  padding: 5.75px 10px;
-  outline: none;
-  width: calc(100% - 22px);
-
-  &:focus {
-    border-color: var(--malloy-composer-form-focus, #4285f4);
-    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
-  }
-`;

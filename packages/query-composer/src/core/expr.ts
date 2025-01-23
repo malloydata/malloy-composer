@@ -29,7 +29,7 @@ export const stringFromExpr = (e: Expr | null, nullValue = 'null'): string => {
     case 'numberLiteral':
       return e.literal;
     case 'cast':
-      return stringFromExpr(e.e);
+      return stringFromExpr(e.e, nullValue);
   }
   return JSON.stringify(e);
 };

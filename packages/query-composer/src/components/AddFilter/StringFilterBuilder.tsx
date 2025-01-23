@@ -31,6 +31,10 @@ import {
   StringEqualToFilter,
   StringFilter,
   StringFilterType,
+  StringGreaterThanFilter,
+  StringGreaterThanOrEqualToFilter,
+  StringLessThanFilter,
+  StringLessThanOrEqualToFilter,
   StringNotContainsFilter,
   StringNotEndsWithFilter,
   StringNotEqualToFilter,
@@ -46,6 +50,7 @@ import {PillInput} from '../PillInput/PillInput';
 import {SelectDropdown} from '../SelectDropdown';
 import {LoadingSpinner} from '../Spinner';
 import {largeNumberLabel} from '../../utils';
+import {StringInput} from '../StringInput';
 
 interface StringFilterBuilderProps {
   fieldPath: string;
@@ -69,6 +74,16 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
   const doesNotContain = useStringNotStartsWithBuilder(filter, setFilter);
   const endsWith = useStringEndsWithBuilder(filter, setFilter);
   const doesNotEndWith = useStringNotEndsWithBuilder(filter, setFilter);
+  const greaterThan = useStringGreaterThanBuilder(filter, setFilter);
+  const greaterThanOrEqualTo = useStringGreaterThanOrEqualToBuilder(
+    filter,
+    setFilter
+  );
+  const lessThan = useStringLessThanBuilder(filter, setFilter);
+  const lessThanOrEqualTo = useStringLessThanOrEqualToBuilder(
+    filter,
+    setFilter
+  );
   const custom = useStringCustomBuilder(filter, setFilter);
 
   const showUtilRow = !!(
@@ -100,11 +115,22 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
               {value: 'does_not_start_with', label: 'Does not start with'},
               {value: 'does_not_end_with', label: 'Does not end with'},
               {value: 'does_not_contain', label: 'Does not contain'},
+              {value: 'is_greater_than', label: 'Greater than'},
+              {value: 'is_less_than', label: 'Less than'},
+              {
+                value: 'is_greater_than_or_equal_to',
+                label: 'Greater than or equal to',
+              },
+              {
+                value: 'is_less_than_or_equal_to',
+                label: 'Less than or equal to',
+              },
               {value: 'is_not_blank', label: 'Not blank'},
               {value: 'is_not_null', label: 'Not null'},
               {value: 'custom', label: 'Custom'},
             ] as {value: StringFilterType; label: string}[]
           }
+          width="20em"
         />
         {equalTo.builder}
         {startsWith.builder}
@@ -113,6 +139,10 @@ export const StringFilterBuilder: React.FC<StringFilterBuilderProps> = ({
         {doesNotContain.builder}
         {endsWith.builder}
         {doesNotEndWith.builder}
+        {greaterThan.builder}
+        {greaterThanOrEqualTo.builder}
+        {lessThan.builder}
+        {lessThanOrEqualTo.builder}
         {custom.builder}
       </BuilderRow>
       {showUtilRow && (
@@ -320,6 +350,74 @@ function useStringNotEndsWithBuilder(
   );
   const util = null;
   return {builder, util};
+}
+
+function useStringGreaterThanBuilder(
+  filter: StringFilter,
+  setFilter: (filter: StringGreaterThanFilter) => void
+) {
+  if (filter.type !== 'is_greater_than') {
+    return {builder: null, util: null};
+  }
+
+  const builder = (
+    <StringInput
+      value={filter.value}
+      setValue={value => setFilter({...filter, value})}
+    />
+  );
+  return {builder};
+}
+
+function useStringLessThanBuilder(
+  filter: StringFilter,
+  setFilter: (filter: StringLessThanFilter) => void
+) {
+  if (filter.type !== 'is_less_than') {
+    return {builder: null, util: null};
+  }
+
+  const builder = (
+    <StringInput
+      value={filter.value}
+      setValue={value => setFilter({...filter, value})}
+    />
+  );
+  return {builder};
+}
+
+function useStringGreaterThanOrEqualToBuilder(
+  filter: StringFilter,
+  setFilter: (filter: StringGreaterThanOrEqualToFilter) => void
+) {
+  if (filter.type !== 'is_greater_than_or_equal_to') {
+    return {builder: null, util: null};
+  }
+
+  const builder = (
+    <StringInput
+      value={filter.value}
+      setValue={value => setFilter({...filter, value})}
+    />
+  );
+  return {builder};
+}
+
+function useStringLessThanOrEqualToBuilder(
+  filter: StringFilter,
+  setFilter: (filter: StringLessThanOrEqualToFilter) => void
+) {
+  if (filter.type !== 'is_less_than_or_equal_to') {
+    return {builder: null, util: null};
+  }
+
+  const builder = (
+    <StringInput
+      value={filter.value}
+      setValue={value => setFilter({...filter, value})}
+    />
+  );
+  return {builder};
 }
 
 function useStringCustomBuilder(
