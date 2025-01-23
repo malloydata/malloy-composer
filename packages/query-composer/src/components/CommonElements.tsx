@@ -291,3 +291,18 @@ export const PageContent = styled.div`
   flex-direction: row;
   overflow: hidden;
 `;
+
+export const StyledInput = styled.input`
+  font-family: var(--malloy-composer-fontFamily, sans-serif);
+  font-size: var(--malloy-composer-fontSize, 14px);
+  border-radius: 5px;
+  border: 1px solid #efefef;
+  padding: 5.75px 10px;
+  outline: none;
+  width: calc(100% - 22px);
+
+  &:focus {
+    border-color: var(--malloy-composer-form-focus, #4285f4);
+    background-color: var(--malloy-composer-form-focusBackground, #f0f6ff);
+  }
+`;

@@ -35,6 +35,27 @@ import {
 } from '../types';
 import {maybeQuoteIdentifier, unquoteIdentifier} from './utils';
 
+export type TimeFrame =
+  | 'year'
+  | 'quarter'
+  | 'month'
+  | 'week'
+  | 'day'
+  | 'hour'
+  | 'minute'
+  | 'second';
+
+export const TIMEFRAMES: TimeFrame[] = [
+  'year',
+  'quarter',
+  'month',
+  'week',
+  'day',
+  'hour',
+  'minute',
+  'second',
+];
+
 function alternationOf(alternator: '|' | '&', values: string[]): string {
   if (values.length === 0) {
     throw new Error('Alternation must have some values');
@@ -183,6 +204,14 @@ export function stringFilterToString(
           .map(quoteString)
       )}`;
     }
+    case 'is_greater_than':
+      return `${quotedField} > ${quoteString(filter.value)}`;
+    case 'is_less_than':
+      return `${quotedField} < ${quoteString(filter.value)}`;
+    case 'is_greater_than_or_equal_to':
+      return `${quotedField} >= ${quoteString(filter.value)}`;
+    case 'is_less_than_or_equal_to':
+      return `${quotedField} <= ${quoteString(filter.value)}`;
     case 'is_null':
       return `${quotedField} = null`;
     case 'is_not_null':
@@ -272,18 +301,7 @@ function quoteString(str: string) {
   return `'${str.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 }
 
-export function timeToString(
-  time: Date,
-  timeframe:
-    | 'year'
-    | 'quarter'
-    | 'month'
-    | 'week'
-    | 'day'
-    | 'hour'
-    | 'minute'
-    | 'second'
-): string {
+export function timeToString(time: Date, timeframe: TimeFrame): string {
   switch (timeframe) {
     case 'year': {
       const year = digits(time.getUTCFullYear(), 4);
@@ -348,6 +366,14 @@ export function stringFilterChangeType(
   filter: StringFilter,
   type: StringFilterType
 ): StringFilter {
+  const values =
+    'values' in filter
+      ? filter.values
+      : 'value' in filter
+      ? [filter.value]
+      : [];
+  const value = values.length ? values[0] : '';
+
   switch (type) {
     case 'is_equal_to':
     case 'is_not_equal_to':
@@ -357,7 +383,12 @@ export function stringFilterChangeType(
     case 'does_not_contain':
     case 'ends_with':
     case 'does_not_end_with':
-      return {type, values: 'values' in filter ? filter.values : []};
+      return {type, values};
+    case 'is_greater_than':
+    case 'is_greater_than_or_equal_to':
+    case 'is_less_than':
+    case 'is_less_than_or_equal_to':
+      return {type, value};
     case 'is_blank':
     case 'is_not_blank':
     case 'is_null':
@@ -535,6 +566,11 @@ const STR_NSTARTS_FILTER = new RegExp(
 const STR_NENDS_FILTER = new RegExp(
   `^(${FIELD})\\s*!~\\s*(${ALTERNATION('&', ENDS_STRING)})$`
 );
+const STR_GT_FILTER = new RegExp(`^(${FIELD})\\s*>\\s*(${STRING})$`);
+const STR_LT_FILTER = new RegExp(`^(${FIELD})\\s*<\\s*(${STRING})$`);
+const STR_LTE_FILTER = new RegExp(`^(${FIELD})\\s*<=\\s*(${STRING})$`);
+const STR_GTE_FILTER = new RegExp(`^(${FIELD})\\s*>=\\s*(${STRING})$`);
+
 const NUMBER = `${DIGIT}+(?:\\.${DIGIT}*)?`;
 const NUM_EQ_FILTER = new RegExp(
   `^(${FIELD})\\s*=\\s*(${ALTERNATION('|', NUMBER)})$`
@@ -687,36 +723,14 @@ function getAlternationValues(kind: '|' | '&', alternation: string) {
 }
 
 function toTimeUnit(timeUnitString: string): InThePastUnit {
-  if (
-    [
-      'year',
-      'quarter',
-      'month',
-      'week',
-      'day',
-      'hour',
-      'minute',
-      'second',
-    ].includes(timeUnitString)
-  ) {
+  if (TIMEFRAMES.includes(timeUnitString as TimeFrame)) {
     return (timeUnitString + 's') as InThePastUnit;
   }
   throw new Error(`Invalid time unit '${timeUnitString}'`);
 }
 
 function toTimePeriod(timeUnitString: string): ThisLastPeriod {
-  if (
-    [
-      'year',
-      'quarter',
-      'month',
-      'week',
-      'day',
-      'hour',
-      'minute',
-      'second',
-    ].includes(timeUnitString)
-  ) {
+  if (TIMEFRAMES.includes(timeUnitString as TimeFrame)) {
     return timeUnitString as ThisLastPeriod;
   }
   throw new Error(`Invalid time period '${timeUnitString}'`);
@@ -888,6 +902,47 @@ function hackyTerribleStringToStringFilter(
       },
     };
   }
+  const isGTMatch = filterString.match(STR_GT_FILTER);
+  if (isGTMatch) {
+    return {
+      field: extractField(isGTMatch[1]),
+      filter: {
+        type: 'is_greater_than',
+        value: deEscape(deQuote(extractField(isGTMatch[2]))),
+      },
+    };
+  }
+  const isLTMatch = filterString.match(STR_LT_FILTER);
+  if (isLTMatch) {
+    return {
+      field: extractField(isLTMatch[1]),
+      filter: {
+        type: 'is_less_than',
+        value: deEscape(deQuote(extractField(isLTMatch[2]))),
+      },
+    };
+  }
+  const isGTEMatch = filterString.match(STR_GTE_FILTER);
+  if (isGTEMatch) {
+    return {
+      field: extractField(isGTEMatch[1]),
+      filter: {
+        type: 'is_greater_than_or_equal_to',
+        value: deEscape(deQuote(extractField(isGTEMatch[2]))),
+      },
+    };
+  }
+  const isLTEMatch = filterString.match(STR_LTE_FILTER);
+  if (isLTEMatch) {
+    return {
+      field: extractField(isLTEMatch[1]),
+      filter: {
+        type: 'is_less_than_or_equal_to',
+        value: deEscape(deQuote(extractField(isLTEMatch[2]))),
+      },
+    };
+  }
+
   return undefined;
 }
 

@@ -354,6 +354,26 @@ export interface StringNotEndsWithFilter {
   values: string[];
 }
 
+export interface StringGreaterThanFilter {
+  type: 'is_greater_than';
+  value: string;
+}
+
+export interface StringLessThanFilter {
+  type: 'is_less_than';
+  value: string;
+}
+
+export interface StringGreaterThanOrEqualToFilter {
+  type: 'is_greater_than_or_equal_to';
+  value: string;
+}
+
+export interface StringLessThanOrEqualToFilter {
+  type: 'is_less_than_or_equal_to';
+  value: string;
+}
+
 export type NumberIsNullFilter = AnyIsNullFilter;
 export type NumberIsNotNullFilter = AnyIsNotNullFilter;
 export type NumberCustomFilter = AnyCustomFilter;
@@ -407,6 +427,10 @@ export type StringFilter =
   | StringIsNotBlankFilter
   | StringEndsWithFilter
   | StringNotEndsWithFilter
+  | StringGreaterThanFilter
+  | StringLessThanFilter
+  | StringGreaterThanOrEqualToFilter
+  | StringLessThanOrEqualToFilter
   | StringIsNullFilter
   | StringIsNotNullFilter
   | StringCustomFilter;
@@ -422,6 +446,10 @@ export type StringFilterType =
   | 'is_not_blank'
   | 'ends_with'
   | 'does_not_end_with'
+  | 'is_greater_than'
+  | 'is_less_than'
+  | 'is_greater_than_or_equal_to'
+  | 'is_less_than_or_equal_to'
   | 'is_null'
   | 'is_not_null'
   | 'custom';

@@ -9,13 +9,17 @@ import {
   booleanFilterToString,
   hackyTerribleStringToFilter,
   numberFilterToString,
+  stringFilterChangeType,
   stringFilterToString,
   timeFilterToString,
+  TimeFrame,
+  timeToString,
 } from '../../src/core/filters';
 import {
   BooleanFilter,
   NumberFilter,
   StringFilter,
+  StringFilterType,
   TimeFilter,
 } from '../../src/types';
 
@@ -70,6 +74,11 @@ const STRING_FILTER_TO_STRING_NON_EMPTY: [StringFilter, string][] = [
   [{type: 'contains', values: ['a', 'b']}, "a ~ '%a%' | '%b%'"],
   [{type: 'does_not_contain', values: ['a']}, "a !~ '%a%'"],
   [{type: 'does_not_contain', values: ['a', 'b']}, "a !~ '%a%' & '%b%'"],
+
+  [{type: 'is_greater_than', value: 'a'}, "a > 'a'"],
+  [{type: 'is_greater_than_or_equal_to', value: 'a'}, "a >= 'a'"],
+  [{type: 'is_less_than', value: 'a'}, "a < 'a'"],
+  [{type: 'is_less_than_or_equal_to', value: 'a'}, "a <= 'a'"],
 
   [{type: 'is_blank'}, "a = ''"],
   [{type: 'is_not_blank'}, "a != ''"],
@@ -187,6 +196,57 @@ describe('hackyTerribleStringToFilter (time)', () => {
     '%o is generated from %s',
     (filter: TimeFilter, str: string) => {
       expect(hackyTerribleStringToFilter(str)).toEqual({field: 'a', filter});
+    }
+  );
+});
+
+const STRING_FILTER_CHANGE_TYPE: [
+  StringFilter,
+  StringFilterType,
+  StringFilter,
+][] = [
+  [{type: 'is_not_null'}, 'is_null', {type: 'is_null'}],
+  [{type: 'is_not_null'}, 'is_equal_to', {type: 'is_equal_to', values: []}],
+  [{type: 'is_equal_to', values: ['a', 'b']}, 'is_null', {type: 'is_null'}],
+  [
+    {type: 'is_equal_to', values: ['a', 'b']},
+    'is_greater_than',
+    {type: 'is_greater_than', value: 'a'},
+  ],
+  [
+    {type: 'is_greater_than', value: 'a'},
+    'is_equal_to',
+    {type: 'is_equal_to', values: ['a']},
+  ],
+];
+
+describe('stringFilterChangeType', () => {
+  it.each(STRING_FILTER_CHANGE_TYPE)(
+    '%o %s is converted to %o',
+    (input, type, output) => {
+      expect(stringFilterChangeType(input, type)).toEqual(output);
+    }
+  );
+});
+
+const DATE = new Date('02-03-2024 13:02:01');
+
+const TO_TIME_STRING: [Date, TimeFrame, string][] = [
+  [DATE, 'year', '@2024'],
+  [DATE, 'quarter', '@2024-Q1'],
+  [DATE, 'month', '@2024-02'],
+  [DATE, 'week', '@WK2024-02-03'],
+  [DATE, 'day', '@2024-02-03'],
+  [DATE, 'hour', '@2024-02-03 21:00'],
+  [DATE, 'minute', '@2024-02-03 21:02'],
+  [DATE, 'second', '@2024-02-03 21:02:01'],
+];
+
+describe('timeToString', () => {
+  it.each(TO_TIME_STRING)(
+    '%s generates %s',
+    (input: Date, format: TimeFrame, output: string) => {
+      expect(timeToString(input, format)).toEqual(output);
     }
   );
 });
