@@ -10,7 +10,8 @@
     "resolveJsonModule": true,
     "rootDir": "src",
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "lib": ["ES2021"]
   },
   "include": ["src"]
 }

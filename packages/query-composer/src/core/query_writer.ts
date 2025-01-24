@@ -199,9 +199,15 @@ export class QueryWriter extends SourceUtils {
         };
       } else {
         const property = computeProperty(stage, field);
-        const malloy: Fragment[] = [
-          `${maybeQuoteIdentifier(field.as || field.name)} is ${field.code}`,
-        ];
+        const malloy: Fragment[] = [];
+        const identifier = maybeQuoteIdentifier(field.as || field.name);
+        if (field.code) {
+          malloy.push(`${identifier} is ${field.code}`);
+        } else if (field.e) {
+          malloy.push(codeFromExpr(field.e, undefined));
+        } else {
+          malloy.push(identifier);
+        }
         return {
           tagLines,
           property,
@@ -627,6 +633,7 @@ export class QueryWriter extends SourceUtils {
             saveDefinition: source === this.getSource() ? field : undefined,
             stages: stages,
             styles: this.stylesForField(field, fieldIndex),
+            annotations,
           });
         } else {
           items.push({
@@ -635,12 +642,13 @@ export class QueryWriter extends SourceUtils {
             fieldIndex,
             field,
             saveDefinition: source === this.getSource() ? field : undefined,
-            source: field.code,
+            source: field.code || codeFromExpr(field.e) || undefined,
             kind: expressionIsCalculation(field.expressionType)
               ? 'measure'
               : 'dimension',
             property: computeProperty(stage, field),
             styles: this.stylesForField(field, fieldIndex),
+            annotations,
           });
           // mtoy to will: This is stripping more things from order by
           if (field.type !== 'error' && isLeafAtomic(field)) {

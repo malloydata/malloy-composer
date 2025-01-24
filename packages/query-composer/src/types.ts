@@ -139,6 +139,7 @@ export interface QuerySummaryItemNestedQueryDefinition {
   stages: StageSummary[];
   saveDefinition: FieldDef | undefined;
   styles?: QuerySummaryItemDataStyle[];
+  annotations: string[];
 }
 
 export interface QuerySummaryItemFieldDefinition {
@@ -152,6 +153,7 @@ export interface QuerySummaryItemFieldDefinition {
   property: PropertyType;
   filters?: QuerySummaryItemFilter[];
   styles?: QuerySummaryItemDataStyle[];
+  annotations: string[];
 }
 
 export interface QuerySummaryItemFilter {
