@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {QuerySummaryPanel} from '../QuerySummaryPanel';
 import {
   ModelDef,
@@ -19,6 +19,7 @@ import {QuerySummary} from '../../types';
 import styled from 'styled-components';
 import {SearchContext} from '../../contexts/search_context';
 import {QueryWriter} from '../../core/query_writer';
+import {UndoContext} from '../../contexts/undo_context';
 
 export interface QueryEditorProps {
   isRunning: boolean;
@@ -49,6 +50,7 @@ export const QueryEditor = ({
 
   const isQueryEmpty = !querySummary || querySummary.stages.length === 0;
   const {isRunnable} = querySummary ?? {isRunnable: false};
+  const {canRedo, canUndo, undo, redo} = useContext(UndoContext);
 
   const query = queryWriter.getQueryStringForNotebook();
 
@@ -84,6 +86,32 @@ export const QueryEditor = ({
                     onClick={event => {
                       const {altKey, ctrlKey, metaKey, shiftKey} = event;
                       refreshModel({altKey, ctrlKey, metaKey, shiftKey});
+                    }}
+                    color="dimension"
+                  />
+                )}
+              </div>
+              <div>
+                {undo && (
+                  <ActionIcon
+                    action="undo"
+                    disabled={!canUndo?.()}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      undo({altKey, ctrlKey, metaKey, shiftKey});
+                    }}
+                    color="dimension"
+                  />
+                )}
+              </div>
+              <div>
+                {redo && (
+                  <ActionIcon
+                    action="redo"
+                    disabled={!canRedo?.()}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      redo({altKey, ctrlKey, metaKey, shiftKey});
                     }}
                     color="dimension"
                   />
