@@ -191,7 +191,10 @@ export function pathParent(path: string): string {
   return parts[parts.length - 2];
 }
 
-export function largeNumberLabel(n: number): string {
+export function largeNumberLabel(n: number | null): string {
+  if (n === null) {
+    return '∅';
+  }
   if (n < 1_000) {
     return n.toLocaleString();
   } else if (n < 10_000) {
