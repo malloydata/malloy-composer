@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>viz_dashboard</title>
     <g id="viz_dashboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="dashboard_black_24dp" transform="translate(13.000000, 13.000000)">
             <path d="M5,0 L80,0 C82.7614237,-5.07265313e-16 85,2.23857625 85,5 L85,80 C85,82.7614237 82.7614237,85 80,85 L5,85 C2.23857625,85 3.38176876e-16,82.7614237 0,80 L0,5 C-3.38176876e-16,2.23857625 2.23857625,5.07265313e-16 5,0 Z" id="Path"></path>

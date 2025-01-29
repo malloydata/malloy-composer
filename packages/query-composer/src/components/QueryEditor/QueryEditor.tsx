@@ -88,32 +88,7 @@ export const QueryEditor = ({
                       refreshModel({altKey, ctrlKey, metaKey, shiftKey});
                     }}
                     color="dimension"
-                  />
-                )}
-              </div>
-              <div>
-                {undo && (
-                  <ActionIcon
-                    action="undo"
-                    disabled={!canUndo?.()}
-                    onClick={event => {
-                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
-                      undo({altKey, ctrlKey, metaKey, shiftKey});
-                    }}
-                    color="dimension"
-                  />
-                )}
-              </div>
-              <div>
-                {redo && (
-                  <ActionIcon
-                    action="redo"
-                    disabled={!canRedo?.()}
-                    onClick={event => {
-                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
-                      redo({altKey, ctrlKey, metaKey, shiftKey});
-                    }}
-                    color="dimension"
+                    title="Refresh Model"
                   />
                 )}
               </div>
@@ -122,6 +97,7 @@ export const QueryEditor = ({
                   action="add"
                   onClick={() => setInsertOpen(true)}
                   color="dimension"
+                  title="Add"
                 />
                 <Popover open={insertOpen} setOpen={setInsertOpen}>
                   <TopQueryActionMenu
@@ -140,6 +116,7 @@ export const QueryEditor = ({
                   action="load"
                   onClick={() => setLoadOpen(true)}
                   color="query"
+                  title="Load Query"
                 />
                 <Popover open={loadOpen} setOpen={setLoadOpen}>
                   <LoadTopQueryContextBar
@@ -160,6 +137,34 @@ export const QueryEditor = ({
                 color={isQueryEmpty ? 'other' : 'dimension'}
                 title="Clear Query"
               />
+              <div>
+                {undo && (
+                  <ActionIcon
+                    action="undo"
+                    disabled={!canUndo?.()}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      undo({altKey, ctrlKey, metaKey, shiftKey});
+                    }}
+                    color="dimension"
+                    title="Undo"
+                  />
+                )}
+              </div>
+              <div>
+                {redo && (
+                  <ActionIcon
+                    action="redo"
+                    disabled={!canRedo?.()}
+                    onClick={event => {
+                      const {altKey, ctrlKey, metaKey, shiftKey} = event;
+                      redo({altKey, ctrlKey, metaKey, shiftKey});
+                    }}
+                    color="dimension"
+                    title="Redo"
+                  />
+                )}
+              </div>
               <StyledRunIcon
                 width="80px"
                 onClick={onRun}
@@ -212,7 +217,7 @@ const SidebarOuter = styled.div`
 `;
 
 const SidebarHeader = styled(PageHeader)`
-  gap: 20px;
+  gap: 10px;
   justify-content: center;
   align-items: center;
 `;
