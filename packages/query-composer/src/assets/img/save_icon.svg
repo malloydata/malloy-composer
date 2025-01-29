@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>query_save_hover</title>
     <g id="query_save_hover" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <circle id="Oval" class="hoverfill" fill="transparent" cx="55" cy="55" r="55"></circle>
         <g id="Shape-2" transform="translate(24.000000, 24.000000) scale(1.1)" fill="#4285F4" fill-rule="nonzero" stroke="#4285F4" class="primaryfill primarystroke">

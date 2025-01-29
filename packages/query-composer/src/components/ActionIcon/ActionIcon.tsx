@@ -84,6 +84,7 @@ export type ActionIconName =
 
 interface ActionIconProps {
   action: ActionIconName;
+  disabled?: boolean;
   onClick?: (event: React.MouseEvent) => void;
   color?: ColorKey;
   title?: string;
@@ -127,6 +128,7 @@ const iconMap: Record<
 
 export const ActionIcon: React.FC<ActionIconProps> = ({
   action,
+  disabled,
   onClick,
   color,
   title,
@@ -134,12 +136,12 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
 }) => {
   const sizeProps = {width: '22px', height: '22px'};
   const otherProps = {
-    onClick,
+    onClick: disabled ? undefined : onClick,
     style: {cursor: onClick ? 'pointer' : 'unset'},
   };
   const props = {...sizeProps, ...otherProps};
   const Icon = iconMap[action];
-
+  color = disabled ? 'other' : color;
   return (
     <IconWrapper
       className={className}
