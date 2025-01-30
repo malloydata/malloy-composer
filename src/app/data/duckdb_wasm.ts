@@ -71,7 +71,10 @@ export class BrowserURLReader implements malloy.URLReader {
 
 const URL_READER = new BrowserURLReader();
 const DUCKDB_WASM = new DuckDBWasmLookup();
-const RUNTIME = new malloy.Runtime(URL_READER, DUCKDB_WASM);
+const RUNTIME = new malloy.Runtime({
+  urlReader: URL_READER,
+  connections: DUCKDB_WASM,
+});
 
 export async function apps(): Promise<explore.ComposerConfig> {
   const base = window.location.href;
@@ -145,7 +148,10 @@ export async function datasets(appRoot: string): Promise<explore.AppInfo> {
       connection.registerRemoteTableCallback(remoteTableCallback);
 
       const modelURL = new URL(sample.path, samplesURL);
-      const runtime = new malloy.Runtime(URL_READER, DUCKDB_WASM);
+      const runtime = new malloy.Runtime({
+        urlReader: URL_READER,
+        connections: DUCKDB_WASM,
+      });
       const model = await runtime.getModel(modelURL);
       const sources =
         sample.sources ||

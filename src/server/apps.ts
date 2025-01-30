@@ -27,6 +27,9 @@ import * as explore from '../types';
 import * as path from 'path';
 import * as fs from 'fs';
 
+const unpackResponse = (response: string | {contents: string}): string =>
+  typeof response === 'string' ? response : response.contents;
+
 export async function getApps(): Promise<explore.ComposerConfig> {
   const config = await getConfig();
   let root = config.root;
@@ -54,14 +57,18 @@ export async function getApps(): Promise<explore.ComposerConfig> {
 
   if (rootIsConfigFile) {
     const response = await URL_READER.readURL(new URL('file://' + rootPath));
-    const config = JSON.parse(response) as explore.ComposerConfig;
+    const config = JSON.parse(
+      unpackResponse(response)
+    ) as explore.ComposerConfig;
     const rootIsDatasetsConfigFile = 'apps' in config;
     if (rootIsDatasetsConfigFile) {
-      const readme =
-        config.readme &&
-        (await URL_READER.readURL(
+      let readme: string | undefined;
+      if (config.readme) {
+        const response = await URL_READER.readURL(
           new URL('file://' + path.join(workingDirectory, config.readme))
-        ));
+        );
+        readme = unpackResponse(response);
+      }
       return {
         ...config,
         readme,

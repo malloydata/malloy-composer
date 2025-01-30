@@ -24,7 +24,7 @@
 import * as explore from '../types';
 import {Runtime, isSourceDef} from '@malloydata/malloy';
 import {CONNECTION_MANAGER} from './connections';
-import {URL_READER} from './urls';
+import {URL_READER as urlReader} from './urls';
 import {promises as fs} from 'fs';
 import * as path from 'path';
 import {getConfig} from './config';
@@ -33,6 +33,9 @@ import {snakeToTitle} from '../app/utils';
 export async function getDatasets(
   _app: explore.AppListing
 ): Promise<explore.AppInfo> {
+  const unpackResponse = (response: string | {contents: string}): string =>
+    typeof response === 'string' ? response : response.contents;
+
   const {workingDirectory} = await getConfig();
   const root = path.join(workingDirectory, _app.path);
   const rootDirectory = (await fs.lstat(root)).isDirectory()
@@ -40,13 +43,13 @@ export async function getDatasets(
     : path.dirname(root);
   let app: explore.AppConfig = {};
   if (root.endsWith('.json')) {
-    const response = await URL_READER.readURL(new URL('file://' + root));
-    app = JSON.parse(response) as explore.AppConfig;
+    const response = await urlReader.readURL(new URL('file://' + root));
+    app = JSON.parse(unpackResponse(response)) as explore.AppConfig;
   }
   const title = app.title;
   const readme =
     app.readme &&
-    (await URL_READER.readURL(
+    (await urlReader.readURL(
       new URL('file://' + path.resolve(rootDirectory, app.readme))
     ));
   let modelConfigs = app.models;
@@ -75,7 +78,7 @@ export async function getDatasets(
       const modelPath = path.resolve(rootDirectory, sample.path);
       const modelURL = new URL('file://' + modelPath);
       const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
-      const runtime = new Runtime(URL_READER, connections);
+      const runtime = new Runtime({urlReader, connections});
       const model = await runtime.getModel(modelURL);
       const sources =
         sample.sources ||
@@ -96,7 +99,7 @@ export async function getDatasets(
     })
   );
   return {
-    readme: readme || '',
+    readme: unpackResponse(readme || ''),
     linkedReadmes: app.linkedReadmes || [],
     title,
     models,

@@ -23,7 +23,7 @@
 
 import {Malloy, Result, Runtime} from '@malloydata/malloy';
 import {CONNECTION_MANAGER} from './connections';
-import {URL_READER} from './urls';
+import {URL_READER as urlReader} from './urls';
 import * as path from 'path';
 import {getConfig} from './config';
 
@@ -35,10 +35,10 @@ export async function runQuery(
   const {workingDirectory} = await getConfig();
   const modelURL = new URL('file://' + path.join(workingDirectory, modelPath));
   const connections = CONNECTION_MANAGER.getConnectionLookup(modelURL);
-  const runtime = new Runtime(URL_READER, connections);
+  const runtime = new Runtime({urlReader, connections});
   const baseModel = await runtime.getModel(modelURL);
   const queryModel = await Malloy.compile({
-    urlReader: URL_READER,
+    urlReader,
     connections,
     model: baseModel,
     parse: Malloy.parse({source: query}),
