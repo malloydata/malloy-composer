@@ -59,7 +59,9 @@ export class StubCompile {
     modelDef: ModelDef,
     malloy: string
   ): Promise<Model> {
-    const runtime = new Runtime(new StubReader(), new StubConnection());
+    const urlReader = new StubReader();
+    const connection = new StubConnection();
+    const runtime = new Runtime({urlReader, connection});
     const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
     const model = await Malloy.compile({
