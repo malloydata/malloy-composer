@@ -36,7 +36,9 @@ export class StubReader implements URLReader {
 export class StubConnection extends BaseConnection {
   name = 'stub';
 
-  dialectName = 'duckdb';
+  constructor(public dialectName: string) {
+    super();
+  }
 
   runSQL(): Promise<MalloyQueryData> {
     throw new Error('Stub connection cannot run SQL.');
@@ -57,17 +59,18 @@ export class StubConnection extends BaseConnection {
 export class StubCompile {
   private async _compileModel(
     modelDef: ModelDef,
-    malloy: string
+    malloy: string,
+    dialectName: string
   ): Promise<Model> {
     const urlReader = new StubReader();
-    const connection = new StubConnection();
+    const connection = new StubConnection(dialectName);
     const runtime = new Runtime({urlReader, connection});
     const baseModel = await runtime._loadModelFromModelDef(modelDef).getModel();
     // TODO maybe a ModelMaterializer should have a `loadExtendingModel()` or something like that for this....
     const model = await Malloy.compile({
       urlReader: new StubReader(),
       connections: new FixedConnectionMap(
-        new Map([['stub', new StubConnection()]]),
+        new Map([['stub', connection]]),
         'stub'
       ),
       model: baseModel,
@@ -78,9 +81,10 @@ export class StubCompile {
 
   public async compileModel(
     modelDef: ModelDef,
-    malloy: string
+    malloy: string,
+    dialectName: string
   ): Promise<ModelDef> {
-    return (await this._compileModel(modelDef, malloy))._modelDef;
+    return (await this._compileModel(modelDef, malloy, dialectName))._modelDef;
   }
 
   private modelDefForSource(source: SourceDef): ModelDef {
@@ -98,7 +102,7 @@ export class StubCompile {
     malloy: string
   ): Promise<QuerySegment> {
     const modelDef = this.modelDefForSource(source);
-    const model = await this.compileModel(modelDef, malloy);
+    const model = await this.compileModel(modelDef, malloy, source.dialect);
     const theQuery = model.contents['the_query'];
     if (theQuery.type !== 'query') {
       throw new Error('Expected the_query to be a query');
@@ -227,9 +231,10 @@ export class StubCompile {
 
   private async _compileQuery(
     modelDef: ModelDef,
-    query: string
+    query: string,
+    dialectName: string
   ): Promise<PreparedQuery> {
-    const model = await this._compileModel(modelDef, query);
+    const model = await this._compileModel(modelDef, query, dialectName);
     const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
     const match = query.match(regex);
     const preparedQuery = match
@@ -240,9 +245,14 @@ export class StubCompile {
 
   public async compileQueryToSQL(
     modelDef: ModelDef,
-    query: string
+    query: string,
+    dialectName: string
   ): Promise<string> {
-    const preparedQuery = await this._compileQuery(modelDef, query);
+    const preparedQuery = await this._compileQuery(
+      modelDef,
+      query,
+      dialectName
+    );
     return preparedQuery.preparedResult.sql;
   }
 
@@ -250,7 +260,7 @@ export class StubCompile {
     modelDef: ModelDef,
     query: string
   ): Promise<NamedQuery> {
-    const preparedQuery = await this._compileQuery(modelDef, query);
+    const preparedQuery = await this._compileQuery(modelDef, query, 'duckdb');
     const name =
       'as' in preparedQuery._query
         ? preparedQuery._query.as || preparedQuery._query.name
@@ -266,7 +276,7 @@ export class StubCompile {
     modelDef: ModelDef,
     query: string
   ): Promise<string> {
-    const model = await this._compileModel(modelDef, query);
+    const model = await this._compileModel(modelDef, query, 'duckdb');
     const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
     const match = query.match(regex);
     const preparedQuery = match
