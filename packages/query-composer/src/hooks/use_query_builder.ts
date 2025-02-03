@@ -120,7 +120,11 @@ export function useQueryBuilder(
   modelDef?: ModelDef,
   sourceName?: string,
   modelPath?: string,
-  updateQueryInURL?: (params: {run: boolean; query: string | undefined}) => void
+  updateQueryInURL?: (params: {
+    run: boolean;
+    query: string | undefined;
+    turtle: TurtleDef | undefined;
+  }) => void
 ): UseQueryBuilderResult {
   const query = useRef<TurtleDef>();
   const [error, setError] = useState<Error>();
@@ -168,6 +172,7 @@ export function useQueryBuilder(
             updateQueryInURL?.({
               run: noURLUpdate,
               query: queryString,
+              turtle: queryBuilder.getQuery(),
             });
           }
         } catch (error) {
@@ -193,7 +198,9 @@ export function useQueryBuilder(
       modifyQuery(qb => {
         qb.clearQuery();
       }, noURLUpdate);
-      updateQueryInURL?.({run: false, query: undefined});
+      if (!noURLUpdate) {
+        updateQueryInURL?.({run: false, query: undefined, turtle: undefined});
+      }
     };
 
     const toggleField = (stagePath: StagePath, fieldPath: string) => {
