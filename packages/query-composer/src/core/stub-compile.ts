@@ -27,6 +27,8 @@ import {QuerySegment} from '@malloydata/malloy/dist/model';
 
 const DEFAULT_NAME = 'new_query';
 
+const DEFAULT_DIALECT = 'duckdb';
+
 export class StubReader implements URLReader {
   async readURL(_url: URL): Promise<string> {
     throw new Error('Stub reader cannot read files');
@@ -60,7 +62,7 @@ export class StubCompile {
   private async _compileModel(
     modelDef: ModelDef,
     malloy: string,
-    dialectName: string
+    dialectName: string = DEFAULT_DIALECT
   ): Promise<Model> {
     const urlReader = new StubReader();
     const connection = new StubConnection(dialectName);
@@ -82,7 +84,7 @@ export class StubCompile {
   public async compileModel(
     modelDef: ModelDef,
     malloy: string,
-    dialectName: string
+    dialectName: string = DEFAULT_DIALECT
   ): Promise<ModelDef> {
     return (await this._compileModel(modelDef, malloy, dialectName))._modelDef;
   }
@@ -232,7 +234,7 @@ export class StubCompile {
   private async _compileQuery(
     modelDef: ModelDef,
     query: string,
-    dialectName: string
+    dialectName: string = DEFAULT_DIALECT
   ): Promise<PreparedQuery> {
     const model = await this._compileModel(modelDef, query, dialectName);
     const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
@@ -246,7 +248,7 @@ export class StubCompile {
   public async compileQueryToSQL(
     modelDef: ModelDef,
     query: string,
-    dialectName: string
+    dialectName: string = DEFAULT_DIALECT
   ): Promise<string> {
     const preparedQuery = await this._compileQuery(
       modelDef,
@@ -260,7 +262,7 @@ export class StubCompile {
     modelDef: ModelDef,
     query: string
   ): Promise<NamedQuery> {
-    const preparedQuery = await this._compileQuery(modelDef, query, 'duckdb');
+    const preparedQuery = await this._compileQuery(modelDef, query);
     const name =
       'as' in preparedQuery._query
         ? preparedQuery._query.as || preparedQuery._query.name
@@ -276,7 +278,7 @@ export class StubCompile {
     modelDef: ModelDef,
     query: string
   ): Promise<string> {
-    const model = await this._compileModel(modelDef, query, 'duckdb');
+    const model = await this._compileModel(modelDef, query);
     const regex = /\bquery\s*:\s*([^\s]*)\s*is\b/;
     const match = query.match(regex);
     const preparedQuery = match
