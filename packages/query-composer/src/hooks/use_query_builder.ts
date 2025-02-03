@@ -172,7 +172,7 @@ export function useQueryBuilder(
             updateQueryInURL?.({
               run: noURLUpdate,
               query: queryString,
-              turtle: queryBuilder.getQuery(),
+              turtle: structuredClone(queryBuilder.getQuery()),
             });
           }
         } catch (error) {
