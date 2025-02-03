@@ -143,10 +143,8 @@ export const Result: React.FC<ResultProps> = ({
     const updateSQL = async () => {
       try {
         const getSQL = async (): Promise<string | undefined> => {
-          if (result?.sql) {
-            return result?.sql;
-          } else if (model && malloy && isRunnable) {
-            return compiler.compileQueryToSQL(model, malloy);
+          if (model && malloy && isRunnable) {
+            return compiler.compileQueryToSQL(model, malloy, source.dialect);
           } else {
             return undefined;
           }

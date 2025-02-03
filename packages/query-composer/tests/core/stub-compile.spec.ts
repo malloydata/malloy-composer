@@ -32,7 +32,7 @@ describe('StubConnection', () => {
   let stubConnection: StubConnection;
 
   beforeEach(() => {
-    stubConnection = new StubConnection();
+    stubConnection = new StubConnection('duckdb');
   });
 
   it('throws when asked to run sql', () => {
