@@ -113,7 +113,7 @@ export interface QueryModifiers {
   removeStage: (stagePath: StagePath) => void;
   clearQuery: (noURLUpdate?: boolean) => void;
   onDrill: (filters: FilterCondition[]) => void;
-  setQuery: (query: NamedQuery, noURLUpdate?: boolean) => void;
+  setQuery: (query: NamedQuery | TurtleDef, noURLUpdate?: boolean) => void;
 }
 
 export function useQueryBuilder(
@@ -313,7 +313,7 @@ export function useQueryBuilder(
       modifyQuery(qb => qb.addNewField(stagePath, dimension));
     };
 
-    const setQuery = (query: NamedQuery, noURLUpdate = false) => {
+    const setQuery = (query: NamedQuery | TurtleDef, noURLUpdate = false) => {
       modifyQuery(qb => qb.setQuery(query), noURLUpdate);
     };
 
