@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {useState, useRef} from 'react';
+import {useState, useRef, ReactElement} from 'react';
 import styled from 'styled-components';
 import {useClickOutside} from '../../hooks';
 import {Popover} from '../Popover';
@@ -33,7 +33,7 @@ interface SelectDropdownProps<T> {
   value: T | undefined;
   placeholder?: string;
   onChange?: (newValue: T) => void;
-  options: {label: string | JSX.Element; value: T; divider?: boolean}[];
+  options: {label: string | ReactElement; value: T; divider?: boolean}[];
   disabled?: boolean;
   valueEqual?: (a: T, b: T) => boolean;
   width?: number | string;
@@ -112,7 +112,7 @@ export const SelectDropdown = <T,>({
   disabled = false,
   valueEqual = (a: T, b: T) => a === b,
   width = 200,
-}: SelectDropdownProps<T>): JSX.Element => {
+}: SelectDropdownProps<T>): ReactElement => {
   const [open, setOpen] = useState(false);
   const wrapperElement = useRef<HTMLDivElement>(null);
   const label =
@@ -163,7 +163,7 @@ export const SelectDropdown = <T,>({
 
 interface SelectListProps<T> {
   value: T | undefined;
-  options: {label: string | JSX.Element; value: T; divider?: boolean}[];
+  options: {label: string | ReactElement; value: T; divider?: boolean}[];
   valueEqual?: (a: T, b: T) => boolean;
   onChange: (value: T) => void;
 }
@@ -173,10 +173,10 @@ export function SelectList<T>({
   value,
   onChange,
   valueEqual = (a: T, b: T) => a === b,
-}: SelectListProps<T>): JSX.Element {
+}: SelectListProps<T>): ReactElement {
   return (
     <SelectListDiv>
-      {options.reduce<JSX.Element[]>((result, option, index) => {
+      {options.reduce<ReactElement[]>((result, option, index) => {
         const isSelected =
           value !== undefined && valueEqual(value, option.value);
         if (option.divider) {
@@ -201,16 +201,16 @@ export function SelectList<T>({
 
 interface DropdownMenuProps {
   options: {
-    label: string | JSX.Element;
+    label: string | ReactElement;
     onSelect: (event: React.MouseEvent) => void;
     divider?: boolean;
   }[];
 }
 
-export function DropdownMenu({options}: DropdownMenuProps): JSX.Element {
+export function DropdownMenu({options}: DropdownMenuProps): ReactElement {
   return (
     <SelectListDiv>
-      {options.reduce<JSX.Element[]>((result, option, index) => {
+      {options.reduce<ReactElement[]>((result, option, index) => {
         if (option.divider) {
           result.push(<OptionDivider key={'divider' + index} />);
         }

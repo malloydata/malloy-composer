@@ -402,7 +402,7 @@ export const SummaryItem: React.FC<SummaryItemProps> = ({
                       Stage {stageIndex + 1} - {stageSummary.type}
                       <BackPart className="back">
                         <CloseIconStyled
-                          color="other"
+                          $color="other"
                           width="20px"
                           height="20px"
                           className="close"

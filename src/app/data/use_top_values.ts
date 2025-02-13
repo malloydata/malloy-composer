@@ -22,7 +22,7 @@
  */
 
 import {ModelDef, SearchValueMapResult, StructDef} from '@malloydata/malloy';
-import {useQuery} from 'react-query';
+import {useQuery} from '@tanstack/react-query';
 import {isDuckDBWASM} from '../utils';
 import * as duckDBWASM from './duckdb_wasm';
 import {useCallback} from 'react';
@@ -31,9 +31,9 @@ async function fetchTopValues(
   model?: ModelDef,
   modelPath?: string,
   source?: StructDef
-): Promise<SearchValueMapResult[] | undefined> {
+): Promise<SearchValueMapResult[]> {
   if (source === undefined || model === undefined) {
-    return undefined;
+    return [];
   }
 
   if (isDuckDBWASM()) {
@@ -52,7 +52,7 @@ async function fetchTopValues(
       }),
     })
   ).json();
-  return raw.result as SearchValueMapResult[];
+  return (raw.result as SearchValueMapResult[]) || [];
 }
 
 export function useTopValues(
@@ -60,13 +60,11 @@ export function useTopValues(
   modelPath?: string,
   source?: StructDef
 ): {refresh: () => void; topValues: SearchValueMapResult[] | undefined} {
-  const {data: topValues, refetch} = useQuery(
-    ['top_values', modelPath, source?.name],
-    () => fetchTopValues(model, modelPath, source),
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  const {data: topValues, refetch} = useQuery({
+    queryKey: ['top_values', modelPath, source?.name],
+    queryFn: () => fetchTopValues(model, modelPath, source),
+    refetchOnWindowFocus: false,
+  });
 
   const refresh = useCallback(() => {
     refetch();

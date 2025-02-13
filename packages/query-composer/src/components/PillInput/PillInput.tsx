@@ -154,7 +154,7 @@ export const PillInput: React.FC<PillInputProps> = ({
     <OuterInput
       onKeyUp={onKeyUp}
       onClick={() => inp.current?.focus()}
-      isFocused={focused || selectedPill !== undefined}
+      $isFocused={focused || selectedPill !== undefined}
       ref={ref}
     >
       {pills}
@@ -232,7 +232,7 @@ const PillInner = ({
 };
 
 const OuterInput = styled.div<{
-  isFocused: boolean;
+  $isFocused: boolean;
 }>`
   font-family: var(--malloy-composer-fontFamily, sans-serif);
   font-size: var(--malloy-composer-fontSize, 14px);
@@ -247,7 +247,7 @@ const OuterInput = styled.div<{
   gap: 3px;
   flex-wrap: wrap;
 
-  ${({isFocused}) => (isFocused ? `border-color: #4285F4;` : '')}
+  ${({$isFocused}) => ($isFocused ? `border-color: #4285F4;` : '')}
 `;
 
 const Pill = styled(PillInner)<{

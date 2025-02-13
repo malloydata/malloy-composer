@@ -215,7 +215,10 @@ export async function search(
 export async function topValues(
   model: malloy.ModelDef,
   source: malloy.StructDef
-): Promise<malloy.SearchValueMapResult[] | undefined> {
+): Promise<malloy.SearchValueMapResult[]> {
   const sourceName = source.as || source.name;
-  return RUNTIME._loadModelFromModelDef(model).searchValueMap(sourceName);
+  return (
+    (await RUNTIME._loadModelFromModelDef(model).searchValueMap(sourceName)) ||
+    []
+  );
 }

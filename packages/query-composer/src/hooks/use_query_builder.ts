@@ -126,7 +126,7 @@ export function useQueryBuilder(
     turtle: TurtleDef | undefined;
   }) => void
 ): UseQueryBuilderResult {
-  const query = useRef<TurtleDef>();
+  const query = useRef<TurtleDef>(undefined);
   const [error, setError] = useState<Error>();
   const sourceDef =
     modelDef && sourceName ? getSourceDef(modelDef, sourceName) : undefined;

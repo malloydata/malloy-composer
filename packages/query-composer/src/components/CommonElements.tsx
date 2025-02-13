@@ -221,20 +221,20 @@ export const SmallFieldName = styled(FieldName)`
 `;
 
 export const FieldIcon = styled.div<{
-  color: ColorKey;
+  $color: ColorKey;
 }>`
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   display: flex;
 
-  ${({color}) => {
+  ${({$color}) => {
     return `
       svg .primaryfill {
-        fill: ${COLORS[color].fillStrong};
+        fill: ${COLORS[$color].fillStrong};
       }
       svg .primarystroke {
-        stroke: ${COLORS[color].fillStrong};
+        stroke: ${COLORS[$color].fillStrong};
       }
     `;
   }}

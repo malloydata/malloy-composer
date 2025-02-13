@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
+import {ReactElement} from 'react';
 import styled from 'styled-components';
 import {FieldDef} from '@malloydata/malloy';
 import {QuerySummaryItem} from '../../types';
@@ -46,7 +47,7 @@ interface SearchListProps {
 }
 
 interface UseSearchListResult {
-  searchList: JSX.Element;
+  searchList: ReactElement;
   count: number;
 }
 

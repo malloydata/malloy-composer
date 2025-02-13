@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {useQuery} from 'react-query';
+import {useQuery} from '@tanstack/react-query';
 import {useCallback} from 'react';
 import * as explore from '../../types';
 import {isDuckDBWASM} from '../utils';
@@ -33,11 +33,11 @@ export function useDatasets(
   appInfo: explore.AppInfo | undefined;
   refresh: () => void;
 } {
-  const {data: appInfo, refetch} = useQuery(
-    ['datasets', app ? app.id ?? 'default' : 'empty'],
-    async () => {
+  const {data: appInfo, refetch} = useQuery({
+    queryKey: ['datasets', app ? app.id ?? 'default' : 'empty'],
+    queryFn: async (): Promise<explore.AppInfo> => {
       if (app === undefined) {
-        return undefined;
+        return {readme: '', linkedReadmes: [], models: []};
       }
       if (isDuckDBWASM()) {
         return duckDBWASM.datasets(app.path);
@@ -55,10 +55,8 @@ export function useDatasets(
       ).json();
       return raw.datasets as explore.AppInfo;
     },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const refresh = useCallback(() => {
     refetch();

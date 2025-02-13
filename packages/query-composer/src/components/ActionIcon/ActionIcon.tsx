@@ -145,8 +145,8 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
   return (
     <IconWrapper
       className={className}
-      color={color}
-      doHover={onClick !== undefined}
+      $color={color}
+      $doHover={onClick !== undefined}
       title={title}
     >
       <Icon {...props} />
@@ -155,33 +155,33 @@ export const ActionIcon: React.FC<ActionIconProps> = ({
 };
 
 export const IconWrapper = styled.div<{
-  color: ColorKey | undefined;
-  doHover: boolean;
+  $color: ColorKey | undefined;
+  $doHover: boolean;
 }>`
   display: flex;
-  ${({color, doHover}) => {
-    if (color === undefined) return '';
+  ${({$color, $doHover}) => {
+    if ($color === undefined) return '';
     return `
       svg .hoverfill {
         fill: transparent;
       }
       ${
-        color !== undefined &&
+        $color !== undefined &&
         `
         svg .primaryfill {
-          fill: ${COLORS[color].fillStrong};
+          fill: ${COLORS[$color].fillStrong};
         }
         svg .primarystroke {
-          stroke: ${COLORS[color].fillStrong};
+          stroke: ${COLORS[$color].fillStrong};
         }
       `
       }
       ${
-        color !== undefined &&
-        doHover &&
+        $color !== undefined &&
+        $doHover &&
         `
         svg:hover .hoverfill {
-          fill: var(--malloy-composer-form-focusBackground, ${COLORS[color].fillLight});
+          fill: var(--malloy-composer-form-focusBackground, ${COLORS[$color].fillLight});
         }
       `
       }

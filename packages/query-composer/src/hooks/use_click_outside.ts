@@ -23,7 +23,7 @@
 
 import {useEffect} from 'react';
 
-export function useClickOutside<E extends Element>(
+export function useClickOutside<E extends Element | null>(
   refOrRefs: React.RefObject<E> | React.RefObject<E>[],
   handler: (event: Event) => void
 ): void {

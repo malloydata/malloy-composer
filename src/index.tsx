@@ -25,7 +25,7 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {QueryClient, QueryClientProvider} from 'react-query';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {RouterProvider, createHashRouter} from 'react-router-dom';
 import {Explore} from './app';
 import {ErrorElement} from './app/ErrorElement';

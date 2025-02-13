@@ -59,9 +59,9 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
   return (
     <FieldButtonRaw
       onClick={onClick}
-      color={color}
-      active={active}
-      disableHover={disableHover}
+      $color={color}
+      $active={active}
+      $disableHover={disableHover}
       onMouseDown={e => {
         if (trapMouseDown) {
           // Allows PillInputs to accept a search value
@@ -71,14 +71,14 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
       }}
     >
       <FrontPart>
-        <FieldIcon color={color}>{icon}</FieldIcon>
+        <FieldIcon $color={color}>{icon}</FieldIcon>
         <FieldName>{name}</FieldName>
-        {unsaved ? <UnsavedIndicator color={color} /> : ''}
+        {unsaved ? <UnsavedIndicator $color={color} /> : ''}
       </FrontPart>
       {canRemove && (
         <BackPart className="back" title="Remove">
           <CloseIconStyled
-            color={color}
+            $color={color}
             width="20px"
             height="20px"
             className="close"
@@ -99,7 +99,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
 };
 
 export const UnsavedIndicator = styled.div<{
-  color: ColorKey;
+  $color: ColorKey;
 }>`
   width: 8px;
   margin-top: 3px;
@@ -108,9 +108,9 @@ export const UnsavedIndicator = styled.div<{
   min-height: 8px;
   border-radius: 100px;
 
-  ${({color}) => {
+  ${({$color}) => {
     return `
-    background-color: ${COLORS[color].fillStrong};
+    background-color: ${COLORS[$color].fillStrong};
     `;
   }}
 `;
@@ -150,9 +150,9 @@ export const DetailPart = styled.div<{
 `;
 
 export const FieldButtonRaw = styled.div<{
-  color: ColorKey;
-  active: boolean;
-  disableHover: boolean;
+  $color: ColorKey;
+  $active: boolean;
+  $disableHover: boolean;
 }>`
   border: none;
   background-color: transparent;
@@ -169,10 +169,10 @@ export const FieldButtonRaw = styled.div<{
   align-items: center;
   font-family: var(--malloy-composer-code-fontFamily, monospace);
 
-  ${({active, color}) => {
-    if (active) {
+  ${({$active, $color}) => {
+    if ($active) {
       return `
-        background-color: ${COLORS[color].fillMedium};
+        background-color: ${COLORS[$color].fillMedium};
         .back {
           display: flex;
         }
@@ -192,11 +192,11 @@ export const FieldButtonRaw = styled.div<{
     display: none;
   }
 
-  ${({color, disableHover}) => {
-    if (!disableHover) {
+  ${({$color, $disableHover}) => {
+    if (!$disableHover) {
       return `
         &:hover {
-          background-color: ${COLORS[color].fillMedium};
+          background-color: ${COLORS[$color].fillMedium};
         }
       `;
     }
@@ -205,16 +205,16 @@ export const FieldButtonRaw = styled.div<{
 `;
 
 export const CloseIconStyled = styled(CloseIcon)<{
-  color: ColorKey;
+  $color: ColorKey;
 }>`
   cursor: pointer;
-  ${({color}) => {
+  ${({$color}) => {
     return `
       .cross {
-        fill: ${COLORS[color].fillStrong};
+        fill: ${COLORS[$color].fillStrong};
       }
       .circle {
-        fill: ${COLORS[color].fillMedium};
+        fill: ${COLORS[$color].fillMedium};
       }
     `;
   }}

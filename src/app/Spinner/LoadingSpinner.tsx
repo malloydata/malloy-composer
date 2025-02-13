@@ -48,8 +48,8 @@ interface SpinnerProps {
 export const Spinner: React.FC<SpinnerProps> = ({size, color}) => {
   return (
     <SpinningSVG
-      size={size}
-      color={color || 'dimension'}
+      $size={size}
+      $color={color || 'dimension'}
       width={size + 'px'}
       height={size + 'px'}
     />
@@ -65,13 +65,13 @@ const rotation = keyframes`
   }
 `;
 
-const SpinningSVG = styled(SpinnerSVG)<{size: number; color: ColorKey}>`
-  ${({size, color}) => `
-    width: ${size}px;
-    height: ${size}px;
+const SpinningSVG = styled(SpinnerSVG)<{$size: number; $color: ColorKey}>`
+  ${({$size, $color}) => `
+    width: ${$size}px;
+    height: ${$size}px;
 
     .primarystroke {
-      stroke: ${COLORS[color].fillStrong}
+      stroke: ${COLORS[$color].fillStrong}
     }
   `}
   animation: ${rotation} 2s infinite linear;
