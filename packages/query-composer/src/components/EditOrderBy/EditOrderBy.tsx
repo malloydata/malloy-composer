@@ -64,7 +64,7 @@ export const EditOrderBy: React.FC<EditOrderByProps> = ({
       <ContextMenuTitle>
         Order By
         <FieldLabel>
-          <FieldIcon color="dimension">
+          <FieldIcon $color="dimension">
             <TypeIcon
               type={typeOfField(byField)}
               kind={kindOfField(byField)}

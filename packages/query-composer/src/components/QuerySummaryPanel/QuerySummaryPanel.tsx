@@ -85,7 +85,7 @@ export const QuerySummaryPanel: React.FC<QuerySummaryPanelProps> = ({
                     Stage {stageIndex + 1} - {stageSummary.type}
                     <BackPart className="back">
                       <CloseIconStyled
-                        color="other"
+                        $color="other"
                         width="20px"
                         height="20px"
                         className="close"

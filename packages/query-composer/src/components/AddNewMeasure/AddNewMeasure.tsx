@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {useContext, useEffect, useMemo, useState} from 'react';
+import {ReactElement, useContext, useEffect, useMemo, useState} from 'react';
 import {CodeInput, CodeTextArea} from '../CodeInput';
 import {
   Button,
@@ -273,7 +273,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
   const flattened = useMemo(
     () =>
       sortFlatFields(flatFields(source)).reduce<
-        Array<{label: JSX.Element; value: FlatField}>
+        Array<{label: ReactElement; value: FlatField}>
       >((acc, {path, field}) => {
         const type = typeOfField(field);
         const kind = kindOfField(field);

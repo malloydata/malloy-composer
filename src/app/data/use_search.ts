@@ -22,7 +22,7 @@
  */
 
 import {ModelDef, SearchIndexResult, StructDef} from '@malloydata/malloy';
-import {useQuery} from 'react-query';
+import {useQuery} from '@tanstack/react-query';
 import {isDuckDBWASM} from '../utils';
 import * as duckDBWASM from './duckdb_wasm';
 
@@ -32,9 +32,9 @@ async function search(
   source: StructDef | undefined,
   searchTerm: string,
   fieldPath?: string
-) {
+): Promise<SearchIndexResult[]> {
   if (source === undefined) {
-    return undefined;
+    return [];
   }
 
   if (isDuckDBWASM()) {
@@ -42,7 +42,7 @@ async function search(
     if (res instanceof Error) {
       throw res;
     }
-    return res;
+    return res as SearchIndexResult[];
   }
 
   const raw = await (
@@ -69,13 +69,11 @@ export function useSearch(
   searchTerm: string,
   fieldPath?: string
 ): UseSearchResult {
-  const {data: searchResults, isLoading} = useQuery(
-    [source, searchTerm, fieldPath],
-    () => search(model, modelPath, source, searchTerm, fieldPath),
-    {
-      refetchOnWindowFocus: true,
-    }
-  );
+  const {data: searchResults, isLoading} = useQuery({
+    queryKey: [source, searchTerm, fieldPath],
+    queryFn: () => search(model, modelPath, source, searchTerm, fieldPath),
+    refetchOnWindowFocus: true,
+  });
 
   return {searchResults, isLoading};
 }

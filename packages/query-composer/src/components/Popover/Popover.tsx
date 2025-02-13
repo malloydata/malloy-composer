@@ -32,7 +32,7 @@ interface PopoverProps {
   width?: number | string;
   maxHeight?: number;
   placement?: Placement;
-  referenceDiv?: RefObject<HTMLDivElement>;
+  referenceDiv?: RefObject<HTMLDivElement | null>;
   zIndex?: number;
   xOffset?: number;
   yOffset?: number;
@@ -42,7 +42,7 @@ interface PopoverProps {
 
 export const PopoverBox = styled.div<{
   width: number | string;
-  zIndex: number;
+  $zIndex: number;
 }>`
   border: 1px solid var(--malloy-composer-menu-border, #ececed);
   border-radius: 4px;
@@ -50,9 +50,9 @@ export const PopoverBox = styled.div<{
   box-shadow: 0px 1px 5px 1px #0000001a;
   background-color: var(--malloy-composer-menu-background, white);
   font-size: var(--malloy-composer-menu-fontSize, 14px);
-  ${({width, zIndex}) => `
+  ${({width, $zIndex}) => `
     width: ${typeof width === 'string' ? width : `${width}px`};
-    z-index: ${zIndex};
+    z-index: ${$zIndex};
   `}
 `;
 
@@ -115,7 +115,7 @@ export const Popover: React.FC<PopoverProps> = ({
           ref={setTooltipRef}
           style={{...styles.popper, position: 'fixed'}}
           {...attributes.popper}
-          zIndex={zIndex}
+          $zIndex={zIndex}
         >
           {children}
         </PopoverBox>

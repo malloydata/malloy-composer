@@ -21,25 +21,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {useQuery} from 'react-query';
+import {useQuery} from '@tanstack/react-query';
 import * as explore from '../../types';
 import {isDuckDBWASM} from '../utils';
 import * as duckDBWASM from './duckdb_wasm';
 
 export function useApps(): explore.ComposerConfig | undefined {
-  const {data: apps} = useQuery(
-    ['apps'],
-    async () => {
+  const {data: apps} = useQuery({
+    queryKey: ['apps'],
+    queryFn: async (): Promise<explore.ComposerConfig> => {
       if (isDuckDBWASM()) {
         return duckDBWASM.apps();
       }
       const raw = await (await fetch('api/apps')).json();
       return raw as explore.ComposerConfig;
     },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   return apps;
 }

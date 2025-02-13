@@ -136,7 +136,7 @@ export const AddFilter: React.FC<AddFilterProps> = ({
         <ContextMenuTitle style={{padding: '15px', paddingBottom: 0}}>
           Filter
           <FieldLabel>
-            <FieldIcon color="dimension">
+            <FieldIcon $color="dimension">
               <TypeIcon type={type} kind={kind}></TypeIcon>
             </FieldIcon>
             <SmallFieldName>{field.name}</SmallFieldName>

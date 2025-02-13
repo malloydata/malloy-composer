@@ -194,7 +194,7 @@ export const Explore: React.FC = () => {
 
   useEffect(() => {
     const loadDataset = async () => {
-      if (model && (urlQuery || source) && appInfo) {
+      if (model && (urlQuery || source) && appInfo?.models.length) {
         const newModelInfo = appInfo.models.find(
           modelInfo => modelInfo.id === model
         );
