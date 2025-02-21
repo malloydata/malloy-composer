@@ -31,7 +31,7 @@ import {targetDuckDBMap} from './utils/fetch_duckdb';
 
 const duckdbPath = '../third_party/github.com/duckdb/duckdb';
 
-const nodeTarget = 'node18';
+const nodeTarget = 'node20';
 
 async function packageServer(
   platform: string,
