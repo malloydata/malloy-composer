@@ -1,1 +1,1 @@
-with import <nixpkgs> {}; stdenv.mkDerivation { name = "malloy"; buildInputs = [ nodejs-18_x git cacert fakeroot]; }
+with import <nixpkgs> {}; stdenv.mkDerivation { name = "malloy"; buildInputs = [ nodejs-20_x git cacert fakeroot]; }
