@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {Annotation, DocumentLocation, Tag} from '@malloydata/malloy';
+import {
+  Annotation,
+  annotationToTag,
+  DocumentLocation,
+} from '@malloydata/malloy';
 import {RendererName} from '../types';
 
 export const QUERY_RENDERERS: RendererName[] = [
@@ -42,7 +46,7 @@ export const RENDERERS: RendererName[] = [
 export function rendererFromAnnotation(
   annotation: Annotation | undefined
 ): RendererName | undefined {
-  const tagProps = Tag.annotationToTag(annotation).tag.getProperties();
+  const tagProps = annotationToTag(annotation).tag.getProperties();
   const tags = Object.keys(tagProps);
 
   if (tags.length) {

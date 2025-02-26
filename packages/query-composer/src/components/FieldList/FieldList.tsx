@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as React from 'react';
-import {FieldDef, isJoined, StructDef, Tag} from '@malloydata/malloy';
+import {FieldDef, isJoined, StructDef} from '@malloydata/malloy';
 import {useState} from 'react';
 import styled from 'styled-components';
 import {ActionIcon} from '../ActionIcon';
@@ -30,7 +30,7 @@ import {FieldDetailPanel} from '../FieldDetailPanel';
 import {HoverToPopover} from '../HoverToPopover';
 import {ListNest} from '../ListNest';
 import {TypeIcon} from '../TypeIcon';
-import {kindOfField, typeOfField} from '../../utils';
+import {annotationToTaglines, kindOfField, typeOfField} from '../../utils';
 import {EventModifiers} from '../component_types';
 
 export interface FieldListProps {
@@ -67,9 +67,7 @@ export const FieldList: React.FC<FieldListProps> = ({
       {fields
         .filter(field => filter(field) || (showNested && isJoined(field)))
         .map(field => {
-          const annotations: string[] = Tag.annotationToTaglines(
-            field.annotation
-          );
+          const annotations: string[] = annotationToTaglines(field.annotation);
           const fieldPath = [...path, field.as || field.name].join('.');
           const key = keyFor(fieldPath, field);
           if (filter(field)) {

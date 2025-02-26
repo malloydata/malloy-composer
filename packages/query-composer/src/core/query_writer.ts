@@ -16,7 +16,6 @@ import {
   PipeSegment,
   QueryFieldDef,
   SourceDef,
-  Tag,
   TurtleDef,
 } from '@malloydata/malloy';
 import uniq from 'lodash/uniq';
@@ -28,7 +27,12 @@ import {
   isRenamedField,
   SourceUtils,
 } from './source_utils';
-import {computeKind, computeProperty, snakeToTitle} from '../utils';
+import {
+  annotationToTaglines,
+  computeKind,
+  computeProperty,
+  snakeToTitle,
+} from '../utils';
 import {
   OrderByField,
   QuerySummary,
@@ -120,11 +124,11 @@ export class QueryWriter extends SourceUtils {
         const {blockNotes, notes} = field.annotation;
         const directOnly = {blockNotes, notes};
         if (field.type === 'turtle') {
-          tagLines = Tag.annotationToTaglines(field.annotation).map(tagLine =>
+          tagLines = annotationToTaglines(field.annotation).map(tagLine =>
             tagLine.replace(/\n$/, '')
           );
         } else {
-          tagLines = Tag.annotationToTaglines(directOnly).map(tagLine =>
+          tagLines = annotationToTaglines(directOnly).map(tagLine =>
             tagLine.replace(/\n$/, '')
           );
         }
@@ -335,7 +339,7 @@ export class QueryWriter extends SourceUtils {
 
     let stageSource = this.getSource();
     if (this.query.annotation) {
-      const tagLines = Tag.annotationToTaglines(this.query.annotation).map(
+      const tagLines = annotationToTaglines(this.query.annotation).map(
         tagLine => tagLine.replace(/\n$/, '')
       );
       tagLines.forEach(tagLine => malloy.push(tagLine, NEWLINE));
@@ -523,9 +527,7 @@ export class QueryWriter extends SourceUtils {
       const field = fields[fieldIndex];
       try {
         const stages = [];
-        const annotations: string[] = Tag.annotationToTaglines(
-          field.annotation
-        );
+        const annotations: string[] = annotationToTaglines(field.annotation);
         const fieldDef = this.fieldDefForQueryFieldDef(field, source);
         if (fieldDef.type === 'turtle') {
           let stageSource = source;

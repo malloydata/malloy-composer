@@ -22,6 +22,7 @@
  */
 
 import {
+  Annotation,
   AtomicFieldDef,
   FieldDef,
   PipeSegment,
@@ -272,4 +273,26 @@ export function indentCode(code: string, spaces = 2): string {
 
 export function copyToClipboard(text: string): void {
   navigator.clipboard.writeText(text);
+}
+
+type NoteArray = Annotation['notes'];
+
+export function annotationToTaglines(
+  annote: Annotation | undefined,
+  prefix?: RegExp
+): string[] {
+  annote ||= {};
+  const tagLines = annote.inherits
+    ? annotationToTaglines(annote.inherits, prefix)
+    : [];
+  function prefixed(na: NoteArray | undefined): string[] {
+    const ret: string[] = [];
+    for (const n of na || []) {
+      if (prefix === undefined || n.text.match(prefix)) {
+        ret.push(n.text);
+      }
+    }
+    return ret;
+  }
+  return tagLines.concat(prefixed(annote.blockNotes), prefixed(annote.notes));
 }
