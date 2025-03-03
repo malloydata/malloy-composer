@@ -26,6 +26,7 @@ import styled from 'styled-components';
 import CloseIcon from '../../assets/img/query_clear_hover.svg?react';
 import {ColorKey, COLORS} from '../../colors';
 import {FieldName, FieldIcon} from '../CommonElements';
+import {largeNumberLabel} from '../../utils';
 
 interface FieldButtonProps {
   icon: ReactElement;
@@ -40,6 +41,7 @@ interface FieldButtonProps {
   detail?: string;
   fullDetail?: boolean;
   trapMouseDown?: boolean;
+  weight?: number;
 }
 
 export const FieldButton: React.FC<FieldButtonProps> = ({
@@ -55,6 +57,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
   detail,
   fullDetail = false,
   trapMouseDown = false,
+  weight,
 }) => {
   return (
     <FieldButtonRaw
@@ -92,6 +95,7 @@ export const FieldButton: React.FC<FieldButtonProps> = ({
           noShrink={fullDetail}
         >
           {detail}
+          {weight && <Weight>{largeNumberLabel(weight)}</Weight>}
         </DetailPart>
       )}
     </FieldButtonRaw>
@@ -130,6 +134,10 @@ export const BackPart = styled.div`
   align-items: center;
   overflow: hidden;
   flex-shrink: 0;
+`;
+
+export const Weight = styled.div`
+  color: #9aa0a6;
 `;
 
 export const DetailPart = styled.div<{

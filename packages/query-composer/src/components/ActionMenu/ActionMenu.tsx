@@ -90,7 +90,10 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   const {searchResults, isLoading} = useSearch(searchTerm);
   const stringSearchResults =
     searchResults &&
-    searchResults.filter(r => r.fieldType === 'string').slice(0, 100);
+    searchResults
+      .filter(r => r.fieldType === 'string')
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, 100);
   const isSearchEnabled = searchItems !== undefined;
   const {compiler} = useContext(ComposerOptionsContext);
 
@@ -183,6 +186,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
                               key={index}
                               name={searchResult.fieldValue}
                               detail={searchResult.fieldName}
+                              weight={searchResult.weight}
                               icon={<ActionIcon action="filter" />}
                               color="filter"
                               onClick={() => {
