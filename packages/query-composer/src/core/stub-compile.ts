@@ -23,7 +23,7 @@ import {
 } from '@malloydata/malloy';
 import {maybeQuoteIdentifier} from './utils';
 import {BaseConnection} from '@malloydata/malloy/connection';
-import {QuerySegment} from '@malloydata/malloy/dist/model';
+import {QuerySegment} from '@malloydata/malloy/dist/model/malloy_types';
 
 const DEFAULT_NAME = 'new_query';
 
@@ -136,6 +136,19 @@ export class StubCompile {
       throw new Error('Expected a filter list');
     }
     return filterList[0];
+  }
+
+  public async compileFilters(
+    source: SourceDef,
+    filters: string
+  ): Promise<FilterCondition[] | undefined> {
+    const name = source.as || source.name;
+    const segment: QuerySegment = await this.compile(
+      source,
+      `query: the_query is ${name} -> { group_by: one is 1; where: ${filters}}`
+    );
+    const filterList = segment.filterList;
+    return filterList;
   }
 
   private async compileToField(
