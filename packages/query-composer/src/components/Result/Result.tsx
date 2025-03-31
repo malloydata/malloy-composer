@@ -43,19 +43,12 @@ import {ComposerOptionsContext} from '../../contexts';
 import {highlightPre} from '../../highlight';
 import {QuerySummary} from '../../types';
 import {QueryWriter} from '../../core/query_writer';
-import {maybeQuoteIdentifier} from '../../core/utils';
 
 type MalloyType = 'notebook' | 'model' | 'markdown' | 'source';
 
 // TODO: import from Malloy
-type DimensionContextEntry = {
-  fieldDef: string;
-  value: string | number | boolean | Date;
-};
-
-// TODO: import from Malloy
 type DrillData = {
-  dimensionFilters: DimensionContextEntry[];
+  dimensionFilters: unknown[];
   copyQueryToClipboard: () => Promise<void>;
   query: string;
   whereClause: string;
@@ -173,7 +166,7 @@ export const Result: React.FC<ResultProps> = ({
     return () => {
       canceled = true;
     };
-  }, [result, malloy, model, compiler, isRunnable]);
+  }, [result, malloy, model, compiler, isRunnable, source.dialect]);
 
   const legacyDrillCallback = useCallback(
     (_drillQuery: string, _target: HTMLElement, drillFilters: string[]) => {
@@ -195,24 +188,18 @@ export const Result: React.FC<ResultProps> = ({
   );
 
   const drillCallback = useCallback(
-    (drillData: DrillData) => {
-      Promise.all(
-        drillData.dimensionFilters.map(dimensionFilter => {
-          const fieldName = maybeQuoteIdentifier(dimensionFilter.fieldDef);
-          const value = dimensionFilter.value;
-          return compiler
-            .compileFilter(source, `${fieldName} = ${JSON.stringify(value)}`)
-            .catch(error => {
-              console.error(error);
-              return undefined;
-            });
+    async (drillData: DrillData) => {
+      return compiler
+        .compileFilters(source, drillData.whereClause)
+        .then(filters => {
+          if (filters && filters.length > 0) {
+            onDrill(filters);
+          }
         })
-      ).then(filters => {
-        const validFilters = filters.filter(notUndefined);
-        if (validFilters.length > 0) {
-          onDrill(validFilters);
-        }
-      });
+        .catch(error => {
+          console.error(error);
+          return undefined;
+        });
     },
     [compiler, onDrill, source]
   );
