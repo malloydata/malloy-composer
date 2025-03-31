@@ -23,6 +23,9 @@ export default defineConfig({
         'react/jsx-runtime',
         'styled-components',
         '@malloydata/malloy',
+        '@malloydata/malloy-tag',
+        '@malloydata/malloy-filter',
+        '@malloydata/malloy/connection',
         '@malloydata/render',
         '@malloydata/render/webcomponent',
       ],
@@ -31,6 +34,7 @@ export default defineConfig({
           return 'index';
         },
       },
+      preserveSymlinks: true,
     },
     minify: false,
     sourcemap: true,
