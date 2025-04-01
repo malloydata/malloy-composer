@@ -24,7 +24,7 @@ import * as React from 'react';
 import {
   expressionIsCalculation,
   FieldDef,
-  isLeafAtomic,
+  isBasicAtomic,
   QueryFieldDef,
   SourceDef,
 } from '@malloydata/malloy';
@@ -109,7 +109,7 @@ export const GroupByContextBar: React.FC<GroupByContextBarProps> = ({
                   <FieldList
                     fields={source.fields}
                     filter={field =>
-                      isLeafAtomic(field) &&
+                      isBasicAtomic(field) &&
                       !expressionIsCalculation(field.expressionType)
                     }
                     showNested={true}

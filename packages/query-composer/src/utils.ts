@@ -31,7 +31,7 @@ import {
   expressionIsAnalytic,
   expressionIsCalculation,
   isJoined,
-  isLeafAtomic,
+  isBasicAtomic,
 } from '@malloydata/malloy';
 import {PropertyType, QuerySummaryItem} from './types';
 
@@ -142,12 +142,12 @@ export function fieldToSummaryItem(
 }
 
 export function isAggregate(field: FieldDef): boolean {
-  return isLeafAtomic(field) && expressionIsCalculation(field.expressionType);
+  return isBasicAtomic(field) && expressionIsCalculation(field.expressionType);
 }
 
 export function isDimension(field: FieldDef): boolean {
   return (
-    isLeafAtomic(field) &&
+    isBasicAtomic(field) &&
     (!field.expressionType || field.expressionType === 'scalar')
   );
 }

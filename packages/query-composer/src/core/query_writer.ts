@@ -11,7 +11,7 @@ import {
   FieldDef,
   FilterCondition,
   isJoined,
-  isLeafAtomic,
+  isBasicAtomic,
   Parameter,
   PipeSegment,
   QueryFieldDef,
@@ -645,7 +645,7 @@ export class QueryWriter extends SourceUtils {
             styles: this.stylesForField(field, fieldIndex),
           });
           // mtoy to will: This is stripping more things from order by
-          if (field.type !== 'error' && isLeafAtomic(field)) {
+          if (field.type !== 'error' && isBasicAtomic(field)) {
             orderByFields.push({
               name: field.as || field.name,
               fieldIndex,
@@ -694,7 +694,7 @@ export class QueryWriter extends SourceUtils {
           if (theField.type === 'fieldref') {
             theField = this.getField(source, dottify(theField.path));
           }
-          if (!isLeafAtomic(theField) || theField.type === 'error') {
+          if (!isBasicAtomic(theField) || theField.type === 'error') {
             continue;
           }
           items.push({
