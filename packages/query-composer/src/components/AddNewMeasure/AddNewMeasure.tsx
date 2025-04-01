@@ -36,7 +36,7 @@ import {
 import {SelectDropdown} from '../SelectDropdown';
 import {
   FieldDef,
-  isLeafAtomic,
+  isBasicAtomic,
   QueryFieldDef,
   SourceDef,
 } from '@malloydata/malloy';
@@ -397,7 +397,7 @@ export const AddNewMeasure: React.FC<AddMeasureProps> = ({
               compiler
                 .compileMeasure(source, maybeQuoteIdentifier(newName), measure)
                 .then(measure => {
-                  if (isLeafAtomic(measure)) {
+                  if (isBasicAtomic(measure)) {
                     addMeasure(measure);
                     onComplete();
                   }

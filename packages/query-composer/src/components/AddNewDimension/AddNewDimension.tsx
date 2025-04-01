@@ -31,7 +31,7 @@ import {
   FormError,
   FormFieldList,
 } from '../CommonElements';
-import {isLeafAtomic, QueryFieldDef, SourceDef} from '@malloydata/malloy';
+import {isBasicAtomic, QueryFieldDef, SourceDef} from '@malloydata/malloy';
 import {ComposerOptionsContext} from '../../contexts';
 import {maybeQuoteIdentifier} from '../../core/utils';
 
@@ -94,7 +94,7 @@ export const AddNewDimension: React.FC<AddFilterProps> = ({
                   dimension
                 )
                 .then(dimension => {
-                  if (isLeafAtomic(dimension)) {
+                  if (isBasicAtomic(dimension)) {
                     addDimension(dimension);
                     onComplete();
                   }

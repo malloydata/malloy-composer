@@ -8,7 +8,7 @@
 import {
   FilterCondition,
   isJoined,
-  isLeafAtomic,
+  isBasicAtomic,
   NamedQuery,
   Parameter,
   QueryFieldDef,
@@ -783,7 +783,7 @@ export class QueryBuilder extends SourceUtils {
     } else if (isFilteredField(field)) {
       field.e.kids.filterList = [...(field.e.kids.filterList || []), filter];
     } else if (isRenamedField(field)) {
-      if (!isLeafAtomic(field)) {
+      if (!isBasicAtomic(field)) {
         throw new Error('Invalid field');
       }
       stage.queryFields[fieldIndex] = {
