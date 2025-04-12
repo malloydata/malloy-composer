@@ -64,6 +64,7 @@ export const Popover: React.FC<PopoverProps> = ({
   children,
   width = 350,
   placement = 'right-start',
+  referenceDiv,
   setOpen,
   zIndex = 10,
   xOffset = 0,
@@ -78,6 +79,9 @@ export const Popover: React.FC<PopoverProps> = ({
       offset({mainAxis: xOffset, crossAxis: yOffset}),
       flip({boundary: document.body}),
     ],
+    elements: {
+      reference: referenceDiv?.current,
+    },
   });
 
   useClickOutside(refs.floating, () => setOpen(false));
