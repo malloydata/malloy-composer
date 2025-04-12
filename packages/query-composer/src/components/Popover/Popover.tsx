@@ -20,11 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import React, {ReactNode, RefObject, useRef, useState} from 'react';
+import React, {ReactNode, RefObject} from 'react';
 import styled from 'styled-components';
 import {useClickOutside} from '../../hooks';
-import {usePopper} from 'react-popper';
-import {Placement} from '@popperjs/core';
+import {flip, offset, Placement, useFloating} from '@floating-ui/react-dom';
 
 interface PopoverProps {
   open: boolean;
@@ -62,59 +61,34 @@ const Wrapper = styled.div`
 
 export const Popover: React.FC<PopoverProps> = ({
   open,
-  setOpen,
   children,
   width = 350,
   placement = 'right-start',
-  referenceDiv,
+  setOpen,
   zIndex = 10,
   xOffset = 0,
   yOffset = 10,
   disabled = false,
 }) => {
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null);
+  const {refs, floatingStyles} = useFloating({
+    placement,
+    strategy: 'fixed',
+    open,
+    middleware: [
+      offset({mainAxis: xOffset, crossAxis: yOffset}),
+      flip({boundary: document.body}),
+    ],
+  });
 
-  const {styles, attributes} = usePopper(
-    referenceDiv?.current || triggerRef.current,
-    tooltipRef,
-    {
-      placement,
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [xOffset, yOffset],
-          },
-        },
-        {
-          name: 'preventOverflow',
-          options: {
-            altAxis: true,
-            padding: 20,
-            boundary: document.getElementsByTagName('body')[0],
-          },
-        },
-        {
-          name: 'flip',
-          options: {
-            flipVariations: false,
-          },
-        },
-      ],
-    }
-  );
-
-  useClickOutside(triggerRef, () => setOpen(false));
+  useClickOutside(refs.floating, () => setOpen(false));
 
   return (
-    <Wrapper ref={triggerRef}>
+    <Wrapper ref={refs.setReference}>
       {open && !disabled && (
         <PopoverBox
           width={width}
-          ref={setTooltipRef}
-          style={{...styles.popper, position: 'fixed'}}
-          {...attributes.popper}
+          ref={refs.setFloating}
+          style={floatingStyles}
           zIndex={zIndex}
         >
           {children}
