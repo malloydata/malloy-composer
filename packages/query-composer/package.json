@@ -9,10 +9,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/esm/index.js"
+        "default": "./dist/esm/index.js",
+        "types": "./dist/types/index.d.ts"
       },
       "require": {
-        "default": "./dist/cjs/index.cjs"
+        "default": "./dist/cjs/index.cjs",
+        "types": "./dist/types/index.d.ts"
       }
     },
     "./package.json": "./package.json",
