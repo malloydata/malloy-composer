@@ -43,7 +43,7 @@
     "@malloydata/render": "0.0.269",
     "cors": "^2.8.5",
     "duckdb": "^0.9.2",
-    "express": "^4.21.2",
+    "express": "^4.22.1",
     "mdast-comment-marker": "^2.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
