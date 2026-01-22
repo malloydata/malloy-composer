@@ -34,7 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "moment-js": "^1.1.15",
     "shiki": "^1.1.6"
   },
